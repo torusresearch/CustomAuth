@@ -16,11 +16,14 @@ import { BroadcastChannel } from 'broadcast-channel'
 import config from './config'
 import log from 'loglevel'
 import { broadcastChannelOptions } from './utils/utils'
+import NodeDetailManager from '@toruslabs/fetch-node-details'
 
 const torus = new Torus()
+const nodeDetailManager = new NodeDetailManager()
 torus.instanceID = "test"
 
 window.triggerLogin = triggerLogin
+window.nodeDetailManager = nodeDetailManager
 
 function triggerLogin(verifier) {
     log.info('Verifier: ', verifier)
@@ -68,7 +71,8 @@ function triggerLogin(verifier) {
             //   verifierParams: { verifier_id: email.toString().toLowerCase() }
             // })
             // dispatch('handleLogin', { calledFromEmbed, idToken })
-            await handleLogin(GOOGLE,email.toString().toLowerCase(),{ verifier_id: email.toString().toLowerCase() }, idToken)
+            console.log("AT HANDLE LOGIN with " +email.toString().toLowerCase() )
+            return await handleLogin(GOOGLE,email.toString().toLowerCase(),{ verifier_id: email.toString().toLowerCase() }, idToken)
           }
         } catch (error) {
           log.error(error)
@@ -317,7 +321,7 @@ function triggerLogin(verifier) {
 async function handleLogin(verifier, verifierId, verifierParams, idToken) {
     let torusNodeEndpoints
     let torusIndexes
-    return torus.nodeDetailManager
+    return nodeDetailManager
       .getNodeDetails()
       .then(({ torusNodeEndpoints: torusNodeEndpointsValue, torusNodePub, torusIndexes: torusIndexesValue }) => {
         torusNodeEndpoints = torusNodeEndpointsValue

@@ -19,6 +19,7 @@
   "license": "ISC",
   "dependencies": {
     "@chaitanyapotti/random-id": "^1.0.3",
+    "@toruslabs/fetch-node-details": "^2.0.2",
     "@toruslabs/torus.js": "^1.0.7",
     "bignumber.js": "^9.0.0",
     "broadcast-channel": "^3.1.0",
