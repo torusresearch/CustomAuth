@@ -1,6 +1,5 @@
 import { EventEmitter } from 'events'
 
-import StreamWindow from './StreamWindow'
 
 class PopupHandler extends EventEmitter {
   constructor({ url, target, features, preopenInstanceId }) {
@@ -32,12 +31,8 @@ class PopupHandler extends EventEmitter {
   open() {
     if (!this.preopenInstanceId) {
       this.window = window.open(this.url, this.target, this.features)
-      if (!this.window) {
-        this.window = new StreamWindow(undefined, this.url)
-      }
       return Promise.resolve()
     }
-    this.window = new StreamWindow(this.preopenInstanceId)
     return this.window.open(this.url)
   }
 

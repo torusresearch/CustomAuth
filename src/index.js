@@ -9,15 +9,18 @@ import {
     TWITCH,
     USER_INFO_REQUEST_APPROVED,
     USER_INFO_REQUEST_REJECTED
-  } from '../utils/enums'
-import { get, post, remove } from '../utils/httpHelpers'
-import PopupHandler from '../utils/PopupHandler'
+  } from './utils/enums'
+import { get, post, remove } from './utils/httpHelpers'
+import PopupHandler from './utils/PopupHandler'
 import { BroadcastChannel } from 'broadcast-channel'
 import config from './config'
 import log from 'loglevel'
+import { broadcastChannelOptions } from './utils/utils'
 
 const torus = new Torus()
 torus.instanceID = "test"
+
+window.triggerLogin = triggerLogin
 
 function triggerLogin(verifier) {
     log.info('Verifier: ', verifier)

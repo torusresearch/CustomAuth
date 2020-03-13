@@ -13,12 +13,12 @@ app.get('/',function(req, res) {
     res.sendFile(path.join(__dirname + '/dist/example.html'));
 })
 
-app.get('/index.js',function(req, res) {
-    res.sendFile(path.join(__dirname + '/dist/index.js'));
+app.get('/bundle.js',function(req, res) {
+    res.sendFile(path.join(__dirname + '/dist/bundle.js'));
 })
 
 var httpServer = http.createServer(app);
 var httpsServer = https.createServer(credentials, app);
 
 httpServer.listen(8080);
-httpsServer.listen(8443);
+httpsServer.listen(3000);
