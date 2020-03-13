@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "babel ./src --out-dir dist/ && cp ./src/example.html ./dist/example.html && node createBundle.js",
+    "build": "babel ./src --out-dir dist/ && cp ./src/example.html ./dist/example.html && cp ./src/redirect.html ./dist/redirect.html && node createBundle.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "devDependencies": {

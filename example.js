@@ -17,6 +17,10 @@ app.get('/bundle.js',function(req, res) {
     res.sendFile(path.join(__dirname + '/dist/bundle.js'));
 })
 
+app.get('/redirect', (request, response) => {
+    response.sendFile(path.join(__dirname, '/dist/redirect.html'))
+})
+
 var httpServer = http.createServer(app);
 var httpsServer = https.createServer(credentials, app);
 
