@@ -4,8 +4,27 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "build": "babel ./src --out-dir dist/ && cp ./src/example.html ./dist/example.html && node createBundle.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "devDependencies": {
+    "@babel/cli": "^7.8.4",
+    "@babel/core": "^7.8.4",
+    "@babel/plugin-proposal-class-properties": "^7.8.3",
+    "@babel/plugin-proposal-object-rest-spread": "^7.8.3",
+    "@babel/plugin-transform-runtime": "^7.8.3",
+    "@babel/preset-env": "^7.8.4"
+  },
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "@chaitanyapotti/random-id": "^1.0.3",
+    "@toruslabs/torus.js": "^1.0.7",
+    "broadcast-channel": "^3.1.0",
+    "browserify": "^16.5.0",
+    "envify": "^4.1.0",
+    "express": "^4.17.1",
+    "loglevel": "^1.6.7",
+    "path": "^0.12.7"
+  }
 }
