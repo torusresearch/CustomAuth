@@ -326,6 +326,7 @@ async function handleLogin(verifier, verifierId, verifierParams, idToken) {
         // commit('setLoginInProgress', false)
         // torus.updateStaticData({ isUnlocked: true })
         // dispatch('cleanupOAuth', { idToken })
+        return data
       })
       .catch(error => {
         log.error(error)
