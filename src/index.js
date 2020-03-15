@@ -25,6 +25,14 @@ torus.instanceID = "test"
 window.triggerLogin = triggerLogin
 window.nodeDetailManager = nodeDetailManager
 
+class DirectWebSDK {
+  constructor() {
+    
+  }
+
+
+}
+
 function triggerLogin(verifier) {
     log.info('Verifier: ', verifier)
 
