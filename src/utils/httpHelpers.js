@@ -1,7 +1,5 @@
 import log from 'loglevel'
 
-import config from '../config'
-
 export const promiseTimeout = (ms, promise) => {
   const timeout = new Promise((resolve, reject) => {
     const id = setTimeout(() => {
@@ -104,25 +102,6 @@ export const generateJsonRPCObject = (method, parameters) => ({
   id: 10,
   params: parameters
 })
-
-export const getPastOrders = (parameters = {}, headers) => {
-  try {
-    const options = {
-      mode: 'cors',
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-        ...headers
-      }
-    }
-    const url = new URL(`${config.commonApiHost}/transaction`)
-    Object.keys(parameters).forEach(key => url.searchParams.append(key, parameters[key]))
-    return get(url, options)
-  } catch (error) {
-    log.error(error)
-    return undefined
-  }
-}
 
 export const promiseRace = (url, options, timeout) => {
   log.info('promise race', url)

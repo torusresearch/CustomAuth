@@ -333,6 +333,4 @@ async function handleLogin(verifier, verifierId, verifierParams, idToken) {
       })
   }
 
-
-  window.directWebSDK = new DirectWebSDK()
-  window.triggerLogin = window.directWebSDK.triggerLogin
+export default DirectWebSDK;

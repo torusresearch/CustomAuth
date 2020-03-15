@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "build": "babel ./src --out-dir dist/ && cp ./src/example.html ./dist/example.html && cp ./src/redirect.html ./dist/redirect.html && node createBundle.js",
+    "prepack": "npm run build",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "devDependencies": {

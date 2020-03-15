@@ -4,7 +4,6 @@ import * as ethUtil from 'ethereumjs-util'
 import log from 'loglevel'
 import { isAddress } from 'web3-utils'
 
-import config from '../config'
 import {
   ACTIVE,
   DISCORD,
@@ -454,8 +453,6 @@ export function selectChainId(network, provider) {
   const { chainId } = provider
   return standardNetworkId[network] || `0x${parseInt(chainId, 10).toString(16)}`
 }
-
-export const isMain = window.location === window.parent.location && window.location.origin === config.baseUrl
 
 export const getIFrameOrigin = () => {
   const originHref = window.location.ancestorOrigins ? window.location.ancestorOrigins[0] : document.referrer
