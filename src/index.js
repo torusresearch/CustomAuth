@@ -38,6 +38,7 @@ class DirectWebSDK {
       DISCORD_CLIENT_ID: DISCORD_CLIENT_ID,
       redirect_uri: redirect_uri
     }
+    this.torus = torus
   }
 
  
@@ -333,4 +334,4 @@ async function handleLogin(verifier, verifierId, verifierParams, idToken) {
 
 
   window.directWebSDK = new DirectWebSDK()
-  window.triggerLogin = window.directWebSDK.triggerLogin("google")
+  window.triggerLogin = window.directWebSDK.triggerLogin
