@@ -104,3 +104,4 @@ dist
 .tern-port
 
 toruslabs-torus-direct-web-sdk-*
+bundle.min.js
