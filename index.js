@@ -1,3 +1,3 @@
-const DirectWebSdk = require("./dist/index")
+const DirectWebSdk = require("./dist/login");
 
-module.exports =  DirectWebSdk
+module.exports = DirectWebSdk;

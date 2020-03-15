@@ -104,3 +104,9 @@ examples/
 torus-direct-web-sdk-*
 ssl/
 src/
+scripts/
+.eslintrc.json
+.eslintignore
+.prettierignore
+.prettierrc.yaml
+.babelrc
