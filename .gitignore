@@ -103,4 +103,4 @@ dist
 # TernJS port file
 .tern-port
 
-torus-direct-web-sdk-*
+toruslabs-torus-direct-web-sdk-*

@@ -1,5 +1,5 @@
 {
-  "name": "torus-direct-web-sdk",
+  "name": "@toruslabs/torus-direct-web-sdk",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",

@@ -19,7 +19,7 @@
 </template>
 
 <script>
-import TorusSdk from "torus-direct-web-sdk";
+import TorusSdk from "@toruslabs/torus-direct-web-sdk";
 
 export default {
   name: "App",
