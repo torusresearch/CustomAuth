@@ -18,7 +18,7 @@ import { broadcastChannelOptions } from './utils/utils'
 import NodeDetailManager from '@toruslabs/fetch-node-details'
 
 const torus = new Torus()
-const nodeDetailManager = new NodeDetailManager()
+
 torus.instanceID = "test"
 
 class DirectWebSDK {
@@ -28,7 +28,9 @@ class DirectWebSDK {
     TWITCH_CLIENT_ID = 'tfppratfiloo53g1x133ofa4rc29px',
     REDDIT_CLIENT_ID = 'dcQJYPaG481XyQ',
     DISCORD_CLIENT_ID = '630308572013527060',
-    redirect_uri = 'https://localhost:3000/redirect'
+    redirect_uri = 'https://localhost:3000/redirect',
+    network = "mainnet", 
+    proxyContractAddress = "0x638646503746d5456209e33a2ff5e3226d698bea"
   } = {}) {
     this.config = {
       GOOGLE_CLIENT_ID: GOOGLE_CLIENT_ID,
@@ -39,6 +41,7 @@ class DirectWebSDK {
       redirect_uri: redirect_uri
     }
     this.torus = torus
+    this.nodeDetailManager =  new NodeDetailManager({network:network, proxyAddress:proxyContractAddress})
   }
 
  
@@ -80,7 +83,7 @@ class DirectWebSDK {
           })
           const { picture: profileImage, email, name } = userInfo || {}
           console.log("AT HANDLE LOGIN with " +email.toString().toLowerCase() )
-          return await handleLogin(GOOGLE,email.toString().toLowerCase(),{ verifier_id: email.toString().toLowerCase() }, idToken)
+          return await this.handleLogin(GOOGLE,email.toString().toLowerCase(),{ verifier_id: email.toString().toLowerCase() }, idToken)
         }
       } catch (error) {
         log.error(error)
@@ -126,7 +129,7 @@ class DirectWebSDK {
             }
           })
           const { name, id, picture, email } = userInfo || {}
-          await handleLogin(FACEBOOK, id.toString(),{ verifier_id: id.toString() }, accessToken)
+          await this.handleLogin(FACEBOOK, id.toString(),{ verifier_id: id.toString() }, accessToken)
         }
       } catch (error) {
         log.error(error)
@@ -181,7 +184,7 @@ class DirectWebSDK {
           const tokenInfo = jwtDecode(idtoken)
           const { picture: profileImage, preferred_username: name } = userInfo || {}
           const { email } = tokenInfo || {}
-          await handleLogin(TWITCH, userInfo.sub.toString(),{ verifier_id: userInfo.sub.toString() }, accessToken.toString())
+          await this.handleLogin(TWITCH, userInfo.sub.toString(),{ verifier_id: userInfo.sub.toString() }, accessToken.toString())
         }
       } catch (error) {
         log.error(error)
@@ -225,7 +228,7 @@ class DirectWebSDK {
             }
           })
           const { icon_img: profileImage, name } = userInfo || {}
-          await handleLogin(REDDIT, name.toString().toLowerCase(),{ verifier_id: name.toString().toLowerCase() }, accessToken)
+          await this.handleLogin(REDDIT, name.toString().toLowerCase(),{ verifier_id: name.toString().toLowerCase() }, accessToken)
         }
       } catch (error) {
         log.error(error)
@@ -274,7 +277,7 @@ class DirectWebSDK {
             avatar === null
               ? `https://cdn.discordapp.com/embed/avatars/${discriminator % 5}.png`
               : `https://cdn.discordapp.com/avatars/${id}/${avatar}.png?size=2048`
-          await handleLogin(DISCORD, id.toString(),{ verifier_id: id.toString() }, accessToken)
+          await this.handleLogin(DISCORD, id.toString(),{ verifier_id: id.toString() }, accessToken)
         }
       } catch (error) {
         log.error(error)
@@ -290,47 +293,49 @@ class DirectWebSDK {
   }
 }
 
+
+async handleLogin(verifier, verifierId, verifierParams, idToken) {
+  let torusNodeEndpoints
+  let torusIndexes
+  return this.nodeDetailManager
+    .getNodeDetails()
+    .then(({ torusNodeEndpoints: torusNodeEndpointsValue, torusNodePub, torusIndexes: torusIndexesValue }) => {
+      torusNodeEndpoints = torusNodeEndpointsValue
+      torusIndexes = torusIndexesValue
+      return torus.getPublicAddress(torusNodeEndpoints, torusNodePub, { verifier, verifierId })
+    })
+    .then(response => {
+      log.info('New private key assigned to user at address ', response)
+      const p1 = torus.retrieveShares(torusNodeEndpoints, torusIndexes, verifier, verifierParams, idToken)
+      // const p2 = torus.getMessageForSigning(response)
+      return Promise.all([p1])
+    })
+    .then(async response => {
+      const data = response[0]
+      // const message = response[1]
+      // dispatch('addWallet', data) // synchronous
+      // dispatch('subscribeToControllers')
+      // await Promise.all([
+      //   dispatch('initTorusKeyring', data),
+      //   dispatch('processAuthMessage', { message, selectedAddress: data.ethAddress, calledFromEmbed })
+      // ])
+      // dispatch('updateSelectedAddress', { selectedAddress: data.ethAddress }) // synchronous
+      // continue enable function
+      const { ethAddress } = data
+      console.log(data)
+      // statusStream.write({ loggedIn: true, rehydrate: false, verifier })
+      // commit('setLoginInProgress', false)
+      // torus.updateStaticData({ isUnlocked: true })
+      // dispatch('cleanupOAuth', { idToken })
+      return data
+    })
+    .catch(error => {
+      log.error(error)
+    })
+}
+
 }
 
 
-async function handleLogin(verifier, verifierId, verifierParams, idToken) {
-    let torusNodeEndpoints
-    let torusIndexes
-    return nodeDetailManager
-      .getNodeDetails()
-      .then(({ torusNodeEndpoints: torusNodeEndpointsValue, torusNodePub, torusIndexes: torusIndexesValue }) => {
-        torusNodeEndpoints = torusNodeEndpointsValue
-        torusIndexes = torusIndexesValue
-        return torus.getPublicAddress(torusNodeEndpoints, torusNodePub, { verifier, verifierId })
-      })
-      .then(response => {
-        log.info('New private key assigned to user at address ', response)
-        const p1 = torus.retrieveShares(torusNodeEndpoints, torusIndexes, verifier, verifierParams, idToken)
-        // const p2 = torus.getMessageForSigning(response)
-        return Promise.all([p1])
-      })
-      .then(async response => {
-        const data = response[0]
-        // const message = response[1]
-        // dispatch('addWallet', data) // synchronous
-        // dispatch('subscribeToControllers')
-        // await Promise.all([
-        //   dispatch('initTorusKeyring', data),
-        //   dispatch('processAuthMessage', { message, selectedAddress: data.ethAddress, calledFromEmbed })
-        // ])
-        // dispatch('updateSelectedAddress', { selectedAddress: data.ethAddress }) // synchronous
-        // continue enable function
-        const { ethAddress } = data
-        console.log(data)
-        // statusStream.write({ loggedIn: true, rehydrate: false, verifier })
-        // commit('setLoginInProgress', false)
-        // torus.updateStaticData({ isUnlocked: true })
-        // dispatch('cleanupOAuth', { idToken })
-        return data
-      })
-      .catch(error => {
-        log.error(error)
-      })
-  }
 
 export default DirectWebSDK;
