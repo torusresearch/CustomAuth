@@ -4,8 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "babel ./src --out-dir dist/ && cp ./src/login.d.ts ./dist/login.d.ts && node ./scripts/createBundle.js",
+    "build": "rimraf dist/ && babel ./src --out-dir dist/ && cp ./src/login.d.ts ./dist/login.d.ts && node ./scripts/createBundle.js",
+    "lint:js": "eslint --fix src/**/*.js",
     "prepack": "npm run build",
+    "prepublish": "npm run build",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "devDependencies": {
@@ -31,6 +33,7 @@
     "eslint-plugin-simple-import-sort": "^5.0.2",
     "eslint-plugin-standard": "^4.0.1",
     "prettier": "^1.19.1",
+    "rimraf": "^3.0.2",
     "uglifyify": "^5.0.2"
   },
   "author": "",
