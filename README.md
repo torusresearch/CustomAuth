@@ -1,6 +1,6 @@
 # torus-direct-web-sdk
 
-This repo allows web applications to directly retrieve keys stored on the Torus Network. Whist the attestationi layer for the Torus Network is generalizable, one of the main ways to access keys is via Google Logins.
+This repo allows web applications to directly retrieve keys stored on the Torus Network. The attestation layer for the Torus Network is generalizable, below is an example of how to access keys via the SDK via Google.
 
 To allow your web app to retrieve keys:
 
