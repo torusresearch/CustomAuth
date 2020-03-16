@@ -7,7 +7,7 @@ To allow your web app to retrieve keys:
 1) Install the package
 ``` npm i torus-direct-web-sdk ```
 
-2) Create and serve redirect page[https://github.com/torusresearch/torus-direct-web-sdk/blob/master/examples/vue-app/public/redirect.html] through a redirect_uri via your server for specific login ( example localhost:3000/redirect)
+2) Create and serve redirect page(https://github.com/torusresearch/torus-direct-web-sdk/blob/master/examples/vue-app/public/redirect.html) through a redirect_uri via your server for specific login ( example localhost:3000/redirect)
 
 3) Instantiate the package with your own specific client-id 
       ```
