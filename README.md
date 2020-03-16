@@ -8,7 +8,7 @@ To allow your web app to retrieve keys:
 ``` npm i torus-direct-web-sdk ```
 
 2) Instantiate the package with your own specific client-id 
-      ``
+      ```
       import TorusSdk from "@toruslabs/torus-direct-web-sdk";
 
       const torus = new TorusSdk({
@@ -18,7 +18,7 @@ To allow your web app to retrieve keys:
         proxyContractAddress: "0x4023d2a0D330bF11426B12C6144Cfb96B7fa6183", // details for test net
         network: "ropsten" // details for test net
       });
-      ``
+      ```
 
 3) ```triggerLogin()```
 
