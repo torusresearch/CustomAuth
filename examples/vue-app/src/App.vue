@@ -30,7 +30,7 @@ export default {
   },
   methods: {
     async login() {
-      const torus = new TorusSdk({ verifier: this.selectedVerifier });
+      const torus = new TorusSdk();
       const loginDetails = await torus.triggerLogin(this.selectedVerifier);
       this.console(loginDetails);
     },
