@@ -21,7 +21,7 @@ class DirectWebSDK {
     TWITCH_CLIENT_ID = "tfppratfiloo53g1x133ofa4rc29px",
     REDDIT_CLIENT_ID = "dcQJYPaG481XyQ",
     DISCORD_CLIENT_ID = "630308572013527060",
-    redirect_uri = "https://localhost:3000/redirect",
+    redirect_uri = "https://localhost:3000/serviceworker/redirect",
     network = MAINNET,
     proxyContractAddress = "0x638646503746d5456209e33a2ff5e3226d698bea",
     enableLogging = false,

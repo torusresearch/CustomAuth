@@ -10,7 +10,7 @@ module.exports = {
     },
     historyApiFallback: {
       rewrites: [
-        { from: /redirect/, to: "/redirect.html" },
+        { from: /serviceworker\/redirect/, to: "/redirect.html" },
         { from: /./, to: "/index.html" }
       ]
     }
