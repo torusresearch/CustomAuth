@@ -9,6 +9,7 @@ import { DISCORD, FACEBOOK, GOOGLE, MAINNET, REDDIT, TWITCH } from "./utils/enum
 import { get } from "./utils/httpHelpers";
 import PopupHandler from "./utils/PopupHandler";
 import { broadcastChannelOptions } from "./utils/utils";
+import { registerServiceWorker } from "./registerServiceWorker"
 
 const torus = new Torus();
 
@@ -389,6 +390,10 @@ class DirectWebSDK {
     const data = await torus.retrieveShares(torusNodeEndpoints, torusIndexes, verifier, verifierParams, idToken);
     log.info(data);
     return data;
+  }
+
+  registerServiceWorker() {
+    registerServiceWorker(this.redirect_uri);
   }
 }
 
