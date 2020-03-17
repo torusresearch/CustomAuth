@@ -9,10 +9,35 @@ To allow your web app to retrieve keys:
 
 2) Create and serve redirect page(https://github.com/torusresearch/torus-direct-web-sdk/blob/master/examples/vue-app/public/redirect.html) through a redirect_uri via your server for specific login ( example localhost:3000/redirect)
 
-3) Instantiate the package with your own specific client-id 
-      ```
-      import TorusSdk from "@toruslabs/torus-direct-web-sdk";
+3) Edit and serve sw.js (service worker) that bypasses the OAuth token from being relayed to the server. 
 
+```
+...
+
+self.addEventListener('fetch', function(event) {
+  try {
+    const url = new URL(event.request.url)
+    if (url.pathname.includes('/serviceworker/redirect') && url.href.includes(getScope())) {  // <---- edit /serviceworker/redirect to your redirect
+
+...
+              
+```
+4) On higher parent domain register service worker before procing login. Example in https://github.com/torusresearch/torus-direct-web-sdk/blob/master/examples/vue-app/src/App.vue:
+
+```
+  import TorusSdk from "@toruslabs/torus-direct-web-sdk";
+...
+ mounted() {
+     const torus = new TorusSdk()
+     console.log("Registering service worker")
+     torus.registerServiceWorker("https://localhost:3000/") // where serviceWorker is hosted at https://localhost:3000/sw.js
+  },
+...
+
+```
+
+5) Instantiate the package with your own specific client-id 
+      ```
       const torus = new TorusSdk({
         typeOfLogin: "google",
         verifier:"google-MY SPECIFIC VERIFIER",
@@ -22,7 +47,7 @@ To allow your web app to retrieve keys:
       });
       ```
 
-4) ```triggerLogin()```
+6) ```triggerLogin()```
 
 
 
