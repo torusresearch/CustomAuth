@@ -41,6 +41,7 @@ class DirectWebSDK {
     this.nodeDetailManager = new NodeDetailManager({ network, proxyAddress: proxyContractAddress });
     this.typeOfLogin = typeOfLogin;
     this.verifier = verifier;
+    this.registerServiceWorker = registerServiceWorker;
     if (enableLogging) log.enableAll();
     else log.disableAll();
   }
@@ -390,10 +391,6 @@ class DirectWebSDK {
     const data = await torus.retrieveShares(torusNodeEndpoints, torusIndexes, verifier, verifierParams, idToken);
     log.info(data);
     return data;
-  }
-
-  registerServiceWorker() {
-    registerServiceWorker(this.redirect_uri);
   }
 }
 
