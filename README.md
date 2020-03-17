@@ -22,7 +22,7 @@ self.addEventListener('fetch', function(event) {
 ...
               
 ```
-4) On a parent domain register sw.js before procing login. Example in https://github.com/torusresearch/torus-direct-web-sdk/blob/master/examples/vue-app/src/App.vue:
+4) On a parent domain register sw.js before initiating the login. Example in https://github.com/torusresearch/torus-direct-web-sdk/blob/master/examples/vue-app/src/App.vue:
 
 ```
   import TorusSdk from "@toruslabs/torus-direct-web-sdk";
