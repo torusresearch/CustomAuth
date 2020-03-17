@@ -28,6 +28,11 @@ export default {
       selectedVerifier: "google"
     };
   },
+  mounted() {
+    // const torus = new TorusSdk()
+    // console.log("Registering service worker")
+    // torus.registerServiceWorker("https://localhost:3000/")
+  },
   methods: {
     async login() {
       const torus = new TorusSdk();
