@@ -27,4 +27,8 @@ interface TorusLoginResponse extends TorusKey {
     profileImage: String;
     verifier: String;
     verifierId: String;
+    privateKey: String;
+    publicKey: String;
+    accessToken: String;
+    idToken? : String;
 }
