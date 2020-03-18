@@ -1,3 +1,3 @@
-const DirectWebSdk = require("../dist/login");
+const DirectWebSdk = require("..");
 
 window.DirectWebSdk = DirectWebSdk;

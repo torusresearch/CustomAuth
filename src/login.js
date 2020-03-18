@@ -5,11 +5,11 @@ import { BroadcastChannel } from "broadcast-channel";
 import jwtDecode from "jwt-decode";
 import log from "loglevel";
 
+import { registerServiceWorker } from "./registerServiceWorker";
 import { DISCORD, FACEBOOK, GOOGLE, MAINNET, REDDIT, TWITCH } from "./utils/enums";
 import { get } from "./utils/httpHelpers";
 import PopupHandler from "./utils/PopupHandler";
 import { broadcastChannelOptions } from "./utils/utils";
-import { registerServiceWorker } from "./registerServiceWorker"
 
 const torus = new Torus();
 

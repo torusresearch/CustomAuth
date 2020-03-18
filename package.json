@@ -1,10 +1,10 @@
 {
   "name": "@toruslabs/torus-direct-web-sdk",
   "version": "1.0.0",
-  "description": "",
+  "description": "Direct login with torus to get user private key",
   "main": "index.js",
   "scripts": {
-    "build": "rimraf dist/ && babel ./src --out-dir dist/ && cp ./src/login.d.ts ./dist/login.d.ts && node ./scripts/createBundle.js",
+    "build": "rimraf dist/ && babel ./src --out-dir dist/ && cp ./src/login.d.ts ./dist/login.d.ts && webpack --mode=production",
     "lint:js": "eslint --fix src/**/*.js",
     "prepack": "npm run build",
     "prepublish": "npm run build",
@@ -18,7 +18,7 @@
     "@babel/plugin-transform-runtime": "^7.8.3",
     "@babel/preset-env": "^7.8.7",
     "babel-eslint": "^10.1.0",
-    "browserify": "^16.5.0",
+    "babel-loader": "^8.0.6",
     "eslint": "^6.8.0",
     "eslint-config-airbnb-base": "^14.1.0",
     "eslint-config-prettier": "^6.10.0",
@@ -34,10 +34,11 @@
     "eslint-plugin-standard": "^4.0.1",
     "prettier": "^1.19.1",
     "rimraf": "^3.0.2",
-    "uglifyify": "^5.0.2"
+    "webpack": "^4.42.0",
+    "webpack-cli": "^3.3.11"
   },
-  "author": "",
-  "license": "ISC",
+  "author": "Torus Labs",
+  "license": "MIT",
   "dependencies": {
     "@chaitanyapotti/random-id": "^1.0.3",
     "@toruslabs/fetch-node-details": "^2.0.2",
