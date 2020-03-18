@@ -99,7 +99,9 @@ class DirectWebSDK {
                 verifierId: email.toString().toLowerCase(),
                 verifier: this.verifier,
                 publicAddress: pubKeyDetails.ethAddress,
-                privateKey: pubKeyDetails.privKey
+                privateKey: pubKeyDetails.privKey,
+                accessToken,
+                idToken
               });
             }
           } catch (error) {
@@ -160,7 +162,8 @@ class DirectWebSDK {
                 verifierId: id.toString(),
                 verifier: this.verifier,
                 publicAddress: pubKeyDetails.ethAddress,
-                privateKey: pubKeyDetails.privKey
+                privateKey: pubKeyDetails.privKey,
+                accessToken,
               });
             }
           } catch (error) {
@@ -235,7 +238,9 @@ class DirectWebSDK {
                 verifierId: userInfo.sub.toString(),
                 verifier: this.verifier,
                 publicAddress: pubKeyDetails.ethAddress,
-                privateKey: pubKeyDetails.privKey
+                privateKey: pubKeyDetails.privKey,
+                accessToken,
+                idToken
               });
             }
           } catch (error) {
@@ -299,7 +304,8 @@ class DirectWebSDK {
                 verifierId: name.toString().toLowerCase(),
                 verifier: this.verifier,
                 publicAddress: pubKeyDetails.ethAddress,
-                privateKey: pubKeyDetails.privKey
+                privateKey: pubKeyDetails.privKey,
+                accessToken
               });
             }
           } catch (error) {
@@ -363,7 +369,8 @@ class DirectWebSDK {
                 verifierId: id.toString(),
                 verifier: this.verifier,
                 publicAddress: pubKeyDetails.ethAddress,
-                privateKey: pubKeyDetails.privKey
+                privateKey: pubKeyDetails.privKey,
+                accessToken
               });
             }
           } catch (error) {
