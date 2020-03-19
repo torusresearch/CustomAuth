@@ -26,8 +26,6 @@ class DirectWebSDK {
     network = MAINNET,
     proxyContractAddress = "0x638646503746d5456209e33a2ff5e3226d698bea",
     enableLogging = false,
-    typeOfLogin = GOOGLE,
-    verifier = GOOGLE
   } = {}) {
     this.config = {
       GOOGLE_CLIENT_ID,
@@ -39,22 +37,20 @@ class DirectWebSDK {
     };
     this.torus = torus;
     this.nodeDetailManager = new NodeDetailManager({ network, proxyAddress: proxyContractAddress });
-    this.typeOfLogin = typeOfLogin;
-    this.verifier = verifier;
     this.registerServiceWorker = registerServiceWorker;
     if (enableLogging) log.enableAll();
     else log.disableAll();
   }
 
-  triggerLogin() {
+  triggerLogin(verifier) {
     return new Promise((resolve, reject) => {
-      log.info("Verifier: ", this.verifier);
-      if (this.typeOfLogin === GOOGLE) {
+      log.info("Verifier: ", verifier);
+      if (verifier === GOOGLE) {
         const state = encodeURIComponent(
           window.btoa(
             JSON.stringify({
               instanceId: torus.instanceId,
-              verifier: this.verifier
+              verifier
             })
           )
         );
@@ -77,7 +73,7 @@ class DirectWebSDK {
               reject(ev.error);
               return;
             }
-            if (ev.data && returnedVerifier === this.verifier) {
+            if (ev.data && returnedVerifier === verifier) {
               log.info(ev.data);
               const { access_token: accessToken, id_token: idToken } = verifierParameters;
               const userInfo = await get("https://www.googleapis.com/userinfo/v2/me", {
@@ -87,7 +83,7 @@ class DirectWebSDK {
               });
               const { picture: profileImage, email, name } = userInfo || {};
               const pubKeyDetails = await this.handleLogin(
-                this.verifier,
+                verifier,
                 email.toString().toLowerCase(),
                 { verifier_id: email.toString().toLowerCase() },
                 idToken
@@ -97,7 +93,7 @@ class DirectWebSDK {
                 name,
                 email,
                 verifierId: email.toString().toLowerCase(),
-                verifier: this.verifier,
+                verifier,
                 publicAddress: pubKeyDetails.ethAddress,
                 privateKey: pubKeyDetails.privKey
               });
@@ -116,12 +112,12 @@ class DirectWebSDK {
           bc.close();
           reject(new Error("user closed popup"));
         });
-      } else if (this.typeOfLogin === FACEBOOK) {
+      } else if (verifier === FACEBOOK) {
         const state = encodeURIComponent(
           window.btoa(
             JSON.stringify({
               instanceId: torus.instanceId,
-              verifier: this.verifier
+              verifier
             })
           )
         );
@@ -143,7 +139,7 @@ class DirectWebSDK {
               reject(ev.error);
               return;
             }
-            if (ev.data && returnedVerifier === this.verifier) {
+            if (ev.data && returnedVerifier === verifier) {
               log.info(ev.data);
               const { access_token: accessToken } = verifierParameters;
               const userInfo = await get("https://graph.facebook.com/me?fields=name,email,picture.type(large)", {
@@ -152,13 +148,13 @@ class DirectWebSDK {
                 }
               });
               const { name, id, picture, email } = userInfo || {};
-              const pubKeyDetails = await this.handleLogin(this.verifier, id.toString(), { verifier_id: id.toString() }, accessToken);
+              const pubKeyDetails = await this.handleLogin(verifier, id.toString(), { verifier_id: id.toString() }, accessToken);
               resolve({
                 profileImage: picture.data.url,
                 name,
                 email,
                 verifierId: id.toString(),
-                verifier: this.verifier,
+                verifier,
                 publicAddress: pubKeyDetails.ethAddress,
                 privateKey: pubKeyDetails.privKey
               });
@@ -177,12 +173,12 @@ class DirectWebSDK {
           bc.close();
           reject(new Error("user closed popup"));
         });
-      } else if (this.typeOfLogin === TWITCH) {
+      } else if (verifier === TWITCH) {
         const state = encodeURIComponent(
           window.btoa(
             JSON.stringify({
               instanceId: torus.instanceId,
-              verifier: this.verifier
+              verifier
             })
           )
         );
@@ -212,7 +208,7 @@ class DirectWebSDK {
               reject(ev.error);
               return;
             }
-            if (ev.data && returnedVerifier === this.verifier) {
+            if (ev.data && returnedVerifier === verifier) {
               const { access_token: accessToken, id_token: idtoken } = verifierParameters;
               const userInfo = await get("https://id.twitch.tv/oauth2/userinfo", {
                 headers: {
@@ -223,7 +219,7 @@ class DirectWebSDK {
               const { picture: profileImage, preferred_username: name } = userInfo || {};
               const { email } = tokenInfo || {};
               const pubKeyDetails = await this.handleLogin(
-                this.verifier,
+                verifier,
                 userInfo.sub.toString(),
                 { verifier_id: userInfo.sub.toString() },
                 accessToken.toString()
@@ -233,7 +229,7 @@ class DirectWebSDK {
                 name,
                 email,
                 verifierId: userInfo.sub.toString(),
-                verifier: this.verifier,
+                verifier,
                 publicAddress: pubKeyDetails.ethAddress,
                 privateKey: pubKeyDetails.privKey
               });
@@ -252,12 +248,12 @@ class DirectWebSDK {
           bc.close();
           reject(new Error("user closed popup"));
         });
-      } else if (this.typeOfLogin === REDDIT) {
+      } else if (verifier === REDDIT) {
         const state = encodeURIComponent(
           window.btoa(
             JSON.stringify({
               instanceId: torus.instanceId,
-              verifier: this.verifier
+              verifier
             })
           )
         );
@@ -278,7 +274,7 @@ class DirectWebSDK {
               reject(ev.error);
               return;
             }
-            if (ev.data && returnedVerifier === this.verifier) {
+            if (ev.data && returnedVerifier === verifier) {
               const { access_token: accessToken } = verifierParameters;
               const userInfo = await get("https://oauth.reddit.com/api/v1/me", {
                 headers: {
@@ -287,7 +283,7 @@ class DirectWebSDK {
               });
               const { icon_img: profileImage, name } = userInfo || {};
               const pubKeyDetails = await this.handleLogin(
-                this.verifier,
+                verifier,
                 name.toString().toLowerCase(),
                 { verifier_id: name.toString().toLowerCase() },
                 accessToken
@@ -297,7 +293,7 @@ class DirectWebSDK {
                 name,
                 email: "",
                 verifierId: name.toString().toLowerCase(),
-                verifier: this.verifier,
+                verifier,
                 publicAddress: pubKeyDetails.ethAddress,
                 privateKey: pubKeyDetails.privKey
               });
@@ -316,12 +312,12 @@ class DirectWebSDK {
           bc.close();
           reject(new Error("user closed popup"));
         });
-      } else if (this.typeOfLogin === DISCORD) {
+      } else if (verifier === DISCORD) {
         const state = encodeURIComponent(
           window.btoa(
             JSON.stringify({
               instanceId: torus.instanceId,
-              verifier: this.verifier
+              verifier
             })
           )
         );
@@ -343,7 +339,7 @@ class DirectWebSDK {
               reject(ev.error);
               return;
             }
-            if (ev.data && returnedVerifier === this.verifier) {
+            if (ev.data && returnedVerifier === verifier) {
               const { access_token: accessToken } = verifierParameters;
               const userInfo = await get("https://discordapp.com/api/users/@me", {
                 headers: {
@@ -355,13 +351,13 @@ class DirectWebSDK {
                 avatar === null
                   ? `https://cdn.discordapp.com/embed/avatars/${discriminator % 5}.png`
                   : `https://cdn.discordapp.com/avatars/${id}/${avatar}.png?size=2048`;
-              const pubKeyDetails = await this.handleLogin(this.verifier, id.toString(), { verifier_id: id.toString() }, accessToken);
+              const pubKeyDetails = await this.handleLogin(verifier, id.toString(), { verifier_id: id.toString() }, accessToken);
               resolve({
                 profileImage,
                 name: `${name}#${discriminator}`,
                 email,
                 verifierId: id.toString(),
-                verifier: this.verifier,
+                verifier,
                 publicAddress: pubKeyDetails.ethAddress,
                 privateKey: pubKeyDetails.privKey
               });
