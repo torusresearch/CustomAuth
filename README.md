@@ -11,7 +11,9 @@ To allow your web app to retrieve keys:
 
 3. For browsers where service workers are not supported or if you wish to not use service workers, create and serve [redirect page](public/redirect.html) from `baseUrl/serviceworker/redirect` where baseUrl is the one passed while instantiating `TorusSdk` for specific login ( example http://localhost:3000/)
 
-4. Instantiate the package with your own specific client-id
+4. At verifier's interface (where you obtain client id), please use `baseUrl/serviceworker/redirect` (eg: http://localhost:3000/serviceworker/redirect) as the redirect_uri where baseUrl is the one passed while instantiating `TorusSdk`
+
+5. Instantiate the package with your own specific client-id
 
 ```js
 const torus = new TorusSdk({
@@ -23,7 +25,7 @@ const torus = new TorusSdk({
 await torus.init();
 ```
 
-5. Trigger the login
+6. Trigger the login
 ```js
 const userInfo = await torus.triggerLogin("google", "google-MY SPECIFIC VERIFIER");
 ```
