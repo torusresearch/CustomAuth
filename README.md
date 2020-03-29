@@ -4,53 +4,28 @@ This repo allows web applications to directly retrieve keys stored on the Torus 
 
 To allow your web app to retrieve keys:
 
-1) Install the package
-``` npm i @toruslabs/torus-direct-web-sdk ```
+1. Install the package
+   `npm i @toruslabs/torus-direct-web-sdk`
 
-2) Create and serve redirect page(https://github.com/torusresearch/torus-direct-web-sdk/blob/master/examples/vue-app/public/redirect.html) through a redirect_uri via your server for specific login ( example localhost:3000/serviceworker/redirect)
+2. Serve [service worker](public/sw.js) from `baseUrl` where baseUrl is the one passed while instantiating `TorusSdk` for specific login (example http://localhost:3000/). If you're already using a sw, pls ensure to port over the fetch override from [our service worker](public/sw.js)
 
-3) Edit and serve sw.js (service worker) that bypasses the OAuth token from being relayed to the server. 
+3. For browsers where service workers are not supported or if you wish to not use service workers, create and serve [redirect page](public/redirect.html) from `baseUrl/serviceworker/redirect` where baseUrl is the one passed while instantiating `TorusSdk` for specific login ( example http://localhost:3000/)
 
-```
-...
+4. Instantiate the package with your own specific client-id
 
-self.addEventListener('fetch', function(event) {
-  try {
-    const url = new URL(event.request.url)
-    if (url.pathname.includes('/serviceworker/redirect') && url.href.includes(getScope())) {  // <---- edit /serviceworker/redirect to your redirect
-
-...
-              
-```
-4) On a parent domain register sw.js before initiating the login. Example in https://github.com/torusresearch/torus-direct-web-sdk/blob/master/examples/vue-app/src/App.vue:
-
-```
-  import TorusSdk from "@toruslabs/torus-direct-web-sdk";
-...
- mounted() {
-     const torus = new TorusSdk()
-     console.log("Registering service worker")
-     torus.registerServiceWorker("https://localhost:3000/") // where serviceWorker is hosted at https://localhost:3000/sw.js
-  },
-...
-
+```js
+const torus = new TorusSdk({
+  baseUrl: "http://localhost:3000",
+  GOOGLE_CLIENT_ID: "MY CLIENT ID GOOGLE",
+  proxyContractAddress: "0x4023d2a0D330bF11426B12C6144Cfb96B7fa6183", // details for test net
+  network: "ropsten", // details for test net
+});
+await torus.init();
 ```
 
-5) Instantiate the package with your own specific client-id 
-      ```
-      const torus = new TorusSdk({
-        typeOfLogin: "google",
-        verifier:"google-MY SPECIFIC VERIFIER",
-        GOOGLE_CLIENT_ID: "MY CLIENT ID GOOGLE",
-        proxyContractAddress: "0x4023d2a0D330bF11426B12C6144Cfb96B7fa6183", // details for test net
-        network: "ropsten" // details for test net
-      });
-      ```
-
-6) ```triggerLogin()```
-
-
-
+5. Trigger the login
+```js
+const userInfo = await torus.triggerLogin("google", "google-MY SPECIFIC VERIFIER");
+```
 
 Reach out to hello@tor.us to get your verifier spun up on the testnet today!
-

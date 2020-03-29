@@ -2,59 +2,95 @@ import randomId from "@chaitanyapotti/random-id";
 import NodeDetailManager from "@toruslabs/fetch-node-details";
 import Torus from "@toruslabs/torus.js";
 import { BroadcastChannel } from "broadcast-channel";
-import jwtDecode from "jwt-decode";
 import log from "loglevel";
 
 import { registerServiceWorker } from "./registerServiceWorker";
 import { DISCORD, FACEBOOK, GOOGLE, MAINNET, REDDIT, TWITCH } from "./utils/enums";
-import { get } from "./utils/httpHelpers";
+import { get, remove } from "./utils/httpHelpers";
 import PopupHandler from "./utils/PopupHandler";
-import { broadcastChannelOptions } from "./utils/utils";
 
-const torus = new Torus();
-
-torus.instanceId = randomId();
+const broadcastChannelOptions = {
+  // type: 'localstorage', // (optional) enforce a type, oneOf['native', 'idb', 'localstorage', 'node']
+  webWorkerSupport: false, // (optional) set this to false if you know that your channel will never be used in a WebWorker (increases performance)
+};
 
 class DirectWebSDK {
   constructor({
-    GOOGLE_CLIENT_ID = "876733105116-i0hj3s53qiio5k95prpfmj0hp0gmgtor.apps.googleusercontent.com",
-    FACEBOOK_APP_ID = "2554219104599979",
-    TWITCH_CLIENT_ID = "tfppratfiloo53g1x133ofa4rc29px",
-    REDDIT_CLIENT_ID = "dcQJYPaG481XyQ",
-    DISCORD_CLIENT_ID = "630308572013527060",
-    redirect_uri = "https://localhost:3000/serviceworker/redirect",
+    GOOGLE_CLIENT_ID,
+    FACEBOOK_APP_ID,
+    TWITCH_CLIENT_ID,
+    REDDIT_CLIENT_ID,
+    DISCORD_CLIENT_ID,
+    baseUrl,
     network = MAINNET,
     proxyContractAddress = "0x638646503746d5456209e33a2ff5e3226d698bea",
     enableLogging = false,
-    typeOfLogin = GOOGLE,
-    verifier = GOOGLE
   } = {}) {
+    this.isInitialized = false;
     this.config = {
       GOOGLE_CLIENT_ID,
       FACEBOOK_APP_ID,
       TWITCH_CLIENT_ID,
       REDDIT_CLIENT_ID,
       DISCORD_CLIENT_ID,
-      redirect_uri
+      baseUrl: baseUrl.endsWith("/") ? baseUrl : `${baseUrl}/`,
+      get redirect_uri() {
+        return baseUrl.endsWith("/") ? `${baseUrl}serviceworker/redirect` : `${baseUrl}/serviceworker/redirect`;
+      },
     };
+    const torus = new Torus();
+    torus.instanceId = randomId();
     this.torus = torus;
     this.nodeDetailManager = new NodeDetailManager({ network, proxyAddress: proxyContractAddress });
-    this.typeOfLogin = typeOfLogin;
-    this.verifier = verifier;
-    this.registerServiceWorker = registerServiceWorker;
+    this.nodeDetailManager.getNodeDetails();
     if (enableLogging) log.enableAll();
     else log.disableAll();
   }
 
-  triggerLogin() {
+  async init() {
+    const fetchSwResponse = await fetch(`${this.config.baseUrl}sw.js`, { cache: "reload" });
+    if (fetchSwResponse.ok) {
+      try {
+        await registerServiceWorker(this.config.baseUrl);
+        this.isInitialized = true;
+        return;
+      } catch (error) {
+        log.error(error);
+        const response2 = await fetch(this.config.redirect_uri, { cache: "reload" });
+        if (response2.ok) {
+          this.isInitialized = true;
+          return;
+        }
+        throw new Error(
+          `Service worker not supported. Please serve redirect.html present in public folder of this package on ${this.config.redirect_uri}`
+        );
+      }
+    } else {
+      throw new Error("Service worker is not being served. Checking for fallback");
+    }
+  }
+
+  triggerLogin(typeOfLogin = GOOGLE, verifier) {
     return new Promise((resolve, reject) => {
-      log.info("Verifier: ", this.verifier);
-      if (this.typeOfLogin === GOOGLE) {
+      log.info("Verifier: ", verifier);
+      if (!this.isInitialized) {
+        reject(new Error("Not initialized yet"));
+        return;
+      }
+      if (!verifier) {
+        reject(new Error("Invalid verifier"));
+        return;
+      }
+      if (!this.config[`${typeOfLogin.toUpperCase()}_CLIENT_ID`]) {
+        reject(new Error("Client id is not available"));
+        return;
+      }
+      if (typeOfLogin === GOOGLE) {
         const state = encodeURIComponent(
           window.btoa(
             JSON.stringify({
-              instanceId: torus.instanceId,
-              verifier: this.verifier
+              instanceId: this.torus.instanceId,
+              verifier,
             })
           )
         );
@@ -63,31 +99,33 @@ class DirectWebSDK {
         const prompt = "consent select_account";
         const finalUrl =
           `https://accounts.google.com/o/oauth2/v2/auth?response_type=${responseType}&client_id=${this.config.GOOGLE_CLIENT_ID}` +
-          `&state=${state}&scope=${scope}&redirect_uri=${encodeURIComponent(this.config.redirect_uri)}&nonce=${torus.instanceId}&prompt=${prompt}`;
+          `&state=${state}&scope=${scope}&redirect_uri=${encodeURIComponent(this.config.redirect_uri)}&nonce=${
+            this.torus.instanceId
+          }&prompt=${prompt}`;
         const googleWindow = new PopupHandler({ url: finalUrl });
-        const bc = new BroadcastChannel(`redirect_channel_${torus.instanceId}`, broadcastChannelOptions);
-        bc.addEventListener("message", async ev => {
+        const bc = new BroadcastChannel(`redirect_channel_${this.torus.instanceId}`, broadcastChannelOptions);
+        bc.addEventListener("message", async (ev) => {
           try {
             const {
               instanceParams: { verifier: returnedVerifier },
-              hashParams: verifierParameters
+              hashParams: verifierParameters,
             } = ev.data || {};
             if (ev.error && ev.error !== "") {
               log.error(ev.error);
               reject(ev.error);
               return;
             }
-            if (ev.data && returnedVerifier === this.verifier) {
+            if (ev.data && returnedVerifier === verifier) {
               log.info(ev.data);
               const { access_token: accessToken, id_token: idToken } = verifierParameters;
               const userInfo = await get("https://www.googleapis.com/userinfo/v2/me", {
                 headers: {
-                  Authorization: `Bearer ${accessToken}`
-                }
+                  Authorization: `Bearer ${accessToken}`,
+                },
               });
               const { picture: profileImage, email, name } = userInfo || {};
               const pubKeyDetails = await this.handleLogin(
-                this.verifier,
+                verifier,
                 email.toString().toLowerCase(),
                 { verifier_id: email.toString().toLowerCase() },
                 idToken
@@ -97,9 +135,9 @@ class DirectWebSDK {
                 name,
                 email,
                 verifierId: email.toString().toLowerCase(),
-                verifier: this.verifier,
+                verifier,
                 publicAddress: pubKeyDetails.ethAddress,
-                privateKey: pubKeyDetails.privKey
+                privateKey: pubKeyDetails.privKey,
               });
             }
           } catch (error) {
@@ -116,12 +154,12 @@ class DirectWebSDK {
           bc.close();
           reject(new Error("user closed popup"));
         });
-      } else if (this.typeOfLogin === FACEBOOK) {
+      } else if (typeOfLogin === FACEBOOK) {
         const state = encodeURIComponent(
           window.btoa(
             JSON.stringify({
-              instanceId: torus.instanceId,
-              verifier: this.verifier
+              instanceId: this.torus.instanceId,
+              verifier,
             })
           )
         );
@@ -131,37 +169,40 @@ class DirectWebSDK {
           `https://www.facebook.com/v6.0/dialog/oauth?response_type=${responseType}&client_id=${this.config.FACEBOOK_APP_ID}` +
           `&state=${state}&scope=${scope}&redirect_uri=${encodeURIComponent(this.config.redirect_uri)}`;
         const facebookWindow = new PopupHandler({ url: finalUrl });
-        const bc = new BroadcastChannel(`redirect_channel_${torus.instanceId}`, broadcastChannelOptions);
-        bc.addEventListener("message", async ev => {
+        const bc = new BroadcastChannel(`redirect_channel_${this.torus.instanceId}`, broadcastChannelOptions);
+        bc.addEventListener("message", async (ev) => {
           try {
             const {
               instanceParams: { verifier: returnedVerifier },
-              hashParams: verifierParameters
+              hashParams: verifierParameters,
             } = ev.data || {};
             if (ev.error && ev.error !== "") {
               log.error(ev.error);
               reject(ev.error);
               return;
             }
-            if (ev.data && returnedVerifier === this.verifier) {
+            if (ev.data && returnedVerifier === verifier) {
               log.info(ev.data);
               const { access_token: accessToken } = verifierParameters;
               const userInfo = await get("https://graph.facebook.com/me?fields=name,email,picture.type(large)", {
                 headers: {
-                  Authorization: `Bearer ${accessToken}`
-                }
+                  Authorization: `Bearer ${accessToken}`,
+                },
               });
               const { name, id, picture, email } = userInfo || {};
-              const pubKeyDetails = await this.handleLogin(this.verifier, id.toString(), { verifier_id: id.toString() }, accessToken);
+              const pubKeyDetails = await this.handleLogin(verifier, id.toString(), { verifier_id: id.toString() }, accessToken);
               resolve({
                 profileImage: picture.data.url,
                 name,
                 email,
                 verifierId: id.toString(),
-                verifier: this.verifier,
+                verifier,
                 publicAddress: pubKeyDetails.ethAddress,
-                privateKey: pubKeyDetails.privKey
+                privateKey: pubKeyDetails.privKey,
               });
+              remove(`https://graph.facebook.com/me/permissions?access_token=${accessToken}`)
+                .then((resp) => log.info(resp))
+                .catch((error) => log.error(error));
             }
           } catch (error) {
             log.error(error);
@@ -177,65 +218,49 @@ class DirectWebSDK {
           bc.close();
           reject(new Error("user closed popup"));
         });
-      } else if (this.typeOfLogin === TWITCH) {
+      } else if (typeOfLogin === TWITCH) {
         const state = encodeURIComponent(
           window.btoa(
             JSON.stringify({
-              instanceId: torus.instanceId,
-              verifier: this.verifier
+              instanceId: this.torus.instanceId,
+              verifier,
             })
           )
         );
-        const claims = JSON.stringify({
-          id_token: {
-            email: null
-          },
-          userinfo: {
-            picture: null,
-            preferred_username: null
-          }
-        });
         const finalUrl =
           `https://id.twitch.tv/oauth2/authorize?client_id=${this.config.TWITCH_CLIENT_ID}&redirect_uri=` +
-          `${this.config.redirect_uri}&response_type=token%20id_token&scope=user:read:email+openid&claims=${claims}&state=${state}`;
+          `${this.config.redirect_uri}&response_type=token&scope=user:read:email&state=${state}&force_verify=true`;
         const twitchWindow = new PopupHandler({ url: finalUrl });
-        const bc = new BroadcastChannel(`redirect_channel_${torus.instanceId}`, broadcastChannelOptions);
-        bc.addEventListener("message", async ev => {
+        const bc = new BroadcastChannel(`redirect_channel_${this.torus.instanceId}`, broadcastChannelOptions);
+        bc.addEventListener("message", async (ev) => {
           try {
             log.info(ev.data);
             const {
               instanceParams: { verifier: returnedVerifier },
-              hashParams: verifierParameters
+              hashParams: verifierParameters,
             } = ev.data || {};
             if (ev.error && ev.error !== "") {
               log.error(ev.error);
               reject(ev.error);
               return;
             }
-            if (ev.data && returnedVerifier === this.verifier) {
-              const { access_token: accessToken, id_token: idtoken } = verifierParameters;
-              const userInfo = await get("https://id.twitch.tv/oauth2/userinfo", {
+            if (ev.data && returnedVerifier === verifier) {
+              const { access_token: accessToken } = verifierParameters;
+              const userInfo = await get("https://api.twitch.tv/helix/users", {
                 headers: {
-                  Authorization: `Bearer ${accessToken}`
-                }
+                  Authorization: `Bearer ${accessToken}`,
+                },
               });
-              const tokenInfo = jwtDecode(idtoken);
-              const { picture: profileImage, preferred_username: name } = userInfo || {};
-              const { email } = tokenInfo || {};
-              const pubKeyDetails = await this.handleLogin(
-                this.verifier,
-                userInfo.sub.toString(),
-                { verifier_id: userInfo.sub.toString() },
-                accessToken.toString()
-              );
+              const [{ profile_image_url: profileImage, display_name: name, email, id: verifierId }] = userInfo.data || {};
+              const pubKeyDetails = await this.handleLogin(verifier, verifierId, { verifier_id: verifierId }, accessToken.toString());
               resolve({
                 profileImage,
                 name,
                 email,
-                verifierId: userInfo.sub.toString(),
-                verifier: this.verifier,
+                verifierId,
+                verifier,
                 publicAddress: pubKeyDetails.ethAddress,
-                privateKey: pubKeyDetails.privKey
+                privateKey: pubKeyDetails.privKey,
               });
             }
           } catch (error) {
@@ -252,12 +277,12 @@ class DirectWebSDK {
           bc.close();
           reject(new Error("user closed popup"));
         });
-      } else if (this.typeOfLogin === REDDIT) {
+      } else if (typeOfLogin === REDDIT) {
         const state = encodeURIComponent(
           window.btoa(
             JSON.stringify({
-              instanceId: torus.instanceId,
-              verifier: this.verifier
+              instanceId: this.torus.instanceId,
+              verifier,
             })
           )
         );
@@ -265,12 +290,12 @@ class DirectWebSDK {
           `https://www.reddit.com/api/v1/authorize?client_id=${this.config.REDDIT_CLIENT_ID}&redirect_uri=` +
           `${this.config.redirect_uri}&response_type=token&scope=identity&state=${state}`;
         const redditWindow = new PopupHandler({ url: finalUrl });
-        const bc = new BroadcastChannel(`redirect_channel_${torus.instanceId}`, broadcastChannelOptions);
-        bc.addEventListener("message", async ev => {
+        const bc = new BroadcastChannel(`redirect_channel_${this.torus.instanceId}`, broadcastChannelOptions);
+        bc.addEventListener("message", async (ev) => {
           try {
             const {
               instanceParams: { verifier: returnedVerifier },
-              hashParams: verifierParameters
+              hashParams: verifierParameters,
             } = ev.data || {};
             log.info(ev.data);
             if (ev.error && ev.error !== "") {
@@ -278,16 +303,16 @@ class DirectWebSDK {
               reject(ev.error);
               return;
             }
-            if (ev.data && returnedVerifier === this.verifier) {
+            if (ev.data && returnedVerifier === verifier) {
               const { access_token: accessToken } = verifierParameters;
               const userInfo = await get("https://oauth.reddit.com/api/v1/me", {
                 headers: {
-                  Authorization: `Bearer ${accessToken}`
-                }
+                  Authorization: `Bearer ${accessToken}`,
+                },
               });
               const { icon_img: profileImage, name } = userInfo || {};
               const pubKeyDetails = await this.handleLogin(
-                this.verifier,
+                verifier,
                 name.toString().toLowerCase(),
                 { verifier_id: name.toString().toLowerCase() },
                 accessToken
@@ -297,9 +322,9 @@ class DirectWebSDK {
                 name,
                 email: "",
                 verifierId: name.toString().toLowerCase(),
-                verifier: this.verifier,
+                verifier,
                 publicAddress: pubKeyDetails.ethAddress,
-                privateKey: pubKeyDetails.privKey
+                privateKey: pubKeyDetails.privKey,
               });
             }
           } catch (error) {
@@ -316,12 +341,12 @@ class DirectWebSDK {
           bc.close();
           reject(new Error("user closed popup"));
         });
-      } else if (this.typeOfLogin === DISCORD) {
+      } else if (typeOfLogin === DISCORD) {
         const state = encodeURIComponent(
           window.btoa(
             JSON.stringify({
-              instanceId: torus.instanceId,
-              verifier: this.verifier
+              instanceId: this.torus.instanceId,
+              verifier,
             })
           )
         );
@@ -330,12 +355,12 @@ class DirectWebSDK {
           `https://discordapp.com/api/oauth2/authorize?response_type=token&client_id=${this.config.DISCORD_CLIENT_ID}` +
           `&state=${state}&scope=${scope}&redirect_uri=${encodeURIComponent(this.config.redirect_uri)}`;
         const discordWindow = new PopupHandler({ url: finalUrl });
-        const bc = new BroadcastChannel(`redirect_channel_${torus.instanceId}`, broadcastChannelOptions);
-        bc.addEventListener("message", async ev => {
+        const bc = new BroadcastChannel(`redirect_channel_${this.torus.instanceId}`, broadcastChannelOptions);
+        bc.addEventListener("message", async (ev) => {
           try {
             const {
               instanceParams: { verifier: returnedVerifier },
-              hashParams: verifierParameters
+              hashParams: verifierParameters,
             } = ev.data || {};
             log.info(ev.data);
             if (ev.error && ev.error !== "") {
@@ -343,27 +368,27 @@ class DirectWebSDK {
               reject(ev.error);
               return;
             }
-            if (ev.data && returnedVerifier === this.verifier) {
+            if (ev.data && returnedVerifier === verifier) {
               const { access_token: accessToken } = verifierParameters;
               const userInfo = await get("https://discordapp.com/api/users/@me", {
                 headers: {
-                  Authorization: `Bearer ${accessToken}`
-                }
+                  Authorization: `Bearer ${accessToken}`,
+                },
               });
               const { id, avatar, email, username: name, discriminator } = userInfo || {};
               const profileImage =
                 avatar === null
                   ? `https://cdn.discordapp.com/embed/avatars/${discriminator % 5}.png`
                   : `https://cdn.discordapp.com/avatars/${id}/${avatar}.png?size=2048`;
-              const pubKeyDetails = await this.handleLogin(this.verifier, id.toString(), { verifier_id: id.toString() }, accessToken);
+              const pubKeyDetails = await this.handleLogin(verifier, id.toString(), { verifier_id: id.toString() }, accessToken);
               resolve({
                 profileImage,
                 name: `${name}#${discriminator}`,
                 email,
                 verifierId: id.toString(),
-                verifier: this.verifier,
+                verifier,
                 publicAddress: pubKeyDetails.ethAddress,
-                privateKey: pubKeyDetails.privKey
+                privateKey: pubKeyDetails.privKey,
               });
             }
           } catch (error) {
@@ -386,9 +411,10 @@ class DirectWebSDK {
 
   async handleLogin(verifier, verifierId, verifierParams, idToken) {
     const { torusNodeEndpoints, torusNodePub, torusIndexes } = await this.nodeDetailManager.getNodeDetails();
-    const response = await torus.getPublicAddress(torusNodeEndpoints, torusNodePub, { verifier, verifierId });
+    const response = await this.torus.getPublicAddress(torusNodeEndpoints, torusNodePub, { verifier, verifierId });
     log.info("New private key assigned to user at address ", response);
-    const data = await torus.retrieveShares(torusNodeEndpoints, torusIndexes, verifier, verifierParams, idToken);
+    const data = await this.torus.retrieveShares(torusNodeEndpoints, torusIndexes, verifier, verifierParams, idToken);
+    if (data.ethAddress.toLowerCase() !== response.toLowerCase()) throw new Error("Invalid");
     log.info(data);
     return data;
   }
