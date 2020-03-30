@@ -3,7 +3,7 @@
     <div>
       <span :style="{marginRight: '20px'}">verifier:</span>
       <select v-model="selectedVerifier">
-        <option selected value="google">Google</option>
+        <option value="google">Google</option>
         <option value="facebook">Facebook</option>
         <option value="twitch">Twitch</option>
         <option value="discord">Discord</option>
@@ -28,16 +28,16 @@ export default {
       selectedVerifier: "google"
     };
   },
-  mounted() {
-    // const torus = new TorusSdk()
-    // console.log("Registering service worker")
-    // torus.registerServiceWorker("https://localhost:3000/")
-  },
   methods: {
     async login() {
-      const torus = new TorusSdk();
-      const loginDetails = await torus.triggerLogin(this.selectedVerifier);
-      this.console(loginDetails);
+      try {
+        const torus = new TorusSdk({ baseUrl: "http://localhost:3000/", GOOGLE_CLIENT_ID: '876733105116-i0hj3s53qiio5k95prpfmj0hp0gmgtor.apps.googleusercontent.com' });
+        await torus.init();
+        const loginDetails = await torus.triggerLogin(this.selectedVerifier, this.selectedVerifier);
+        this.console(loginDetails);  
+      } catch (error) {
+        console.error(error);
+      }
     },
     console(text) {
       document.querySelector("#console>p").innerHTML = typeof text === "object" ? JSON.stringify(text) : text;
