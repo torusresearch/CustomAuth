@@ -21,21 +21,22 @@ class DirectWebSDK {
     TWITCH_CLIENT_ID,
     REDDIT_CLIENT_ID,
     DISCORD_CLIENT_ID,
-    baseUrl,
+    baseUrl = "http://localhost:3000/serviceworker/",
     network = MAINNET,
     proxyContractAddress = "0x638646503746d5456209e33a2ff5e3226d698bea",
     enableLogging = false,
   } = {}) {
     this.isInitialized = false;
+    const baseUri = new URL(baseUrl);
     this.config = {
       GOOGLE_CLIENT_ID,
       FACEBOOK_APP_ID,
       TWITCH_CLIENT_ID,
       REDDIT_CLIENT_ID,
       DISCORD_CLIENT_ID,
-      baseUrl: baseUrl.endsWith("/") ? baseUrl : `${baseUrl}/`,
+      baseUrl: baseUri.href.endsWith("/") ? baseUri.href : `${baseUri.href}/`,
       get redirect_uri() {
-        return baseUrl.endsWith("/") ? `${baseUrl}serviceworker/redirect` : `${baseUrl}/serviceworker/redirect`;
+        return `${this.baseUrl}redirect`;
       },
     };
     const torus = new Torus();
