@@ -7,7 +7,7 @@ export default class DirectWebSDK {
 
 interface DirectWebSDKArgs {
     GOOGLE_CLIENT_ID: String;
-    FACEBOOK_APP_ID: String;
+    FACEBOOK_CLIENT_ID: String;
     TWITCH_CLIENT_ID: String;
     REDDIT_CLIENT_ID: String;
     DISCORD_CLIENT_ID: String;

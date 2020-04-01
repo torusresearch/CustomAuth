@@ -31,7 +31,7 @@ export default {
   methods: {
     async login() {
       try {
-        const torus = new TorusSdk({ baseUrl: "http://localhost:3000/serviceworker", GOOGLE_CLIENT_ID: '876733105116-i0hj3s53qiio5k95prpfmj0hp0gmgtor.apps.googleusercontent.com', enableLogging: true });
+        const torus = new TorusSdk({ baseUrl: "http://localhost:3000/serviceworker", GOOGLE_CLIENT_ID: '876733105116-i0hj3s53qiio5k95prpfmj0hp0gmgtor.apps.googleusercontent.com', FACEBOOK_CLIENT_ID: '2554219104599979', enableLogging: true });
         await torus.init();
         const loginDetails = await torus.triggerLogin(this.selectedVerifier, this.selectedVerifier);
         this.console(loginDetails);  

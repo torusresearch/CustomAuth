@@ -4,7 +4,7 @@ module.exports = {
   entry: "./public/index.js",
   output: {
     filename: "bundle.min.js",
-    path: path.resolve(__dirname, "public")
+    path: path.resolve(__dirname, "public"),
   },
   module: {
     rules: [
@@ -12,9 +12,9 @@ module.exports = {
         test: /\.js$/,
         exclude: /(node_modules|bower_components)/,
         use: {
-          loader: "babel-loader"
-        }
-      }
-    ]
-  }
+          loader: "babel-loader",
+        },
+      },
+    ],
+  },
 };

@@ -17,7 +17,7 @@ const broadcastChannelOptions = {
 class DirectWebSDK {
   constructor({
     GOOGLE_CLIENT_ID,
-    FACEBOOK_APP_ID,
+    FACEBOOK_CLIENT_ID,
     TWITCH_CLIENT_ID,
     REDDIT_CLIENT_ID,
     DISCORD_CLIENT_ID,
@@ -30,7 +30,7 @@ class DirectWebSDK {
     const baseUri = new URL(baseUrl);
     this.config = {
       GOOGLE_CLIENT_ID,
-      FACEBOOK_APP_ID,
+      FACEBOOK_CLIENT_ID,
       TWITCH_CLIENT_ID,
       REDDIT_CLIENT_ID,
       DISCORD_CLIENT_ID,
@@ -167,7 +167,7 @@ class DirectWebSDK {
         const scope = "public_profile email";
         const responseType = "token";
         const finalUrl =
-          `https://www.facebook.com/v6.0/dialog/oauth?response_type=${responseType}&client_id=${this.config.FACEBOOK_APP_ID}` +
+          `https://www.facebook.com/v6.0/dialog/oauth?response_type=${responseType}&client_id=${this.config.FACEBOOK_CLIENT_ID}` +
           `&state=${state}&scope=${scope}&redirect_uri=${encodeURIComponent(this.config.redirect_uri)}`;
         const facebookWindow = new PopupHandler({ url: finalUrl });
         const bc = new BroadcastChannel(`redirect_channel_${this.torus.instanceId}`, broadcastChannelOptions);
