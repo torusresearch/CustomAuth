@@ -2138,7 +2138,7 @@ self.addEventListener("fetch", function (event) {
             console.log('posted', { queryParams, instanceParams, hashParams })
             setTimeout(function() {
               window.close()
-            }, 5000)
+            }, 30000)
           })
         } catch (err) {
           console.error(err, 'service worker error in redirect')
