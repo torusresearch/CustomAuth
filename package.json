@@ -2,13 +2,22 @@
   "name": "@toruslabs/torus-direct-web-sdk",
   "version": "1.1.2",
   "description": "Direct login with torus to get user private key",
-  "main": "index.js",
+  "main": "dist/directWebSdk.cjs.js",
+  "unpkg": "dist/directWebSdk.umd.min.js",
+  "jsdelivr": "dist/directWebSdk.umd.min.js",
+  "types": "types/login.d.ts",
   "scripts": {
-    "build:babel": "rimraf dist/ && babel ./src --out-dir dist/ && cp ./src/login.d.ts ./dist/login.d.ts",
-    "build": "npm run build:babel && webpack --mode=production",
+    "build": "rimraf dist/ && parallel-webpack --no-stats",
     "lint:js": "eslint --fix 'src/**/*.js'",
     "prepack": "npm run build",
     "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "files": [
+    "dist",
+    "types"
+  ],
+  "peerDependencies": {
+    "@babel/runtime-corejs3": "^7.9.2"
   },
   "dependencies": {
     "@chaitanyapotti/random-id": "^1.0.3",
@@ -25,12 +34,14 @@
     "@babel/plugin-proposal-object-rest-spread": "^7.9.0",
     "@babel/plugin-transform-runtime": "^7.9.0",
     "@babel/preset-env": "^7.9.0",
+    "@babel/runtime-corejs3": "^7.9.2",
     "babel-eslint": "^10.1.0",
     "babel-loader": "^8.1.0",
     "eslint": "^6.8.0",
     "eslint-config-airbnb-base": "^14.1.0",
     "eslint-config-prettier": "^6.10.1",
     "eslint-config-standard": "^14.1.1",
+    "eslint-loader": "^4.0.0",
     "eslint-plugin-babel": "^5.3.0",
     "eslint-plugin-flowtype": "^4.7.0",
     "eslint-plugin-import": "^2.20.2",
@@ -40,11 +51,28 @@
     "eslint-plugin-promise": "^4.2.1",
     "eslint-plugin-simple-import-sort": "^5.0.2",
     "eslint-plugin-standard": "^4.0.1",
+    "husky": "^4.2.3",
+    "lint-staged": "^10.1.2",
+    "parallel-webpack": "^2.5.0",
     "prettier": "^2.0.2",
     "rimraf": "^3.0.2",
     "webpack": "^4.42.1",
     "webpack-cli": "^3.3.11"
   },
   "author": "Torus Labs",
-  "license": "MIT"
+  "license": "MIT",
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.js": [
+      "npm run lint:js --",
+      "prettier --write 'src/**/*.js'"
+    ],
+    "*.{json, md}": [
+      "prettier --write"
+    ]
+  }
 }
