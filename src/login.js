@@ -117,6 +117,7 @@ class DirectWebSDK {
               return;
             }
             if (ev.data && returnedVerifier === verifier) {
+              googleWindow.close();
               log.info(ev.data);
               const { access_token: accessToken, id_token: idToken } = verifierParameters;
               const userInfo = await get("https://www.googleapis.com/userinfo/v2/me", {
@@ -183,6 +184,7 @@ class DirectWebSDK {
               return;
             }
             if (ev.data && returnedVerifier === verifier) {
+              facebookWindow.close();
               log.info(ev.data);
               const { access_token: accessToken } = verifierParameters;
               const userInfo = await get("https://graph.facebook.com/me?fields=name,email,picture.type(large)", {
@@ -246,6 +248,7 @@ class DirectWebSDK {
               return;
             }
             if (ev.data && returnedVerifier === verifier) {
+              twitchWindow.close();
               const { access_token: accessToken } = verifierParameters;
               const userInfo = await get("https://api.twitch.tv/helix/users", {
                 headers: {
@@ -305,6 +308,7 @@ class DirectWebSDK {
               return;
             }
             if (ev.data && returnedVerifier === verifier) {
+              redditWindow.close();
               const { access_token: accessToken } = verifierParameters;
               const userInfo = await get("https://oauth.reddit.com/api/v1/me", {
                 headers: {
@@ -370,6 +374,7 @@ class DirectWebSDK {
               return;
             }
             if (ev.data && returnedVerifier === verifier) {
+              discordWindow.close();
               const { access_token: accessToken } = verifierParameters;
               const userInfo = await get("https://discordapp.com/api/users/@me", {
                 headers: {

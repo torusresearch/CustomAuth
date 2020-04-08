@@ -1,3 +1,3 @@
-const DirectWebSdk = require("./dist/login");
+import DirectWebSdk from "./src/login";
 
-module.exports = DirectWebSdk;
+export default DirectWebSdk;
