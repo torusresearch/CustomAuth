@@ -73,5 +73,20 @@
       "npm run lint:js --",
       "prettier --write 'src/**/*.js'"
     ]
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/torusresearch/torus-direct-web-sdk.git"
+  },
+  "bugs": {
+    "url": "https://github.com/torusresearch/torus-direct-web-sdk/issues"
+  },
+  "homepage": "https://github.com/torusresearch/torus-direct-web-sdk#readme",
+  "keywords": [
+    "torus-direct-web-sdk",
+    "torus-direct-auth",
+    "torus nodes",
+    "torus-embed",
+    "direct auth"
+  ]
 }
