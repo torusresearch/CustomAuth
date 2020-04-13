@@ -86,15 +86,46 @@ class DirectWebSDK {
         reject(new Error("Client id is not available"));
         return;
       }
+      const state = encodeURIComponent(
+        window.btoa(
+          JSON.stringify({
+            instanceId: this.torus.instanceId,
+            verifier,
+          })
+        )
+      );
+      const handleWindow = (url, handler) => {
+        const verifierWindow = new PopupHandler({ url });
+        const bc = new BroadcastChannel(`redirect_channel_${this.torus.instanceId}`, broadcastChannelOptions);
+        bc.addEventListener("message", async (ev) => {
+          try {
+            const {
+              instanceParams: { verifier: returnedVerifier },
+              hashParams: verifierParameters,
+            } = ev.data || {};
+            if (ev.error && ev.error !== "") {
+              log.error(ev.error);
+              reject(ev.error);
+              return;
+            }
+            if (ev.data && returnedVerifier === verifier) {
+              log.info(ev.data);
+              await handler(verifierParameters);
+            }
+          } catch (error) {
+            log.error(error);
+            reject(error);
+          }
+          bc.close();
+          verifierWindow.close();
+        });
+        verifierWindow.open();
+        verifierWindow.once("close", () => {
+          bc.close();
+          reject(new Error("user closed popup"));
+        });
+      };
       if (typeOfLogin === GOOGLE) {
-        const state = encodeURIComponent(
-          window.btoa(
-            JSON.stringify({
-              instanceId: this.torus.instanceId,
-              verifier,
-            })
-          )
-        );
         const scope = "profile email openid";
         const responseType = "token id_token";
         const prompt = "consent select_account";
@@ -103,309 +134,142 @@ class DirectWebSDK {
           `&state=${state}&scope=${scope}&redirect_uri=${encodeURIComponent(this.config.redirect_uri)}&nonce=${
             this.torus.instanceId
           }&prompt=${prompt}`;
-        const googleWindow = new PopupHandler({ url: finalUrl });
-        const bc = new BroadcastChannel(`redirect_channel_${this.torus.instanceId}`, broadcastChannelOptions);
-        bc.addEventListener("message", async (ev) => {
-          try {
-            const {
-              instanceParams: { verifier: returnedVerifier },
-              hashParams: verifierParameters,
-            } = ev.data || {};
-            if (ev.error && ev.error !== "") {
-              log.error(ev.error);
-              reject(ev.error);
-              return;
-            }
-            if (ev.data && returnedVerifier === verifier) {
-              log.info(ev.data);
-              const { access_token: accessToken, id_token: idToken } = verifierParameters;
-              const userInfo = await get("https://www.googleapis.com/userinfo/v2/me", {
-                headers: {
-                  Authorization: `Bearer ${accessToken}`,
-                },
-              });
-              const { picture: profileImage, email, name } = userInfo || {};
-              const pubKeyDetails = await this.handleLogin(
-                verifier,
-                email.toString().toLowerCase(),
-                { verifier_id: email.toString().toLowerCase() },
-                idToken
-              );
-              resolve({
-                profileImage,
-                name,
-                email,
-                verifierId: email.toString().toLowerCase(),
-                verifier,
-                publicAddress: pubKeyDetails.ethAddress,
-                privateKey: pubKeyDetails.privKey,
-              });
-            }
-          } catch (error) {
-            log.error(error);
-            reject(error);
-            return;
-          } finally {
-            bc.close();
-            googleWindow.close();
-          }
-        });
-        googleWindow.open();
-        googleWindow.once("close", () => {
-          bc.close();
-          reject(new Error("user closed popup"));
-        });
+        const googleHandler = async (verifierParameters) => {
+          const { access_token: accessToken, id_token: idToken } = verifierParameters;
+          const userInfo = await get("https://www.googleapis.com/userinfo/v2/me", {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          });
+          const { picture: profileImage, email, name } = userInfo || {};
+          const pubKeyDetails = await this.handleLogin(
+            verifier,
+            email.toString().toLowerCase(),
+            { verifier_id: email.toString().toLowerCase() },
+            idToken
+          );
+          resolve({
+            profileImage,
+            name,
+            email,
+            verifierId: email.toString().toLowerCase(),
+            verifier,
+            publicAddress: pubKeyDetails.ethAddress,
+            privateKey: pubKeyDetails.privKey,
+          });
+        };
+        handleWindow(finalUrl, googleHandler);
       } else if (typeOfLogin === FACEBOOK) {
-        const state = encodeURIComponent(
-          window.btoa(
-            JSON.stringify({
-              instanceId: this.torus.instanceId,
-              verifier,
-            })
-          )
-        );
         const scope = "public_profile email";
         const responseType = "token";
         const finalUrl =
           `https://www.facebook.com/v6.0/dialog/oauth?response_type=${responseType}&client_id=${this.config.FACEBOOK_CLIENT_ID}` +
           `&state=${state}&scope=${scope}&redirect_uri=${encodeURIComponent(this.config.redirect_uri)}`;
-        const facebookWindow = new PopupHandler({ url: finalUrl });
-        const bc = new BroadcastChannel(`redirect_channel_${this.torus.instanceId}`, broadcastChannelOptions);
-        bc.addEventListener("message", async (ev) => {
-          try {
-            const {
-              instanceParams: { verifier: returnedVerifier },
-              hashParams: verifierParameters,
-            } = ev.data || {};
-            if (ev.error && ev.error !== "") {
-              log.error(ev.error);
-              reject(ev.error);
-              return;
-            }
-            if (ev.data && returnedVerifier === verifier) {
-              log.info(ev.data);
-              const { access_token: accessToken } = verifierParameters;
-              const userInfo = await get("https://graph.facebook.com/me?fields=name,email,picture.type(large)", {
-                headers: {
-                  Authorization: `Bearer ${accessToken}`,
-                },
-              });
-              const { name, id, picture, email } = userInfo || {};
-              const pubKeyDetails = await this.handleLogin(verifier, id.toString(), { verifier_id: id.toString() }, accessToken);
-              resolve({
-                profileImage: picture.data.url,
-                name,
-                email,
-                verifierId: id.toString(),
-                verifier,
-                publicAddress: pubKeyDetails.ethAddress,
-                privateKey: pubKeyDetails.privKey,
-              });
-              remove(`https://graph.facebook.com/me/permissions?access_token=${accessToken}`)
-                .then((resp) => log.info(resp))
-                .catch((error) => log.error(error));
-            }
-          } catch (error) {
-            log.error(error);
-            reject(error);
-            return;
-          } finally {
-            bc.close();
-            facebookWindow.close();
-          }
-        });
-        facebookWindow.open();
-        facebookWindow.once("close", () => {
-          bc.close();
-          reject(new Error("user closed popup"));
-        });
+        const facebookHandler = async (verifierParameters) => {
+          const { access_token: accessToken } = verifierParameters;
+          const userInfo = await get("https://graph.facebook.com/me?fields=name,email,picture.type(large)", {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          });
+          const { name, id, picture, email } = userInfo || {};
+          const pubKeyDetails = await this.handleLogin(verifier, id.toString(), { verifier_id: id.toString() }, accessToken);
+          resolve({
+            profileImage: picture.data.url,
+            name,
+            email,
+            verifierId: id.toString(),
+            verifier,
+            publicAddress: pubKeyDetails.ethAddress,
+            privateKey: pubKeyDetails.privKey,
+          });
+          remove(`https://graph.facebook.com/me/permissions?access_token=${accessToken}`)
+            .then((resp) => log.info(resp))
+            .catch((error) => log.error(error));
+        };
+        handleWindow(finalUrl, facebookHandler);
       } else if (typeOfLogin === TWITCH) {
-        const state = encodeURIComponent(
-          window.btoa(
-            JSON.stringify({
-              instanceId: this.torus.instanceId,
-              verifier,
-            })
-          )
-        );
         const finalUrl =
           `https://id.twitch.tv/oauth2/authorize?client_id=${this.config.TWITCH_CLIENT_ID}&redirect_uri=` +
           `${this.config.redirect_uri}&response_type=token&scope=user:read:email&state=${state}&force_verify=true`;
-        const twitchWindow = new PopupHandler({ url: finalUrl });
-        const bc = new BroadcastChannel(`redirect_channel_${this.torus.instanceId}`, broadcastChannelOptions);
-        bc.addEventListener("message", async (ev) => {
-          try {
-            log.info(ev.data);
-            const {
-              instanceParams: { verifier: returnedVerifier },
-              hashParams: verifierParameters,
-            } = ev.data || {};
-            if (ev.error && ev.error !== "") {
-              log.error(ev.error);
-              reject(ev.error);
-              return;
-            }
-            if (ev.data && returnedVerifier === verifier) {
-              const { access_token: accessToken } = verifierParameters;
-              const userInfo = await get("https://api.twitch.tv/helix/users", {
-                headers: {
-                  Authorization: `Bearer ${accessToken}`,
-                },
-              });
-              const [{ profile_image_url: profileImage, display_name: name, email, id: verifierId }] = userInfo.data || {};
-              const pubKeyDetails = await this.handleLogin(verifier, verifierId, { verifier_id: verifierId }, accessToken.toString());
-              resolve({
-                profileImage,
-                name,
-                email,
-                verifierId,
-                verifier,
-                publicAddress: pubKeyDetails.ethAddress,
-                privateKey: pubKeyDetails.privKey,
-              });
-            }
-          } catch (error) {
-            log.error(error);
-            reject(error);
-            return;
-          } finally {
-            bc.close();
-            twitchWindow.close();
-          }
-        });
-        twitchWindow.open();
-        twitchWindow.once("close", () => {
-          bc.close();
-          reject(new Error("user closed popup"));
-        });
+        const twitchHandler = async (verifierParameters) => {
+          const { access_token: accessToken } = verifierParameters;
+          const userInfo = await get("https://api.twitch.tv/helix/users", {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          });
+          const [{ profile_image_url: profileImage, display_name: name, email, id: verifierId }] = userInfo.data || {};
+          const pubKeyDetails = await this.handleLogin(verifier, verifierId, { verifier_id: verifierId }, accessToken.toString());
+          resolve({
+            profileImage,
+            name,
+            email,
+            verifierId,
+            verifier,
+            publicAddress: pubKeyDetails.ethAddress,
+            privateKey: pubKeyDetails.privKey,
+          });
+        };
+        handleWindow(finalUrl, twitchHandler);
       } else if (typeOfLogin === REDDIT) {
-        const state = encodeURIComponent(
-          window.btoa(
-            JSON.stringify({
-              instanceId: this.torus.instanceId,
-              verifier,
-            })
-          )
-        );
         const finalUrl =
           `https://www.reddit.com/api/v1/authorize?client_id=${this.config.REDDIT_CLIENT_ID}&redirect_uri=` +
           `${this.config.redirect_uri}&response_type=token&scope=identity&state=${state}`;
-        const redditWindow = new PopupHandler({ url: finalUrl });
-        const bc = new BroadcastChannel(`redirect_channel_${this.torus.instanceId}`, broadcastChannelOptions);
-        bc.addEventListener("message", async (ev) => {
-          try {
-            const {
-              instanceParams: { verifier: returnedVerifier },
-              hashParams: verifierParameters,
-            } = ev.data || {};
-            log.info(ev.data);
-            if (ev.error && ev.error !== "") {
-              log.error(ev.error);
-              reject(ev.error);
-              return;
-            }
-            if (ev.data && returnedVerifier === verifier) {
-              const { access_token: accessToken } = verifierParameters;
-              const userInfo = await get("https://oauth.reddit.com/api/v1/me", {
-                headers: {
-                  Authorization: `Bearer ${accessToken}`,
-                },
-              });
-              const { icon_img: profileImage, name } = userInfo || {};
-              const pubKeyDetails = await this.handleLogin(
-                verifier,
-                name.toString().toLowerCase(),
-                { verifier_id: name.toString().toLowerCase() },
-                accessToken
-              );
-              resolve({
-                profileImage: profileImage.split("?").length > 0 ? profileImage.split("?")[0] : profileImage,
-                name,
-                email: "",
-                verifierId: name.toString().toLowerCase(),
-                verifier,
-                publicAddress: pubKeyDetails.ethAddress,
-                privateKey: pubKeyDetails.privKey,
-              });
-            }
-          } catch (error) {
-            log.error(error);
-            reject(error);
-            return;
-          } finally {
-            bc.close();
-            redditWindow.close();
-          }
-        });
-        redditWindow.open();
-        redditWindow.once("close", () => {
-          bc.close();
-          reject(new Error("user closed popup"));
-        });
+        const redditHandler = async (verifierParameters) => {
+          const { access_token: accessToken } = verifierParameters;
+          const userInfo = await get("https://oauth.reddit.com/api/v1/me", {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          });
+          const { icon_img: profileImage, name } = userInfo || {};
+          const pubKeyDetails = await this.handleLogin(
+            verifier,
+            name.toString().toLowerCase(),
+            { verifier_id: name.toString().toLowerCase() },
+            accessToken
+          );
+          resolve({
+            profileImage: profileImage.split("?").length > 0 ? profileImage.split("?")[0] : profileImage,
+            name,
+            email: "",
+            verifierId: name.toString().toLowerCase(),
+            verifier,
+            publicAddress: pubKeyDetails.ethAddress,
+            privateKey: pubKeyDetails.privKey,
+          });
+        };
+        handleWindow(finalUrl, redditHandler);
       } else if (typeOfLogin === DISCORD) {
-        const state = encodeURIComponent(
-          window.btoa(
-            JSON.stringify({
-              instanceId: this.torus.instanceId,
-              verifier,
-            })
-          )
-        );
         const scope = encodeURIComponent("identify email");
         const finalUrl =
           `https://discordapp.com/api/oauth2/authorize?response_type=token&client_id=${this.config.DISCORD_CLIENT_ID}` +
           `&state=${state}&scope=${scope}&redirect_uri=${encodeURIComponent(this.config.redirect_uri)}`;
-        const discordWindow = new PopupHandler({ url: finalUrl });
-        const bc = new BroadcastChannel(`redirect_channel_${this.torus.instanceId}`, broadcastChannelOptions);
-        bc.addEventListener("message", async (ev) => {
-          try {
-            const {
-              instanceParams: { verifier: returnedVerifier },
-              hashParams: verifierParameters,
-            } = ev.data || {};
-            log.info(ev.data);
-            if (ev.error && ev.error !== "") {
-              log.error(ev.error);
-              reject(ev.error);
-              return;
-            }
-            if (ev.data && returnedVerifier === verifier) {
-              const { access_token: accessToken } = verifierParameters;
-              const userInfo = await get("https://discordapp.com/api/users/@me", {
-                headers: {
-                  Authorization: `Bearer ${accessToken}`,
-                },
-              });
-              const { id, avatar, email, username: name, discriminator } = userInfo || {};
-              const profileImage =
-                avatar === null
-                  ? `https://cdn.discordapp.com/embed/avatars/${discriminator % 5}.png`
-                  : `https://cdn.discordapp.com/avatars/${id}/${avatar}.png?size=2048`;
-              const pubKeyDetails = await this.handleLogin(verifier, id.toString(), { verifier_id: id.toString() }, accessToken);
-              resolve({
-                profileImage,
-                name: `${name}#${discriminator}`,
-                email,
-                verifierId: id.toString(),
-                verifier,
-                publicAddress: pubKeyDetails.ethAddress,
-                privateKey: pubKeyDetails.privKey,
-              });
-            }
-          } catch (error) {
-            log.error(error);
-            reject(error);
-            return;
-          } finally {
-            bc.close();
-            discordWindow.close();
-          }
-        });
-        discordWindow.open();
-        discordWindow.once("close", () => {
-          bc.close();
-          reject(new Error("user closed popup"));
-        });
+        const discordHandler = async (verifierParameters) => {
+          const { access_token: accessToken } = verifierParameters;
+          const userInfo = await get("https://discordapp.com/api/users/@me", {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          });
+          const { id, avatar, email, username: name, discriminator } = userInfo || {};
+          const profileImage =
+            avatar === null
+              ? `https://cdn.discordapp.com/embed/avatars/${discriminator % 5}.png`
+              : `https://cdn.discordapp.com/avatars/${id}/${avatar}.png?size=2048`;
+          const pubKeyDetails = await this.handleLogin(verifier, id.toString(), { verifier_id: id.toString() }, accessToken);
+          resolve({
+            profileImage,
+            name: `${name}#${discriminator}`,
+            email,
+            verifierId: id.toString(),
+            verifier,
+            publicAddress: pubKeyDetails.ethAddress,
+            privateKey: pubKeyDetails.privKey,
+          });
+        };
+        handleWindow(finalUrl, discordHandler);
       }
     });
   }
