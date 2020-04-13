@@ -24,7 +24,7 @@
     "@chaitanyapotti/random-id": "^1.0.3",
     "@chaitanyapotti/register-service-worker": "^1.7.3",
     "@toruslabs/fetch-node-details": "^2.2.1",
-    "@toruslabs/torus.js": "^2.1.1",
+    "@toruslabs/torus.js": "^2.1.2",
     "broadcast-channel": "^3.1.0",
     "loglevel": "^1.6.7"
   },
