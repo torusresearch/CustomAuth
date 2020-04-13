@@ -116,37 +116,49 @@ export async function discordHandler(verifier, verifierParameters) {
   };
 }
 
-export const handleLoginWindow = (verifier, resolve, reject) => {
+export const handleLoginWindow = (verifier, redirectToOpener, resolve, reject) => {
+  async function handleData(ev, handler) {
+    try {
+      const {
+        instanceParams: { verifier: returnedVerifier },
+        hashParams: verifierParameters,
+      } = ev.data || {};
+      if (ev.error && ev.error !== "") {
+        log.error(ev.error);
+        reject(ev.error);
+        return;
+      }
+      if (ev.data && returnedVerifier === verifier) {
+        log.info(ev.data);
+        const loginDetails = await handler(verifier, verifierParameters);
+        resolve(loginDetails);
+      }
+    } catch (error) {
+      log.error(error);
+      reject(error);
+    }
+  }
   return function handleWindow(url, handler) {
     const verifierWindow = new PopupHandler({ url });
-    const bc = new BroadcastChannel(`redirect_channel_${this.torus.instanceId}`, broadcastChannelOptions);
-    bc.addEventListener("message", async (ev) => {
-      try {
-        const {
-          instanceParams: { verifier: returnedVerifier },
-          hashParams: verifierParameters,
-        } = ev.data || {};
-        if (ev.error && ev.error !== "") {
-          log.error(ev.error);
-          reject(ev.error);
-          return;
-        }
-        if (ev.data && returnedVerifier === verifier) {
-          log.info(ev.data);
-          const boundHandler = handler.bind(this);
-          const loginDetails = await boundHandler(verifier, verifierParameters);
-          resolve(loginDetails);
-        }
-      } catch (error) {
-        log.error(error);
-        reject(error);
-      }
-      bc.close();
-      verifierWindow.close();
-    });
+    let bc;
+    if (!redirectToOpener) {
+      bc = new BroadcastChannel(`redirect_channel_${this.torus.instanceId}`, broadcastChannelOptions);
+      bc.addEventListener("message", async (ev) => {
+        await handleData(ev, handler.bind(this));
+        bc.close();
+        verifierWindow.close();
+      });
+    } else {
+      window.addEventListener("message", async (postMessageEvent) => {
+        if (!postMessageEvent.data) return;
+        const ev = postMessageEvent.data;
+        if (ev.channel !== `redirect_channel_${this.torus.instanceId}`) return;
+        await handleData(ev, handler.bind(this));
+      });
+    }
     verifierWindow.open();
     verifierWindow.once("close", () => {
-      bc.close();
+      if (bc) bc.close();
       reject(new Error("user closed popup"));
     });
   };

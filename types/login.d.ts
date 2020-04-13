@@ -19,6 +19,7 @@ interface DirectWebSDKArgs {
     network?: 'mainnet' | 'rinkeby' | 'ropsten' | 'kovan' | 'goerli';
     proxyContractAddress?: String;
     enableLogging?: Boolean;
+    redirectToOpener?: Boolean;
 }
 
 interface TorusKey {
