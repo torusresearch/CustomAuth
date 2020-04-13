@@ -154,6 +154,7 @@ export const handleLoginWindow = (verifier, redirectToOpener, resolve, reject) =
         const ev = postMessageEvent.data;
         if (ev.channel !== `redirect_channel_${this.torus.instanceId}`) return;
         await handleData(ev, handler.bind(this));
+        verifierWindow.close();
       });
     }
     verifierWindow.open();
