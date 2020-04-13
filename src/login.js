@@ -18,6 +18,7 @@ class DirectWebSDK {
     network = MAINNET,
     proxyContractAddress = "0x638646503746d5456209e33a2ff5e3226d698bea",
     enableLogging = false,
+    redirectToOpener = false,
   } = {}) {
     this.isInitialized = false;
     const baseUri = new URL(baseUrl);
@@ -31,6 +32,7 @@ class DirectWebSDK {
       get redirect_uri() {
         return `${this.baseUrl}redirect`;
       },
+      redirectToOpener,
     };
     const torus = new Torus();
     torus.instanceId = randomId();
@@ -84,10 +86,11 @@ class DirectWebSDK {
           JSON.stringify({
             instanceId: this.torus.instanceId,
             verifier,
+            redirectToOpener: this.config.redirectToOpener,
           })
         )
       );
-      const handleWindow = handleLoginWindow(verifier, resolve, reject).bind(this);
+      const handleWindow = handleLoginWindow(verifier, this.config.redirectToOpener, resolve, reject).bind(this);
       if (typeOfLogin === GOOGLE) {
         const scope = "profile email openid";
         const responseType = "token id_token";

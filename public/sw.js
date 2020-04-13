@@ -2125,21 +2125,33 @@ self.addEventListener("fetch", function (event) {
             instanceParams = JSON.parse(window.atob(decodeURIComponent(decodeURIComponent(queryParams.state)))) || {}
             if (queryParams.error) error = queryParams.error
           }
-          bc = new broadcastChannelLib.BroadcastChannel('redirect_channel_' + instanceParams.instanceId, broadcastChannelOptions)
-          bc.postMessage({
-            data: {
-              instanceParams: instanceParams,
-              hashParams: hashParams,
-              queryParams: queryParams
-            },
-            error: error
-          }).then(function() {
-            bc.close()
-            console.log('posted', { queryParams, instanceParams, hashParams })
-            setTimeout(function() {
-              window.close()
-            }, 30000)
-          })
+          if (instanceParams.redirectToOpener) {
+            window.opener.postMessage({
+              channel: 'redirect_channel_' + instanceParams.instanceId,
+              data: {
+                instanceParams: instanceParams,
+                hashParams: hashParams,
+                queryParams: queryParams
+              },
+              error: error
+            }, '*')
+          } else {
+            bc = new broadcastChannelLib.BroadcastChannel('redirect_channel_' + instanceParams.instanceId, broadcastChannelOptions)
+            bc.postMessage({
+              data: {
+                instanceParams: instanceParams,
+                hashParams: hashParams,
+                queryParams: queryParams
+              },
+              error: error
+            }).then(function() {
+              bc.close()
+              console.log('posted', { queryParams, instanceParams, hashParams })
+              setTimeout(function() {
+                window.close()
+              }, 30000)
+            })
+          }
         } catch (err) {
           console.error(err, 'service worker error in redirect')
           bc && bc.close()
