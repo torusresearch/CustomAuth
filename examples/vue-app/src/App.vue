@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <div>
-      <span :style="{marginRight: '20px'}">verifier:</span>
+      <span :style="{ marginRight: '20px' }">verifier:</span>
       <select v-model="selectedVerifier">
         <option value="google">Google</option>
         <option value="facebook">Facebook</option>
@@ -9,7 +9,7 @@
         <option value="discord">Discord</option>
       </select>
     </div>
-    <div :style="{marginTop: '20px'}">
+    <div :style="{ marginTop: '20px' }">
       <button @click="login">Login with Torus</button>
     </div>
     <div id="console">
@@ -25,24 +25,29 @@ export default {
   name: "App",
   data() {
     return {
-      selectedVerifier: "google"
+      selectedVerifier: "google",
     };
   },
   methods: {
     async login() {
       try {
-        const torus = new TorusSdk({ baseUrl: "http://localhost:3000/serviceworker", GOOGLE_CLIENT_ID: '876733105116-i0hj3s53qiio5k95prpfmj0hp0gmgtor.apps.googleusercontent.com', FACEBOOK_CLIENT_ID: '2554219104599979', enableLogging: true });
-        await torus.init();
-        const loginDetails = await torus.triggerLogin(this.selectedVerifier, this.selectedVerifier);
-        this.console(loginDetails);  
+        const torusdirectsdk = new TorusSdk({
+          baseUrl: "http://localhost:3000/serviceworker",
+          GOOGLE_CLIENT_ID: "876733105116-i0hj3s53qiio5k95prpfmj0hp0gmgtor.apps.googleusercontent.com",
+          FACEBOOK_CLIENT_ID: "2554219104599979",
+          enableLogging: true,
+        });
+        await torusdirectsdk.init();
+        const loginDetails = await torusdirectsdk.triggerLogin(this.selectedVerifier, this.selectedVerifier);
+        this.console(loginDetails);
       } catch (error) {
         console.error(error);
       }
     },
     console(text) {
       document.querySelector("#console>p").innerHTML = typeof text === "object" ? JSON.stringify(text) : text;
-    }
-  }
+    },
+  },
 };
 </script>
 
