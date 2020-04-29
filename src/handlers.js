@@ -149,13 +149,15 @@ export const handleLoginWindow = (verifier, redirectToOpener, resolve, reject) =
         verifierWindow.close();
       });
     } else {
-      window.addEventListener("message", async (postMessageEvent) => {
+      const postMessageEventHandler = async (postMessageEvent) => {
         if (!postMessageEvent.data) return;
         const ev = postMessageEvent.data;
         if (ev.channel !== `redirect_channel_${this.torus.instanceId}`) return;
+        window.removeEventListener("message", postMessageEventHandler);
         await handleData(ev, handler.bind(this));
         verifierWindow.close();
-      });
+      };
+      window.addEventListener("message", postMessageEventHandler);
     }
     verifierWindow.open();
     verifierWindow.once("close", () => {
