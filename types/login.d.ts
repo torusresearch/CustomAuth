@@ -5,7 +5,7 @@ declare class DirectWebSDK {
     handleLogin(verifier: String, verifierId: String, verifierParams: any, idToken: String): Promise<TorusKey>;
 }
 
-export as namespace directWebSdk;
+export as namespace DirectWebSdk;
 
 export = DirectWebSDK;
 

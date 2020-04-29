@@ -2,6 +2,7 @@ const path = require("path");
 const pkg = require("./package.json");
 
 const pkgName = "directWebSdk";
+const libraryName = pkgName.charAt(0).toUpperCase() + pkgName.slice(1);
 
 const packagesToInclude = ["broadcast-channel"];
 
@@ -11,7 +12,7 @@ const baseConfig = {
   target: "web",
   output: {
     path: path.resolve(__dirname, "dist"),
-    library: pkgName,
+    library: libraryName,
     libraryExport: "default",
   },
   module: {
