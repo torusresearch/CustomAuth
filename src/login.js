@@ -101,12 +101,12 @@ class DirectWebSDK {
       } else {
         // for single logins
         this.requiredLoginCount = 1;
-        singleLoginParams.push({ verifier, typeOfLogin });
+        singleLoginParams.push({ verifier, typeOfLogin, ...this.config });
         this.handleLogin = this.handleSingleLogin.bind(this);
       }
       const loginPromises = [];
       for (let i = 0; i < this.requiredLoginCount; i += 1) {
-        loginPromises.push(this.startSingleLogin(singleLoginParams[i].typeOfLogin, singleLoginParams[i].verifier));
+        loginPromises.push(this.startSingleLogin(singleLoginParams[i].typeOfLogin, singleLoginParams[i].verifier, singleLoginParams));
       }
       Promise.all(loginPromises)
         .then(function () {
@@ -120,7 +120,7 @@ class DirectWebSDK {
     });
   }
 
-  async startSingleLogin(typeOfLogin, verifier) {
+  async startSingleLogin(typeOfLogin, verifier, extraParams) {
     const state = encodeURIComponent(
       window.btoa(
         JSON.stringify({
@@ -137,7 +137,7 @@ class DirectWebSDK {
         const responseType = "token id_token";
         const prompt = "consent select_account";
         const finalUrl =
-          `https://accounts.google.com/o/oauth2/v2/auth?response_type=${responseType}&client_id=${this.config.GOOGLE_CLIENT_ID}` +
+          `https://accounts.google.com/o/oauth2/v2/auth?response_type=${responseType}&client_id=${extraParams.GOOGLE_CLIENT_ID}` +
           `&state=${state}&scope=${scope}&redirect_uri=${encodeURIComponent(this.config.redirect_uri)}&nonce=${
             this.torus.instanceId
           }&prompt=${prompt}`;
@@ -146,23 +146,23 @@ class DirectWebSDK {
         const scope = "public_profile email";
         const responseType = "token";
         const finalUrl =
-          `https://www.facebook.com/v6.0/dialog/oauth?response_type=${responseType}&client_id=${this.config.FACEBOOK_CLIENT_ID}` +
+          `https://www.facebook.com/v6.0/dialog/oauth?response_type=${responseType}&client_id=${extraParams.FACEBOOK_CLIENT_ID}` +
           `&state=${state}&scope=${scope}&redirect_uri=${encodeURIComponent(this.config.redirect_uri)}`;
         handleWindow(finalUrl, facebookHandler);
       } else if (typeOfLogin === TWITCH) {
         const finalUrl =
-          `https://id.twitch.tv/oauth2/authorize?client_id=${this.config.TWITCH_CLIENT_ID}&redirect_uri=` +
+          `https://id.twitch.tv/oauth2/authorize?client_id=${extraParams.TWITCH_CLIENT_ID}&redirect_uri=` +
           `${this.config.redirect_uri}&response_type=token&scope=user:read:email&state=${state}&force_verify=true`;
         handleWindow(finalUrl, twitchHandler);
       } else if (typeOfLogin === REDDIT) {
         const finalUrl =
-          `https://www.reddit.com/api/v1/authorize?client_id=${this.config.REDDIT_CLIENT_ID}&redirect_uri=` +
+          `https://www.reddit.com/api/v1/authorize?client_id=${extraParams.REDDIT_CLIENT_ID}&redirect_uri=` +
           `${this.config.redirect_uri}&response_type=token&scope=identity&state=${state}`;
         handleWindow(finalUrl, redditHandler);
       } else if (typeOfLogin === DISCORD) {
         const scope = encodeURIComponent("identify email");
         const finalUrl =
-          `https://discordapp.com/api/oauth2/authorize?response_type=token&client_id=${this.config.DISCORD_CLIENT_ID}` +
+          `https://discordapp.com/api/oauth2/authorize?response_type=token&client_id=${extraParams.DISCORD_CLIENT_ID}` +
           `&state=${state}&scope=${scope}&redirect_uri=${encodeURIComponent(this.config.redirect_uri)}`;
         handleWindow(finalUrl, discordHandler);
       }
