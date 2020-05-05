@@ -85,7 +85,7 @@ class DirectWebSDK {
       //   reject(new Error("Client id is not available"));
       //   return;
       // }
-      const singleLoginParams = [];
+      let singleLoginParams = [];
       const listOfAggregateLoginTypes = ["single_id_verifier", "and_aggregate_verifier", "or_aggregate_verifier"];
       const aggregateLoginMode = listOfAggregateLoginTypes.includes(typeOfLogin);
       if (aggregateLoginMode) {
@@ -97,7 +97,7 @@ class DirectWebSDK {
             return;
           }
           this.requiredLoginCount = subVerifierDetails.length;
-          this.singleLoginParams = subVerifierDetails;
+          singleLoginParams = subVerifierDetails;
         }
         this.handleLogin = this.storeLoginParams.bind(this, typeOfLogin);
       } else {
