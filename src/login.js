@@ -109,12 +109,12 @@ class DirectWebSDK {
         loginPromises.push(this.startSingleLogin.bind(this)(singleLoginParams[i].typeOfLogin, singleLoginParams[i].verifier, singleLoginParams));
       }
       Promise.all(loginPromises)
-        .then(function () {
+        .then(() => {
           const data = this.handleAggregateLogin(typeOfLogin, verifier);
           resolve(data);
           return data;
         })
-        .catch(function (err) {
+        .catch((err) => {
           reject(err);
         });
     });
@@ -130,7 +130,7 @@ class DirectWebSDK {
         })
       )
     );
-    return new Promise(function initialLogin(resolve, reject) {
+    return new Promise((resolve, reject) => {
       const handleWindow = handleLoginWindow(verifier, this.config.redirectToOpener, resolve, reject).bind(this);
       if (typeOfLogin === GOOGLE) {
         const scope = "profile email openid";
