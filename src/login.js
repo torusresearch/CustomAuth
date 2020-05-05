@@ -2,6 +2,7 @@ import randomId from "@chaitanyapotti/random-id";
 import NodeDetailManager from "@toruslabs/fetch-node-details";
 import Torus from "@toruslabs/torus.js";
 import log from "loglevel";
+import { keccak256 } from "web3-utils";
 
 import { discordHandler, facebookHandler, googleHandler, handleLoginWindow, redditHandler, twitchHandler } from "./handlers";
 import { registerServiceWorker } from "./registerServiceWorker";
@@ -39,6 +40,9 @@ class DirectWebSDK {
     this.torus = torus;
     this.nodeDetailManager = new NodeDetailManager({ network, proxyAddress: proxyContractAddress });
     this.nodeDetailManager.getNodeDetails();
+    this.loginCount = 0;
+    this.requiredLoginCount = 0;
+    this.loginParams = [];
     if (enableLogging) log.enableAll();
     else log.disableAll();
   }
@@ -81,15 +85,46 @@ class DirectWebSDK {
         reject(new Error("Client id is not available"));
         return;
       }
-      const state = encodeURIComponent(
-        window.btoa(
-          JSON.stringify({
-            instanceId: this.torus.instanceId,
-            verifier,
-            redirectToOpener: this.config.redirectToOpener,
-          })
-        )
-      );
+      const parsedLogin = typeOfLogin.split("|");
+      const singleLoginParams = [];
+      const listOfAggregateLoginTypes = ["single_id_verifier", "and_aggregate_verifier", "or_aggregate_verifier"];
+      if (listOfAggregateLoginTypes.includes(parsedLogin[0])) {
+        if (typeOfLogin === "single_id_verifier") {
+          this.requiredLoginCount = 1;
+        }
+        this.handleLogin = this.storeLoginParams.bind(this, typeOfLogin);
+      } else {
+        this.requiredLoginCount = 1;
+        singleLoginParams.push({ verifier, typeOfLogin });
+        this.handleLogin = this.handleSingleLogin.bind(this);
+      }
+      const loginPromises = [];
+      for (let i = 0; i < this.requiredLoginCount; i += 1) {
+        loginPromises.push(this.startSingleLogin(singleLoginParams[i].typeOfLogin, singleLoginParams[i].verifier));
+      }
+      Promise.all(loginPromises)
+        .then(function () {
+          const data = this.handleAggregateLogin(parsedLogin[0], verifier);
+          resolve(data);
+          return data;
+        })
+        .catch(function (err) {
+          reject(err);
+        });
+    });
+  }
+
+  async startSingleLogin(typeOfLogin, verifier) {
+    const state = encodeURIComponent(
+      window.btoa(
+        JSON.stringify({
+          instanceId: this.torus.instanceId,
+          verifier,
+          redirectToOpener: this.config.redirectToOpener,
+        })
+      )
+    );
+    return new Promise(function initialLogin(resolve, reject) {
       const handleWindow = handleLoginWindow(verifier, this.config.redirectToOpener, resolve, reject).bind(this);
       if (typeOfLogin === GOOGLE) {
         const scope = "profile email openid";
@@ -112,13 +147,11 @@ class DirectWebSDK {
         const finalUrl =
           `https://id.twitch.tv/oauth2/authorize?client_id=${this.config.TWITCH_CLIENT_ID}&redirect_uri=` +
           `${this.config.redirect_uri}&response_type=token&scope=user:read:email&state=${state}&force_verify=true`;
-
         handleWindow(finalUrl, twitchHandler);
       } else if (typeOfLogin === REDDIT) {
         const finalUrl =
           `https://www.reddit.com/api/v1/authorize?client_id=${this.config.REDDIT_CLIENT_ID}&redirect_uri=` +
           `${this.config.redirect_uri}&response_type=token&scope=identity&state=${state}`;
-
         handleWindow(finalUrl, redditHandler);
       } else if (typeOfLogin === DISCORD) {
         const scope = encodeURIComponent("identify email");
@@ -130,14 +163,43 @@ class DirectWebSDK {
     });
   }
 
-  async handleLogin(verifier, verifierId, verifierParams, idToken) {
+  async handleSingleLogin(verifier, verifierId, verifierParams, idToken) {
     const { torusNodeEndpoints, torusNodePub, torusIndexes } = await this.nodeDetailManager.getNodeDetails();
     const response = await this.torus.getPublicAddress(torusNodeEndpoints, torusNodePub, { verifier, verifierId });
-    log.info("New private key assigned to user at address ", response);
+    log.info("private key assigned to user at address ", response);
     const data = await this.torus.retrieveShares(torusNodeEndpoints, torusIndexes, verifier, verifierParams, idToken);
     if (data.ethAddress.toLowerCase() !== response.toLowerCase()) throw new Error("Invalid");
     log.info(data);
     return data;
+  }
+
+  async storeLoginParams(typeOfAggregateLogin, verifier, verifierId, verifierParams, idToken) {
+    this.loginParams = { verifier, verifierId, verifierParams, idToken };
+    return { ethAddress: "", privKey: "" };
+  }
+
+  async handleAggregateLogin(typeOfAggregateLogin, verifier) {
+    const aggregateVerifierParams = { verify_params: [], sub_verifier_ids: [] };
+    const aggregateIdTokenSeeds = [];
+    let aggregateVerifierId = "";
+    // req = []byte(`{"verifieridentifier":"test_single","verifier_id":"id1",
+    // "sub_verifier_ids":["sub_test2"],"verify_params":[{"idtoken":"dlublu","id":"id1"}],
+    // "idtoken":"052df4fd5c6c78fa4cc6798a385f54d667e97c6dd0e3b74fd36103861e8b18ed"}`)
+    this.loginParams.forEach(function (item) {
+      aggregateVerifierParams.verify_params.push({ ...item.verifierParams, idtoken: item.idToken });
+      aggregateVerifierParams.sub_verifier_ids.push(item.verifier);
+      aggregateIdTokenSeeds.push(item.idToken);
+      aggregateVerifierId = item.verifierId;
+    });
+    aggregateIdTokenSeeds.sort();
+    const aggregateIdToken = keccak256(aggregateIdTokenSeeds.join(String.fromCharCode(29)));
+    const pubKeyDetails = this.handleSingleLogin(verifier, aggregateVerifierId, aggregateVerifierParams, aggregateIdToken);
+    return {
+      verifierId: aggregateVerifierId,
+      verifier,
+      publicAddress: pubKeyDetails.ethAddress,
+      privateKey: pubKeyDetails.privKey,
+    };
   }
 }
 
