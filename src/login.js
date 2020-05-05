@@ -70,7 +70,7 @@ class DirectWebSDK {
     }
   }
 
-  triggerLogin(typeOfLogin, verifier) {
+  triggerLogin(typeOfLogin, verifier, ...subVerifierDetails) {
     return new Promise((resolve, reject) => {
       log.info("Verifier: ", verifier);
       if (!this.isInitialized) {
@@ -85,15 +85,21 @@ class DirectWebSDK {
         reject(new Error("Client id is not available"));
         return;
       }
-      const parsedLogin = typeOfLogin.split("|");
       const singleLoginParams = [];
       const listOfAggregateLoginTypes = ["single_id_verifier", "and_aggregate_verifier", "or_aggregate_verifier"];
-      if (listOfAggregateLoginTypes.includes(parsedLogin[0])) {
+      if (listOfAggregateLoginTypes.includes(typeOfLogin)) {
+        // for aggregate logins
         if (typeOfLogin === "single_id_verifier") {
-          this.requiredLoginCount = 1;
+          if (subVerifierDetails.length === 0) {
+            reject(new Error("no sub verifiers provided"));
+            return;
+          }
+          this.requiredLoginCount = subVerifierDetails.length;
+          this.singleLoginParams = subVerifierDetails;
         }
         this.handleLogin = this.storeLoginParams.bind(this, typeOfLogin);
       } else {
+        // for single logins
         this.requiredLoginCount = 1;
         singleLoginParams.push({ verifier, typeOfLogin });
         this.handleLogin = this.handleSingleLogin.bind(this);
@@ -104,7 +110,7 @@ class DirectWebSDK {
       }
       Promise.all(loginPromises)
         .then(function () {
-          const data = this.handleAggregateLogin(parsedLogin[0], verifier);
+          const data = this.handleAggregateLogin(typeOfLogin, verifier);
           resolve(data);
           return data;
         })
