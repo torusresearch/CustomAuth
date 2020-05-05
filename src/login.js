@@ -106,7 +106,7 @@ class DirectWebSDK {
       }
       const loginPromises = [];
       for (let i = 0; i < this.requiredLoginCount; i += 1) {
-        loginPromises.push(this.startSingleLogin(singleLoginParams[i].typeOfLogin, singleLoginParams[i].verifier, singleLoginParams));
+        loginPromises.push(this.startSingleLogin.bind(this)(singleLoginParams[i].typeOfLogin, singleLoginParams[i].verifier, singleLoginParams));
       }
       Promise.all(loginPromises)
         .then(function () {

@@ -38,7 +38,11 @@ export default {
           enableLogging: true,
         });
         await torusdirectsdk.init();
-        const loginDetails = await torusdirectsdk.triggerLogin(this.selectedVerifier, this.selectedVerifier);
+        const loginDetails = await torusdirectsdk.triggerLogin(this.selectedVerifier, "google-google", {
+          GOOGLE_CLIENT_ID: "238941746713-qqe4a7rduuk256d8oi5l0q34qtu9gpfg.apps.googleusercontent.com",
+          typeOfLogin: "google",
+          "verifier": "google-shubs",
+        });
         this.console(loginDetails);
       } catch (error) {
         console.error(error);
