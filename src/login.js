@@ -72,7 +72,7 @@ class DirectWebSDK {
 
   triggerLogin(typeOfLogin, verifier, ...subVerifierDetails) {
     return new Promise((resolve, reject) => {
-      log.info("Verifier: ", verifier);
+      log.info("Login params: ", typeOfLogin, verifier, subVerifierDetails);
       if (!this.isInitialized) {
         reject(new Error("Not initialized yet"));
         return;
@@ -81,15 +81,17 @@ class DirectWebSDK {
         reject(new Error("Invalid params"));
         return;
       }
-      if (!this.config[`${typeOfLogin.toUpperCase()}_CLIENT_ID`]) {
-        reject(new Error("Client id is not available"));
-        return;
-      }
+      // if (!this.config[`${typeOfLogin.toUpperCase()}_CLIENT_ID`]) {
+      //   reject(new Error("Client id is not available"));
+      //   return;
+      // }
       const singleLoginParams = [];
       const listOfAggregateLoginTypes = ["single_id_verifier", "and_aggregate_verifier", "or_aggregate_verifier"];
-      if (listOfAggregateLoginTypes.includes(typeOfLogin)) {
+      const aggregateLoginMode = listOfAggregateLoginTypes.includes(typeOfLogin);
+      if (aggregateLoginMode) {
         // for aggregate logins
         if (typeOfLogin === "single_id_verifier") {
+          log.info("set to single_id_verifier login");
           if (subVerifierDetails.length === 0) {
             reject(new Error("no sub verifiers provided"));
             return;
@@ -104,15 +106,20 @@ class DirectWebSDK {
         singleLoginParams.push({ verifier, typeOfLogin, ...this.config });
         this.handleLogin = this.handleSingleLogin.bind(this);
       }
+      log.info("starting single logins with", singleLoginParams);
       const loginPromises = [];
       for (let i = 0; i < this.requiredLoginCount; i += 1) {
         loginPromises.push(this.startSingleLogin.bind(this)(singleLoginParams[i].typeOfLogin, singleLoginParams[i].verifier, singleLoginParams[i]));
       }
       Promise.all(loginPromises)
-        .then(() => {
-          const data = this.handleAggregateLogin(typeOfLogin, verifier);
-          resolve(data);
-          return data;
+        .then((result) => {
+          if (aggregateLoginMode) {
+            const data = this.handleAggregateLogin(typeOfLogin, verifier);
+            resolve(data);
+            return data;
+          }
+          resolve(result);
+          return result;
         })
         .catch((err) => {
           reject(err);
@@ -181,11 +188,13 @@ class DirectWebSDK {
   }
 
   async storeLoginParams(typeOfAggregateLogin, verifier, verifierId, verifierParams, idToken) {
+    log.info("storeLoginParams with arguments ", typeOfAggregateLogin, verifier, verifierId, verifierParams, idToken);
     this.loginParams = { verifier, verifierId, verifierParams, idToken };
     return { ethAddress: "", privKey: "" };
   }
 
   async handleAggregateLogin(typeOfAggregateLogin, verifier) {
+    log.info("handleAggregateLogin called", verifier);
     const aggregateVerifierParams = { verify_params: [], sub_verifier_ids: [] };
     const aggregateIdTokenSeeds = [];
     let aggregateVerifierId = "";
@@ -199,6 +208,8 @@ class DirectWebSDK {
       aggregateVerifierId = item.verifierId;
     });
     aggregateIdTokenSeeds.sort();
+    console.log("token seeds", aggregateIdTokenSeeds);
+    log.info("token seeds", aggregateIdTokenSeeds);
     const aggregateIdToken = Web3Utils.keccak256(aggregateIdTokenSeeds.join(String.fromCharCode(29)));
     const pubKeyDetails = this.handleSingleLogin(verifier, aggregateVerifierId, aggregateVerifierParams, aggregateIdToken);
     return {
