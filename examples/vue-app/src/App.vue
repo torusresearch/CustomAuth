@@ -35,13 +35,15 @@ export default {
           baseUrl: "http://localhost:3000/serviceworker",
           GOOGLE_CLIENT_ID: "876733105116-i0hj3s53qiio5k95prpfmj0hp0gmgtor.apps.googleusercontent.com",
           FACEBOOK_CLIENT_ID: "2554219104599979",
+          proxyContractAddress: "0x4023d2a0D330bF11426B12C6144Cfb96B7fa6183", // details for test net
+          network: "ropsten", // details for test net
           enableLogging: true,
         });
         await torusdirectsdk.init();
         const loginDetails = await torusdirectsdk.triggerLogin(this.selectedVerifier, "google-google", {
           GOOGLE_CLIENT_ID: "238941746713-qqe4a7rduuk256d8oi5l0q34qtu9gpfg.apps.googleusercontent.com",
           typeOfLogin: "google",
-          "verifier": "google-shubs",
+          verifier: "google-shubs",
         });
         this.console(loginDetails);
       } catch (error) {

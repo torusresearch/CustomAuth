@@ -2,7 +2,7 @@ import randomId from "@chaitanyapotti/random-id";
 import NodeDetailManager from "@toruslabs/fetch-node-details";
 import Torus from "@toruslabs/torus.js";
 import log from "loglevel";
-import { keccak256 } from "web3-utils";
+import Web3Utils from "web3-utils";
 
 import { discordHandler, facebookHandler, googleHandler, handleLoginWindow, redditHandler, twitchHandler } from "./handlers";
 import { registerServiceWorker } from "./registerServiceWorker";
@@ -106,7 +106,7 @@ class DirectWebSDK {
       }
       const loginPromises = [];
       for (let i = 0; i < this.requiredLoginCount; i += 1) {
-        loginPromises.push(this.startSingleLogin.bind(this)(singleLoginParams[i].typeOfLogin, singleLoginParams[i].verifier, singleLoginParams));
+        loginPromises.push(this.startSingleLogin.bind(this)(singleLoginParams[i].typeOfLogin, singleLoginParams[i].verifier, singleLoginParams[i]));
       }
       Promise.all(loginPromises)
         .then(() => {
@@ -170,6 +170,7 @@ class DirectWebSDK {
   }
 
   async handleSingleLogin(verifier, verifierId, verifierParams, idToken) {
+    log.info("login called with arguments ", verifier, verifierId, verifierParams, idToken);
     const { torusNodeEndpoints, torusNodePub, torusIndexes } = await this.nodeDetailManager.getNodeDetails();
     const response = await this.torus.getPublicAddress(torusNodeEndpoints, torusNodePub, { verifier, verifierId });
     log.info("private key assigned to user at address ", response);
@@ -198,7 +199,7 @@ class DirectWebSDK {
       aggregateVerifierId = item.verifierId;
     });
     aggregateIdTokenSeeds.sort();
-    const aggregateIdToken = keccak256(aggregateIdTokenSeeds.join(String.fromCharCode(29)));
+    const aggregateIdToken = Web3Utils.keccak256(aggregateIdTokenSeeds.join(String.fromCharCode(29)));
     const pubKeyDetails = this.handleSingleLogin(verifier, aggregateVerifierId, aggregateVerifierParams, aggregateIdToken);
     return {
       verifierId: aggregateVerifierId,
