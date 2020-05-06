@@ -96,6 +96,7 @@ class DirectWebSDK {
             reject(new Error("no sub verifiers provided"));
             return;
           }
+          this.loginParams = [];
           this.requiredLoginCount = subVerifierDetails.length;
           singleLoginParams = subVerifierDetails;
         }
@@ -189,7 +190,7 @@ class DirectWebSDK {
 
   async storeLoginParams(typeOfAggregateLogin, verifier, verifierId, verifierParams, idToken) {
     log.info("storeLoginParams with arguments ", typeOfAggregateLogin, verifier, verifierId, verifierParams, idToken);
-    this.loginParams = { verifier, verifierId, verifierParams, idToken };
+    this.loginParams.push({ verifier, verifierId, verifierParams, idToken });
     return { ethAddress: "", privKey: "" };
   }
 
