@@ -9,6 +9,18 @@ const broadcastChannelOptions = {
   webWorkerSupport: false, // (optional) set this to false if you know that your channel will never be used in a WebWorker (increases performance)
 };
 
+export async function auth0Handler(verifier, verifierParameters) {
+  const { idtoken, email } = verifierParameters;
+  const pubKeyDetails = await this.handleLogin(verifier, email.toString().toLowerCase(), { verifier_id: email.toString().toLowerCase() }, idtoken);
+  return {
+    email,
+    verifierId: email.toString().toLowerCase(),
+    verifier,
+    publicAddress: pubKeyDetails.ethAddress,
+    privateKey: pubKeyDetails.privKey,
+  };
+}
+
 export async function googleHandler(verifier, verifierParameters) {
   const { access_token: accessToken, id_token: idToken } = verifierParameters;
   const userInfo = await get("https://www.googleapis.com/userinfo/v2/me", {

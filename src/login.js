@@ -3,9 +3,9 @@ import NodeDetailManager from "@toruslabs/fetch-node-details";
 import Torus from "@toruslabs/torus.js";
 import log from "loglevel";
 
-import { discordHandler, facebookHandler, googleHandler, handleLoginWindow, redditHandler, twitchHandler } from "./handlers";
+import { auth0Handler, discordHandler, facebookHandler, googleHandler, handleLoginWindow, redditHandler, twitchHandler } from "./handlers";
 import { registerServiceWorker } from "./registerServiceWorker";
-import { DISCORD, FACEBOOK, GOOGLE, MAINNET, REDDIT, TWITCH } from "./utils/enums";
+import { DISCORD, FACEBOOK, GOOGLE, JWT, MAINNET, REDDIT, TWITCH } from "./utils/enums";
 
 class DirectWebSDK {
   constructor({
@@ -14,6 +14,8 @@ class DirectWebSDK {
     TWITCH_CLIENT_ID,
     REDDIT_CLIENT_ID,
     DISCORD_CLIENT_ID,
+    auth0InitParams,
+    auth0LoginParams,
     baseUrl = "http://localhost:3000/serviceworker/",
     network = MAINNET,
     proxyContractAddress = "0x638646503746d5456209e33a2ff5e3226d698bea",
@@ -28,12 +30,27 @@ class DirectWebSDK {
       TWITCH_CLIENT_ID,
       REDDIT_CLIENT_ID,
       DISCORD_CLIENT_ID,
+      auth0InitParams,
+      auth0LoginParams,
       baseUrl: baseUri.href.endsWith("/") ? baseUri.href : `${baseUri.href}/`,
       get redirect_uri() {
         return `${this.baseUrl}redirect`;
       },
       redirectToOpener,
     };
+    if (!this.config.auth0ULInstance) {
+      this.config.auth0ULInstance = new Proxy(
+        {},
+        {
+          get: function get(obj, prop) {
+            if (typeof window.auth0 === "object") {
+              return window.auth0[prop];
+            }
+            return undefined;
+          },
+        }
+      );
+    }
     const torus = new Torus();
     torus.instanceId = randomId();
     this.torus = torus;
@@ -126,6 +143,13 @@ class DirectWebSDK {
           `https://discordapp.com/api/oauth2/authorize?response_type=token&client_id=${this.config.DISCORD_CLIENT_ID}` +
           `&state=${state}&scope=${scope}&redirect_uri=${encodeURIComponent(this.config.redirect_uri)}`;
         handleWindow(finalUrl, discordHandler);
+      } else if (typeOfLogin === JWT) {
+        handleWindow(
+          `${this.redirect_uri}?auth0Login=${window.btoa(JSON.stringify(this.auth0LoginParams))}&auth0InitParams=${window.btoa(
+            JSON.stringify(this.auth0InitParams)
+          )}`,
+          auth0Handler
+        );
       }
     });
   }
