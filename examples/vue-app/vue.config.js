@@ -9,6 +9,7 @@ module.exports = {
     },
     historyApiFallback: {
       rewrites: [
+        { from: /serviceworker\/sw.js/, to: "/serviceworker/sw.js" },
         { from: /serviceworker\/redirect/, to: "/serviceworker/redirect.html" },
         { from: /./, to: "/index.html" },
       ],

@@ -7,6 +7,7 @@
         <option value="facebook">Facebook</option>
         <option value="twitch">Twitch</option>
         <option value="discord">Discord</option>
+        <option value="jwt">Auth0</option>
       </select>
     </div>
     <div :style="{ marginTop: '20px' }">
@@ -32,13 +33,31 @@ export default {
     async login() {
       try {
         const torusdirectsdk = new TorusSdk({
-          baseUrl: "http://localhost:3000/serviceworker",
+          baseUrl: "http://localhost:3000/serviceworker/",
           GOOGLE_CLIENT_ID: "876733105116-i0hj3s53qiio5k95prpfmj0hp0gmgtor.apps.googleusercontent.com",
           FACEBOOK_CLIENT_ID: "2554219104599979",
+          auth0Params: {
+            "domain": "lentan.auth0.com",
+            "client_id": "LPDUGgSqNP5mSxllGP0TEgJwRrNU0lVH",
+            "prompt": "login"
+          },
+          auth0LoginParams: {
+            "redirect_uri": "http://localhost:3000/serviceworker/redirect",
+            "prompt": "login"
+          },
           enableLogging: true,
+          network: 'ropsten',
+          proxyContractAddress: '0x4023d2a0D330bF11426B12C6144Cfb96B7fa6183',
         });
         await torusdirectsdk.init();
-        const loginDetails = await torusdirectsdk.triggerLogin(this.selectedVerifier, this.selectedVerifier);
+        var verifierTypeMap = {
+          google: 'google',
+          discord: 'discord',
+          facebook: 'facebook',
+          twitch: 'twitch',
+          jwt: 'test-jwt',
+        }
+        const loginDetails = await torusdirectsdk.triggerLogin(this.selectedVerifier, verifierTypeMap[this.selectedVerifier]);
         this.console(loginDetails);
       } catch (error) {
         console.error(error);

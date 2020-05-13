@@ -14,7 +14,7 @@ class DirectWebSDK {
     TWITCH_CLIENT_ID,
     REDDIT_CLIENT_ID,
     DISCORD_CLIENT_ID,
-    auth0InitParams,
+    auth0Params,
     auth0LoginParams,
     baseUrl = "http://localhost:3000/serviceworker/",
     network = MAINNET,
@@ -30,7 +30,7 @@ class DirectWebSDK {
       TWITCH_CLIENT_ID,
       REDDIT_CLIENT_ID,
       DISCORD_CLIENT_ID,
-      auth0InitParams,
+      auth0Params,
       auth0LoginParams,
       baseUrl: baseUri.href.endsWith("/") ? baseUri.href : `${baseUri.href}/`,
       get redirect_uri() {
@@ -94,7 +94,7 @@ class DirectWebSDK {
         reject(new Error("Invalid params"));
         return;
       }
-      if (!this.config[`${typeOfLogin.toUpperCase()}_CLIENT_ID`]) {
+      if (typeOfLogin !== "jwt" && !this.config[`${typeOfLogin.toUpperCase()}_CLIENT_ID`]) {
         reject(new Error("Client id is not available"));
         return;
       }
@@ -145,9 +145,12 @@ class DirectWebSDK {
         handleWindow(finalUrl, discordHandler);
       } else if (typeOfLogin === JWT) {
         handleWindow(
-          `${this.redirect_uri}?auth0Login=${window.btoa(JSON.stringify(this.auth0LoginParams))}&auth0InitParams=${window.btoa(
-            JSON.stringify(this.auth0InitParams)
-          )}`,
+          `${this.config.redirect_uri}?auth0Login=${window.btoa(
+            JSON.stringify({
+              ...this.config.auth0LoginParams,
+              appState: state,
+            })
+          )}&auth0Params=${window.btoa(JSON.stringify(this.config.auth0Params))}`,
           auth0Handler
         );
       }
