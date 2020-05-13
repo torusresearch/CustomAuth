@@ -212,6 +212,7 @@ class DirectWebSDK {
     console.log("token seeds", aggregateIdTokenSeeds);
     log.info("token seeds", aggregateIdTokenSeeds);
     const aggregateIdToken = Web3Utils.keccak256(aggregateIdTokenSeeds.join(String.fromCharCode(29))).slice(2);
+    aggregateVerifierParams.verifier_id = aggregateVerifierId;
     const pubKeyDetails = this.handleSingleLogin(verifier, aggregateVerifierId, aggregateVerifierParams, aggregateIdToken);
     return {
       verifierId: aggregateVerifierId,
