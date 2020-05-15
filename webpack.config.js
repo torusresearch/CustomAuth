@@ -35,15 +35,9 @@ const babelLoaderWithPolyfills = {
   },
 };
 
-const optimization = {
-  optimization: {
-    minimize: false,
-  },
-};
-
 const babelLoader = { ...babelLoaderWithPolyfills, use: { loader: "babel-loader", options: { plugins: ["@babel/transform-runtime"] } } };
 
-const umdPolyfilledConfigMinified = {
+const umdPolyfilledConfig = {
   ...baseConfig,
   output: {
     ...baseConfig.output,
@@ -55,16 +49,7 @@ const umdPolyfilledConfigMinified = {
   },
 };
 
-const umdPolyfilledConfig = {
-  ...umdPolyfilledConfigMinified,
-  ...optimization,
-  output: {
-    ...umdPolyfilledConfigMinified.output,
-    filename: `${pkgName}.polyfill.umd.js`,
-  },
-};
-
-const umdConfigMinified = {
+const umdConfig = {
   ...baseConfig,
   output: {
     ...baseConfig.output,
@@ -73,15 +58,6 @@ const umdConfigMinified = {
   },
   module: {
     rules: [eslintLoader, babelLoader],
-  },
-};
-
-const umdConfig = {
-  ...umdConfigMinified,
-  ...optimization,
-  output: {
-    ...umdConfigMinified.output,
-    filename: `${pkgName}.umd.js`,
   },
 };
 
@@ -98,7 +74,7 @@ const cjsConfig = {
   externals: [...Object.keys(pkg.dependencies).filter((x) => !packagesToInclude.includes(x)), /^(@babel\/runtime)/i],
 };
 
-module.exports = [umdPolyfilledConfig, umdPolyfilledConfigMinified, umdConfig, umdConfigMinified, cjsConfig];
+module.exports = [umdPolyfilledConfig, umdConfig, cjsConfig];
 
 // V5
 // experiments: {

@@ -16,12 +16,10 @@ This repo allows web applications to directly retrieve keys stored on the Torus 
 
 ### Bundling
 
-This module is distributed in 6 formats
+This module is distributed in 3 formats
 
 - `commonjs` build `dist/directWebSdk.cjs.js` in es5 format
-- `umd` build `dist/directWebSdk.umd.js` in es5 format without polyfilling corejs
 - `umd` build `dist/directWebSdk.umd.min.js` in es5 format without polyfilling corejs minified
-- `umd` build `dist/directWebSdk.polyfill.umd.js` in es5 format with polyfilling corejs
 - `umd` build `dist/directWebSdk.polyfill.umd.min.js` in es5 format with polyfilling corejs minified
 
 By default, the appropriate format is used for your specified usecase
@@ -87,5 +85,5 @@ Reach out to hello@tor.us to get your verifier spun up on the testnet today!
 
 
 ## Requirements
-- This package requires a peer dependency of `@babel/runtime` or `@babel/runtime-corejs3`
+- This package requires a peer dependency of `@babel/runtime`
 - Node 10+
