@@ -4821,6 +4821,7 @@ self.addEventListener("fetch", function (event) {
             auth0LoginObj.appState = {}
           }
           auth0LoginObj.appState.auth0Params = auth0ParamsObj
+          window.sessionStorage.removeItem('auth0Login')
           return window.auth0.loginWithRedirect(auth0LoginObj)
         }
       })

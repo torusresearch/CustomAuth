@@ -132,69 +132,91 @@ self.addEventListener("fetch", function (event) {
     <h1 class="title content">Loading</h1>
   </div>
   <script>
-    // auth0-spa-js.production.js
-    ! function (t, e) {
-      "object" == typeof exports && "undefined" != typeof module ? module.exports = e() : "function" == typeof define &&
-        define.amd ? define(e) : (t = t || self).createAuth0Client = e()
-    }(this, function () {
+    // auth0 spa js production
+    /*! *****************************************************************************
+    Copyright (c) Microsoft Corporation. All rights reserved.
+    Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+    this file except in compliance with the License. You may obtain a copy of the
+    License at http://www.apache.org/licenses/LICENSE-2.0
+
+    THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+    KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION ANY IMPLIED
+    WARRANTIES OR CONDITIONS OF TITLE, FITNESS FOR A PARTICULAR PURPOSE,
+    MERCHANTABLITY OR NON-INFRINGEMENT.
+
+    See the Apache Version 2.0 License for specific language governing permissions
+    and limitations under the License.
+    ***************************************************************************** */
+
+    ! function (e, t) {
+      "object" == typeof exports && "undefined" != typeof module ? module.exports = t() : "function" == typeof define &&
+        define.amd ? define(t) : (e = e || self).createAuth0Client = t()
+    }(this, (function () {
       "use strict";
-      var t = function (e, n) {
-        return (t = Object.setPrototypeOf || {
+      var e = function (t, n) {
+        return (e = Object.setPrototypeOf || {
             __proto__: []
           }
-          instanceof Array && function (t, e) {
-            t.__proto__ = e
-          } || function (t, e) {
-            for (var n in e) e.hasOwnProperty(n) && (t[n] = e[n])
-          })(e, n)
+          instanceof Array && function (e, t) {
+            e.__proto__ = t
+          } || function (e, t) {
+            for (var n in t) t.hasOwnProperty(n) && (e[n] = t[n])
+          })(t, n)
       };
-      var e = function () {
-        return (e = Object.assign || function (t) {
-          for (var e, n = 1, r = arguments.length; n < r; n++)
-            for (var o in e = arguments[n]) Object.prototype.hasOwnProperty.call(e, o) && (t[o] = e[o]);
-          return t
+
+      function t(t, n) {
+        function r() {
+          this.constructor = t
+        }
+        e(t, n), t.prototype = null === n ? Object.create(n) : (r.prototype = n.prototype, new r)
+      }
+      var n = function () {
+        return (n = Object.assign || function (e) {
+          for (var t, n = 1, r = arguments.length; n < r; n++)
+            for (var o in t = arguments[n]) Object.prototype.hasOwnProperty.call(t, o) && (e[o] = t[o]);
+          return e
         }).apply(this, arguments)
       };
 
-      function n(t, e) {
+      function r(e, t) {
         var n = {};
-        for (var r in t) Object.prototype.hasOwnProperty.call(t, r) && e.indexOf(r) < 0 && (n[r] = t[r]);
-        if (null != t && "function" == typeof Object.getOwnPropertySymbols) {
+        for (var r in e) Object.prototype.hasOwnProperty.call(e, r) && t.indexOf(r) < 0 && (n[r] = e[r]);
+        if (null != e && "function" == typeof Object.getOwnPropertySymbols) {
           var o = 0;
-          for (r = Object.getOwnPropertySymbols(t); o < r.length; o++) e.indexOf(r[o]) < 0 && Object.prototype
-            .propertyIsEnumerable.call(t, r[o]) && (n[r[o]] = t[r[o]])
+          for (r = Object.getOwnPropertySymbols(e); o < r.length; o++) t.indexOf(r[o]) < 0 && Object.prototype
+            .propertyIsEnumerable.call(e, r[o]) && (n[r[o]] = e[r[o]])
         }
         return n
       }
 
-      function r(t, e, n, r) {
-        return new(n || (n = Promise))(function (o, i) {
-          function c(t) {
+      function o(e, t, n, r) {
+        return new(n || (n = Promise))((function (o, i) {
+          function c(e) {
             try {
-              u(r.next(t))
-            } catch (t) {
-              i(t)
+              s(r.next(e))
+            } catch (e) {
+              i(e)
             }
           }
 
-          function a(t) {
+          function a(e) {
             try {
-              u(r.throw(t))
-            } catch (t) {
-              i(t)
+              s(r.throw(e))
+            } catch (e) {
+              i(e)
             }
           }
 
-          function u(t) {
-            t.done ? o(t.value) : new n(function (e) {
-              e(t.value)
-            }).then(c, a)
+          function s(e) {
+            e.done ? o(e.value) : new n((function (t) {
+              t(e.value)
+            })).then(c, a)
           }
-          u((r = r.apply(t, e || [])).next())
-        })
+          s((r = r.apply(e, t || [])).next())
+        }))
       }
 
-      function o(t, e) {
+      function i(e, t) {
         var n, r, o, i, c = {
           label: 0,
           sent: function () {
@@ -217,8 +239,8 @@ self.addEventListener("fetch", function (event) {
             return function (i) {
               if (n) throw new TypeError("Generator is already executing.");
               for (; c;) try {
-                if (n = 1, r && (o = 2 & i[0] ? r.return : i[0] ? r.throw || ((o = r.return) && o.call(r), 0) :
-                    r.next) && !(o = o.call(r, i[1])).done) return o;
+                if (n = 1, r && (o = 2 & i[0] ? r.return : i[0] ? r.throw || ((o = r.return) && o.call(r),
+                    0) : r.next) && !(o = o.call(r, i[1])).done) return o;
                 switch (r = 0, o && (i = [2 & i[0], o.value]), i[0]) {
                   case 0:
                   case 1:
@@ -236,7 +258,7 @@ self.addEventListener("fetch", function (event) {
                     i = c.ops.pop(), c.trys.pop();
                     continue;
                   default:
-                    if (!(o = (o = c.trys).length > 0 && o[o.length - 1]) && (6 === i[0] || 2 === i[0])) {
+                    if (!(o = c.trys, (o = o.length > 0 && o[o.length - 1]) || 6 !== i[0] && 2 !== i[0])) {
                       c = 0;
                       continue
                     }
@@ -255,9 +277,9 @@ self.addEventListener("fetch", function (event) {
                     o[2] && c.ops.pop(), c.trys.pop();
                     continue
                 }
-                i = e.call(t, c)
-              } catch (t) {
-                i = [6, t], r = 0
+                i = t.call(e, c)
+              } catch (e) {
+                i = [6, e], r = 0
               } finally {
                 n = o = 0
               }
@@ -270,601 +292,624 @@ self.addEventListener("fetch", function (event) {
           }
         }
       }
-      var i = "undefined" != typeof globalThis ? globalThis : "undefined" != typeof window ? window : "undefined" !=
+      var c = "undefined" != typeof globalThis ? globalThis : "undefined" != typeof window ? window : "undefined" !=
         typeof global ? global : "undefined" != typeof self ? self : {};
 
-      function c(t, e) {
-        return t(e = {
-          exports: {}
-        }, e.exports), e.exports
+      function a(e) {
+        return e && e.__esModule && Object.prototype.hasOwnProperty.call(e, "default") ? e.default : e
       }
-      var a, u, s, f = "object",
-        l = function (t) {
-          return t && t.Math == Math && t
+
+      function s(e, t) {
+        return e(t = {
+          exports: {}
+        }, t.exports), t.exports
+      }
+      var u = function (e) {
+          return e && e.Math == Math && e
         },
-        p = l(typeof globalThis == f && globalThis) || l(typeof window == f && window) || l(typeof self == f &&
-        self) || l(typeof i == f && i) || Function("return this")(),
-        d = function (t) {
+        l = u("object" == typeof globalThis && globalThis) || u("object" == typeof window && window) || u(
+          "object" == typeof self && self) || u("object" == typeof c && c) || Function("return this")(),
+        f = function (e) {
           try {
-            return !!t()
-          } catch (t) {
+            return !!e()
+          } catch (e) {
             return !0
           }
         },
-        h = !d(function () {
-          return 7 != Object.defineProperty({}, "a", {
+        d = !f((function () {
+          return 7 != Object.defineProperty({}, 1, {
             get: function () {
               return 7
             }
-          }).a
-        }),
-        y = {}.propertyIsEnumerable,
-        v = Object.getOwnPropertyDescriptor,
-        w = {
-          f: v && !y.call({
+          })[1]
+        })),
+        p = {}.propertyIsEnumerable,
+        h = Object.getOwnPropertyDescriptor,
+        y = {
+          f: h && !p.call({
             1: 2
-          }, 1) ? function (t) {
-            var e = v(this, t);
-            return !!e && e.enumerable
-          } : y
+          }, 1) ? function (e) {
+            var t = h(this, e);
+            return !!t && t.enumerable
+          } : p
         },
-        g = function (t, e) {
+        m = function (e, t) {
           return {
-            enumerable: !(1 & t),
-            configurable: !(2 & t),
-            writable: !(4 & t),
-            value: e
+            enumerable: !(1 & e),
+            configurable: !(2 & e),
+            writable: !(4 & e),
+            value: t
           }
         },
-        m = {}.toString,
-        _ = function (t) {
-          return m.call(t).slice(8, -1)
+        v = {}.toString,
+        b = function (e) {
+          return v.call(e).slice(8, -1)
         },
-        b = "".split,
-        O = d(function () {
+        g = "".split,
+        w = f((function () {
           return !Object("z").propertyIsEnumerable(0)
-        }) ? function (t) {
-          return "String" == _(t) ? b.call(t, "") : Object(t)
+        })) ? function (e) {
+          return "String" == b(e) ? g.call(e, "") : Object(e)
         } : Object,
-        E = function (t) {
-          if (null == t) throw TypeError("Can't call method on " + t);
-          return t
-        },
-        T = function (t) {
-          return O(E(t))
-        },
-        S = function (t) {
-          return "object" == typeof t ? null !== t : "function" == typeof t
-        },
-        j = function (t, e) {
-          if (!S(t)) return t;
-          var n, r;
-          if (e && "function" == typeof (n = t.toString) && !S(r = n.call(t))) return r;
-          if ("function" == typeof (n = t.valueOf) && !S(r = n.call(t))) return r;
-          if (!e && "function" == typeof (n = t.toString) && !S(r = n.call(t))) return r;
-          throw TypeError("Can't convert object to primitive value")
-        },
-        A = {}.hasOwnProperty,
-        P = function (t, e) {
-          return A.call(t, e)
-        },
-        x = p.document,
-        U = S(x) && S(x.createElement),
-        C = function (t) {
-          return U ? x.createElement(t) : {}
-        },
-        k = !h && !d(function () {
-          return 7 != Object.defineProperty(C("div"), "a", {
-            get: function () {
-              return 7
-            }
-          }).a
-        }),
-        I = Object.getOwnPropertyDescriptor,
-        F = {
-          f: h ? I : function (t, e) {
-            if (t = T(t), e = j(e, !0), k) try {
-              return I(t, e)
-            } catch (t) {}
-            if (P(t, e)) return g(!w.f.call(t, e), t[e])
-          }
-        },
-        R = function (t) {
-          if (!S(t)) throw TypeError(String(t) + " is not an object");
-          return t
-        },
-        D = Object.defineProperty,
-        L = {
-          f: h ? D : function (t, e, n) {
-            if (R(t), e = j(e, !0), R(n), k) try {
-              return D(t, e, n)
-            } catch (t) {}
-            if ("get" in n || "set" in n) throw TypeError("Accessors not supported");
-            return "value" in n && (t[e] = n.value), t
-          }
-        },
-        M = h ? function (t, e, n) {
-          return L.f(t, e, g(1, n))
-        } : function (t, e, n) {
-          return t[e] = n, t
-        },
-        z = function (t, e) {
-          try {
-            M(p, t, e)
-          } catch (n) {
-            p[t] = e
-          }
+        S = function (e) {
+          if (null == e) throw TypeError("Can't call method on " + e);
           return e
         },
-        N = c(function (t) {
-          var e = p["__core-js_shared__"] || z("__core-js_shared__", {});
-          (t.exports = function (t, n) {
-            return e[t] || (e[t] = void 0 !== n ? n : {})
+        _ = function (e) {
+          return w(S(e))
+        },
+        k = function (e) {
+          return "object" == typeof e ? null !== e : "function" == typeof e
+        },
+        T = function (e, t) {
+          if (!k(e)) return e;
+          var n, r;
+          if (t && "function" == typeof (n = e.toString) && !k(r = n.call(e))) return r;
+          if ("function" == typeof (n = e.valueOf) && !k(r = n.call(e))) return r;
+          if (!t && "function" == typeof (n = e.toString) && !k(r = n.call(e))) return r;
+          throw TypeError("Can't convert object to primitive value")
+        },
+        I = {}.hasOwnProperty,
+        O = function (e, t) {
+          return I.call(e, t)
+        },
+        E = l.document,
+        j = k(E) && k(E.createElement),
+        A = function (e) {
+          return j ? E.createElement(e) : {}
+        },
+        x = !d && !f((function () {
+          return 7 != Object.defineProperty(A("div"), "a", {
+            get: function () {
+              return 7
+            }
+          }).a
+        })),
+        W = Object.getOwnPropertyDescriptor,
+        Z = {
+          f: d ? W : function (e, t) {
+            if (e = _(e), t = T(t, !0), x) try {
+              return W(e, t)
+            } catch (e) {}
+            if (O(e, t)) return m(!y.f.call(e, t), e[t])
+          }
+        },
+        C = function (e) {
+          if (!k(e)) throw TypeError(String(e) + " is not an object");
+          return e
+        },
+        U = Object.defineProperty,
+        L = {
+          f: d ? U : function (e, t, n) {
+            if (C(e), t = T(t, !0), C(n), x) try {
+              return U(e, t, n)
+            } catch (e) {}
+            if ("get" in n || "set" in n) throw TypeError("Accessors not supported");
+            return "value" in n && (e[t] = n.value), e
+          }
+        },
+        K = d ? function (e, t, n) {
+          return L.f(e, t, m(1, n))
+        } : function (e, t, n) {
+          return e[t] = n, e
+        },
+        P = function (e, t) {
+          try {
+            K(l, e, t)
+          } catch (n) {
+            l[e] = t
+          }
+          return t
+        },
+        R = l["__core-js_shared__"] || P("__core-js_shared__", {}),
+        G = Function.toString;
+      "function" != typeof R.inspectSource && (R.inspectSource = function (e) {
+        return G.call(e)
+      });
+      var X, F, V, Y = R.inspectSource,
+        J = l.WeakMap,
+        N = "function" == typeof J && /native code/.test(Y(J)),
+        z = s((function (e) {
+          (e.exports = function (e, t) {
+            return R[e] || (R[e] = void 0 !== t ? t : {})
           })("versions", []).push({
-            version: "3.2.1",
+            version: "3.6.4",
             mode: "global",
-            copyright: "Â© 2019 Denis Pushkarev (zloirock.ru)"
+            copyright: "Â© 2020 Denis Pushkarev (zloirock.ru)"
           })
-        }),
-        B = N("native-function-to-string", Function.toString),
-        W = p.WeakMap,
-        q = "function" == typeof W && /native code/.test(B.call(W)),
-        G = 0,
-        J = Math.random(),
-        H = function (t) {
-          return "Symbol(" + String(void 0 === t ? "" : t) + ")_" + (++G + J).toString(36)
+        })),
+        B = 0,
+        D = Math.random(),
+        M = function (e) {
+          return "Symbol(" + String(void 0 === e ? "" : e) + ")_" + (++B + D).toString(36)
         },
-        Y = N("keys"),
-        V = function (t) {
-          return Y[t] || (Y[t] = H(t))
+        q = z("keys"),
+        H = function (e) {
+          return q[e] || (q[e] = M(e))
         },
-        K = {},
-        Q = p.WeakMap;
-      if (q) {
-        var X = new Q,
-          Z = X.get,
-          $ = X.has,
-          tt = X.set;
-        a = function (t, e) {
-          return tt.call(X, t, e), e
-        }, u = function (t) {
-          return Z.call(X, t) || {}
-        }, s = function (t) {
-          return $.call(X, t)
+        Q = {},
+        $ = l.WeakMap;
+      if (N) {
+        var ee = new $,
+          te = ee.get,
+          ne = ee.has,
+          re = ee.set;
+        X = function (e, t) {
+          return re.call(ee, e, t), t
+        }, F = function (e) {
+          return te.call(ee, e) || {}
+        }, V = function (e) {
+          return ne.call(ee, e)
         }
       } else {
-        var et = V("state");
-        K[et] = !0, a = function (t, e) {
-          return M(t, et, e), e
-        }, u = function (t) {
-          return P(t, et) ? t[et] : {}
-        }, s = function (t) {
-          return P(t, et)
+        var oe = H("state");
+        Q[oe] = !0, X = function (e, t) {
+          return K(e, oe, t), t
+        }, F = function (e) {
+          return O(e, oe) ? e[oe] : {}
+        }, V = function (e) {
+          return O(e, oe)
         }
       }
-      var nt = {
-          set: a,
-          get: u,
-          has: s,
-          enforce: function (t) {
-            return s(t) ? u(t) : a(t, {})
+      var ie, ce = {
+          set: X,
+          get: F,
+          has: V,
+          enforce: function (e) {
+            return V(e) ? F(e) : X(e, {})
           },
-          getterFor: function (t) {
-            return function (e) {
+          getterFor: function (e) {
+            return function (t) {
               var n;
-              if (!S(e) || (n = u(e)).type !== t) throw TypeError("Incompatible receiver, " + t + " required");
+              if (!k(t) || (n = F(t)).type !== e) throw TypeError("Incompatible receiver, " + e + " required");
               return n
             }
           }
         },
-        rt = c(function (t) {
-          var e = nt.get,
-            n = nt.enforce,
-            r = String(B).split("toString");
-          N("inspectSource", function (t) {
-            return B.call(t)
-          }), (t.exports = function (t, e, o, i) {
+        ae = s((function (e) {
+          var t = ce.get,
+            n = ce.enforce,
+            r = String(String).split("String");
+          (e.exports = function (e, t, o, i) {
             var c = !!i && !!i.unsafe,
               a = !!i && !!i.enumerable,
-              u = !!i && !!i.noTargetGet;
-            "function" == typeof o && ("string" != typeof e || P(o, "name") || M(o, "name", e), n(o).source = r
-              .join("string" == typeof e ? e : "")), t !== p ? (c ? !u && t[e] && (a = !0) : delete t[e], a ?
-              t[e] = o : M(t, e, o)) : a ? t[e] = o : z(e, o)
-          })(Function.prototype, "toString", function () {
-            return "function" == typeof this && e(this).source || B.call(this)
-          })
-        }),
-        ot = p,
-        it = function (t) {
-          return "function" == typeof t ? t : void 0
+              s = !!i && !!i.noTargetGet;
+            "function" == typeof o && ("string" != typeof t || O(o, "name") || K(o, "name", t), n(o).source =
+              r.join("string" == typeof t ? t : "")), e !== l ? (c ? !s && e[t] && (a = !0) : delete e[t],
+              a ? e[t] = o : K(e, t, o)) : a ? e[t] = o : P(t, o)
+          })(Function.prototype, "toString", (function () {
+            return "function" == typeof this && t(this).source || Y(this)
+          }))
+        })),
+        se = l,
+        ue = function (e) {
+          return "function" == typeof e ? e : void 0
         },
-        ct = function (t, e) {
-          return arguments.length < 2 ? it(ot[t]) || it(p[t]) : ot[t] && ot[t][e] || p[t] && p[t][e]
+        le = function (e, t) {
+          return arguments.length < 2 ? ue(se[e]) || ue(l[e]) : se[e] && se[e][t] || l[e] && l[e][t]
         },
-        at = Math.ceil,
-        ut = Math.floor,
-        st = function (t) {
-          return isNaN(t = +t) ? 0 : (t > 0 ? ut : at)(t)
+        fe = Math.ceil,
+        de = Math.floor,
+        pe = function (e) {
+          return isNaN(e = +e) ? 0 : (e > 0 ? de : fe)(e)
         },
-        ft = Math.min,
-        lt = function (t) {
-          return t > 0 ? ft(st(t), 9007199254740991) : 0
+        he = Math.min,
+        ye = function (e) {
+          return e > 0 ? he(pe(e), 9007199254740991) : 0
         },
-        pt = Math.max,
-        dt = Math.min,
-        ht = function (t) {
-          return function (e, n, r) {
-            var o, i = T(e),
-              c = lt(i.length),
-              a = function (t, e) {
-                var n = st(t);
-                return n < 0 ? pt(n + e, 0) : dt(n, e)
+        me = Math.max,
+        ve = Math.min,
+        be = function (e) {
+          return function (t, n, r) {
+            var o, i = _(t),
+              c = ye(i.length),
+              a = function (e, t) {
+                var n = pe(e);
+                return n < 0 ? me(n + t, 0) : ve(n, t)
               }(r, c);
-            if (t && n != n) {
+            if (e && n != n) {
               for (; c > a;)
                 if ((o = i[a++]) != o) return !0
             } else
               for (; c > a; a++)
-                if ((t || a in i) && i[a] === n) return t || a || 0;
-            return !t && -1
+                if ((e || a in i) && i[a] === n) return e || a || 0;
+            return !e && -1
           }
         },
-        yt = {
-          includes: ht(!0),
-          indexOf: ht(!1)
+        ge = {
+          includes: be(!0),
+          indexOf: be(!1)
         },
-        vt = yt.indexOf,
-        wt = function (t, e) {
-          var n, r = T(t),
+        we = ge.indexOf,
+        Se = function (e, t) {
+          var n, r = _(e),
             o = 0,
             i = [];
-          for (n in r) !P(K, n) && P(r, n) && i.push(n);
-          for (; e.length > o;) P(r, n = e[o++]) && (~vt(i, n) || i.push(n));
+          for (n in r) !O(Q, n) && O(r, n) && i.push(n);
+          for (; t.length > o;) O(r, n = t[o++]) && (~we(i, n) || i.push(n));
           return i
         },
-        gt = ["constructor", "hasOwnProperty", "isPrototypeOf", "propertyIsEnumerable", "toLocaleString", "toString",
-          "valueOf"
+        _e = ["constructor", "hasOwnProperty", "isPrototypeOf", "propertyIsEnumerable", "toLocaleString",
+          "toString", "valueOf"
         ],
-        mt = gt.concat("length", "prototype"),
-        _t = {
-          f: Object.getOwnPropertyNames || function (t) {
-            return wt(t, mt)
+        ke = _e.concat("length", "prototype"),
+        Te = {
+          f: Object.getOwnPropertyNames || function (e) {
+            return Se(e, ke)
           }
         },
-        bt = {
+        Ie = {
           f: Object.getOwnPropertySymbols
         },
-        Ot = ct("Reflect", "ownKeys") || function (t) {
-          var e = _t.f(R(t)),
-            n = bt.f;
-          return n ? e.concat(n(t)) : e
+        Oe = le("Reflect", "ownKeys") || function (e) {
+          var t = Te.f(C(e)),
+            n = Ie.f;
+          return n ? t.concat(n(e)) : t
         },
-        Et = function (t, e) {
-          for (var n = Ot(e), r = L.f, o = F.f, i = 0; i < n.length; i++) {
+        Ee = function (e, t) {
+          for (var n = Oe(t), r = L.f, o = Z.f, i = 0; i < n.length; i++) {
             var c = n[i];
-            P(t, c) || r(t, c, o(e, c))
+            O(e, c) || r(e, c, o(t, c))
           }
         },
-        Tt = /#|\\.prototype\\./,
-        St = function (t, e) {
-          var n = At[jt(t)];
-          return n == xt || n != Pt && ("function" == typeof e ? d(e) : !!e)
+        je = /#|\\.prototype\\./,
+        Ae = function (e, t) {
+          var n = We[xe(e)];
+          return n == Ce || n != Ze && ("function" == typeof t ? f(t) : !!t)
         },
-        jt = St.normalize = function (t) {
-          return String(t).replace(Tt, ".").toLowerCase()
+        xe = Ae.normalize = function (e) {
+          return String(e).replace(je, ".").toLowerCase()
         },
-        At = St.data = {},
-        Pt = St.NATIVE = "N",
-        xt = St.POLYFILL = "P",
-        Ut = St,
-        Ct = F.f,
-        kt = function (t, e) {
-          var n, r, o, i, c, a = t.target,
-            u = t.global,
-            s = t.stat;
-          if (n = u ? p : s ? p[a] || z(a, {}) : (p[a] || {}).prototype)
-            for (r in e) {
-              if (i = e[r], o = t.noTargetGet ? (c = Ct(n, r)) && c.value : n[r], !Ut(u ? r : a + (s ? "." : "#") + r,
-                  t.forced) && void 0 !== o) {
+        We = Ae.data = {},
+        Ze = Ae.NATIVE = "N",
+        Ce = Ae.POLYFILL = "P",
+        Ue = Ae,
+        Le = Z.f,
+        Ke = function (e, t) {
+          var n, r, o, i, c, a = e.target,
+            s = e.global,
+            u = e.stat;
+          if (n = s ? l : u ? l[a] || P(a, {}) : (l[a] || {}).prototype)
+            for (r in t) {
+              if (i = t[r], o = e.noTargetGet ? (c = Le(n, r)) && c.value : n[r], !Ue(s ? r : a + (u ? "." : "#") +
+                  r, e.forced) && void 0 !== o) {
                 if (typeof i == typeof o) continue;
-                Et(i, o)
-              }(t.sham || o && o.sham) && M(i, "sham", !0), rt(n, r, i, t)
+                Ee(i, o)
+              }(e.sham || o && o.sham) && K(i, "sham", !0), ae(n, r, i, e)
             }
         },
-        It = !!Object.getOwnPropertySymbols && !d(function () {
+        Pe = !!Object.getOwnPropertySymbols && !f((function () {
           return !String(Symbol())
-        }),
-        Ft = p.Symbol,
-        Rt = N("wks"),
-        Dt = function (t) {
-          return Rt[t] || (Rt[t] = It && Ft[t] || (It ? Ft : H)("Symbol." + t))
+        })),
+        Re = Pe && !Symbol.sham && "symbol" == typeof Symbol.iterator,
+        Ge = z("wks"),
+        Xe = l.Symbol,
+        Fe = Re ? Xe : Xe && Xe.withoutSetter || M,
+        Ve = function (e) {
+          return O(Ge, e) || (Pe && O(Xe, e) ? Ge[e] = Xe[e] : Ge[e] = Fe("Symbol." + e)), Ge[e]
         },
-        Lt = Dt("match"),
-        Mt = function (t) {
-          if (function (t) {
-              var e;
-              return S(t) && (void 0 !== (e = t[Lt]) ? !!e : "RegExp" == _(t))
-            }(t)) throw TypeError("The method doesn't accept regular expressions");
-          return t
+        Ye = Ve("match"),
+        Je = function (e) {
+          if (function (e) {
+              var t;
+              return k(e) && (void 0 !== (t = e[Ye]) ? !!t : "RegExp" == b(e))
+            }(e)) throw TypeError("The method doesn't accept regular expressions");
+          return e
         },
-        zt = Dt("match"),
-        Nt = "".startsWith,
-        Bt = Math.min;
-      kt({
-        target: "String",
-        proto: !0,
-        forced: ! function (t) {
-          var e = /./;
+        Ne = Ve("match"),
+        ze = function (e) {
+          var t = /./;
           try {
-            "/./" [t](e)
+            "/./" [e](t)
           } catch (n) {
             try {
-              return e[zt] = !1, "/./" [t](e)
-            } catch (t) {}
+              return t[Ne] = !1, "/./" [e](t)
+            } catch (e) {}
           }
           return !1
-        }("startsWith")
+        },
+        Be = Z.f,
+        De = "".startsWith,
+        Me = Math.min,
+        qe = ze("startsWith"),
+        He = !(qe || (ie = Be(String.prototype, "startsWith"), !ie || ie.writable));
+      Ke({
+        target: "String",
+        proto: !0,
+        forced: !He && !qe
       }, {
-        startsWith: function (t) {
-          var e = String(E(this));
-          Mt(t);
-          var n = lt(Bt(arguments.length > 1 ? arguments[1] : void 0, e.length)),
-            r = String(t);
-          return Nt ? Nt.call(e, r, n) : e.slice(n, n + r.length) === r
+        startsWith: function (e) {
+          var t = String(S(this));
+          Je(e);
+          var n = ye(Me(arguments.length > 1 ? arguments[1] : void 0, t.length)),
+            r = String(e);
+          return De ? De.call(t, r, n) : t.slice(n, n + r.length) === r
         }
       });
-      var Wt, qt, Gt, Jt = function (t) {
-          if ("function" != typeof t) throw TypeError(String(t) + " is not a function");
-          return t
+      var Qe, $e, et, tt = function (e) {
+          if ("function" != typeof e) throw TypeError(String(e) + " is not a function");
+          return e
         },
-        Ht = function (t, e, n) {
-          if (Jt(t), void 0 === e) return t;
+        nt = function (e, t, n) {
+          if (tt(e), void 0 === t) return e;
           switch (n) {
             case 0:
               return function () {
-                return t.call(e)
+                return e.call(t)
               };
             case 1:
               return function (n) {
-                return t.call(e, n)
+                return e.call(t, n)
               };
             case 2:
               return function (n, r) {
-                return t.call(e, n, r)
+                return e.call(t, n, r)
               };
             case 3:
               return function (n, r, o) {
-                return t.call(e, n, r, o)
+                return e.call(t, n, r, o)
               }
           }
           return function () {
-            return t.apply(e, arguments)
+            return e.apply(t, arguments)
           }
         },
-        Yt = Function.call,
-        Vt = function (t, e, n) {
-          return Ht(Yt, p[t].prototype[e], n)
+        rt = Function.call,
+        ot = function (e, t, n) {
+          return nt(rt, l[e].prototype[t], n)
         },
-        Kt = (Vt("String", "startsWith"), function (t) {
-          return function (e, n) {
-            var r, o, i = String(E(e)),
-              c = st(n),
+        it = (ot("String", "startsWith"), function (e) {
+          return function (t, n) {
+            var r, o, i = String(S(t)),
+              c = pe(n),
               a = i.length;
-            return c < 0 || c >= a ? t ? "" : void 0 : (r = i.charCodeAt(c)) < 55296 || r > 56319 || c + 1 ===
-              a || (o = i.charCodeAt(c + 1)) < 56320 || o > 57343 ? t ? i.charAt(c) : r : t ? i.slice(c, c + 2) :
-              o - 56320 + (r - 55296 << 10) + 65536
+            return c < 0 || c >= a ? e ? "" : void 0 : (r = i.charCodeAt(c)) < 55296 || r > 56319 || c + 1 ===
+              a || (o = i.charCodeAt(c + 1)) < 56320 || o > 57343 ? e ? i.charAt(c) : r : e ? i.slice(c, c +
+              2) : o - 56320 + (r - 55296 << 10) + 65536
           }
         }),
-        Qt = {
-          codeAt: Kt(!1),
-          charAt: Kt(!0)
+        ct = {
+          codeAt: it(!1),
+          charAt: it(!0)
         },
-        Xt = function (t) {
-          return Object(E(t))
+        at = function (e) {
+          return Object(S(e))
         },
-        Zt = !d(function () {
-          function t() {}
-          return t.prototype.constructor = null, Object.getPrototypeOf(new t) !== t.prototype
-        }),
-        $t = V("IE_PROTO"),
-        te = Object.prototype,
-        ee = Zt ? Object.getPrototypeOf : function (t) {
-          return t = Xt(t), P(t, $t) ? t[$t] : "function" == typeof t.constructor && t instanceof t.constructor ? t
-            .constructor.prototype : t instanceof Object ? te : null
+        st = !f((function () {
+          function e() {}
+          return e.prototype.constructor = null, Object.getPrototypeOf(new e) !== e.prototype
+        })),
+        ut = H("IE_PROTO"),
+        lt = Object.prototype,
+        ft = st ? Object.getPrototypeOf : function (e) {
+          return e = at(e), O(e, ut) ? e[ut] : "function" == typeof e.constructor && e instanceof e.constructor ? e
+            .constructor.prototype : e instanceof Object ? lt : null
         },
-        ne = Dt("iterator"),
-        re = !1;
-      [].keys && ("next" in (Gt = [].keys()) ? (qt = ee(ee(Gt))) !== Object.prototype && (Wt = qt) : re = !0), null ==
-        Wt && (Wt = {}), P(Wt, ne) || M(Wt, ne, function () {
+        dt = Ve("iterator"),
+        pt = !1;
+      [].keys && ("next" in (et = [].keys()) ? ($e = ft(ft(et))) !== Object.prototype && (Qe = $e) : pt = !0),
+        null == Qe && (Qe = {}), O(Qe, dt) || K(Qe, dt, (function () {
           return this
-        });
-      var oe = {
-          IteratorPrototype: Wt,
-          BUGGY_SAFARI_ITERATORS: re
+        }));
+      var ht, yt = {
+          IteratorPrototype: Qe,
+          BUGGY_SAFARI_ITERATORS: pt
         },
-        ie = Object.keys || function (t) {
-          return wt(t, gt)
+        mt = Object.keys || function (e) {
+          return Se(e, _e)
         },
-        ce = h ? Object.defineProperties : function (t, e) {
-          R(t);
-          for (var n, r = ie(e), o = r.length, i = 0; o > i;) L.f(t, n = r[i++], e[n]);
-          return t
+        vt = d ? Object.defineProperties : function (e, t) {
+          C(e);
+          for (var n, r = mt(t), o = r.length, i = 0; o > i;) L.f(e, n = r[i++], t[n]);
+          return e
         },
-        ae = ct("document", "documentElement"),
-        ue = V("IE_PROTO"),
-        se = function () {},
-        fe = function () {
-          var t, e = C("iframe"),
-            n = gt.length;
-          for (e.style.display = "none", ae.appendChild(e), e.src = String("javascript:"), (t = e.contentWindow
-              .document).open(), t.write("<scr" + "ipt>document.F=Object<\\/scr" + "ipt>"), t.close(), fe = t.F; n--;)
-            delete fe.prototype[gt[n]];
-          return fe()
+        bt = le("document", "documentElement"),
+        gt = H("IE_PROTO"),
+        wt = function () {},
+        St = function (e) {
+          return "<scr" + "ipt>" + e + "<\\/scr" + "ipt>"
         },
-        le = Object.create || function (t, e) {
-          var n;
-          return null !== t ? (se.prototype = R(t), n = new se, se.prototype = null, n[ue] = t) : n = fe(), void 0 ===
-            e ? n : ce(n, e)
+        _t = function () {
+          try {
+            ht = document.domain && new ActiveXObject("htmlfile")
+          } catch (e) {}
+          var e, t;
+          _t = ht ? function (e) {
+            e.write(St("")), e.close();
+            var t = e.parentWindow.Object;
+            return e = null, t
+          }(ht) : ((t = A("iframe")).style.display = "none", bt.appendChild(t), t.src = String("javascript:"), (
+            e = t.contentWindow.document).open(), e.write(St("document.F=Object")), e.close(), e.F);
+          for (var n = _e.length; n--;) delete _t.prototype[_e[n]];
+          return _t()
         };
-      K[ue] = !0;
-      var pe = L.f,
-        de = Dt("toStringTag"),
-        he = function (t, e, n) {
-          t && !P(t = n ? t : t.prototype, de) && pe(t, de, {
+      Q[gt] = !0;
+      var kt = Object.create || function (e, t) {
+          var n;
+          return null !== e ? (wt.prototype = C(e), n = new wt, wt.prototype = null, n[gt] = e) : n = _t(),
+            void 0 === t ? n : vt(n, t)
+        },
+        Tt = L.f,
+        It = Ve("toStringTag"),
+        Ot = function (e, t, n) {
+          e && !O(e = n ? e : e.prototype, It) && Tt(e, It, {
             configurable: !0,
-            value: e
+            value: t
           })
         },
-        ye = {},
-        ve = oe.IteratorPrototype,
-        we = function () {
+        Et = {},
+        jt = yt.IteratorPrototype,
+        At = function () {
           return this
         },
-        ge = Object.setPrototypeOf || ("__proto__" in {} ? function () {
-          var t, e = !1,
+        xt = Object.setPrototypeOf || ("__proto__" in {} ? function () {
+          var e, t = !1,
             n = {};
           try {
-            (t = Object.getOwnPropertyDescriptor(Object.prototype, "__proto__").set).call(n, []), e =
+            (e = Object.getOwnPropertyDescriptor(Object.prototype, "__proto__").set).call(n, []), t =
               n instanceof Array
-          } catch (t) {}
+          } catch (e) {}
           return function (n, r) {
-            return R(n),
-              function (t) {
-                if (!S(t) && null !== t) throw TypeError("Can't set " + String(t) + " as a prototype")
-              }(r), e ? t.call(n, r) : n.__proto__ = r, n
+            return C(n),
+              function (e) {
+                if (!k(e) && null !== e) throw TypeError("Can't set " + String(e) + " as a prototype")
+              }(r), t ? e.call(n, r) : n.__proto__ = r, n
           }
         }() : void 0),
-        me = oe.IteratorPrototype,
-        _e = oe.BUGGY_SAFARI_ITERATORS,
-        be = Dt("iterator"),
-        Oe = function () {
+        Wt = yt.IteratorPrototype,
+        Zt = yt.BUGGY_SAFARI_ITERATORS,
+        Ct = Ve("iterator"),
+        Ut = function () {
           return this
         },
-        Ee = Qt.charAt,
-        Te = nt.set,
-        Se = nt.getterFor("String Iterator");
-      ! function (t, e, n, r, o, i, c) {
-        ! function (t, e, n) {
-          var r = e + " Iterator";
-          t.prototype = le(ve, {
-            next: g(1, n)
-          }), he(t, r, !1), ye[r] = we
-        }(n, e, r);
-        var a, u, s, f = function (t) {
-            if (t === o && y) return y;
-            if (!_e && t in d) return d[t];
-            switch (t) {
+        Lt = ct.charAt,
+        Kt = ce.set,
+        Pt = ce.getterFor("String Iterator");
+      ! function (e, t, n, r, o, i, c) {
+        ! function (e, t, n) {
+          var r = t + " Iterator";
+          e.prototype = kt(jt, {
+            next: m(1, n)
+          }), Ot(e, r, !1), Et[r] = At
+        }(n, t, r);
+        var a, s, u, l = function (e) {
+            if (e === o && y) return y;
+            if (!Zt && e in p) return p[e];
+            switch (e) {
               case "keys":
               case "values":
               case "entries":
                 return function () {
-                  return new n(this, t)
+                  return new n(this, e)
                 }
             }
             return function () {
               return new n(this)
             }
           },
-          l = e + " Iterator",
-          p = !1,
-          d = t.prototype,
-          h = d[be] || d["@@iterator"] || o && d[o],
-          y = !_e && h || f(o),
-          v = "Array" == e && d.entries || h;
-        if (v && (a = ee(v.call(new t)), me !== Object.prototype && a.next && (ee(a) !== me && (ge ? ge(a, me) :
-            "function" != typeof a[be] && M(a, be, Oe)), he(a, l, !0))), "values" == o && h && "values" !== h.name &&
-          (p = !0, y = function () {
+          f = t + " Iterator",
+          d = !1,
+          p = e.prototype,
+          h = p[Ct] || p["@@iterator"] || o && p[o],
+          y = !Zt && h || l(o),
+          v = "Array" == t && p.entries || h;
+        if (v && (a = ft(v.call(new e)), Wt !== Object.prototype && a.next && (ft(a) !== Wt && (xt ? xt(a, Wt) :
+            "function" != typeof a[Ct] && K(a, Ct, Ut)), Ot(a, f, !0))), "values" == o && h && "values" !== h
+          .name && (d = !0, y = function () {
             return h.call(this)
-          }), d[be] !== y && M(d, be, y), ye[e] = y, o)
-          if (u = {
-              values: f("values"),
-              keys: i ? y : f("keys"),
-              entries: f("entries")
+          }), p[Ct] !== y && K(p, Ct, y), Et[t] = y, o)
+          if (s = {
+              values: l("values"),
+              keys: i ? y : l("keys"),
+              entries: l("entries")
             }, c)
-            for (s in u) !_e && !p && s in d || rt(d, s, u[s]);
-          else kt({
-            target: e,
+            for (u in s)(Zt || d || !(u in p)) && ae(p, u, s[u]);
+          else Ke({
+            target: t,
             proto: !0,
-            forced: _e || p
-          }, u)
-      }(String, "String", function (t) {
-        Te(this, {
+            forced: Zt || d
+          }, s)
+      }(String, "String", (function (e) {
+        Kt(this, {
           type: "String Iterator",
-          string: String(t),
+          string: String(e),
           index: 0
         })
-      }, function () {
-        var t, e = Se(this),
-          n = e.string,
-          r = e.index;
+      }), (function () {
+        var e, t = Pt(this),
+          n = t.string,
+          r = t.index;
         return r >= n.length ? {
           value: void 0,
           done: !0
-        } : (t = Ee(n, r), e.index += t.length, {
-          value: t,
+        } : (e = Lt(n, r), t.index += e.length, {
+          value: e,
           done: !1
         })
-      });
-      var je = function (t, e, n, r) {
+      }));
+      var Rt = function (e, t, n, r) {
           try {
-            return r ? e(R(n)[0], n[1]) : e(n)
-          } catch (e) {
-            var o = t.return;
-            throw void 0 !== o && R(o.call(t)), e
+            return r ? t(C(n)[0], n[1]) : t(n)
+          } catch (t) {
+            var o = e.return;
+            throw void 0 !== o && C(o.call(e)), t
           }
         },
-        Ae = Dt("iterator"),
-        Pe = Array.prototype,
-        xe = function (t) {
-          return void 0 !== t && (ye.Array === t || Pe[Ae] === t)
+        Gt = Ve("iterator"),
+        Xt = Array.prototype,
+        Ft = function (e) {
+          return void 0 !== e && (Et.Array === e || Xt[Gt] === e)
         },
-        Ue = function (t, e, n) {
-          var r = j(e);
-          r in t ? L.f(t, r, g(0, n)) : t[r] = n
+        Vt = function (e, t, n) {
+          var r = T(t);
+          r in e ? L.f(e, r, m(0, n)) : e[r] = n
         },
-        Ce = Dt("toStringTag"),
-        ke = "Arguments" == _(function () {
+        Yt = {};
+      Yt[Ve("toStringTag")] = "z";
+      var Jt = "[object z]" === String(Yt),
+        Nt = Ve("toStringTag"),
+        zt = "Arguments" == b(function () {
           return arguments
         }()),
-        Ie = function (t) {
-          var e, n, r;
-          return void 0 === t ? "Undefined" : null === t ? "Null" : "string" == typeof (n = function (t, e) {
+        Bt = Jt ? b : function (e) {
+          var t, n, r;
+          return void 0 === e ? "Undefined" : null === e ? "Null" : "string" == typeof (n = function (e, t) {
               try {
-                return t[e]
-              } catch (t) {}
-            }(e = Object(t), Ce)) ? n : ke ? _(e) : "Object" == (r = _(e)) && "function" == typeof e.callee ?
+                return e[t]
+              } catch (e) {}
+            }(t = Object(e), Nt)) ? n : zt ? b(t) : "Object" == (r = b(t)) && "function" == typeof t.callee ?
             "Arguments" : r
         },
-        Fe = Dt("iterator"),
-        Re = function (t) {
-          if (null != t) return t[Fe] || t["@@iterator"] || ye[Ie(t)]
+        Dt = Ve("iterator"),
+        Mt = function (e) {
+          if (null != e) return e[Dt] || e["@@iterator"] || Et[Bt(e)]
         },
-        De = Dt("iterator"),
-        Le = !1;
+        qt = Ve("iterator"),
+        Ht = !1;
       try {
-        var Me = 0,
-          ze = {
+        var Qt = 0,
+          $t = {
             next: function () {
               return {
-                done: !!Me++
+                done: !!Qt++
               }
             },
             return: function () {
-              Le = !0
+              Ht = !0
             }
           };
-        ze[De] = function () {
+        $t[qt] = function () {
           return this
-        }, Array.from(ze, function () {
+        }, Array.from($t, (function () {
           throw 2
-        })
-      } catch (t) {}
-      var Ne = ! function (t, e) {
-        if (!e && !Le) return !1;
+        }))
+      } catch (e) {}
+      var en = ! function (e, t) {
+        if (!t && !Ht) return !1;
         var n = !1;
         try {
           var r = {};
-          r[De] = function () {
+          r[qt] = function () {
             return {
               next: function () {
                 return {
@@ -872,50 +917,48 @@ self.addEventListener("fetch", function (event) {
                 }
               }
             }
-          }, t(r)
-        } catch (t) {}
+          }, e(r)
+        } catch (e) {}
         return n
-      }(function (t) {
-        Array.from(t)
-      });
-      kt({
+      }((function (e) {
+        Array.from(e)
+      }));
+      Ke({
         target: "Array",
         stat: !0,
-        forced: Ne
+        forced: en
       }, {
-        from: function (t) {
-          var e, n, r, o, i = Xt(t),
-            c = "function" == typeof this ? this : Array,
-            a = arguments.length,
-            u = a > 1 ? arguments[1] : void 0,
-            s = void 0 !== u,
-            f = 0,
-            l = Re(i);
-          if (s && (u = Ht(u, a > 2 ? arguments[2] : void 0, 2)), null == l || c == Array && xe(l))
-            for (n = new c(e = lt(i.length)); e > f; f++) Ue(n, f, s ? u(i[f], f) : i[f]);
+        from: function (e) {
+          var t, n, r, o, i, c, a = at(e),
+            s = "function" == typeof this ? this : Array,
+            u = arguments.length,
+            l = u > 1 ? arguments[1] : void 0,
+            f = void 0 !== l,
+            d = Mt(a),
+            p = 0;
+          if (f && (l = nt(l, u > 2 ? arguments[2] : void 0, 2)), null == d || s == Array && Ft(d))
+            for (n = new s(t = ye(a.length)); t > p; p++) c = f ? l(a[p], p) : a[p], Vt(n, p, c);
           else
-            for (o = l.call(i), n = new c; !(r = o.next()).done; f++) Ue(n, f, s ? je(o, u, [r.value, f], !0) :
-              r.value);
-          return n.length = f, n
+            for (i = (o = d.call(a)).next, n = new s; !(r = i.call(o)).done; p++) c = f ? Rt(o, l, [r.value,
+              p], !0) : r.value, Vt(n, p, c);
+          return n.length = p, n
         }
       });
-      ot.Array.from;
-      var Be, We = L.f,
-        qe = p.DataView,
-        Ge = qe && qe.prototype,
-        Je = p.Int8Array,
-        He = Je && Je.prototype,
-        Ye = p.Uint8ClampedArray,
-        Ve = Ye && Ye.prototype,
-        Ke = Je && ee(Je),
-        Qe = He && ee(He),
-        Xe = Object.prototype,
-        Ze = Xe.isPrototypeOf,
-        $e = Dt("toStringTag"),
-        tn = H("TYPED_ARRAY_TAG"),
-        en = !(!p.ArrayBuffer || !qe),
-        nn = en && !!ge && "Opera" !== Ie(p.opera),
-        rn = {
+      se.Array.from;
+      var tn, nn = "undefined" != typeof ArrayBuffer && "undefined" != typeof DataView,
+        rn = L.f,
+        on = l.Int8Array,
+        cn = on && on.prototype,
+        an = l.Uint8ClampedArray,
+        sn = an && an.prototype,
+        un = on && ft(on),
+        ln = cn && ft(cn),
+        fn = Object.prototype,
+        dn = fn.isPrototypeOf,
+        pn = Ve("toStringTag"),
+        hn = M("TYPED_ARRAY_TAG"),
+        yn = nn && !!xt && "Opera" !== Bt(l.opera),
+        mn = {
           Int8Array: 1,
           Uint8Array: 1,
           Uint8ClampedArray: 1,
@@ -926,297 +969,286 @@ self.addEventListener("fetch", function (event) {
           Float32Array: 4,
           Float64Array: 8
         },
-        on = function (t) {
-          return S(t) && P(rn, Ie(t))
+        vn = function (e) {
+          return k(e) && O(mn, Bt(e))
         };
-      for (Be in rn) p[Be] || (nn = !1);
-      if ((!nn || "function" != typeof Ke || Ke === Function.prototype) && (Ke = function () {
+      for (tn in mn) l[tn] || (yn = !1);
+      if ((!yn || "function" != typeof un || un === Function.prototype) && (un = function () {
           throw TypeError("Incorrect invocation")
-        }, nn))
-        for (Be in rn) p[Be] && ge(p[Be], Ke);
-      if ((!nn || !Qe || Qe === Xe) && (Qe = Ke.prototype, nn))
-        for (Be in rn) p[Be] && ge(p[Be].prototype, Qe);
-      if (nn && ee(Ve) !== Qe && ge(Ve, Qe), h && !P(Qe, $e))
-        for (Be in !0, We(Qe, $e, {
+        }, yn))
+        for (tn in mn) l[tn] && xt(l[tn], un);
+      if ((!yn || !ln || ln === fn) && (ln = un.prototype, yn))
+        for (tn in mn) l[tn] && xt(l[tn].prototype, ln);
+      if (yn && ft(sn) !== ln && xt(sn, ln), d && !O(ln, pn))
+        for (tn in !0, rn(ln, pn, {
             get: function () {
-              return S(this) ? this[tn] : void 0
+              return k(this) ? this[hn] : void 0
             }
-          }), rn) p[Be] && M(p[Be], tn, Be);
-      en && ge && ee(Ge) !== Xe && ge(Ge, Xe);
-      var cn = function (t) {
-          if (on(t)) return t;
+          }), mn) l[tn] && K(l[tn], hn, tn);
+      var bn = function (e) {
+          if (vn(e)) return e;
           throw TypeError("Target is not a typed array")
         },
-        an = function (t) {
-          if (ge) {
-            if (Ze.call(Ke, t)) return t
+        gn = function (e) {
+          if (xt) {
+            if (dn.call(un, e)) return e
           } else
-            for (var e in rn)
-              if (P(rn, Be)) {
-                var n = p[e];
-                if (n && (t === n || Ze.call(n, t))) return t
+            for (var t in mn)
+              if (O(mn, tn)) {
+                var n = l[t];
+                if (n && (e === n || dn.call(n, e))) return e
               } throw TypeError("Target is not a typed array constructor")
         },
-        un = function (t, e, n) {
-          if (h) {
+        wn = function (e, t, n) {
+          if (d) {
             if (n)
-              for (var r in rn) {
-                var o = p[r];
-                o && P(o.prototype, t) && delete o.prototype[t]
+              for (var r in mn) {
+                var o = l[r];
+                o && O(o.prototype, e) && delete o.prototype[e]
               }
-            Qe[t] && !n || rt(Qe, t, n ? e : nn && He[t] || e)
+            ln[e] && !n || ae(ln, e, n ? t : yn && cn[e] || t)
           }
         },
-        sn = Dt("species"),
-        fn = cn,
-        ln = an,
-        pn = [].slice;
-      un("slice", function (t, e) {
-        for (var n = pn.call(fn(this), t, e), r = function (t, e) {
-            var n, r = R(t).constructor;
-            return void 0 === r || null == (n = R(r)[sn]) ? e : Jt(n)
-          }(this, this.constructor), o = 0, i = n.length, c = new(ln(r))(i); i > o;) c[o] = n[o++];
+        Sn = Ve("species"),
+        _n = bn,
+        kn = gn,
+        Tn = [].slice;
+      wn("slice", (function (e, t) {
+        for (var n = Tn.call(_n(this), e, t), r = function (e, t) {
+            var n, r = C(e).constructor;
+            return void 0 === r || null == (n = C(r)[Sn]) ? t : tt(n)
+          }(this, this.constructor), o = 0, i = n.length, c = new(kn(r))(i); i > o;) c[o] = n[o++];
         return c
-      }, d(function () {
+      }), f((function () {
         new Int8Array(1).slice()
-      }));
-      var dn = Dt("unscopables"),
-        hn = Array.prototype;
-      null == hn[dn] && M(hn, dn, le(null));
-      var yn, vn = yt.includes;
-      kt({
+      })));
+      var In = Ve("unscopables"),
+        On = Array.prototype;
+      null == On[In] && L.f(On, In, {
+        configurable: !0,
+        value: kt(null)
+      });
+      var En, jn = Object.defineProperty,
+        An = {},
+        xn = function (e) {
+          throw e
+        },
+        Wn = ge.includes,
+        Zn = function (e, t) {
+          if (O(An, e)) return An[e];
+          t || (t = {});
+          var n = [][e],
+            r = !!O(t, "ACCESSORS") && t.ACCESSORS,
+            o = O(t, 0) ? t[0] : xn,
+            i = O(t, 1) ? t[1] : void 0;
+          return An[e] = !!n && !f((function () {
+            if (r && !d) return !0;
+            var e = {
+              length: -1
+            };
+            r ? jn(e, 1, {
+              enumerable: !0,
+              get: xn
+            }) : e[1] = 1, n.call(e, o, i)
+          }))
+        }("indexOf", {
+          ACCESSORS: !0,
+          1: 0
+        });
+      Ke({
         target: "Array",
-        proto: !0
+        proto: !0,
+        forced: !Zn
       }, {
-        includes: function (t) {
-          return vn(this, t, arguments.length > 1 ? arguments[1] : void 0)
+        includes: function (e) {
+          return Wn(this, e, arguments.length > 1 ? arguments[1] : void 0)
         }
-      }), yn = "includes", hn[dn][yn] = !0;
-      Vt("Array", "includes");
+      }), En = "includes", On[In][En] = !0;
+      ot("Array", "includes");
+      Ke({
+        target: "String",
+        proto: !0,
+        forced: !ze("includes")
+      }, {
+        includes: function (e) {
+          return !!~String(S(this)).indexOf(Je(e), arguments.length > 1 ? arguments[1] : void 0)
+        }
+      });
+      ot("String", "includes");
 
-      function wn(t) {
-        var e = this.constructor;
-        return this.then(function (n) {
-          return e.resolve(t()).then(function () {
+      function Cn(e) {
+        var t = this.constructor;
+        return this.then((function (n) {
+          return t.resolve(e()).then((function () {
             return n
-          })
-        }, function (n) {
-          return e.resolve(t()).then(function () {
-            return e.reject(n)
-          })
-        })
+          }))
+        }), (function (n) {
+          return t.resolve(e()).then((function () {
+            return t.reject(n)
+          }))
+        }))
       }
-      var gn = setTimeout;
+      var Un = setTimeout;
 
-      function mn(t) {
-        return Boolean(t && void 0 !== t.length)
-      }
-
-      function _n() {}
-
-      function bn(t) {
-        if (!(this instanceof bn)) throw new TypeError("Promises must be constructed via new");
-        if ("function" != typeof t) throw new TypeError("not a function");
-        this._state = 0, this._handled = !1, this._value = void 0, this._deferreds = [], An(t, this)
+      function Ln(e) {
+        return Boolean(e && void 0 !== e.length)
       }
 
-      function On(t, e) {
-        for (; 3 === t._state;) t = t._value;
-        0 !== t._state ? (t._handled = !0, bn._immediateFn(function () {
-          var n = 1 === t._state ? e.onFulfilled : e.onRejected;
+      function Kn() {}
+
+      function Pn(e) {
+        if (!(this instanceof Pn)) throw new TypeError("Promises must be constructed via new");
+        if ("function" != typeof e) throw new TypeError("not a function");
+        this._state = 0, this._handled = !1, this._value = void 0, this._deferreds = [], Yn(e, this)
+      }
+
+      function Rn(e, t) {
+        for (; 3 === e._state;) e = e._value;
+        0 !== e._state ? (e._handled = !0, Pn._immediateFn((function () {
+          var n = 1 === e._state ? t.onFulfilled : t.onRejected;
           if (null !== n) {
             var r;
             try {
-              r = n(t._value)
-            } catch (t) {
-              return void Tn(e.promise, t)
+              r = n(e._value)
+            } catch (e) {
+              return void Xn(t.promise, e)
             }
-            En(e.promise, r)
-          } else(1 === t._state ? En : Tn)(e.promise, t._value)
-        })) : t._deferreds.push(e)
+            Gn(t.promise, r)
+          } else(1 === e._state ? Gn : Xn)(t.promise, e._value)
+        }))) : e._deferreds.push(t)
       }
 
-      function En(t, e) {
+      function Gn(e, t) {
         try {
-          if (e === t) throw new TypeError("A promise cannot be resolved with itself.");
-          if (e && ("object" == typeof e || "function" == typeof e)) {
-            var n = e.then;
-            if (e instanceof bn) return t._state = 3, t._value = e, void Sn(t);
-            if ("function" == typeof n) return void An((r = n, o = e, function () {
+          if (t === e) throw new TypeError("A promise cannot be resolved with itself.");
+          if (t && ("object" == typeof t || "function" == typeof t)) {
+            var n = t.then;
+            if (t instanceof Pn) return e._state = 3, e._value = t, void Fn(e);
+            if ("function" == typeof n) return void Yn((r = n, o = t, function () {
               r.apply(o, arguments)
-            }), t)
+            }), e)
           }
-          t._state = 1, t._value = e, Sn(t)
-        } catch (e) {
-          Tn(t, e)
+          e._state = 1, e._value = t, Fn(e)
+        } catch (t) {
+          Xn(e, t)
         }
         var r, o
       }
 
-      function Tn(t, e) {
-        t._state = 2, t._value = e, Sn(t)
+      function Xn(e, t) {
+        e._state = 2, e._value = t, Fn(e)
       }
 
-      function Sn(t) {
-        2 === t._state && 0 === t._deferreds.length && bn._immediateFn(function () {
-          t._handled || bn._unhandledRejectionFn(t._value)
-        });
-        for (var e = 0, n = t._deferreds.length; e < n; e++) On(t, t._deferreds[e]);
-        t._deferreds = null
+      function Fn(e) {
+        2 === e._state && 0 === e._deferreds.length && Pn._immediateFn((function () {
+          e._handled || Pn._unhandledRejectionFn(e._value)
+        }));
+        for (var t = 0, n = e._deferreds.length; t < n; t++) Rn(e, e._deferreds[t]);
+        e._deferreds = null
       }
 
-      function jn(t, e, n) {
-        this.onFulfilled = "function" == typeof t ? t : null, this.onRejected = "function" == typeof e ? e : null,
+      function Vn(e, t, n) {
+        this.onFulfilled = "function" == typeof e ? e : null, this.onRejected = "function" == typeof t ? t : null,
           this.promise = n
       }
 
-      function An(t, e) {
+      function Yn(e, t) {
         var n = !1;
         try {
-          t(function (t) {
-            n || (n = !0, En(e, t))
-          }, function (t) {
-            n || (n = !0, Tn(e, t))
-          })
-        } catch (t) {
+          e((function (e) {
+            n || (n = !0, Gn(t, e))
+          }), (function (e) {
+            n || (n = !0, Xn(t, e))
+          }))
+        } catch (e) {
           if (n) return;
-          n = !0, Tn(e, t)
+          n = !0, Xn(t, e)
         }
       }
-      bn.prototype.catch = function (t) {
-        return this.then(null, t)
-      }, bn.prototype.then = function (t, e) {
-        var n = new this.constructor(_n);
-        return On(this, new jn(t, e, n)), n
-      }, bn.prototype.finally = wn, bn.all = function (t) {
-        return new bn(function (e, n) {
-          if (!mn(t)) return n(new TypeError("Promise.all accepts an array"));
-          var r = Array.prototype.slice.call(t);
-          if (0 === r.length) return e([]);
+      Pn.prototype.catch = function (e) {
+        return this.then(null, e)
+      }, Pn.prototype.then = function (e, t) {
+        var n = new this.constructor(Kn);
+        return Rn(this, new Vn(e, t, n)), n
+      }, Pn.prototype.finally = Cn, Pn.all = function (e) {
+        return new Pn((function (t, n) {
+          if (!Ln(e)) return n(new TypeError("Promise.all accepts an array"));
+          var r = Array.prototype.slice.call(e);
+          if (0 === r.length) return t([]);
           var o = r.length;
 
-          function i(t, c) {
+          function i(e, c) {
             try {
               if (c && ("object" == typeof c || "function" == typeof c)) {
                 var a = c.then;
-                if ("function" == typeof a) return void a.call(c, function (e) {
-                  i(t, e)
-                }, n)
+                if ("function" == typeof a) return void a.call(c, (function (t) {
+                  i(e, t)
+                }), n)
               }
-              r[t] = c, 0 == --o && e(r)
-            } catch (t) {
-              n(t)
+              r[e] = c, 0 == --o && t(r)
+            } catch (e) {
+              n(e)
             }
           }
           for (var c = 0; c < r.length; c++) i(c, r[c])
-        })
-      }, bn.resolve = function (t) {
-        return t && "object" == typeof t && t.constructor === bn ? t : new bn(function (e) {
-          e(t)
-        })
-      }, bn.reject = function (t) {
-        return new bn(function (e, n) {
-          n(t)
-        })
-      }, bn.race = function (t) {
-        return new bn(function (e, n) {
-          if (!mn(t)) return n(new TypeError("Promise.race accepts an array"));
-          for (var r = 0, o = t.length; r < o; r++) bn.resolve(t[r]).then(e, n)
-        })
-      }, bn._immediateFn = "function" == typeof setImmediate && function (t) {
-        setImmediate(t)
-      } || function (t) {
-        gn(t, 0)
-      }, bn._unhandledRejectionFn = function (t) {
-        "undefined" != typeof console && console && console.warn("Possible Unhandled Promise Rejection:", t)
+        }))
+      }, Pn.resolve = function (e) {
+        return e && "object" == typeof e && e.constructor === Pn ? e : new Pn((function (t) {
+          t(e)
+        }))
+      }, Pn.reject = function (e) {
+        return new Pn((function (t, n) {
+          n(e)
+        }))
+      }, Pn.race = function (e) {
+        return new Pn((function (t, n) {
+          if (!Ln(e)) return n(new TypeError("Promise.race accepts an array"));
+          for (var r = 0, o = e.length; r < o; r++) Pn.resolve(e[r]).then(t, n)
+        }))
+      }, Pn._immediateFn = "function" == typeof setImmediate && function (e) {
+        setImmediate(e)
+      } || function (e) {
+        Un(e, 0)
+      }, Pn._unhandledRejectionFn = function (e) {
+        "undefined" != typeof console && console && console.warn("Possible Unhandled Promise Rejection:", e)
       };
-      var Pn = function () {
+      var Jn = function () {
         if ("undefined" != typeof self) return self;
         if ("undefined" != typeof window) return window;
         if ("undefined" != typeof global) return global;
         throw new Error("unable to locate global object")
       }();
+      "Promise" in Jn ? Jn.Promise.prototype.finally || (Jn.Promise.prototype.finally = Cn) : Jn.Promise = Pn,
+        function (e) {
+          function t() {}
 
-      function xn(t, e) {
-        return e = e || {}, new Promise(function (n, r) {
-          var o = new XMLHttpRequest,
-            i = [],
-            c = [],
-            a = {},
-            u = function () {
-              return {
-                ok: 2 == (o.status / 100 | 0),
-                statusText: o.statusText,
-                status: o.status,
-                url: o.responseURL,
-                text: function () {
-                  return Promise.resolve(o.responseText)
-                },
-                json: function () {
-                  return Promise.resolve(JSON.parse(o.responseText))
-                },
-                blob: function () {
-                  return Promise.resolve(new Blob([o.response]))
-                },
-                clone: u,
-                headers: {
-                  keys: function () {
-                    return i
-                  },
-                  entries: function () {
-                    return c
-                  },
-                  get: function (t) {
-                    return a[t.toLowerCase()]
-                  },
-                  has: function (t) {
-                    return t.toLowerCase() in a
-                  }
-                }
-              }
-            };
-          for (var s in o.open(e.method || "get", t, !0), o.onload = function () {
-              o.getAllResponseHeaders().replace(/^(.*?):[^\\S\\n]*([\\s\\S]*?)$/gm, function (t, e, n) {
-                i.push(e = e.toLowerCase()), c.push([e, n]), a[e] = a[e] ? a[e] + "," + n : n
-              }), n(u())
-            }, o.onerror = r, o.withCredentials = "include" == e.credentials, e.headers) o.setRequestHeader(s, e
-            .headers[s]);
-          o.send(e.body || null)
-        })
-      }
-      "Promise" in Pn ? Pn.Promise.prototype.finally || (Pn.Promise.prototype.finally = wn) : Pn.Promise = bn,
-        function (t) {
-          function e(t) {
-            if ("utf-8" !== (t = void 0 === t ? "utf-8" : t)) throw new RangeError(
-              "Failed to construct 'TextEncoder': The encoding label provided ('" + t + "') is invalid.")
-          }
-
-          function n(t, e) {
-            if (e = void 0 === e ? {
+          function n(e, t) {
+            if (e = void 0 === e ? "utf-8" : e, t = void 0 === t ? {
                 fatal: !1
-              } : e, "utf-8" !== (t = void 0 === t ? "utf-8" : t)) throw new RangeError(
-              "Failed to construct 'TextDecoder': The encoding label provided ('" + t + "') is invalid.");
-            if (e.fatal) throw Error("Failed to construct 'TextDecoder': the 'fatal' option is unsupported.")
+              } : t, -1 == r.indexOf(e.toLowerCase())) throw new RangeError(
+              "Failed to construct 'TextDecoder': The encoding label provided ('" + e + "') is invalid.");
+            if (t.fatal) throw Error("Failed to construct 'TextDecoder': the 'fatal' option is unsupported.")
           }
-          if (t.TextEncoder && t.TextDecoder) return !1;
-          Object.defineProperty(e.prototype, "encoding", {
+          if (e.TextEncoder && e.TextDecoder) return !1;
+          var r = ["utf-8", "utf8", "unicode-1-1-utf-8"];
+          Object.defineProperty(t.prototype, "encoding", {
             value: "utf-8"
-          }), e.prototype.encode = function (t, e) {
-            if ((e = void 0 === e ? {
+          }), t.prototype.encode = function (e, t) {
+            if ((t = void 0 === t ? {
                 stream: !1
-              } : e).stream) throw Error("Failed to encode: the 'stream' option is unsupported.");
-            e = 0;
-            for (var n = t.length, r = 0, o = Math.max(32, n + (n >> 1) + 7), i = new Uint8Array(o >> 3 << 3); e <
+              } : t).stream) throw Error("Failed to encode: the 'stream' option is unsupported.");
+            t = 0;
+            for (var n = e.length, r = 0, o = Math.max(32, n + (n >> 1) + 7), i = new Uint8Array(o >> 3 << 3); t <
               n;) {
-              var c = t.charCodeAt(e++);
+              var c = e.charCodeAt(t++);
               if (55296 <= c && 56319 >= c) {
-                if (e < n) {
-                  var a = t.charCodeAt(e);
-                  56320 == (64512 & a) && (++e, c = ((1023 & c) << 10) + (1023 & a) + 65536)
+                if (t < n) {
+                  var a = e.charCodeAt(t);
+                  56320 == (64512 & a) && (++t, c = ((1023 & c) << 10) + (1023 & a) + 65536)
                 }
                 if (55296 <= c && 56319 >= c) continue
               }
-              if (r + 4 > i.length && (o += 8, o = (o *= 1 + e / t.length * 2) >> 3 << 3, (a = new Uint8Array(o))
+              if (r + 4 > i.length && (o += 8, o = (o *= 1 + t / e.length * 2) >> 3 << 3, (a = new Uint8Array(o))
                   .set(i), i = a), 0 == (4294967168 & c)) i[r++] = c;
               else {
                 if (0 == (4294965248 & c)) i[r++] = c >> 6 & 31 | 192;
@@ -1228,618 +1260,1486 @@ self.addEventListener("fetch", function (event) {
                 i[r++] = 63 & c | 128
               }
             }
-            return i.slice(0, r)
+            return i.slice ? i.slice(0, r) : i.subarray(0, r)
           }, Object.defineProperty(n.prototype, "encoding", {
             value: "utf-8"
           }), Object.defineProperty(n.prototype, "fatal", {
             value: !1
           }), Object.defineProperty(n.prototype, "ignoreBOM", {
             value: !1
-          }), n.prototype.decode = function (t, e) {
-            if ((e = void 0 === e ? {
+          }), n.prototype.decode = function (e, t) {
+            if ((t = void 0 === t ? {
                 stream: !1
-              } : e).stream) throw Error("Failed to decode: the 'stream' option is unsupported.");
-            e = 0;
-            for (var n = (t = new Uint8Array(t)).length, r = []; e < n;) {
-              var o = t[e++];
-              if (0 === o) break;
-              if (0 == (128 & o)) r.push(o);
+              } : t).stream) throw Error("Failed to decode: the 'stream' option is unsupported.");
+            e.buffer instanceof ArrayBuffer && (e = e.buffer), e = new Uint8Array(e), t = 0;
+            for (var n = [], r = [];;) {
+              var o = t < e.length;
+              if (!o || 65536 & t) {
+                if (r.push(String.fromCharCode.apply(null, n)), !o) return r.join("");
+                n = [], e = e.subarray(t), t = 0
+              }
+              if (0 === (o = e[t++])) n.push(0);
+              else if (0 == (128 & o)) n.push(o);
               else if (192 == (224 & o)) {
-                var i = 63 & t[e++];
-                r.push((31 & o) << 6 | i)
+                var i = 63 & e[t++];
+                n.push((31 & o) << 6 | i)
               } else if (224 == (240 & o)) {
-                i = 63 & t[e++];
-                var c = 63 & t[e++];
-                r.push((31 & o) << 12 | i << 6 | c)
+                i = 63 & e[t++];
+                var c = 63 & e[t++];
+                n.push((31 & o) << 12 | i << 6 | c)
               } else if (240 == (248 & o)) {
-                65535 < (o = (7 & o) << 18 | (i = 63 & t[e++]) << 12 | (c = 63 & t[e++]) << 6 | 63 & t[e++]) && (
-                  o -= 65536, r.push(o >>> 10 & 1023 | 55296), o = 56320 | 1023 & o), r.push(o)
+                65535 < (o = (7 & o) << 18 | (i = 63 & e[t++]) << 12 | (c = 63 & e[t++]) << 6 | 63 & e[t++]) && (
+                  o -= 65536, n.push(o >>> 10 & 1023 | 55296), o = 56320 | 1023 & o), n.push(o)
               }
             }
-            return String.fromCharCode.apply(null, r)
-          }, t.TextEncoder = e, t.TextDecoder = n
-        }("undefined" != typeof window ? window : i);
-      var Un, Cn = {
+          }, e.TextEncoder = t, e.TextDecoder = n
+        }("undefined" != typeof window ? window : c),
+        function () {
+          function e(e, t) {
+            if (!(e instanceof t)) throw new TypeError("Cannot call a class as a function")
+          }
+
+          function t(e, t) {
+            for (var n = 0; n < t.length; n++) {
+              var r = t[n];
+              r.enumerable = r.enumerable || !1, r.configurable = !0, "value" in r && (r.writable = !0), Object
+                .defineProperty(e, r.key, r)
+            }
+          }
+
+          function n(e, n, r) {
+            return n && t(e.prototype, n), r && t(e, r), e
+          }
+
+          function r(e) {
+            return (r = Object.setPrototypeOf ? Object.getPrototypeOf : function (e) {
+              return e.__proto__ || Object.getPrototypeOf(e)
+            })(e)
+          }
+
+          function o(e, t) {
+            return (o = Object.setPrototypeOf || function (e, t) {
+              return e.__proto__ = t, e
+            })(e, t)
+          }
+
+          function i(e) {
+            if (void 0 === e) throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
+            return e
+          }
+
+          function a(e, t, n) {
+            return (a = "undefined" != typeof Reflect && Reflect.get ? Reflect.get : function (e, t, n) {
+              var o = function (e, t) {
+                for (; !Object.prototype.hasOwnProperty.call(e, t) && null !== (e = r(e)););
+                return e
+              }(e, t);
+              if (o) {
+                var i = Object.getOwnPropertyDescriptor(o, t);
+                return i.get ? i.get.call(n) : i.value
+              }
+            })(e, t, n || e)
+          }
+          var s = function () {
+              function t() {
+                e(this, t), Object.defineProperty(this, "listeners", {
+                  value: {},
+                  writable: !0,
+                  configurable: !0
+                })
+              }
+              return n(t, [{
+                key: "addEventListener",
+                value: function (e, t) {
+                  e in this.listeners || (this.listeners[e] = []), this.listeners[e].push(t)
+                }
+              }, {
+                key: "removeEventListener",
+                value: function (e, t) {
+                  if (e in this.listeners)
+                    for (var n = this.listeners[e], r = 0, o = n.length; r < o; r++)
+                      if (n[r] === t) return void n.splice(r, 1)
+                }
+              }, {
+                key: "dispatchEvent",
+                value: function (e) {
+                  var t = this;
+                  if (e.type in this.listeners) {
+                    for (var n = function (n) {
+                        setTimeout((function () {
+                          return n.call(t, e)
+                        }))
+                      }, r = this.listeners[e.type], o = 0, i = r.length; o < i; o++) n(r[o]);
+                    return !e.defaultPrevented
+                  }
+                }
+              }]), t
+            }(),
+            u = function (t) {
+              function c() {
+                var t;
+                return e(this, c), (t = function (e, t) {
+                  return !t || "object" != typeof t && "function" != typeof t ? i(e) : t
+                }(this, r(c).call(this))).listeners || s.call(i(t)), Object.defineProperty(i(t), "aborted", {
+                  value: !1,
+                  writable: !0,
+                  configurable: !0
+                }), Object.defineProperty(i(t), "onabort", {
+                  value: null,
+                  writable: !0,
+                  configurable: !0
+                }), t
+              }
+              return function (e, t) {
+                if ("function" != typeof t && null !== t) throw new TypeError(
+                  "Super expression must either be null or a function");
+                e.prototype = Object.create(t && t.prototype, {
+                  constructor: {
+                    value: e,
+                    writable: !0,
+                    configurable: !0
+                  }
+                }), t && o(e, t)
+              }(c, t), n(c, [{
+                key: "toString",
+                value: function () {
+                  return "[object AbortSignal]"
+                }
+              }, {
+                key: "dispatchEvent",
+                value: function (e) {
+                  "abort" === e.type && (this.aborted = !0, "function" == typeof this.onabort && this
+                    .onabort.call(this, e)), a(r(c.prototype), "dispatchEvent", this).call(this, e)
+                }
+              }]), c
+            }(s),
+            l = function () {
+              function t() {
+                e(this, t), Object.defineProperty(this, "signal", {
+                  value: new u,
+                  writable: !0,
+                  configurable: !0
+                })
+              }
+              return n(t, [{
+                key: "abort",
+                value: function () {
+                  var e;
+                  try {
+                    e = new Event("abort")
+                  } catch (t) {
+                    "undefined" != typeof document ? document.createEvent ? (e = document.createEvent(
+                        "Event")).initEvent("abort", !1, !1) : (e = document.createEventObject()).type =
+                      "abort" : e = {
+                        type: "abort",
+                        bubbles: !1,
+                        cancelable: !1
+                      }
+                  }
+                  this.signal.dispatchEvent(e)
+                }
+              }, {
+                key: "toString",
+                value: function () {
+                  return "[object AbortController]"
+                }
+              }]), t
+            }();
+          "undefined" != typeof Symbol && Symbol.toStringTag && (l.prototype[Symbol.toStringTag] =
+              "AbortController", u.prototype[Symbol.toStringTag] = "AbortSignal"),
+            function (e) {
+              (function (e) {
+                return e.__FORCE_INSTALL_ABORTCONTROLLER_POLYFILL ? (console.log(
+                    "__FORCE_INSTALL_ABORTCONTROLLER_POLYFILL=true is set, will force install polyfill"), !0) :
+                  "function" == typeof e.Request && !e.Request.prototype.hasOwnProperty("signal") || !e
+                  .AbortController
+              })(e) && (e.AbortController = l, e.AbortSignal = u)
+            }("undefined" != typeof self ? self : c)
+        }();
+      var Nn = s((function (e, t) {
+        Object.defineProperty(t, "__esModule", {
+          value: !0
+        });
+        var n = function () {
+          function e() {
+            var e = this;
+            this.locked = new Map, this.addToLocked = function (t, n) {
+              var r = e.locked.get(t);
+              void 0 === r ? void 0 === n ? e.locked.set(t, []) : e.locked.set(t, [n]) : void 0 !== n && (
+                r.unshift(n), e.locked.set(t, r))
+            }, this.isLocked = function (t) {
+              return e.locked.has(t)
+            }, this.lock = function (t) {
+              return new Promise((function (n, r) {
+                e.isLocked(t) ? e.addToLocked(t, n) : (e.addToLocked(t), n())
+              }))
+            }, this.unlock = function (t) {
+              var n = e.locked.get(t);
+              if (void 0 !== n && 0 !== n.length) {
+                var r = n.pop();
+                e.locked.set(t, n), void 0 !== r && setTimeout(r, 0)
+              } else e.locked.delete(t)
+            }
+          }
+          return e.getInstance = function () {
+            return void 0 === e.instance && (e.instance = new e), e.instance
+          }, e
+        }();
+        t.default = function () {
+          return n.getInstance()
+        }
+      }));
+      a(Nn);
+      var zn = a(s((function (e, t) {
+        var n = c && c.__awaiter || function (e, t, n, r) {
+            return new(n || (n = Promise))((function (o, i) {
+              function c(e) {
+                try {
+                  s(r.next(e))
+                } catch (e) {
+                  i(e)
+                }
+              }
+
+              function a(e) {
+                try {
+                  s(r.throw(e))
+                } catch (e) {
+                  i(e)
+                }
+              }
+
+              function s(e) {
+                e.done ? o(e.value) : new n((function (t) {
+                  t(e.value)
+                })).then(c, a)
+              }
+              s((r = r.apply(e, t || [])).next())
+            }))
+          },
+          r = c && c.__generator || function (e, t) {
+            var n, r, o, i, c = {
+              label: 0,
+              sent: function () {
+                if (1 & o[0]) throw o[1];
+                return o[1]
+              },
+              trys: [],
+              ops: []
+            };
+            return i = {
+              next: a(0),
+              throw: a(1),
+              return: a(2)
+            }, "function" == typeof Symbol && (i[Symbol.iterator] = function () {
+              return this
+            }), i;
+
+            function a(i) {
+              return function (a) {
+                return function (i) {
+                  if (n) throw new TypeError("Generator is already executing.");
+                  for (; c;) try {
+                    if (n = 1, r && (o = 2 & i[0] ? r.return : i[0] ? r.throw || ((o = r.return) && o
+                        .call(r), 0) : r.next) && !(o = o.call(r, i[1])).done) return o;
+                    switch (r = 0, o && (i = [2 & i[0], o.value]), i[0]) {
+                      case 0:
+                      case 1:
+                        o = i;
+                        break;
+                      case 4:
+                        return c.label++, {
+                          value: i[1],
+                          done: !1
+                        };
+                      case 5:
+                        c.label++, r = i[1], i = [0];
+                        continue;
+                      case 7:
+                        i = c.ops.pop(), c.trys.pop();
+                        continue;
+                      default:
+                        if (!(o = c.trys, (o = o.length > 0 && o[o.length - 1]) || 6 !== i[0] && 2 !==
+                            i[0])) {
+                          c = 0;
+                          continue
+                        }
+                        if (3 === i[0] && (!o || i[1] > o[0] && i[1] < o[3])) {
+                          c.label = i[1];
+                          break
+                        }
+                        if (6 === i[0] && c.label < o[1]) {
+                          c.label = o[1], o = i;
+                          break
+                        }
+                        if (o && c.label < o[2]) {
+                          c.label = o[2], c.ops.push(i);
+                          break
+                        }
+                        o[2] && c.ops.pop(), c.trys.pop();
+                        continue
+                    }
+                    i = t.call(e, c)
+                  } catch (e) {
+                    i = [6, e], r = 0
+                  } finally {
+                    n = o = 0
+                  }
+                  if (5 & i[0]) throw i[1];
+                  return {
+                    value: i[0] ? i[1] : void 0,
+                    done: !0
+                  }
+                }([i, a])
+              }
+            }
+          };
+        Object.defineProperty(t, "__esModule", {
+          value: !0
+        });
+
+        function o(e) {
+          return new Promise((function (t) {
+            return setTimeout(t, e)
+          }))
+        }
+
+        function i(e) {
+          for (var t = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz", n = "", r = 0; r <
+            e; r++) {
+            n += t[Math.floor(Math.random() * t.length)]
+          }
+          return n
+        }
+        var a = function () {
+          function e() {
+            this.acquiredIatSet = new Set, this.id = Date.now().toString() + i(15), this.acquireLock =
+              this.acquireLock.bind(this), this.releaseLock = this.releaseLock.bind(this), this
+              .releaseLock__private__ = this.releaseLock__private__.bind(this), this
+              .waitForSomethingToChange = this.waitForSomethingToChange.bind(this), this
+              .refreshLockWhileAcquired = this.refreshLockWhileAcquired.bind(this), void 0 === e
+              .waiters && (e.waiters = [])
+          }
+          return e.prototype.acquireLock = function (t, c) {
+            return void 0 === c && (c = 5e3), n(this, void 0, void 0, (function () {
+              var n, a, s, u, l, f;
+              return r(this, (function (r) {
+                switch (r.label) {
+                  case 0:
+                    n = Date.now() + i(4), a = Date.now() + c, s =
+                      "browser-tabs-lock-key-" + t, u = window.localStorage, r.label = 1;
+                  case 1:
+                    return Date.now() < a ? [4, o(30)] : [3, 8];
+                  case 2:
+                    return r.sent(), null !== u.getItem(s) ? [3, 5] : (l = this.id + "-" +
+                      t + "-" + n, [4, o(Math.floor(25 * Math.random()))]);
+                  case 3:
+                    return r.sent(), u.setItem(s, JSON.stringify({
+                      id: this.id,
+                      iat: n,
+                      timeoutKey: l,
+                      timeAcquired: Date.now(),
+                      timeRefreshed: Date.now()
+                    })), [4, o(30)];
+                  case 4:
+                    return r.sent(), null !== (f = u.getItem(s)) && (f = JSON.parse(f))
+                      .id === this.id && f.iat === n ? (this.acquiredIatSet.add(n), this
+                        .refreshLockWhileAcquired(s, n), [2, !0]) : [3, 7];
+                  case 5:
+                    return e.lockCorrector(), [4, this.waitForSomethingToChange(a)];
+                  case 6:
+                    r.sent(), r.label = 7;
+                  case 7:
+                    return n = Date.now() + i(4), [3, 1];
+                  case 8:
+                    return [2, !1]
+                }
+              }))
+            }))
+          }, e.prototype.refreshLockWhileAcquired = function (e, t) {
+            return n(this, void 0, void 0, (function () {
+              var o = this;
+              return r(this, (function (i) {
+                return setTimeout((function () {
+                  return n(o, void 0, void 0, (function () {
+                    var n, o;
+                    return r(this, (function (r) {
+                      switch (r.label) {
+                        case 0:
+                          return [4, Nn.default().lock(t)];
+                        case 1:
+                          return r.sent(), this.acquiredIatSet.has(t) ? (
+                            n = window.localStorage, null === (o = n
+                              .getItem(e)) ? (Nn.default().unlock(t), [
+                              2]) : ((o = JSON.parse(o)).timeRefreshed =
+                              Date.now(), n.setItem(e, JSON.stringify(
+                                o)), Nn.default().unlock(t), this
+                              .refreshLockWhileAcquired(e, t), [2])) : (
+                            Nn.default().unlock(t), [2])
+                      }
+                    }))
+                  }))
+                }), 1e3), [2]
+              }))
+            }))
+          }, e.prototype.waitForSomethingToChange = function (t) {
+            return n(this, void 0, void 0, (function () {
+              return r(this, (function (n) {
+                switch (n.label) {
+                  case 0:
+                    return [4, new Promise((function (n) {
+                      var r = !1,
+                        o = Date.now(),
+                        i = !1;
+
+                      function c() {
+                        if (i || (window.removeEventListener("storage", c), e
+                            .removeFromWaiting(c), clearTimeout(a), i = !0), !r) {
+                          r = !0;
+                          var t = 50 - (Date.now() - o);
+                          t > 0 ? setTimeout(n, t) : n()
+                        }
+                      }
+                      window.addEventListener("storage", c), e.addToWaiting(c);
+                      var a = setTimeout(c, Math.max(0, t - Date.now()))
+                    }))];
+                  case 1:
+                    return n.sent(), [2]
+                }
+              }))
+            }))
+          }, e.addToWaiting = function (t) {
+            this.removeFromWaiting(t), void 0 !== e.waiters && e.waiters.push(t)
+          }, e.removeFromWaiting = function (t) {
+            void 0 !== e.waiters && (e.waiters = e.waiters.filter((function (e) {
+              return e !== t
+            })))
+          }, e.notifyWaiters = function () {
+            void 0 !== e.waiters && e.waiters.slice().forEach((function (e) {
+              return e()
+            }))
+          }, e.prototype.releaseLock = function (e) {
+            return n(this, void 0, void 0, (function () {
+              return r(this, (function (t) {
+                switch (t.label) {
+                  case 0:
+                    return [4, this.releaseLock__private__(e)];
+                  case 1:
+                    return [2, t.sent()]
+                }
+              }))
+            }))
+          }, e.prototype.releaseLock__private__ = function (t) {
+            return n(this, void 0, void 0, (function () {
+              var n, o, i;
+              return r(this, (function (r) {
+                switch (r.label) {
+                  case 0:
+                    return n = window.localStorage, o = "browser-tabs-lock-key-" + t,
+                      null === (i = n.getItem(o)) ? [2] : (i = JSON.parse(i)).id !== this
+                      .id ? [3, 2] : [4, Nn.default().lock(i.iat)];
+                  case 1:
+                    r.sent(), this.acquiredIatSet.delete(i.iat), n.removeItem(o), Nn
+                      .default().unlock(i.iat), e.notifyWaiters(), r.label = 2;
+                  case 2:
+                    return [2]
+                }
+              }))
+            }))
+          }, e.lockCorrector = function () {
+            for (var t = Date.now() - 5e3, n = window.localStorage, r = Object.keys(n), o = !1, i =
+              0; i < r.length; i++) {
+              var c = r[i];
+              if (c.includes("browser-tabs-lock-key")) {
+                var a = n.getItem(c);
+                null !== a && (void 0 === (a = JSON.parse(a)).timeRefreshed && a.timeAcquired < t ||
+                  void 0 !== a.timeRefreshed && a.timeRefreshed < t) && (n.removeItem(c), o = !0)
+              }
+            }
+            o && e.notifyWaiters()
+          }, e.waiters = void 0, e
+        }();
+        t.default = a
+      })));
+      var Bn = {
           timeoutInSeconds: 60
         },
-        kn = function (t) {
-          return t.filter(function (e, n) {
-            return t.indexOf(e) === n
-          })
+        Dn = function (e) {
+          return e.filter((function (t, n) {
+            return e.indexOf(t) === n
+          }))
         },
-        In = {
+        Mn = {
           error: "timeout",
           error_description: "Timeout"
         },
-        Fn = function () {
-          for (var t = [], e = 0; e < arguments.length; e++) t[e] = arguments[e];
-          var n = t.filter(Boolean).join();
-          return kn(n.replace(/\\s/g, ",").split(",")).join(" ").trim()
+        qn = function () {
+          for (var e = [], t = 0; t < arguments.length; t++) e[t] = arguments[t];
+          var n = e.filter(Boolean).join();
+          return Dn(n.replace(/\\s/g, ",").split(",")).join(" ").trim()
         },
-        Rn = function () {
-          var t = window.open("", "auth0:authorize:popup",
-            "left=100,top=100,width=400,height=600,resizable,scrollbars=yes,status=1");
-          if (!t) throw new Error("Could not open popup");
-          return t
-        },
-        Dn = function (t, n, r) {
-          return t.location.href = n, new Promise(function (n, o) {
-            var i = setTimeout(function () {
-              o(e({}, In, {
-                popup: t
+        Hn = function (e, t) {
+          var r, o, i, c = t.popup;
+          if (c ? c.location.href = e : (r = e, o = window.screenX + (window.innerWidth - 400) / 2, i = window
+              .screenY + (window.innerHeight - 600) / 2, c = window.open(r, "auth0:authorize:popup", "left=" + o +
+                ",top=" + i + ",width=400,height=600,resizable,scrollbars=yes,status=1")), !c) throw new Error(
+            "Could not open popup");
+          return new Promise((function (e, r) {
+            var o = setTimeout((function () {
+              r(n(n({}, Mn), {
+                popup: c
               }))
-            }, 1e3 * (r.timeoutInSeconds || 60));
-            window.addEventListener("message", function (e) {
-              if (e.data && "authorization_response" === e.data.type) {
-                if (clearTimeout(i), t.close(), e.data.response.error) return o(e.data.response);
-                n(e.data.response)
+            }), 1e3 * (t.timeoutInSeconds || 60));
+            window.addEventListener("message", (function (t) {
+              if (t.data && "authorization_response" === t.data.type) {
+                if (clearTimeout(o), c.close(), t.data.response.error) return r(t.data.response);
+                e(t.data.response)
               }
-            })
-          })
+            }))
+          }))
         },
-        Ln = function () {
-          var t = "0123456789ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvwxyz-_~.",
-            e = "";
-          return Array.from(crypto.getRandomValues(new Uint8Array(43))).forEach(function (n) {
-            return e += t[n % t.length]
-          }), e
+        Qn = function () {
+          var e = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-_~.",
+            t = "";
+          return Array.from(sr().getRandomValues(new Uint8Array(43))).forEach((function (n) {
+            return t += e[n % e.length]
+          })), t
         },
-        Mn = function (t) {
-          return btoa(t)
+        $n = function (e) {
+          return btoa(e)
         },
-        zn = function (t) {
-          return Object.keys(t).filter(function (e) {
-            return void 0 !== t[e]
-          }).map(function (e) {
-            return encodeURIComponent(e) + "=" + encodeURIComponent(t[e])
-          }).join("&")
+        er = function (e) {
+          return Object.keys(e).filter((function (t) {
+            return void 0 !== e[t]
+          })).map((function (t) {
+            return encodeURIComponent(t) + "=" + encodeURIComponent(e[t])
+          })).join("&")
         },
-        Nn = function (t) {
-          return r(void 0, void 0, void 0, function () {
-            var e;
-            return o(this, function (n) {
+        tr = function (e) {
+          return o(void 0, void 0, void 0, (function () {
+            var t;
+            return i(this, (function (n) {
               switch (n.label) {
                 case 0:
-                  return [4, Promise.resolve(window.crypto.subtle.digest({
+                  return t = ur().digest({
                     name: "SHA-256"
-                  }, (new TextEncoder).encode(t)))];
+                  }, (new TextEncoder).encode(e)), window.msCrypto ? [2, new Promise((function (e,
+                  n) {
+                    t.oncomplete = function (t) {
+                      e(t.target.result)
+                    }, t.onerror = function (e) {
+                      n(e.error)
+                    }, t.onabort = function () {
+                      n("The digest operation was aborted")
+                    }
+                  }))] : [4, t];
                 case 1:
-                  return (e = n.sent()).result ? [2, e.result] : [2, e]
+                  return [2, n.sent()]
               }
-            })
-          })
+            }))
+          }))
         },
-        Bn = function (t) {
-          return function (t) {
-            return decodeURIComponent(atob(t).split("").map(function (t) {
-              return "%" + ("00" + t.charCodeAt(0).toString(16)).slice(-2)
-            }).join(""))
-          }(t.replace(/_/g, "/").replace(/-/g, "+"))
+        nr = function (e) {
+          return function (e) {
+            return decodeURIComponent(atob(e).split("").map((function (e) {
+              return "%" + ("00" + e.charCodeAt(0).toString(16)).slice(-2)
+            })).join(""))
+          }(e.replace(/_/g, "/").replace(/-/g, "+"))
         },
-        Wn = function (t) {
-          var e = new Uint8Array(t);
-          return function (t) {
-            var e = {
+        rr = function (e) {
+          var t = new Uint8Array(e);
+          return function (e) {
+            var t = {
               "+": "-",
               "/": "_",
               "=": ""
             };
-            return t.replace(/[\\+\\/=]/g, function (t) {
-              return e[t]
-            })
-          }(window.btoa(String.fromCharCode.apply(String, Array.from(e))))
+            return e.replace(/[\\+\\/=]/g, (function (e) {
+              return t[e]
+            }))
+          }(window.btoa(String.fromCharCode.apply(String, Array.from(t))))
         },
-        qn = function (t, e) {
-          return r(void 0, void 0, void 0, function () {
-            var r, i, c, a, u, s, f;
-            return o(this, function (o) {
-              switch (o.label) {
+        or = function (e, t, r, c) {
+          return o(void 0, void 0, void 0, (function () {
+            var o, a;
+            return i(this, (function (i) {
+              switch (i.label) {
                 case 0:
-                  return [4, xn(t, e)];
+                  return c ? (delete t.signal, [2, (l = n({
+                    url: e,
+                    timeout: r
+                  }, t), f = c, new Promise((function (e, t) {
+                    var n = new MessageChannel;
+                    n.port1.onmessage = function (n) {
+                      n.data.error ? t(new Error(n.data.error)) : e(n.data)
+                    }, f.postMessage(l, [n.port2])
+                  })))]) : [3, 1];
                 case 1:
-                  return [4, (r = o.sent()).json()];
+                  return [4, (s = e, u = t, u = u || {}, new Promise((function (e, t) {
+                    var n = new XMLHttpRequest,
+                      r = [],
+                      o = [],
+                      i = {},
+                      c = function () {
+                        return {
+                          ok: 2 == (n.status / 100 | 0),
+                          statusText: n.statusText,
+                          status: n.status,
+                          url: n.responseURL,
+                          text: function () {
+                            return Promise.resolve(n.responseText)
+                          },
+                          json: function () {
+                            return Promise.resolve(JSON.parse(n.responseText))
+                          },
+                          blob: function () {
+                            return Promise.resolve(new Blob([n.response]))
+                          },
+                          clone: c,
+                          headers: {
+                            keys: function () {
+                              return r
+                            },
+                            entries: function () {
+                              return o
+                            },
+                            get: function (e) {
+                              return i[e.toLowerCase()]
+                            },
+                            has: function (e) {
+                              return e.toLowerCase() in i
+                            }
+                          }
+                        }
+                      };
+                    for (var a in n.open(u.method || "get", s, !0), n.onload = function () {
+                          n.getAllResponseHeaders().replace(/^(.*?):[^\\S\\n]*([\\s\\S]*?)$/gm, (
+                            function (e, t, n) {
+                              r.push(t = t.toLowerCase()), o.push([t, n]), i[t] = i[t] ?
+                                i[t] + "," + n : n
+                            })), e(c())
+                        }, n.onerror = t, n.withCredentials = "include" == u.credentials, u
+                        .headers) n.setRequestHeader(a, u.headers[a]);
+                    n.send(u.body || null)
+                  })))];
                 case 2:
-                  if (i = o.sent(), c = i.error, a = i.error_description, u = n(i, ["error",
-                      "error_description"
-                    ]), !r.ok) throw s = a || "HTTP error. Unable to fetch " + t, (f = new Error(s)).error =
-                    c || "request_error", f.error_description = s, f;
-                  return [2, u]
+                  return o = i.sent(), a = {
+                    ok: o.ok
+                  }, [4, o.json()];
+                case 3:
+                  return [2, (a.json = i.sent(), a)]
               }
-            })
-          })
+              var s, u, l, f
+            }))
+          }))
         },
-        Gn = function (t) {
-          return r(void 0, void 0, void 0, function () {
-            var r = t.baseUrl,
-              i = n(t, ["baseUrl"]);
-            return o(this, function (t) {
-              switch (t.label) {
+        ir = function (e, t, r, o) {
+          void 0 === o && (o = 1e4);
+          var i = new AbortController,
+            c = i.signal,
+            a = n(n({}, t), {
+              signal: c
+            });
+          return Promise.race([or(e, a, o, r), new Promise((function (e, t) {
+            setTimeout((function () {
+              i.abort(), t(new Error("Timeout when executing 'fetch'"))
+            }), o)
+          }))])
+        },
+        cr = function (e, t, n, c) {
+          return o(void 0, void 0, void 0, (function () {
+            var o, a, s, u, l, f, d, p, h, y;
+            return i(this, (function (i) {
+              switch (i.label) {
                 case 0:
-                  return [4, qn(r + "/oauth/token", {
+                  s = 0, i.label = 1;
+                case 1:
+                  if (!(s < 3)) return [3, 6];
+                  i.label = 2;
+                case 2:
+                  return i.trys.push([2, 4, , 5]), [4, ir(e, n, c, t)];
+                case 3:
+                  return a = i.sent(), o = null, [3, 6];
+                case 4:
+                  return u = i.sent(), o = u, [3, 5];
+                case 5:
+                  return s++, [3, 1];
+                case 6:
+                  if (o) throw o;
+                  if (l = a.json, f = l.error, d = l.error_description, p = r(l, ["error",
+                      "error_description"
+                    ]), !a.ok) throw h = d || "HTTP error. Unable to fetch " + e, (y = new Error(h))
+                    .error = f || "request_error", y.error_description = h, y;
+                  return [2, p]
+              }
+            }))
+          }))
+        },
+        ar = function (e, t) {
+          return o(void 0, void 0, void 0, (function () {
+            var o = e.baseUrl,
+              c = e.timeout,
+              a = r(e, ["baseUrl", "timeout"]);
+            return i(this, (function (e) {
+              switch (e.label) {
+                case 0:
+                  return [4, cr(o + "/oauth/token", c, {
                     method: "POST",
-                    body: JSON.stringify(e({
-                      grant_type: "authorization_code",
+                    body: JSON.stringify(n({
                       redirect_uri: window.location.origin
-                    }, i)),
+                    }, a)),
                     headers: {
                       "Content-type": "application/json"
                     }
-                  })];
+                  }, t)];
                 case 1:
-                  return [2, t.sent()]
+                  return [2, e.sent()]
               }
-            })
-          })
+            }))
+          }))
         },
-        Jn = function (t) {
-          return t.audience + "::" + t.scope
+        sr = function () {
+          return window.crypto || window.msCrypto
         },
-        Hn = function () {
-          function t() {
-            this.cache = {}
+        ur = function () {
+          var e = sr();
+          return e.subtle || e.webkitSubtle
+        },
+        lr = function (e) {
+          return "@@auth0spajs@@::" + e.client_id + "::" + e.audience + "::" + e.scope
+        },
+        fr = function (e) {
+          var t = Math.floor(Date.now() / 1e3) + e.expires_in;
+          return {
+            body: e,
+            expiresAt: Math.min(t, e.decodedToken.claims.exp) - 60
           }
-          return t.prototype.save = function (t) {
-            var e = this,
-              n = Jn(t);
-            this.cache[n] = t;
-            var r, o, i, c = (r = t.expires_in, o = t.decodedToken.claims.exp, i = (new Date(1e3 * o).getTime() - (
-              new Date).getTime()) / 1e3, 1e3 * Math.min(r, i));
-            setTimeout(function () {
-              delete e.cache[n]
-            }, c)
-          }, t.prototype.get = function (t) {
-            return this.cache[Jn(t)]
-          }, t
+        },
+        dr = function () {
+          function e() {}
+          return e.prototype.save = function (e) {
+            var t = lr(e),
+              n = fr(e);
+            window.localStorage.setItem(t, JSON.stringify(n))
+          }, e.prototype.get = function (e) {
+            var t = lr(e),
+              n = this.readJson(t),
+              r = Math.floor(Date.now() / 1e3);
+            if (n) {
+              if (!(n.expiresAt < r)) return n.body;
+              if (n.body.refresh_token) {
+                var o = this.stripData(n);
+                return this.writeJson(t, o), o.body
+              }
+              localStorage.removeItem(t)
+            }
+          }, e.prototype.clear = function () {
+            for (var e = localStorage.length - 1; e >= 0; e--) localStorage.key(e).startsWith("@@auth0spajs@@") &&
+              localStorage.removeItem(localStorage.key(e))
+          }, e.prototype.readJson = function (e) {
+            var t, n = window.localStorage.getItem(e);
+            if (n && (t = JSON.parse(n))) return t
+          }, e.prototype.writeJson = function (e, t) {
+            localStorage.setItem(e, JSON.stringify(t))
+          }, e.prototype.stripData = function (e) {
+            return {
+              body: {
+                refresh_token: e.body.refresh_token
+              },
+              expiresAt: e.expiresAt
+            }
+          }, e
         }(),
-        Yn = c(function (t, e) {
-          var n = i && i.__assign || Object.assign || function (t) {
-            for (var e, n = 1, r = arguments.length; n < r; n++)
-              for (var o in e = arguments[n]) Object.prototype.hasOwnProperty.call(e, o) && (t[o] = e[o]);
-            return t
+        pr = function () {
+          this.enclosedCache = function () {
+            var e = {
+              body: {},
+              expiresAt: 0
+            };
+            return {
+              save: function (t) {
+                var n = lr(t),
+                  r = fr(t);
+                e[n] = r
+              },
+              get: function (t) {
+                var n = lr(t),
+                  r = e[n],
+                  o = Math.floor(Date.now() / 1e3);
+                if (r) return r.expiresAt < o ? r.body.refresh_token ? (r.body = {
+                  refresh_token: r.body.refresh_token
+                }, r.body) : void delete e[n] : r.body
+              },
+              clear: function () {
+                e = {
+                  body: {},
+                  expiresAt: 0
+                }
+              }
+            }
+          }()
+        },
+        hr = s((function (e, t) {
+          var n = c && c.__assign || function () {
+            return (n = Object.assign || function (e) {
+              for (var t, n = 1, r = arguments.length; n < r; n++)
+                for (var o in t = arguments[n]) Object.prototype.hasOwnProperty.call(t, o) && (e[o] = t[
+                  o]);
+              return e
+            }).apply(this, arguments)
           };
 
-          function r(t, e) {
-            if (!e) return "";
-            var n = "; " + t;
-            return !0 === e ? n : n + "=" + e
+          function r(e, t) {
+            if (!t) return "";
+            var n = "; " + e;
+            return !0 === t ? n : n + "=" + t
           }
 
-          function o(t, e, n) {
-            return encodeURIComponent(t).replace(/%(23|24|26|2B|5E|60|7C)/g, decodeURIComponent).replace(/\\(/g,
-              "%28").replace(/\\)/g, "%29") + "=" + encodeURIComponent(e).replace(
-              /%(23|24|26|2B|3A|3C|3E|3D|2F|3F|40|5B|5D|5E|60|7B|7D|7C)/g, decodeURIComponent) + function (t) {
-              if ("number" == typeof t.expires) {
-                var e = new Date;
-                e.setMilliseconds(e.getMilliseconds() + 864e5 * t.expires), t.expires = e
+          function o(e, t, n) {
+            return encodeURIComponent(e).replace(/%(23|24|26|2B|5E|60|7C)/g, decodeURIComponent).replace(/\\(/g,
+              "%28").replace(/\\)/g, "%29") + "=" + encodeURIComponent(t).replace(
+              /%(23|24|26|2B|3A|3C|3E|3D|2F|3F|40|5B|5D|5E|60|7B|7D|7C)/g, decodeURIComponent) + function (
+            e) {
+              if ("number" == typeof e.expires) {
+                var t = new Date;
+                t.setMilliseconds(t.getMilliseconds() + 864e5 * e.expires), e.expires = t
               }
-              return r("Expires", t.expires ? t.expires.toUTCString() : "") + r("Domain", t.domain) + r("Path", t
-                .path) + r("Secure", t.secure) + r("SameSite", t.sameSite)
+              return r("Expires", e.expires ? e.expires.toUTCString() : "") + r("Domain", e.domain) + r(
+                "Path", e.path) + r("Secure", e.secure) + r("SameSite", e.sameSite)
             }(n)
           }
 
-          function c(t) {
-            for (var e = {}, n = t ? t.split("; ") : [], r = /(%[0-9A-Z]{2})+/g, o = 0; o < n.length; o++) {
+          function i(e) {
+            for (var t = {}, n = e ? e.split("; ") : [], r = /(%[\\dA-F]{2})+/gi, o = 0; o < n.length; o++) {
               var i = n[o].split("="),
                 c = i.slice(1).join("=");
               '"' === c.charAt(0) && (c = c.slice(1, -1));
               try {
-                e[i[0].replace(r, decodeURIComponent)] = c.replace(r, decodeURIComponent)
-              } catch (t) {}
+                t[i[0].replace(r, decodeURIComponent)] = c.replace(r, decodeURIComponent)
+              } catch (e) {}
             }
-            return e
+            return t
           }
 
           function a() {
-            return c(document.cookie)
+            return i(document.cookie)
           }
 
-          function u(t, e, r) {
-            document.cookie = o(t, e, n({
+          function s(e, t, r) {
+            document.cookie = o(e, t, n({
               path: "/"
             }, r))
           }
-          e.__esModule = !0, e.encode = o, e.parse = c, e.getAll = a, e.get = function (t) {
-            return a()[t]
-          }, e.set = u, e.remove = function (t, e) {
-            u(t, "", n({}, e, {
+          t.__esModule = !0, t.encode = o, t.parse = i, t.getAll = a, t.get = function (e) {
+            return a()[e]
+          }, t.set = s, t.remove = function (e, t) {
+            s(e, "", n(n({}, t), {
               expires: -1
             }))
           }
-        });
-      (Un = Yn) && Un.__esModule && Object.prototype.hasOwnProperty.call(Un, "default") && Un.default;
-      Yn.encode, Yn.parse;
-      var Vn = Yn.getAll,
-        Kn = Yn.get,
-        Qn = Yn.set,
-        Xn = Yn.remove,
-        Zn = function () {
-          return Object.keys(Vn() || {})
+        }));
+      a(hr);
+      hr.encode, hr.parse;
+      var yr = hr.getAll,
+        mr = hr.get,
+        vr = hr.set,
+        br = hr.remove,
+        gr = function (e) {
+          var t = mr(e);
+          if (void 0 !== t) return JSON.parse(t)
         },
-        $n = function (t) {
-          var e = Kn(t);
-          if (void 0 !== e) return JSON.parse(e)
-        },
-        tr = function (t, e, n) {
-          Qn(t, JSON.stringify(e), {
+        wr = function (e, t, n) {
+          vr(e, JSON.stringify(t), {
             expires: n.daysUntilExpire
           })
         },
-        er = function (t) {
-          Xn(t)
+        Sr = function (e) {
+          br(e)
         },
-        nr = "a0.spajs.txs.",
-        rr = function (t) {
-          return "" + nr + t
+        _r = function (e) {
+          return "a0.spajs.txs." + e
         },
-        or = function () {
-          function t() {
-            var t = this;
-            this.transactions = {}, Zn().filter(function (t) {
-              return t.startsWith(nr)
-            }).forEach(function (e) {
-              var n = e.replace(nr, "");
-              t.transactions[n] = $n(e)
-            })
+        kr = function () {
+          function e() {
+            var e = this;
+            this.transactions = {}, Object.keys(yr() || {}).filter((function (e) {
+              return e.startsWith("a0.spajs.txs.")
+            })).forEach((function (t) {
+              var n = t.replace("a0.spajs.txs.", "");
+              e.transactions[n] = gr(t)
+            }))
           }
-          return t.prototype.create = function (t, e) {
-            this.transactions[t] = e, tr(rr(t), e, {
+          return e.prototype.create = function (e, t) {
+            this.transactions[e] = t, wr(_r(e), t, {
               daysUntilExpire: 1
             })
-          }, t.prototype.get = function (t) {
-            return this.transactions[t]
-          }, t.prototype.remove = function (t) {
-            delete this.transactions[t], er(rr(t))
-          }, t
+          }, e.prototype.get = function (e) {
+            return this.transactions[e]
+          }, e.prototype.remove = function (e) {
+            delete this.transactions[e], Sr(_r(e))
+          }, e
         }(),
-        ir = ["iss", "aud", "exp", "nbf", "iat", "jti", "azp", "nonce", "auth_time", "at_hash", "c_hash", "acr",
-          "amr", "sub_jwk", "cnf", "sip_from_tag", "sip_date", "sip_callid", "sip_cseq_num", "sip_via_branch", "orig",
-          "dest", "mky", "events", "toe", "txn", "rph", "sid", "vot", "vtm"
-        ],
-        cr = function (t) {
-          var e, n, r, o, i, c, a, u, s = (e = t.id_token, n = e.split("."), r = n[0], o = n[1], i = n[2], c = JSON
-            .parse(Bn(o)), a = {
-              __raw: e
-            }, u = {}, Object.keys(c).forEach(function (t) {
-              a[t] = c[t], ir.includes(t) || (u[t] = c[t])
-            }), {
-              encoded: {
-                header: r,
-                payload: o,
-                signature: i
-              },
-              header: JSON.parse(Bn(r)),
-              claims: a,
-              user: u
-            });
-          if (s.claims.iss !== t.iss) throw new Error("Invalid issuer");
-          if (s.claims.aud !== t.aud) throw new Error("Invalid audience");
-          if ("RS256" !== s.header.alg) throw new Error("Invalid algorithm");
-          if (s.claims.nonce !== t.nonce) throw new Error("Invalid nonce");
-          var f = new Date,
-            l = new Date(0),
-            p = new Date(0),
-            d = new Date(0),
-            h = t.leeway || 60;
-          if (l.setUTCSeconds(s.claims.exp + h), p.setUTCSeconds(s.claims.iat - h), d.setUTCSeconds(s.claims.nbf - h),
-            f > l) throw new Error("id_token expired");
-          if (f < p) throw new Error("id_token was issued in the future (invalid iat)");
-          if (void 0 !== s.claims.nbf && f < d) throw new Error("token is not yet valid (invalid notBefore)");
-          return s
+        Tr = function (e) {
+          return "number" == typeof e
         },
-        ar = function (e) {
-          function n(t, r, o) {
-            var i = e.call(this, r) || this;
-            return i.error = t, i.error_description = r, i.state = o, Object.setPrototypeOf(i, n.prototype), i
-          }
-          return function (e, n) {
-            function r() {
-              this.constructor = e
+        Ir = ["iss", "aud", "exp", "nbf", "iat", "jti", "azp", "nonce", "auth_time", "at_hash", "c_hash", "acr",
+          "amr", "sub_jwk", "cnf", "sip_from_tag", "sip_date", "sip_callid", "sip_cseq_num", "sip_via_branch",
+          "orig", "dest", "mky", "events", "toe", "txn", "rph", "sid", "vot", "vtm"
+        ],
+        Or = function (e) {
+          if (!e.id_token) throw new Error("ID token is required but missing");
+          var t = function (e) {
+            var t = e.split("."),
+              n = t[0],
+              r = t[1],
+              o = t[2];
+            if (3 !== t.length || !n || !r || !o) throw new Error("ID token could not be decoded");
+            var i = JSON.parse(nr(r)),
+              c = {
+                __raw: e
+              },
+              a = {};
+            return Object.keys(i).forEach((function (e) {
+              c[e] = i[e], Ir.includes(e) || (a[e] = i[e])
+            })), {
+              encoded: {
+                header: n,
+                payload: r,
+                signature: o
+              },
+              header: JSON.parse(nr(n)),
+              claims: c,
+              user: a
             }
-            t(e, n), e.prototype = null === n ? Object.create(n) : (r.prototype = n.prototype, new r)
-          }(n, e), n
-        }(Error),
-        ur = function () {
-          function t(t) {
-            this.options = t, this.DEFAULT_SCOPE = "openid profile email", this.cache = new Hn, this
-              .transactionManager = new or, this.domainUrl = "https://" + this.options.domain
+          }(e.id_token);
+          if (!t.claims.iss) throw new Error("Issuer (iss) claim must be a string present in the ID token");
+          if (t.claims.iss !== e.iss) throw new Error('Issuer (iss) claim mismatch in the ID token; expected "' + e
+            .iss + '", found "' + t.claims.iss + '"');
+          if (!t.user.sub) throw new Error("Subject (sub) claim must be a string present in the ID token");
+          if ("RS256" !== t.header.alg) throw new Error('Signature algorithm of "' + t.header.alg +
+            '" is not supported. Expected the ID token to be signed with "RS256".');
+          if (!t.claims.aud || "string" != typeof t.claims.aud && !Array.isArray(t.claims.aud)) throw new Error(
+            "Audience (aud) claim must be a string or array of strings present in the ID token");
+          if (Array.isArray(t.claims.aud)) {
+            if (!t.claims.aud.includes(e.aud)) throw new Error(
+              'Audience (aud) claim mismatch in the ID token; expected "' + e.aud + '" but was not one of "' + t
+              .claims.aud.join(", ") + '"');
+            if (t.claims.aud.length > 1) {
+              if (!t.claims.azp) throw new Error(
+                "Authorized Party (azp) claim must be a string present in the ID token when Audience (aud) claim has multiple values"
+                );
+              if (t.claims.azp !== e.aud) throw new Error(
+                'Authorized Party (azp) claim mismatch in the ID token; expected "' + e.aud + '", found "' + t
+                .claims.azp + '"')
+            }
+          } else if (t.claims.aud !== e.aud) throw new Error(
+            'Audience (aud) claim mismatch in the ID token; expected "' + e.aud + '" but found "' + t.claims
+            .aud + '"');
+          if (e.nonce) {
+            if (!t.claims.nonce) throw new Error("Nonce (nonce) claim must be a string present in the ID token");
+            if (t.claims.nonce !== e.nonce) throw new Error(
+              'Nonce (nonce) claim mismatch in the ID token; expected "' + e.nonce + '", found "' + t.claims
+              .nonce + '"')
           }
-          return t.prototype._url = function (t) {
-            var e = encodeURIComponent(btoa(JSON.stringify({
+          if (e.max_age && !Tr(t.claims.auth_time)) throw new Error(
+            "Authentication Time (auth_time) claim must be a number present in the ID token when Max Age (max_age) is specified"
+            );
+          if (!Tr(t.claims.exp)) throw new Error(
+            "Expiration Time (exp) claim must be a number present in the ID token");
+          if (!Tr(t.claims.iat)) throw new Error("Issued At (iat) claim must be a number present in the ID token");
+          var n = e.leeway || 60,
+            r = new Date,
+            o = new Date(0),
+            i = new Date(0),
+            c = new Date(0);
+          if (c.setUTCSeconds((parseInt(t.claims.auth_time) + e.max_age) / 1e3 + n), o.setUTCSeconds(t.claims.exp +
+              n), i.setUTCSeconds(t.claims.nbf - n), r > o) throw new Error(
+            "Expiration Time (exp) claim error in the ID token; current time (" + r +
+            ") is after expiration time (" + o + ")");
+          if (Tr(t.claims.nbf) && r < i) throw new Error(
+            "Not Before time (nbf) claim in the ID token indicates that this token can't be used just yet. Currrent time (" +
+            r + ") is before " + i);
+          if (Tr(t.claims.auth_time) && r > c) throw new Error(
+            "Authentication Time (auth_time) claim in the ID token indicates that too much time has passed since the last end-user authentication. Currrent time (" +
+            r + ") is after last auth at " + c);
+          return t
+        },
+        Er = function (e) {
+          function n(t, r, o, i) {
+            void 0 === i && (i = null);
+            var c = e.call(this, t, r) || this;
+            return c.state = o, c.appState = i, Object.setPrototypeOf(c, n.prototype), c
+          }
+          return t(n, e), n
+        }(function (e) {
+          function n(t, r) {
+            var o = e.call(this, r) || this;
+            return o.error = t, o.error_description = r, Object.setPrototypeOf(o, n.prototype), o
+          }
+          return t(n, e), n
+        }(Error)),
+        jr = "[object process]" === Object.prototype.toString.call("undefined" != typeof process ? process : 0),
+        Ar = jr && "function" == typeof module.require ? module.require : null;
+      var xr = function (e, t, n) {
+          void 0 === t && (t = null), void 0 === n && (n = !1);
+          var r = jr ? function (e, t) {
+              return Buffer.from(e, "base64").toString(t ? "utf16" : "utf8")
+            }(e, n) : function (e, t) {
+              var n = atob(e);
+              if (t) {
+                var r = new Uint8Array(n.length);
+                return Array.prototype.forEach.call(r, (function (e, t, r) {
+                  r[t] = n.charCodeAt(t)
+                })), String.fromCharCode.apply(null, new Uint16Array(r.buffer))
+              }
+              return n
+            }(e, n),
+            o = r.indexOf("\\n", 10) + 1,
+            i = r.substring(o) + (t ? "//# sourceMappingURL=" + t : "");
+          if (Ar) {
+            var c = Ar("worker_threads").Worker;
+            return function (e) {
+              return new c(i, Object.assign({}, e, {
+                eval: !0
+              }))
+            }
+          }
+          var a = new Blob([i], {
+              type: "application/javascript"
+            }),
+            s = URL.createObjectURL(a);
+          return function (e) {
+            return new Worker(s, e)
+          }
+        }("Lyogcm9sbHVwLXBsdWdpbi13ZWItd29ya2VyLWxvYWRlciAqLwovKiEgKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioKQ29weXJpZ2h0IChjKSBNaWNyb3NvZnQgQ29ycG9yYXRpb24uIEFsbCByaWdodHMgcmVzZXJ2ZWQuCkxpY2Vuc2VkIHVuZGVyIHRoZSBBcGFjaGUgTGljZW5zZSwgVmVyc2lvbiAyLjAgKHRoZSAiTGljZW5zZSIpOyB5b3UgbWF5IG5vdCB1c2UKdGhpcyBmaWxlIGV4Y2VwdCBpbiBjb21wbGlhbmNlIHdpdGggdGhlIExpY2Vuc2UuIFlvdSBtYXkgb2J0YWluIGEgY29weSBvZiB0aGUKTGljZW5zZSBhdCBodHRwOi8vd3d3LmFwYWNoZS5vcmcvbGljZW5zZXMvTElDRU5TRS0yLjAKClRISVMgQ09ERSBJUyBQUk9WSURFRCBPTiBBTiAqQVMgSVMqIEJBU0lTLCBXSVRIT1VUIFdBUlJBTlRJRVMgT1IgQ09ORElUSU9OUyBPRiBBTlkKS0lORCwgRUlUSEVSIEVYUFJFU1MgT1IgSU1QTElFRCwgSU5DTFVESU5HIFdJVEhPVVQgTElNSVRBVElPTiBBTlkgSU1QTElFRApXQVJSQU5USUVTIE9SIENPTkRJVElPTlMgT0YgVElUTEUsIEZJVE5FU1MgRk9SIEEgUEFSVElDVUxBUiBQVVJQT1NFLApNRVJDSEFOVEFCTElUWSBPUiBOT04tSU5GUklOR0VNRU5ULgoKU2VlIHRoZSBBcGFjaGUgVmVyc2lvbiAyLjAgTGljZW5zZSBmb3Igc3BlY2lmaWMgbGFuZ3VhZ2UgZ292ZXJuaW5nIHBlcm1pc3Npb25zCmFuZCBsaW1pdGF0aW9ucyB1bmRlciB0aGUgTGljZW5zZS4KKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKiogKi8KdmFyIGU9ZnVuY3Rpb24oKXtyZXR1cm4oZT1PYmplY3QuYXNzaWdufHxmdW5jdGlvbihlKXtmb3IodmFyIHIsdD0xLG49YXJndW1lbnRzLmxlbmd0aDt0PG47dCsrKWZvcih2YXIgbyBpbiByPWFyZ3VtZW50c1t0XSlPYmplY3QucHJvdG90eXBlLmhhc093blByb3BlcnR5LmNhbGwocixvKSYmKGVbb109cltvXSk7cmV0dXJuIGV9KS5hcHBseSh0aGlzLGFyZ3VtZW50cyl9O2Z1bmN0aW9uIHIoZSxyKXt2YXIgdCxuLG8scyxhPXtsYWJlbDowLHNlbnQ6ZnVuY3Rpb24oKXtpZigxJm9bMF0pdGhyb3cgb1sxXTtyZXR1cm4gb1sxXX0sdHJ5czpbXSxvcHM6W119O3JldHVybiBzPXtuZXh0OmkoMCksdGhyb3c6aSgxKSxyZXR1cm46aSgyKX0sImZ1bmN0aW9uIj09dHlwZW9mIFN5bWJvbCYmKHNbU3ltYm9sLml0ZXJhdG9yXT1mdW5jdGlvbigpe3JldHVybiB0aGlzfSkscztmdW5jdGlvbiBpKHMpe3JldHVybiBmdW5jdGlvbihpKXtyZXR1cm4gZnVuY3Rpb24ocyl7aWYodCl0aHJvdyBuZXcgVHlwZUVycm9yKCJHZW5lcmF0b3IgaXMgYWxyZWFkeSBleGVjdXRpbmcuIik7Zm9yKDthOyl0cnl7aWYodD0xLG4mJihvPTImc1swXT9uLnJldHVybjpzWzBdP24udGhyb3d8fCgobz1uLnJldHVybikmJm8uY2FsbChuKSwwKTpuLm5leHQpJiYhKG89by5jYWxsKG4sc1sxXSkpLmRvbmUpcmV0dXJuIG87c3dpdGNoKG49MCxvJiYocz1bMiZzWzBdLG8udmFsdWVdKSxzWzBdKXtjYXNlIDA6Y2FzZSAxOm89czticmVhaztjYXNlIDQ6cmV0dXJuIGEubGFiZWwrKyx7dmFsdWU6c1sxXSxkb25lOiExfTtjYXNlIDU6YS5sYWJlbCsrLG49c1sxXSxzPVswXTtjb250aW51ZTtjYXNlIDc6cz1hLm9wcy5wb3AoKSxhLnRyeXMucG9wKCk7Y29udGludWU7ZGVmYXVsdDppZighKG89YS50cnlzLChvPW8ubGVuZ3RoPjAmJm9bby5sZW5ndGgtMV0pfHw2IT09c1swXSYmMiE9PXNbMF0pKXthPTA7Y29udGludWV9aWYoMz09PXNbMF0mJighb3x8c1sxXT5vWzBdJiZzWzFdPG9bM10pKXthLmxhYmVsPXNbMV07YnJlYWt9aWYoNj09PXNbMF0mJmEubGFiZWw8b1sxXSl7YS5sYWJlbD1vWzFdLG89czticmVha31pZihvJiZhLmxhYmVsPG9bMl0pe2EubGFiZWw9b1syXSxhLm9wcy5wdXNoKHMpO2JyZWFrfW9bMl0mJmEub3BzLnBvcCgpLGEudHJ5cy5wb3AoKTtjb250aW51ZX1zPXIuY2FsbChlLGEpfWNhdGNoKGUpe3M9WzYsZV0sbj0wfWZpbmFsbHl7dD1vPTB9aWYoNSZzWzBdKXRocm93IHNbMV07cmV0dXJue3ZhbHVlOnNbMF0/c1sxXTp2b2lkIDAsZG9uZTohMH19KFtzLGldKX19fXZhciB0O2FkZEV2ZW50TGlzdGVuZXIoIm1lc3NhZ2UiLChmdW5jdGlvbihuKXt2YXIgbyxzLGEsaSx1LGwsYyxmLHA7cmV0dXJuIGw9dm9pZCAwLGM9dm9pZCAwLHA9ZnVuY3Rpb24oKXt2YXIgbCxjLGYscCxoLHksYjtyZXR1cm4gcih0aGlzLChmdW5jdGlvbihyKXtzd2l0Y2goci5sYWJlbCl7Y2FzZSAwOm89bi5kYXRhLHM9by51cmwsYT1vLnRpbWVvdXQsaT1mdW5jdGlvbihlLHIpe3ZhciB0PXt9O2Zvcih2YXIgbiBpbiBlKU9iamVjdC5wcm90b3R5cGUuaGFzT3duUHJvcGVydHkuY2FsbChlLG4pJiZyLmluZGV4T2Yobik8MCYmKHRbbl09ZVtuXSk7aWYobnVsbCE9ZSYmImZ1bmN0aW9uIj09dHlwZW9mIE9iamVjdC5nZXRPd25Qcm9wZXJ0eVN5bWJvbHMpe3ZhciBvPTA7Zm9yKG49T2JqZWN0LmdldE93blByb3BlcnR5U3ltYm9scyhlKTtvPG4ubGVuZ3RoO28rKylyLmluZGV4T2YobltvXSk8MCYmT2JqZWN0LnByb3RvdHlwZS5wcm9wZXJ0eUlzRW51bWVyYWJsZS5jYWxsKGUsbltvXSkmJih0W25bb11dPWVbbltvXV0pfXJldHVybiB0fShvLFsidXJsIiwidGltZW91dCJdKSx1PW4ucG9ydHNbMF0sci5sYWJlbD0xO2Nhc2UgMTppZihyLnRyeXMucHVzaChbMSw3LCw4XSksIShjPUpTT04ucGFyc2UoaS5ib2R5KSkucmVmcmVzaF90b2tlbiYmInJlZnJlc2hfdG9rZW4iPT09Yy5ncmFudF90eXBlKXtpZighdCl0aHJvdyBuZXcgRXJyb3IoIlRoZSB3ZWIgd29ya2VyIGlzIG1pc3NpbmcgdGhlIHJlZnJlc2ggdG9rZW4iKTtpLmJvZHk9SlNPTi5zdHJpbmdpZnkoZShlKHt9LGMpLHtyZWZyZXNoX3Rva2VuOnR9KSl9Zj1uZXcgQWJvcnRDb250cm9sbGVyLHA9Zi5zaWduYWwsaD12b2lkIDAsci5sYWJlbD0yO2Nhc2UgMjpyZXR1cm4gci50cnlzLnB1c2goWzIsNCwsNV0pLFs0LFByb21pc2UucmFjZShbKHY9YSxuZXcgUHJvbWlzZSgoZnVuY3Rpb24oZSl7cmV0dXJuIHNldFRpbWVvdXQoZSx2KX0pKSksZmV0Y2gocyxlKGUoe30saSkse3NpZ25hbDpwfSkpXSldO2Nhc2UgMzpyZXR1cm4gaD1yLnNlbnQoKSxbMyw1XTtjYXNlIDQ6cmV0dXJuIHk9ci5zZW50KCksdS5wb3N0TWVzc2FnZSh7ZXJyb3I6eS5tZXNzYWdlfSksWzJdO2Nhc2UgNTpyZXR1cm4gaD9bNCxoLmpzb24oKV06KGYuYWJvcnQoKSxbMl0pO2Nhc2UgNjpyZXR1cm4obD1yLnNlbnQoKSkucmVmcmVzaF90b2tlbj8odD1sLnJlZnJlc2hfdG9rZW4sZGVsZXRlIGwucmVmcmVzaF90b2tlbik6dD1udWxsLHUucG9zdE1lc3NhZ2Uoe29rOmgub2ssanNvbjpsfSksWzMsOF07Y2FzZSA3OnJldHVybiBiPXIuc2VudCgpLHUucG9zdE1lc3NhZ2Uoe29rOiExLGpzb246e2Vycm9yX2Rlc2NyaXB0aW9uOmIubWVzc2FnZX19KSxbMyw4XTtjYXNlIDg6cmV0dXJuWzJdfXZhciB2fSkpfSxuZXcoKGY9dm9pZCAwKXx8KGY9UHJvbWlzZSkpKChmdW5jdGlvbihlLHIpe2Z1bmN0aW9uIHQoZSl7dHJ5e28ocC5uZXh0KGUpKX1jYXRjaChlKXtyKGUpfX1mdW5jdGlvbiBuKGUpe3RyeXtvKHAudGhyb3coZSkpfWNhdGNoKGUpe3IoZSl9fWZ1bmN0aW9uIG8ocil7ci5kb25lP2Uoci52YWx1ZSk6bmV3IGYoKGZ1bmN0aW9uKGUpe2Uoci52YWx1ZSl9KSkudGhlbih0LG4pfW8oKHA9cC5hcHBseShsLGN8fFtdKSkubmV4dCgpKX0pKX0pKTsKCg==",
+          null, !1),
+        Wr = new zn,
+        Zr = {
+          memory: function () {
+            return (new pr).enclosedCache
+          },
+          localstorage: function () {
+            return new dr
+          }
+        },
+        Cr = function (e) {
+          return Zr[e]
+        },
+        Ur = function () {
+          function e(e) {
+            if (this.options = e, this.DEFAULT_SCOPE = "openid profile email", function () {
+                if (!sr()) throw new Error(
+                  "For security reasons, 'window.crypto' is required to run 'auth0-spa-js'.");
+                if (void 0 === ur()) throw new Error(
+                  "\\n      auth0-spa-js must run on a secure origin.\\n      See https://github.com/auth0/auth0-spa-js/blob/master/FAQ.md#why-do-i-get-auth0-spa-js-must-run-on-a-secure-origin \\n      for more information.\\n    "
+                  )
+              }(), this.cacheLocation = e.cacheLocation || "memory", !Cr(this.cacheLocation)) throw new Error(
+              'Invalid cache location "' + this.cacheLocation + '"');
+            this.cache = Cr(this.cacheLocation)(), this.transactionManager = new kr, this.domainUrl = "https://" +
+              this.options.domain, this.tokenIssuer = this.options.issuer ? "https://" + this.options.issuer + "/" :
+              this.domainUrl + "/", this.options.useRefreshTokens && (this.options.scope = qn(this.options.scope,
+                "offline_access")), window.Worker && this.options.useRefreshTokens && "memory" === this
+              .cacheLocation && !/Trident.*rv:11\\.0/.test(navigator.userAgent) && (this.worker = new xr)
+          }
+          return e.prototype._url = function (e) {
+            var t = encodeURIComponent(btoa(JSON.stringify({
               name: "auth0-spa-js",
-              version: "1.2.4"
+              version: "1.7.0-beta.5"
             })));
-            return "" + this.domainUrl + t + "&auth0Client=" + e
-          }, t.prototype._getParams = function (t, r, o, i, c) {
+            return "" + this.domainUrl + e + "&auth0Client=" + t
+          }, e.prototype._getParams = function (e, t, o, i, c) {
             var a = this.options,
-              u = (a.domain, a.leeway, n(a, ["domain", "leeway"]));
-            return e({}, u, t, {
-              scope: Fn(this.DEFAULT_SCOPE, this.options.scope, t.scope),
+              s = (a.domain, a.leeway, a.useRefreshTokens, a.cacheLocation, r(a, ["domain", "leeway",
+                "useRefreshTokens", "cacheLocation"
+              ]));
+            return n(n(n({}, s), e), {
+              scope: qn(this.DEFAULT_SCOPE, this.options.scope, e.scope),
               response_type: "code",
               response_mode: "query",
-              state: r,
+              state: t,
               nonce: o,
               redirect_uri: c || this.options.redirect_uri,
               code_challenge: i,
               code_challenge_method: "S256"
             })
-          }, t.prototype._authorizeUrl = function (t) {
-            return this._url("/authorize?" + zn(t))
-          }, t.prototype._verifyIdToken = function (t, e) {
-            return cr({
-              iss: this.domainUrl + "/",
+          }, e.prototype._authorizeUrl = function (e) {
+            return this._url("/authorize?" + er(e))
+          }, e.prototype._verifyIdToken = function (e, t) {
+            return Or({
+              iss: this.tokenIssuer,
               aud: this.options.client_id,
-              id_token: t,
-              nonce: e,
-              leeway: this.options.leeway
+              id_token: e,
+              nonce: t,
+              leeway: this.options.leeway,
+              max_age: this._parseNumber(this.options.max_age)
             })
-          }, t.prototype.loginWithPopup = function (t, i) {
-            return void 0 === t && (t = {}), void 0 === i && (i = Cn), r(this, void 0, void 0, function () {
-              var r, c, a, u, s, f, l, p, d, h, y, v, w;
-              return o(this, function (o) {
-                switch (o.label) {
+          }, e.prototype._parseNumber = function (e) {
+            return "string" != typeof e ? e : parseInt(e, 10) || void 0
+          }, e.prototype.buildAuthorizeUrl = function (e) {
+            return void 0 === e && (e = {}), o(this, void 0, void 0, (function () {
+              var t, n, o, c, a, s, u, l, f, d, p;
+              return i(this, (function (i) {
+                switch (i.label) {
                   case 0:
-                    return [4, Rn()];
+                    return t = e.redirect_uri, n = e.appState, o = r(e, ["redirect_uri", "appState"]),
+                      c = $n(Qn()), a = $n(Qn()), s = Qn(), [4, tr(s)];
                   case 1:
-                    return r = o.sent(), c = n(t, []), a = Mn(Ln()), u = Ln(), s = Ln(), [4, Nn(s)];
-                  case 2:
-                    return f = o.sent(), l = Wn(f), p = this._getParams(c, a, u, l, this.options
-                      .redirect_uri || window.location.origin), d = this._authorizeUrl(e({}, p, {
+                    return u = i.sent(), l = rr(u), f = e.fragment ? "#" + e.fragment : "", d = this
+                      ._getParams(o, c, a, l, t), p = this._authorizeUrl(d), this.transactionManager
+                      .create(c, {
+                        nonce: a,
+                        code_verifier: s,
+                        appState: n,
+                        scope: d.scope,
+                        audience: d.audience || "default",
+                        redirect_uri: d.redirect_uri
+                      }), [2, p + f]
+                }
+              }))
+            }))
+          }, e.prototype.loginWithPopup = function (e, t) {
+            return void 0 === e && (e = {}), void 0 === t && (t = {}), o(this, void 0, void 0, (function () {
+              var o, c, a, s, u, l, f, d, p, h, y, m;
+              return i(this, (function (i) {
+                switch (i.label) {
+                  case 0:
+                    return o = r(e, []), c = $n(Qn()), a = $n(Qn()), s = Qn(), [4, tr(s)];
+                  case 1:
+                    return u = i.sent(), l = rr(u), f = this._getParams(o, c, a, l, this.options
+                      .redirect_uri || window.location.origin), d = this._authorizeUrl(n(n({}, f), {
                       response_mode: "web_message"
-                    })), [4, Dn(r, d, i)];
-                  case 3:
-                    if (h = o.sent(), a !== h.state) throw new Error("Invalid state");
-                    return [4, Gn({
+                    })), [4, Hn(d, n(n({}, t), {
+                      timeoutInSeconds: t.timeoutInSeconds || this.options
+                        .authorizeTimeoutInSeconds || 60
+                    }))];
+                  case 2:
+                    if (p = i.sent(), c !== p.state) throw new Error("Invalid state");
+                    return [4, ar({
                       baseUrl: this.domainUrl,
-                      audience: t.audience || this.options.audience,
                       client_id: this.options.client_id,
                       code_verifier: s,
-                      code: h.code
-                    })];
-                  case 4:
-                    return y = o.sent(), v = this._verifyIdToken(y.id_token, u), w = e({}, y, {
-                      decodedToken: v,
-                      scope: p.scope,
-                      audience: p.audience || "default"
-                    }), this.cache.save(w), tr("auth0.is.authenticated", !0, {
+                      code: p.code,
+                      grant_type: "authorization_code",
+                      redirect_uri: f.redirect_uri
+                    }, this.worker)];
+                  case 3:
+                    return h = i.sent(), y = this._verifyIdToken(h.id_token, a), m = n(n({}, h), {
+                      decodedToken: y,
+                      scope: f.scope,
+                      audience: f.audience || "default",
+                      client_id: this.options.client_id
+                    }), this.cache.save(m), wr("auth0.is.authenticated", !0, {
                       daysUntilExpire: 1
                     }), [2]
                 }
-              })
-            })
-          }, t.prototype.getUser = function (t) {
-            return void 0 === t && (t = {
+              }))
+            }))
+          }, e.prototype.getUser = function (e) {
+            return void 0 === e && (e = {
               audience: this.options.audience || "default",
               scope: this.options.scope || this.DEFAULT_SCOPE
-            }), r(this, void 0, void 0, function () {
-              var e;
-              return o(this, function (n) {
-                return t.scope = Fn(this.DEFAULT_SCOPE, t.scope), [2, (e = this.cache.get(t)) && e
-                  .decodedToken.user
-                ]
-              })
-            })
-          }, t.prototype.getIdTokenClaims = function (t) {
-            return void 0 === t && (t = {
+            }), o(this, void 0, void 0, (function () {
+              var t;
+              return i(this, (function (r) {
+                return e.scope = qn(this.DEFAULT_SCOPE, e.scope), [2, (t = this.cache.get(n({
+                  client_id: this.options.client_id
+                }, e))) && t.decodedToken && t.decodedToken.user]
+              }))
+            }))
+          }, e.prototype.getIdTokenClaims = function (e) {
+            return void 0 === e && (e = {
               audience: this.options.audience || "default",
               scope: this.options.scope || this.DEFAULT_SCOPE
-            }), r(this, void 0, void 0, function () {
-              var e;
-              return o(this, function (n) {
-                return t.scope = Fn(this.DEFAULT_SCOPE, t.scope), [2, (e = this.cache.get(t)) && e
-                  .decodedToken.claims
-                ]
-              })
-            })
-          }, t.prototype.loginWithRedirect = function (t) {
-            return void 0 === t && (t = {}), r(this, void 0, void 0, function () {
-              var e, r, i, c, a, u, s, f, l, p;
-              return o(this, function (o) {
-                switch (o.label) {
-                  case 0:
-                    return e = t.redirect_uri, r = t.appState, i = n(t, ["redirect_uri", "appState"]), c =
-                      Mn(Ln()), a = Ln(), u = Ln(), [4, Nn(u)];
-                  case 1:
-                    return s = o.sent(), f = Wn(s), l = this._getParams(i, c, a, f, e), p = this
-                      ._authorizeUrl(l), this.transactionManager.create(c, {
-                        nonce: a,
-                        code_verifier: u,
-                        appState: r,
-                        scope: l.scope,
-                        audience: l.audience || "default"
-                      }), window.location.assign(p), [2]
-                }
-              })
-            })
-          }, t.prototype.handleRedirectCallback = function () {
-            return r(this, void 0, void 0, function () {
-              var t, n, r, i, c, a, u, s, f;
-              return o(this, function (o) {
-                switch (o.label) {
-                  case 0:
-                    if (!window.location.search) throw new Error(
-                      "There are no query params available at 'window.location.search'.");
-                    if (l = window.location.search.substr(1), p = l.split("&"), d = {}, p.forEach(function (
-                        t) {
-                        var e = t.split("="),
-                          n = e[0],
-                          r = e[1];
-                        d[n] = decodeURIComponent(r)
-                      }), t = e({}, d, {
-                        expires_in: parseInt(d.expires_in)
-                      }), n = t.state, r = t.code, i = t.error, c = t.error_description, i) throw new ar(i,
-                      c, n);
-                    if (!(a = this.transactionManager.get(n))) throw new Error("Invalid state");
-                    return this.transactionManager.remove(n), [4, Gn({
-                      baseUrl: this.domainUrl,
-                      audience: this.options.audience,
-                      client_id: this.options.client_id,
-                      code_verifier: a.code_verifier,
-                      code: r
-                    })];
-                  case 1:
-                    return u = o.sent(), s = this._verifyIdToken(u.id_token, a.nonce), f = e({}, u, {
-                      decodedToken: s,
-                      audience: a.audience,
-                      scope: a.scope
-                    }), this.cache.save(f), tr("auth0.is.authenticated", !0, {
-                      daysUntilExpire: 1
-                    }), [2, {
-                      appState: a.appState
-                    }]
-                }
-                var l, p, d
-              })
-            })
-          }, t.prototype.getTokenSilently = function (t) {
-            return void 0 === t && (t = {
-              audience: this.options.audience,
-              scope: this.options.scope || this.DEFAULT_SCOPE,
-              ignoreCache: !1
-            }), r(this, void 0, void 0, function () {
-              var n, r, i, c, a, u, s, f, l, p, d, h, y;
-              return o(this, function (o) {
-                switch (o.label) {
-                  case 0:
-                    return t.scope = Fn(this.DEFAULT_SCOPE, t.scope), !t.ignoreCache && (n = this.cache
-                  .get({
-                      scope: t.scope,
-                      audience: t.audience || "default"
-                    })) ? [2, n.access_token] : (r = Mn(Ln()), i = Ln(), c = Ln(), [4, Nn(c)]);
-                  case 1:
-                    return a = o.sent(), u = Wn(a), s = {
-                      audience: t.audience,
-                      scope: t.scope
-                    }, f = this._getParams(s, r, i, u, this.options.redirect_uri || window.location
-                      .origin), l = this._authorizeUrl(e({}, f, {
-                      prompt: "none",
-                      response_mode: "web_message"
-                    })), [4, (v = l, w = this.domainUrl, new Promise(function (t, e) {
-                      var n = window.document.createElement("iframe");
-                      n.setAttribute("width", "0"), n.setAttribute("height", "0"), n.style.display =
-                        "none";
-                      var r = setTimeout(function () {
-                          e(In), window.document.body.removeChild(n)
-                        }, 6e4),
-                        o = function (i) {
-                          i.origin == w && i.data && "authorization_response" === i.data.type && (i
-                            .source.close(), i.data.response.error ? e(i.data.response) : t(i.data
-                              .response), clearTimeout(r), window.removeEventListener("message",
-                              o, !1), window.document.body.removeChild(n))
-                        };
-                      window.addEventListener("message", o, !1), window.document.body.appendChild(
-                        n), n.setAttribute("src", v)
-                    }))];
-                  case 2:
-                    if (p = o.sent(), r !== p.state) throw new Error("Invalid state");
-                    return [4, Gn({
-                      baseUrl: this.domainUrl,
-                      audience: t.audience || this.options.audience,
-                      client_id: this.options.client_id,
-                      code_verifier: c,
-                      code: p.code
-                    })];
-                  case 3:
-                    return d = o.sent(), h = this._verifyIdToken(d.id_token, i), y = e({}, d, {
-                      decodedToken: h,
-                      scope: f.scope,
-                      audience: f.audience || "default"
-                    }), this.cache.save(y), tr("auth0.is.authenticated", !0, {
-                      daysUntilExpire: 1
-                    }), [2, d.access_token]
-                }
-                var v, w
-              })
-            })
-          }, t.prototype.getTokenWithPopup = function (t, e) {
-            return void 0 === t && (t = {
-              audience: this.options.audience,
-              scope: this.options.scope || this.DEFAULT_SCOPE
-            }), void 0 === e && (e = Cn), r(this, void 0, void 0, function () {
-              return o(this, function (n) {
+            }), o(this, void 0, void 0, (function () {
+              var t;
+              return i(this, (function (r) {
+                return e.scope = qn(this.DEFAULT_SCOPE, this.options.scope, e.scope), [2, (t = this
+                  .cache.get(n({
+                    client_id: this.options.client_id
+                  }, e))) && t.decodedToken && t.decodedToken.claims]
+              }))
+            }))
+          }, e.prototype.loginWithRedirect = function (e) {
+            return void 0 === e && (e = {}), o(this, void 0, void 0, (function () {
+              var t;
+              return i(this, (function (n) {
                 switch (n.label) {
                   case 0:
-                    return t.scope = Fn(this.DEFAULT_SCOPE, this.options.scope, t.scope), [4, this
-                      .loginWithPopup(t, e)
+                    return [4, this.buildAuthorizeUrl(e)];
+                  case 1:
+                    return t = n.sent(), window.location.assign(t), [2]
+                }
+              }))
+            }))
+          }, e.prototype.handleRedirectCallback = function (e) {
+            return void 0 === e && (e = window.location.href), o(this, void 0, void 0, (function () {
+              var t, r, o, c, a, s, u, l, f, d, p;
+              return i(this, (function (i) {
+                switch (i.label) {
+                  case 0:
+                    if (0 === (t = e.split("?").slice(1)).length) throw new Error(
+                      "There are no query params available for parsing.");
+                    if (r = function (e) {
+                        e.indexOf("#") > -1 && (e = e.substr(0, e.indexOf("#")));
+                        var t = e.split("&"),
+                          r = {};
+                        return t.forEach((function (e) {
+                          var t = e.split("="),
+                            n = t[0],
+                            o = t[1];
+                          r[n] = decodeURIComponent(o)
+                        })), n(n({}, r), {
+                          expires_in: parseInt(r.expires_in)
+                        })
+                      }(t.join("")), o = r.state, c = r.code, a = r.error, s = r.error_description, !(
+                        u = this.transactionManager.get(o))) throw new Error("Invalid state");
+                    if (a) throw this.transactionManager.remove(o), new Er(a, s, o, u.appState);
+                    return this.transactionManager.remove(o), l = {
+                      baseUrl: this.domainUrl,
+                      client_id: this.options.client_id,
+                      code_verifier: u.code_verifier,
+                      grant_type: "authorization_code",
+                      code: c
+                    }, void 0 !== u.redirect_uri && (l.redirect_uri = u.redirect_uri), [4, ar(l,
+                      this.worker)];
+                  case 1:
+                    return f = i.sent(), d = this._verifyIdToken(f.id_token, u.nonce), p = n(n({},
+                    f), {
+                      decodedToken: d,
+                      audience: u.audience,
+                      scope: u.scope,
+                      client_id: this.options.client_id
+                    }), this.cache.save(p), wr("auth0.is.authenticated", !0, {
+                      daysUntilExpire: 1
+                    }), [2, {
+                      appState: u.appState
+                    }]
+                }
+              }))
+            }))
+          }, e.prototype.getTokenSilently = function (e) {
+            return void 0 === e && (e = {}), o(this, void 0, void 0, (function () {
+              var t, o, c, a, s, u;
+              return i(this, (function (i) {
+                switch (i.label) {
+                  case 0:
+                    t = n({
+                      audience: this.options.audience,
+                      scope: qn(this.DEFAULT_SCOPE, this.options.scope, e.scope),
+                      ignoreCache: !1
+                    }, e), o = t.ignoreCache, c = r(t, ["ignoreCache"]), i.label = 1;
+                  case 1:
+                    return i.trys.push([1, 7, 8, 10]), !o && (a = this.cache.get({
+                      scope: c.scope,
+                      audience: c.audience || "default",
+                      client_id: this.options.client_id
+                    })) && a.access_token ? [2, a.access_token] : [4, Wr.acquireLock(
+                      "auth0.lock.getTokenSilently", 5e3)];
+                  case 2:
+                    return i.sent(), !this.options.useRefreshTokens || e.audience ? [3, 4] : [4, this
+                      ._getTokenUsingRefreshToken(c)
+                    ];
+                  case 3:
+                    return u = i.sent(), [3, 6];
+                  case 4:
+                    return [4, this._getTokenFromIFrame(c)];
+                  case 5:
+                    u = i.sent(), i.label = 6;
+                  case 6:
+                    return s = u, this.cache.save(n({
+                      client_id: this.options.client_id
+                    }, s)), wr("auth0.is.authenticated", !0, {
+                      daysUntilExpire: 1
+                    }), [2, s.access_token];
+                  case 7:
+                    throw i.sent();
+                  case 8:
+                    return [4, Wr.releaseLock("auth0.lock.getTokenSilently")];
+                  case 9:
+                    return i.sent(), [7];
+                  case 10:
+                    return [2]
+                }
+              }))
+            }))
+          }, e.prototype.getTokenWithPopup = function (e, t) {
+            return void 0 === e && (e = {
+              audience: this.options.audience,
+              scope: this.options.scope || this.DEFAULT_SCOPE
+            }), void 0 === t && (t = Bn), o(this, void 0, void 0, (function () {
+              return i(this, (function (n) {
+                switch (n.label) {
+                  case 0:
+                    return e.scope = qn(this.DEFAULT_SCOPE, this.options.scope, e.scope), [4, this
+                      .loginWithPopup(e, t)
                     ];
                   case 1:
                     return n.sent(), [2, this.cache.get({
-                      scope: t.scope,
-                      audience: t.audience || "default"
+                      scope: e.scope,
+                      audience: e.audience || "default",
+                      client_id: this.options.client_id
                     }).access_token]
                 }
-              })
-            })
-          }, t.prototype.isAuthenticated = function () {
-            return r(this, void 0, void 0, function () {
-              return o(this, function (t) {
-                switch (t.label) {
+              }))
+            }))
+          }, e.prototype.isAuthenticated = function () {
+            return o(this, void 0, void 0, (function () {
+              return i(this, (function (e) {
+                switch (e.label) {
                   case 0:
                     return [4, this.getUser()];
                   case 1:
-                    return [2, !!t.sent()]
+                    return [2, !!e.sent()]
                 }
-              })
-            })
-          }, t.prototype.logout = function (t) {
-            void 0 === t && (t = {}), null !== t.client_id ? t.client_id = t.client_id || this.options.client_id :
-              delete t.client_id, er("auth0.is.authenticated");
-            var e = t.federated,
-              r = n(t, ["federated"]),
-              o = e ? "&federated" : "",
-              i = this._url("/v2/logout?" + zn(r));
-            window.location.assign("" + i + o)
-          }, t
-        }();
-      return function (t) {
-        return r(this, void 0, void 0, function () {
-          var e;
-          return o(this, function (n) {
-            switch (n.label) {
-              case 0:
-                if (!window.crypto && window.msCrypto && (window.crypto = window.msCrypto), !window.crypto)
-                  throw new Error(
-                    "For security reasons, 'window.crypto' is required to run 'auth0-spa-js'.");
-                if (void 0 === window.crypto.subtle) throw new Error(
-                  "\\n      auth0-spa-js must run on a secure origin.\\n      See https://github.com/auth0/auth0-spa-js/blob/master/FAQ.md#why-do-i-get-error-invalid-state-in-firefox-when-refreshing-the-page-immediately-after-a-login \\n      for more information.\\n    "
-                  );
-                if (e = new ur(t), !$n("auth0.is.authenticated")) return [2, e];
-                n.label = 1;
-              case 1:
-                return n.trys.push([1, 3, , 4]), [4, e.getTokenSilently({
-                  audience: t.audience,
-                  scope: t.scope,
-                  ignoreCache: !0
-                })];
-              case 2:
-              case 3:
-                return n.sent(), [3, 4];
-              case 4:
-                return [2, e]
+              }))
+            }))
+          }, e.prototype.logout = function (e) {
+            void 0 === e && (e = {}), null !== e.client_id ? e.client_id = e.client_id || this.options.client_id :
+              delete e.client_id;
+            var t = e.federated,
+              n = e.localOnly,
+              o = r(e, ["federated", "localOnly"]);
+            if (n && t) throw new Error(
+              "It is invalid to set both the 'federated' and 'localOnly' options to 'true'");
+            if (this.cache.clear(), Sr("auth0.is.authenticated"), !n) {
+              var i = t ? "&federated" : "",
+                c = this._url("/v2/logout?" + er(o));
+              window.location.assign("" + c + i)
             }
-          })
-        })
+          }, e.prototype._getTokenFromIFrame = function (e) {
+            return o(this, void 0, void 0, (function () {
+              var t, r, o, c, a, s, u, l, f, d, p;
+              return i(this, (function (i) {
+                switch (i.label) {
+                  case 0:
+                    return t = $n(Qn()), r = $n(Qn()), o = Qn(), [4, tr(o)];
+                  case 1:
+                    return c = i.sent(), a = rr(c), s = this._getParams(e, t, r, a, e.redirect_uri ||
+                      this.options.redirect_uri || window.location.origin), u = this._authorizeUrl(
+                      n(n({}, s), {
+                        prompt: "none",
+                        response_mode: "web_message"
+                      })), l = e.timeoutInSeconds || this.options.authorizeTimeoutInSeconds, [4, (
+                      h = u, y = this.domainUrl, m = l, void 0 === m && (m = 60), new Promise((
+                        function (e, t) {
+                          var n = window.document.createElement("iframe");
+                          n.setAttribute("width", "0"), n.setAttribute("height", "0"), n.style
+                            .display = "none";
+                          var r = function () {
+                              window.document.body.contains(n) && window.document.body
+                                .removeChild(n)
+                            },
+                            o = setTimeout((function () {
+                              t(Mn), r()
+                            }), 1e3 * m),
+                            i = function (n) {
+                              if (n.origin == y && n.data && "authorization_response" === n.data
+                                .type) {
+                                var c = n.source;
+                                c && c.close(), n.data.response.error ? t(n.data.response) : e(n
+                                    .data.response), clearTimeout(o), window
+                                  .removeEventListener("message", i, !1), setTimeout(r, 2e3)
+                              }
+                            };
+                          window.addEventListener("message", i, !1), window.document.body
+                            .appendChild(n), n.setAttribute("src", h)
+                        })))];
+                  case 2:
+                    if (f = i.sent(), t !== f.state) throw new Error("Invalid state");
+                    return [4, ar({
+                      baseUrl: this.domainUrl,
+                      client_id: this.options.client_id,
+                      code_verifier: o,
+                      code: f.code,
+                      grant_type: "authorization_code",
+                      redirect_uri: s.redirect_uri
+                    }, this.worker)];
+                  case 3:
+                    return d = i.sent(), p = this._verifyIdToken(d.id_token, r), [2, n(n({}, d), {
+                      decodedToken: p,
+                      scope: s.scope,
+                      audience: s.audience || "default"
+                    })]
+                }
+                var h, y, m
+              }))
+            }))
+          }, e.prototype._getTokenUsingRefreshToken = function (e) {
+            return o(this, void 0, void 0, (function () {
+              var t, r, o, c, a;
+              return i(this, (function (i) {
+                switch (i.label) {
+                  case 0:
+                    return e.scope = qn(this.DEFAULT_SCOPE, this.options.scope, e.scope), (t = this
+                      .cache.get({
+                        scope: e.scope,
+                        audience: e.audience || "default",
+                        client_id: this.options.client_id
+                      })) && t.refresh_token || this.worker ? [3, 2] : [4, this._getTokenFromIFrame(
+                      e)];
+                  case 1:
+                    return [2, i.sent()];
+                  case 2:
+                    r = e.redirect_uri || this.options.redirect_uri || window.location.origin, i
+                      .label = 3;
+                  case 3:
+                    return i.trys.push([3, 5, , 8]), [4, ar({
+                      baseUrl: this.domainUrl,
+                      client_id: this.options.client_id,
+                      grant_type: "refresh_token",
+                      refresh_token: t && t.refresh_token,
+                      redirect_uri: r
+                    }, this.worker)];
+                  case 4:
+                    return o = i.sent(), [3, 8];
+                  case 5:
+                    return "The web worker is missing the refresh token" !== (c = i.sent()).message ?
+                      [3, 7] : [4, this._getTokenFromIFrame(e)];
+                  case 6:
+                    return [2, i.sent()];
+                  case 7:
+                    throw c;
+                  case 8:
+                    return a = this._verifyIdToken(o.id_token), [2, n(n({}, o), {
+                      decodedToken: a,
+                      scope: e.scope,
+                      audience: e.audience || "default"
+                    })]
+                }
+              }))
+            }))
+          }, e
+        }();
+
+      function Lr(e) {
+        return o(this, void 0, void 0, (function () {
+          var t, n;
+          return i(this, (function (r) {
+            switch (r.label) {
+              case 0:
+                if ("memory" === (t = new Ur(e)).cacheLocation && !gr("auth0.is.authenticated"))
+                return [2, t];
+                r.label = 1;
+              case 1:
+                return r.trys.push([1, 3, , 4]), [4, t.getTokenSilently()];
+              case 2:
+                return r.sent(), [3, 4];
+              case 3:
+                if ("login_required" !== (n = r.sent()).error) throw n;
+                return [3, 4];
+              case 4:
+                return [2, t]
+            }
+          }))
+        }))
       }
-    });
+      var Kr = Lr;
+      return Kr.Auth0Client = Ur, Kr.createAuth0Client = Lr, Kr
+    })), "Auth0Client" in this && this.console && this.console.warn && this.console.warn(
+      "Auth0Client already declared on the global namespace"), this && this.createAuth0Client && (this.Auth0Client =
+      this.Auth0Client || this.createAuth0Client.Auth0Client);
+    //# sourceMappingURL=auth0-spa-js.production.js.map
+  </script>
   </script>
   <script>
     function storageAvailable(type) {
@@ -1871,7 +2771,7 @@ self.addEventListener("fetch", function (event) {
     // set theme
     let theme = 'light'
     if (storageAvailable('localStorage')) {
-      const torusTheme = localStorage.getItem('torus-theme')
+      var torusTheme = localStorage.getItem('torus-theme')
       if (torusTheme) {
         theme = torusTheme.split('-')[0]
       }
@@ -2117,8 +3017,7 @@ self.addEventListener("fetch", function (event) {
           function (require, module, exports) {
             function _interopRequireDefault(obj) {
               return obj && obj.__esModule ?
-                obj :
-                {
+                obj : {
                   default: obj
                 }
             }
@@ -3050,7 +3949,7 @@ self.addEventListener("fetch", function (event) {
             function readNewMessages(state) {
               // channel already closed
               if (state.closed) return Promise
-              .resolve() // if no one is listening, we do not need to scan for new messages
+                .resolve() // if no one is listening, we do not need to scan for new messages
 
               if (!state.messagesCallback) return Promise.resolve()
               return getMessagesHigherThen(state.db, state.lastCursorId).then(function (newerMessages) {
@@ -3413,7 +4312,7 @@ self.addEventListener("fetch", function (event) {
                 if (BroadcastChannel._pubkey) {
                   throw new Error(
                     'BroadcastChannel: Do not overwrite window.BroadcastChannel with this module, this is not a polyfill'
-                    )
+                  )
                 }
 
                 return true
@@ -3850,7 +4749,7 @@ self.addEventListener("fetch", function (event) {
         ],
         19: [
           function (require, module, exports) {
-            const {
+            var {
               BroadcastChannel
             } = require('broadcast-channel')
             broadcastChannelLib.BroadcastChannel = BroadcastChannel
@@ -3871,14 +4770,29 @@ self.addEventListener("fetch", function (event) {
     var preopenInstanceId = new URL(window.location.href).searchParams.get('preopenInstanceId')
     var auth0Params = new URL(window.location.href).searchParams.get('auth0Params')
     var auth0Login = new URL(window.location.href).searchParams.get('auth0Login')
+    var auth0ParamsObj
+    var auth0LoginObj
+    if (!auth0Params) {
+      auth0Params = window.localStorage.getItem('auth0Params')
+    }
+    if (auth0Params) {
+      auth0ParamsObj = JSON.parse(window.atob(auth0Params))
+      window.localStorage.setItem('auth0Params', auth0Params)
+    }
+    if (!auth0Login) {
+      auth0Login = window.sessionStorage.getItem('auth0Login')
+    }
+    if (auth0Login) {
+      auth0LoginObj = JSON.parse(window.atob(auth0Login))
+      window.sessionStorage.setItem('auth0Login', auth0Login)
+    }
+
     // trying to get a new auth0 login
-    if (auth0Params && auth0Login) {
-      var auth0ParamsObj = JSON.parse(window.atob(auth0Params))
-      var auth0LoginObj = JSON.parse(window.atob(auth0Login))
+    if (auth0ParamsObj && auth0LoginObj) {
 
       new Promise(function (resolve, reject) {
         // wait for page load
-        const readyInterval = setInterval(function () {
+        var readyInterval = setInterval(function () {
           if (window && window.document && window.document.readyState === 'complete') {
             clearInterval(readyInterval)
             resolve()
@@ -3889,7 +4803,7 @@ self.addEventListener("fetch", function (event) {
         }, 5000)
       }).then(function () {
         // create auth0 client
-        return window.createAuth0Client(auth0ParamsObj)
+        return new window.Auth0Client(auth0ParamsObj)
       }).then(function (auth0Client) {
         // check if already authenticated
         window.auth0 = auth0Client
@@ -3897,9 +4811,9 @@ self.addEventListener("fetch", function (event) {
       }).then(function (isAuthenticated) {
         if (isAuthenticated) {
           // if already authenticated but trying to get a login, then logout and refresh page
-          console.log('logging out')
+          alert('logging out')
           window.auth0.logout({
-            returnTo: window.location.href
+            returnTo: auth0LoginObj.redirect_uri
           })
         } else {
           // not authenticated yet and trying to get a login
@@ -3907,6 +4821,7 @@ self.addEventListener("fetch", function (event) {
             auth0LoginObj.appState = {}
           }
           auth0LoginObj.appState.auth0Params = auth0ParamsObj
+          window.sessionStorage.removeItem('auth0Login')
           return window.auth0.loginWithRedirect(auth0LoginObj)
         }
       })
@@ -3917,7 +4832,7 @@ self.addEventListener("fetch", function (event) {
         var url = new URL(location.href)
         var hash = url.hash.substr(1)
         var hashParams = hash.split('&').reduce(function (result, item) {
-          const parts = item.split('=')
+          var parts = item.split('=')
           result[parts[0]] = parts[1]
           return result
         }, {})
@@ -3925,62 +4840,75 @@ self.addEventListener("fetch", function (event) {
         for (var key of url.searchParams.keys()) {
           queryParams[key] = url.searchParams.get(key)
         }
+        var auth0ShouldParseResult = false
         var error = ''
-        if (Object.keys(hashParams).length > 0 && hashParams.state) {
-          instanceParams = JSON.parse(window.atob(decodeURIComponent(decodeURIComponent(hashParams.state)))) || {}
-          if (hashParams.error) error = hashParams.error
-        } else if (Object.keys(queryParams).length > 0 && queryParams.state) {
-          instanceParams = JSON.parse(window.atob(decodeURIComponent(decodeURIComponent(queryParams.state)))) || {}
-          if (queryParams.error) error = queryParams.error
+        try {
+          if (Object.keys(hashParams).length > 0 && hashParams.state) {
+            instanceParams = JSON.parse(window.atob(decodeURIComponent(decodeURIComponent(hashParams.state)))) || {}
+            if (hashParams.error) error = hashParams.error
+          } else if (Object.keys(queryParams).length > 0 && queryParams.state) {
+            instanceParams = JSON.parse(window.atob(decodeURIComponent(decodeURIComponent(queryParams.state)))) || {}
+            if (queryParams.error) error = queryParams.error
+          }
+        } catch (e) {
+          // might be an auth0 redirect, which has a non-JSON state
+          var query = window.location.search
+          auth0ShouldParseResult = query.includes("code=") && query.includes("state=")
         }
-        if (instanceParams.auth0Params) {
+        if (auth0ShouldParseResult) {
           // auth0 redirect
           new Promise(function (resolve, reject) {
-            // wait for page load
-            const readyInterval = setInterval(function () {
-              if (window && window.document && window.document.readyState === 'complete') {
-                clearInterval(readyInterval)
-                resolve()
+              // wait for page load
+              var readyInterval = setInterval(function () {
+                if (window && window.document && window.document.readyState === 'complete') {
+                  clearInterval(readyInterval)
+                  resolve()
+                }
+              }, 100)
+              setTimeout(function () {
+                reject('timed out waiting for document to load')
+              }, 5000)
+            }).then(function () {
+              // create auth0 client
+              return new window.Auth0Client(auth0ParamsObj)
+            }).then(function (auth0Client) {
+              window.auth0 = auth0Client
+              return window.auth0.handleRedirectCallback()
+            }).then(function (result) {
+              instanceParams = JSON.parse(window.atob(decodeURIComponent(decodeURIComponent(result.appState))))
+              return window.auth0.getIdTokenClaims()
+            }).then(function (claim) {
+              if (!claim || !claim.__raw) {
+                throw new Error('invalid idtoken claim')
               }
-            }, 100)
-            setTimeout(function () {
-              reject('timed out waiting for document to load')
-            }, 5000)
-          }).then(function () {
-            // create auth0 client
-            return window.createAuth0Client(instanceParams.auth0Params)
-          }).then(function(auth0Client) {
-            window.auth0 = auth0Client
-            return window.auth0.handleRedirectCallback()
-          }).then(function() {
-            return window.auth0.getIdTokenClaims()
-          }).then(function(claim) {
-            if (!claim || !claim.__raw ) {
-              throw new Error('invalid idtoken claim')
-            }
-            bc = new broadcastChannelLib.BroadcastChannel('redirect_channel_' + instanceParams.instanceId, broadcastChannelOptions)
-            for (var key in claim) {
-              hashParams[key] = claim[key]
-            }
-            hashParams.idtoken = claim.__raw
-            return bc.postMessage({
-              data: {
+              bc = new broadcastChannelLib.BroadcastChannel('redirect_channel_' + instanceParams.instanceId,
+                broadcastChannelOptions)
+              for (var key in claim) {
+                hashParams[key] = claim[key]
+              }
+              hashParams.idtoken = claim.__raw
+              return bc.postMessage({
+                data: {
+                  instanceParams,
+                  queryParams: {},
+                  hashParams: hashParams
+                },
+                error: ''
+              })
+            }).then(function () {
+              bc && bc.close()
+              console.log('posted', {
+                queryParams,
                 instanceParams,
-                queryParams: {},
-                hashParams: hashParams
-              },
-              error: ''
+                hashParams
+              })
+              setTimeout(function () {
+                window.close()
+              }, 1000)
             })
-          }).then(function() {
-            bc && bc.close()
-            console.log('posted', { queryParams, instanceParams, hashParams })
-            setTimeout(function() {
-              window.close()
-            }, 30000)
-          })
-          .catch(function(e) {
-            console.error('could not handle auth0 redirect', e)
-          })
+            .catch(function (e) {
+              console.error('could not handle auth0 redirect', e)
+            })
         } else if (instanceParams.redirectToOpener) {
           // communicate to window.opener
           window.opener.postMessage({
@@ -4018,14 +4946,15 @@ self.addEventListener("fetch", function (event) {
       } catch (err) {
         console.error(err, 'service worker error in redirect')
         bc && bc.close()
-        window.close()
+        // TODO PUT BACK
+        // window.close()
       }
     } else {
       // in preopen, awaiting redirect
       try {
         bc = new broadcastChannelLib.BroadcastChannel('preopen_channel_' + preopenInstanceId, broadcastChannelOptions)
         bc.onmessage = function (ev) {
-          const {
+          var {
             preopenInstanceId: oldId,
             payload,
             message
