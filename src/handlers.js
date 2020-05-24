@@ -57,6 +57,7 @@ export async function twitchHandler(verifier, verifierParameters) {
   const userInfo = await get("https://api.twitch.tv/helix/users", {
     headers: {
       Authorization: `Bearer ${accessToken}`,
+      "Client-ID": this.config.TWITCH_CLIENT_ID,
     },
   });
   const [{ profile_image_url: profileImage, display_name: name, email, id: verifierId }] = userInfo.data || {};
