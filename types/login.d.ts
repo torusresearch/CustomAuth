@@ -10,9 +10,15 @@ declare class DirectWebSDK {
 
   init(): Promise<void>;
 
-  triggerLogin(typeOfLogin: LOGIN_TYPE, verifier: string, clientId: string): Promise<TorusLoginResponse>;
+  triggerLogin({ typeOfLogin, verifier, clientId }: SubVerifierDetails): Promise<TorusLoginResponse>;
 
-  handleLogin(
+  triggerAggregateLogin(
+    aggregateVerifierType: AGGREGATE_VERIFIER_TYPE,
+    verifierIdentifier: string,
+    subVerifierDetailsArray: SubVerifierDetails[]
+  ): Promise<TorusAggregateLoginResponse>;
+
+  getTorusKey(
     verifier: string,
     verifierId: string,
     verifierParams: {
@@ -34,6 +40,11 @@ interface TorusVerifierResponse {
   verifier: string;
   verifierId: string;
 }
+
+interface TorusAggregateVerifierResponse {
+  userInfo: TorusVerifierResponse[];
+}
+
 interface LoginWindowResponse {
   accessToken: string;
   idToken?: string;
@@ -47,7 +58,13 @@ interface TorusKey {
   publicAddress: string;
   privateKey: string;
 }
-type TorusLoginResponse = TorusVerifierResponse & TorusKey;
+
+interface TorusSingleVerifierResponse {
+  userInfo: TorusVerifierResponse;
+}
+
+type TorusLoginResponse = TorusSingleVerifierResponse & TorusKey;
+type TorusAggregateLoginResponse = TorusAggregateVerifierResponse & TorusKey;
 
 interface DirectWebSDKArgs {
   baseUrl: string;
@@ -55,6 +72,12 @@ interface DirectWebSDKArgs {
   proxyContractAddress?: string;
   enableLogging?: boolean;
   redirectToOpener?: boolean;
+}
+
+interface SubVerifierDetails {
+  typeOfLogin: LOGIN_TYPE;
+  verifier: string;
+  clientId: string;
 }
 
 declare enum ETHEREUM_NETWORK {
@@ -71,4 +94,10 @@ declare enum LOGIN_TYPE {
   REDDIT = "reddit",
   DISCORD = "discord",
   TWITCH = "twitch",
+}
+
+declare enum AGGREGATE_VERIFIER_TYPE {
+  SINGLE_VERIFIER_ID = "single_id_verifier",
+  // AND_AGGREGATE_VERIFIER = "and_aggregate_verifier",
+  // OR_AGGREGATE_VERIFIER = "or_aggregate_verifier",
 }
