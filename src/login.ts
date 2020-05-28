@@ -1,9 +1,19 @@
 import NodeDetailManager from "@toruslabs/fetch-node-details";
 import Torus from "@toruslabs/torus.js";
+import { keccak256 } from "web3-utils";
 
-import { DirectWebSDKArgs, ILoginHandler, TorusKey, TorusLoginResponse } from "./handlers/interfaces";
+import {
+  DirectWebSDKArgs,
+  ILoginHandler,
+  LoginWindowResponse,
+  SubVerifierDetails,
+  TorusAggregateLoginResponse,
+  TorusKey,
+  TorusLoginResponse,
+  TorusVerifierResponse,
+} from "./handlers/interfaces";
 import { registerServiceWorker } from "./registerServiceWorker";
-import { ETHEREUM_NETWORK, LOGIN_TYPE } from "./utils/enums";
+import { AGGREGATE_VERIFIER_TYPE, ETHEREUM_NETWORK, LOGIN_TYPE } from "./utils/enums";
 import { createHandler } from "./utils/helpers";
 import log from "./utils/loglevel";
 
@@ -67,7 +77,7 @@ class DirectWebSDK {
     }
   }
 
-  async triggerLogin(typeOfLogin: LOGIN_TYPE, verifier: string, clientId: string): Promise<TorusLoginResponse> {
+  async triggerLogin({ verifier, typeOfLogin, clientId }: SubVerifierDetails): Promise<TorusLoginResponse> {
     log.info("Verifier: ", verifier);
     if (!this.isInitialized) {
       throw new Error("Not initialized yet");
@@ -81,7 +91,7 @@ class DirectWebSDK {
     const loginHandler: ILoginHandler = createHandler(typeOfLogin, clientId, verifier, this.config.redirect_uri, this.config.redirectToOpener);
     const loginParams = await loginHandler.handleLoginWindow();
     const userInfo = await loginHandler.getUserInfo(loginParams.accessToken);
-    const torusKey = await this.handleLogin(
+    const torusKey = await this.getTorusKey(
       verifier,
       userInfo.verifierId,
       { verifier_id: userInfo.verifierId },
@@ -89,11 +99,54 @@ class DirectWebSDK {
     );
     return {
       ...torusKey,
-      ...userInfo,
+      userInfo,
     };
   }
 
-  async handleLogin(verifier: string, verifierId: string, verifierParams: { verifier_id: string }, idToken: string): Promise<TorusKey> {
+  async triggerAggregateLogin(
+    aggregateVerifierType: AGGREGATE_VERIFIER_TYPE,
+    verifierIdentifier: string,
+    subVerifierDetailsArray: SubVerifierDetails[]
+  ): Promise<TorusAggregateLoginResponse> {
+    if (!aggregateVerifierType || !verifierIdentifier || !Array.isArray(subVerifierDetailsArray)) {
+      throw new Error("Invalid params");
+    }
+    if (aggregateVerifierType === AGGREGATE_VERIFIER_TYPE.SINGLE_VERIFIER_ID && subVerifierDetailsArray.length !== 1) {
+      throw new Error("Single id verifier can only have one sub verifier");
+    }
+    const userInfoPromises: Promise<TorusVerifierResponse>[] = [];
+    const loginParamsArray: LoginWindowResponse[] = [];
+    for (const subVerifierDetail of subVerifierDetailsArray) {
+      const { clientId, typeOfLogin, verifier } = subVerifierDetail;
+      const loginHandler: ILoginHandler = createHandler(typeOfLogin, clientId, verifier, this.config.redirect_uri, this.config.redirectToOpener);
+      // eslint-disable-next-line no-await-in-loop
+      const loginParams = await loginHandler.handleLoginWindow();
+      userInfoPromises.push(loginHandler.getUserInfo(loginParams.accessToken));
+      loginParamsArray.push(loginParams);
+    }
+    const userInfoArray = await Promise.all(userInfoPromises);
+    const aggregateVerifierParams = { verify_params: [], sub_verifier_ids: [], verifier_id: "" };
+    const aggregateIdTokenSeeds = [];
+    let aggregateVerifierId = "";
+    for (let index = 0; index < subVerifierDetailsArray.length; index += 1) {
+      const loginParams = loginParamsArray[index];
+      const userInfo = userInfoArray[index];
+      aggregateVerifierParams.verify_params.push({ verifier_id: userInfo.verifierId, idtoken: loginParams.idToken || loginParams.accessToken });
+      aggregateVerifierParams.sub_verifier_ids.push(userInfo.verifier);
+      aggregateIdTokenSeeds.push(loginParams.idToken || loginParams.accessToken);
+      aggregateVerifierId = userInfo.verifierId; // using last because idk
+    }
+    aggregateIdTokenSeeds.sort();
+    const aggregateIdToken = keccak256(aggregateIdTokenSeeds.join(String.fromCharCode(29))).slice(2);
+    aggregateVerifierParams.verifier_id = aggregateVerifierId;
+    const torusKey = await this.getTorusKey(verifierIdentifier, aggregateVerifierId, aggregateVerifierParams, aggregateIdToken);
+    return {
+      ...torusKey,
+      userInfo: userInfoArray,
+    };
+  }
+
+  async getTorusKey(verifier: string, verifierId: string, verifierParams: { verifier_id: string }, idToken: string): Promise<TorusKey> {
     const { torusNodeEndpoints, torusNodePub, torusIndexes } = await this.nodeDetailManager.getNodeDetails();
     const response = await this.torus.getPublicAddress(torusNodeEndpoints, torusNodePub, { verifier: verifier as LOGIN_TYPE, verifierId }, false);
     log.info("New private key assigned to user at address ", response);

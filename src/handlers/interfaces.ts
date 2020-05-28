@@ -1,4 +1,4 @@
-import { ETHEREUM_NETWORK } from "../utils/enums";
+import { ETHEREUM_NETWORK, LOGIN_TYPE } from "../utils/enums";
 
 type NETWORK_TYPE = ETHEREUM_NETWORK.MAINNET | ETHEREUM_NETWORK.RINKEBY | ETHEREUM_NETWORK.ROPSTEN | ETHEREUM_NETWORK.KOVAN | ETHEREUM_NETWORK.GOERLI;
 
@@ -28,7 +28,16 @@ export interface TorusKey {
   privateKey: string;
 }
 
-export type TorusLoginResponse = TorusVerifierResponse & TorusKey;
+export interface TorusAggregateVerifierResponse {
+  userInfo: TorusVerifierResponse[];
+}
+
+export interface TorusSingleVerifierResponse {
+  userInfo: TorusVerifierResponse;
+}
+
+export type TorusLoginResponse = TorusSingleVerifierResponse & TorusKey;
+export type TorusAggregateLoginResponse = TorusAggregateVerifierResponse & TorusKey;
 
 export interface DirectWebSDKArgs {
   baseUrl: string;
@@ -36,4 +45,10 @@ export interface DirectWebSDKArgs {
   proxyContractAddress?: string;
   enableLogging?: boolean;
   redirectToOpener?: boolean;
+}
+
+export interface SubVerifierDetails {
+  typeOfLogin: LOGIN_TYPE;
+  verifier: string;
+  clientId: string;
 }
