@@ -31,14 +31,18 @@ export default {
   methods: {
     async login() {
       try {
+        // GOOGLE_CLIENT_ID: "876733105116-i0hj3s53qiio5k95prpfmj0hp0gmgtor.apps.googleusercontent.com",
+        // FACEBOOK_CLIENT_ID: "2554219104599979",
         const torusdirectsdk = new TorusSdk({
           baseUrl: "http://localhost:3000/serviceworker",
-          GOOGLE_CLIENT_ID: "876733105116-i0hj3s53qiio5k95prpfmj0hp0gmgtor.apps.googleusercontent.com",
-          FACEBOOK_CLIENT_ID: "2554219104599979",
           enableLogging: true,
         });
         await torusdirectsdk.init();
-        const loginDetails = await torusdirectsdk.triggerLogin(this.selectedVerifier, this.selectedVerifier);
+        const loginDetails = await torusdirectsdk.triggerLogin(
+          this.selectedVerifier,
+          this.selectedVerifier,
+          "876733105116-i0hj3s53qiio5k95prpfmj0hp0gmgtor.apps.googleusercontent.com"
+        );
         this.console(loginDetails);
       } catch (error) {
         console.error(error);

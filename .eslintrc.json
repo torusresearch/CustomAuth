@@ -6,18 +6,33 @@
     "prettier/babel",
     "plugin:import/errors",
     "plugin:import/warnings",
+    "plugin:import/typescript",
     "plugin:flowtype/recommended",
     "plugin:promise/recommended",
     "airbnb-base",
+    "plugin:@typescript-eslint/recommended",
+    "prettier/@typescript-eslint",
     "prettier"
   ],
-  "plugins": ["prettier", "babel", "standard", "promise", "import", "flowtype", "standard", "simple-import-sort"],
-  "parser": "babel-eslint",
+  "plugins": ["prettier", "babel", "standard", "promise", "import", "flowtype", "standard", "simple-import-sort", "@typescript-eslint"],
+  "parser": "@typescript-eslint/parser",
   "parserOptions": {
     "sourceType": "module",
-    "ecmaVersion": 9
+    "ecmaVersion": 9,
+    "project": "./tsconfig.json"
   },
   "rules": {
+    "camelcase": 0,
+    "no-useless-constructor": 0,
+    "@typescript-eslint/no-useless-constructor": 2,
+    "import/extensions": [
+      "error",
+      "ignorePackages",
+      {
+        "js": "never",
+        "ts": "never"
+      }
+    ],
     "no-restricted-syntax": 0,
     "simple-import-sort/sort": "error",
     "operator-linebreak": 0,
@@ -48,6 +63,13 @@
         "semi": true
       }
     ]
+  },
+  "settings": {
+    "import/resolver": {
+      "node": {
+        "extensions": [".js", ".jsx", ".ts", ".tsx", ".json", ".vue"]
+      }
+    }
   },
   "env": {
     "es6": true,
