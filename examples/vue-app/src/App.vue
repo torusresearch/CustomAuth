@@ -47,13 +47,13 @@ export default {
           clientId: "876733105116-i0hj3s53qiio5k95prpfmj0hp0gmgtor.apps.googleusercontent.com",
         });
 
-        const loginDetails = await torusdirectsdk.triggerAggregateLogin("single_id_verifier", "google-google", [
-          {
-            clientId: "238941746713-qqe4a7rduuk256d8oi5l0q34qtu9gpfg.apps.googleusercontent.com",
-            typeOfLogin: "google",
-            verifier: "google-shubs",
-          },
-        ]);
+        // const loginDetails = await torusdirectsdk.triggerAggregateLogin("single_id_verifier", "google-google", [
+        //   {
+        //     clientId: "238941746713-qqe4a7rduuk256d8oi5l0q34qtu9gpfg.apps.googleusercontent.com",
+        //     typeOfLogin: "google",
+        //     verifier: "google-shubs",
+        //   },
+        // ]);
         this.console(loginDetails);
       } catch (error) {
         console.error(error);
