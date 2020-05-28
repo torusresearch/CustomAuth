@@ -1,9 +1,10 @@
-/* eslint-disable no-console */
+/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 
 import { register } from "@chaitanyapotti/register-service-worker";
-import log from "loglevel";
 
-export const registerServiceWorker = (baseUrl) => {
+import log from "./utils/loglevel";
+
+export const registerServiceWorker = (baseUrl: string) => {
   return new Promise((resolve, reject) => {
     const swUrl = `${baseUrl}sw.js`;
 

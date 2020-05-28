@@ -1,4 +1,7 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 const path = require("path");
+const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
+
 const pkg = require("./package.json");
 
 const pkgName = "directWebSdk";
@@ -8,7 +11,7 @@ const packagesToInclude = ["broadcast-channel"];
 
 const baseConfig = {
   mode: "production",
-  entry: "./index.js",
+  entry: "./index.ts",
   target: "web",
   output: {
     path: path.resolve(__dirname, "dist"),
@@ -18,7 +21,17 @@ const baseConfig = {
   module: {
     rules: [],
   },
+  resolve: {
+    extensions: [".ts", ".js", ".json"],
+  },
+  plugins: [new ForkTsCheckerWebpackPlugin()],
 };
+
+// const optimization = {
+//   optimization: {
+//     minimize: false,
+//   },
+// };
 
 const eslintLoader = {
   enforce: "pre",
@@ -35,6 +48,18 @@ const babelLoaderWithPolyfills = {
   },
 };
 
+const tsLoader = {
+  test: /\.ts?$/,
+  exclude: /(node_modules|bower_components)/,
+  use: {
+    loader: "ts-loader",
+    options: {
+      // disable type checker - we will use it in fork plugin
+      transpileOnly: true,
+    },
+  },
+};
+
 const babelLoader = { ...babelLoaderWithPolyfills, use: { loader: "babel-loader", options: { plugins: ["@babel/transform-runtime"] } } };
 
 const umdPolyfilledConfig = {
@@ -45,7 +70,7 @@ const umdPolyfilledConfig = {
     libraryTarget: "umd",
   },
   module: {
-    rules: [eslintLoader, babelLoaderWithPolyfills],
+    rules: [tsLoader, eslintLoader, babelLoaderWithPolyfills],
   },
 };
 
@@ -57,25 +82,26 @@ const umdConfig = {
     libraryTarget: "umd",
   },
   module: {
-    rules: [eslintLoader, babelLoader],
+    rules: [tsLoader, eslintLoader, babelLoader],
   },
 };
 
 const cjsConfig = {
   ...baseConfig,
+  // ...optimization,
   output: {
     ...baseConfig.output,
     filename: `${pkgName}.cjs.js`,
     libraryTarget: "commonjs2",
   },
   module: {
-    rules: [eslintLoader, babelLoader],
+    rules: [tsLoader, eslintLoader, babelLoader],
   },
   externals: [...Object.keys(pkg.dependencies).filter((x) => !packagesToInclude.includes(x)), /^(@babel\/runtime)/i],
 };
 
 module.exports = [umdPolyfilledConfig, umdConfig, cjsConfig];
-
+// module.exports = [cjsConfig];
 // V5
 // experiments: {
 //   outputModule: true
