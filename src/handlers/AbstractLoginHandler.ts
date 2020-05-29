@@ -17,9 +17,7 @@ export default abstract class AbstractLoginHandler implements ILoginHandler {
 
   protected finalURL: URL;
 
-  constructor(readonly clientId: string, readonly verifier: string, readonly redirect_uri: string, readonly redirectToOpener?: boolean) {
-    this.setFinalUrl();
-  }
+  constructor(readonly clientId: string, readonly verifier: string, readonly redirect_uri: string, readonly redirectToOpener?: boolean) {}
 
   get state(): string {
     return encodeURIComponent(

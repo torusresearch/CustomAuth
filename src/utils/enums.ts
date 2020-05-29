@@ -11,6 +11,7 @@ export enum LOGIN_TYPE {
   REDDIT = "reddit",
   DISCORD = "discord",
   TWITCH = "twitch",
+  JWT = "jwt",
 }
 
 export enum AGGREGATE_VERIFIER_TYPE {

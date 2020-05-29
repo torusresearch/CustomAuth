@@ -1,7 +1,8 @@
 import DiscordHandler from "../handlers/DiscordHandler";
 import FacebookHandler from "../handlers/FacebookHandler";
 import GoogleHandler from "../handlers/GoogleHandler";
-import { ILoginHandler } from "../handlers/interfaces";
+import { Auth0ClientOptions, ILoginHandler } from "../handlers/interfaces";
+import JwtHandler from "../handlers/JwtHandler";
 import RedditHandler from "../handlers/RedditHandler";
 import TwitchHandler from "../handlers/TwitchHandler";
 import { LOGIN_TYPE } from "./enums";
@@ -33,12 +34,14 @@ export const createHandler = (
   clientId: string,
   verifier: string,
   redirect_uri: string,
-  redirectToOpener?: boolean
+  redirectToOpener?: boolean,
+  jwtParams?: Auth0ClientOptions
 ): ILoginHandler => {
   if (typeofLogin === LOGIN_TYPE.GOOGLE) return new GoogleHandler(clientId, verifier, redirect_uri, redirectToOpener);
   if (typeofLogin === LOGIN_TYPE.FACEBOOK) return new FacebookHandler(clientId, verifier, redirect_uri, redirectToOpener);
   if (typeofLogin === LOGIN_TYPE.TWITCH) return new TwitchHandler(clientId, verifier, redirect_uri, redirectToOpener);
   if (typeofLogin === LOGIN_TYPE.REDDIT) return new RedditHandler(clientId, verifier, redirect_uri, redirectToOpener);
   if (typeofLogin === LOGIN_TYPE.DISCORD) return new DiscordHandler(clientId, verifier, redirect_uri, redirectToOpener);
+  if (typeofLogin === LOGIN_TYPE.JWT) return new JwtHandler(clientId, verifier, redirect_uri, redirectToOpener, jwtParams);
   throw new Error("Invalid login type");
 };
