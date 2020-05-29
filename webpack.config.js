@@ -24,7 +24,6 @@ const baseConfig = {
   resolve: {
     extensions: [".ts", ".js", ".json"],
   },
-  plugins: [new ForkTsCheckerWebpackPlugin()],
 };
 
 // const optimization = {
@@ -98,6 +97,7 @@ const cjsConfig = {
     rules: [tsLoader, eslintLoader, babelLoader],
   },
   externals: [...Object.keys(pkg.dependencies).filter((x) => !packagesToInclude.includes(x)), /^(@babel\/runtime)/i],
+  plugins: [new ForkTsCheckerWebpackPlugin()],
 };
 
 module.exports = [umdPolyfilledConfig, umdConfig, cjsConfig];
