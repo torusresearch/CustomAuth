@@ -77,7 +77,7 @@ class DirectWebSDK {
     }
   }
 
-  async triggerLogin({ verifier, typeOfLogin, clientId }: SubVerifierDetails): Promise<TorusLoginResponse> {
+  async triggerLogin({ verifier, typeOfLogin, clientId, jwtParams }: SubVerifierDetails): Promise<TorusLoginResponse> {
     log.info("Verifier: ", verifier);
     if (!this.isInitialized) {
       throw new Error("Not initialized yet");
@@ -88,15 +88,18 @@ class DirectWebSDK {
     if (!clientId) {
       throw new Error("Client id is not available");
     }
-    const loginHandler: ILoginHandler = createHandler(typeOfLogin, clientId, verifier, this.config.redirect_uri, this.config.redirectToOpener);
-    const loginParams = await loginHandler.handleLoginWindow();
-    const userInfo = await loginHandler.getUserInfo(loginParams.accessToken);
-    const torusKey = await this.getTorusKey(
+    const loginHandler: ILoginHandler = createHandler(
+      typeOfLogin,
+      clientId,
       verifier,
-      userInfo.verifierId,
-      { verifier_id: userInfo.verifierId },
-      loginParams.idToken || loginParams.accessToken
+      this.config.redirect_uri,
+      this.config.redirectToOpener,
+      jwtParams
     );
+    const loginParams = await loginHandler.handleLoginWindow();
+    const { accessToken, idToken } = loginParams;
+    const userInfo = await loginHandler.getUserInfo(accessToken || idToken);
+    const torusKey = await this.getTorusKey(verifier, userInfo.verifierId, { verifier_id: userInfo.verifierId }, idToken || accessToken);
     return {
       ...torusKey,
       userInfo,
@@ -121,7 +124,8 @@ class DirectWebSDK {
       const loginHandler: ILoginHandler = createHandler(typeOfLogin, clientId, verifier, this.config.redirect_uri, this.config.redirectToOpener);
       // eslint-disable-next-line no-await-in-loop
       const loginParams = await loginHandler.handleLoginWindow();
-      userInfoPromises.push(loginHandler.getUserInfo(loginParams.accessToken));
+      const { accessToken, idToken } = loginParams;
+      userInfoPromises.push(loginHandler.getUserInfo(accessToken || idToken));
       loginParamsArray.push(loginParams);
     }
     const userInfoArray = await Promise.all(userInfoPromises);
@@ -130,10 +134,11 @@ class DirectWebSDK {
     let aggregateVerifierId = "";
     for (let index = 0; index < subVerifierDetailsArray.length; index += 1) {
       const loginParams = loginParamsArray[index];
+      const { idToken, accessToken } = loginParams;
       const userInfo = userInfoArray[index];
-      aggregateVerifierParams.verify_params.push({ verifier_id: userInfo.verifierId, idtoken: loginParams.idToken || loginParams.accessToken });
+      aggregateVerifierParams.verify_params.push({ verifier_id: userInfo.verifierId, idtoken: idToken || accessToken });
       aggregateVerifierParams.sub_verifier_ids.push(userInfo.verifier);
-      aggregateIdTokenSeeds.push(loginParams.idToken || loginParams.accessToken);
+      aggregateIdTokenSeeds.push(idToken || accessToken);
       aggregateVerifierId = userInfo.verifierId; // using last because idk
     }
     aggregateIdTokenSeeds.sort();
