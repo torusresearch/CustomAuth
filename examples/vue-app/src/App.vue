@@ -24,7 +24,7 @@ export default {
   name: "App",
   data() {
     return {
-      selectedVerifier: "jwt",
+      selectedVerifier: "google",
     };
   },
   methods: {
@@ -35,36 +35,40 @@ export default {
         // GOOGLE_CLIENT_ID: "876733105116-i0hj3s53qiio5k95prpfmj0hp0gmgtor.apps.googleusercontent.com",
         // FACEBOOK_CLIENT_ID: "2554219104599979",
 
+        let loginDetails
         // AUTH0
-        const torusdirectsdk = new TorusSdk({
-          baseUrl: "http://localhost:3000/serviceworker",
-          enableLogging: true,
-          proxyContractAddress: "0x4023d2a0D330bF11426B12C6144Cfb96B7fa6183", // details for test net
-          network: "ropsten", // details for test net
-        });
-        await torusdirectsdk.init();
-        const loginDetails = await torusdirectsdk.triggerLogin({
-          typeOfLogin: this.selectedVerifier,
-          verifier: 'test-jwt',
-          clientId: "LPDUGgSqNP5mSxllGP0TEgJwRrNU0lVH",
-          jwtParams: {
-            "domain": "lentan.auth0.com"
-          }
-        });
+        if (this.selectedVerifier === "jwt") {
+          const torusdirectsdk = new TorusSdk({
+            baseUrl: "http://localhost:3000/serviceworker",
+            enableLogging: true,
+            proxyContractAddress: "0x4023d2a0D330bF11426B12C6144Cfb96B7fa6183", // details for test net
+            network: "ropsten", // details for test net
+          });
+          await torusdirectsdk.init();
+          loginDetails = await torusdirectsdk.triggerLogin({
+            typeOfLogin: this.selectedVerifier,
+            verifier: 'test-jwt',
+            clientId: "LPDUGgSqNP5mSxllGP0TEgJwRrNU0lVH",
+            jwtParams: {
+              "domain": "lentan.auth0.com"
+            }
+          });
+        } else if (this.selectedVerifier === "google") {
+          // GOOGLE
+          const torusdirectsdk = new TorusSdk({
+            baseUrl: "http://localhost:3000/serviceworker",
+            enableLogging: true,
+            // proxyContractAddress: "0x4023d2a0D330bF11426B12C6144Cfb96B7fa6183", // details for test net
+            // network: "ropsten", // details for test net
+          });
+          await torusdirectsdk.init();
+          loginDetails = await torusdirectsdk.triggerLogin({
+            typeOfLogin: this.selectedVerifier,
+            verifier: this.selectedVerifier,
+            clientId: "876733105116-i0hj3s53qiio5k95prpfmj0hp0gmgtor.apps.googleusercontent.com",
+          });
+        }
 
-        // GOOGLE
-        // const torusdirectsdk = new TorusSdk({
-        //   baseUrl: "http://localhost:3000/serviceworker",
-        //   enableLogging: true,
-        //   // proxyContractAddress: "0x4023d2a0D330bF11426B12C6144Cfb96B7fa6183", // details for test net
-        //   // network: "ropsten", // details for test net
-        // });
-        // await torusdirectsdk.init();
-        // const loginDetails = await torusdirectsdk.triggerLogin({
-        //   typeOfLogin: this.selectedVerifier,
-        //   verifier: this.selectedVerifier,
-        //   clientId: "876733105116-i0hj3s53qiio5k95prpfmj0hp0gmgtor.apps.googleusercontent.com",
-        // });
 
         // AGGREGATE LOGIN
         // const loginDetails = await torusdirectsdk.triggerAggregateLogin("single_id_verifier", "google-google", [
