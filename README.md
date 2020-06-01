@@ -28,7 +28,6 @@ You can use a different format (if you know what you're doing) by referencing th
 The cjs build is not polyfilled with core-js.
 It is upto the user to polyfill based on the browserlist they target
 
-
 ### Directly in Browser
 
 CDN's serve the non-core-js polyfilled version by default. You can use a different
@@ -69,7 +68,6 @@ To allow your web app to retrieve keys:
 ```js
 const torus = new DirectWebSdk({
   baseUrl: "http://localhost:3000/serviceworker/",
-  GOOGLE_CLIENT_ID: "MY CLIENT ID GOOGLE",
   proxyContractAddress: "0x4023d2a0D330bF11426B12C6144Cfb96B7fa6183", // details for test net
   network: "ropsten", // details for test net
 });
@@ -77,13 +75,18 @@ await torus.init();
 ```
 
 6. Trigger the login
+
 ```js
-const userInfo = await torus.triggerLogin("google", "google-MY SPECIFIC VERIFIER");
+const userInfo = await torus.triggerLogin({
+  typeOfLogin: "google",
+  verifier: "google",
+  clientId: "MY CLIENT ID GOOGLE",
+});
 ```
 
 Reach out to hello@tor.us to get your verifier spun up on the testnet today!
 
-
 ## Requirements
+
 - This package requires a peer dependency of `@babel/runtime`
 - Node 10+
