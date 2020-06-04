@@ -2,6 +2,7 @@ import NodeDetailManager from "@toruslabs/fetch-node-details";
 import Torus from "@toruslabs/torus.js";
 import { keccak256 } from "web3-utils";
 
+import createHandler from "./handlers/HandlerFactory";
 import {
   DirectWebSDKArgs,
   ILoginHandler,
@@ -14,7 +15,7 @@ import {
 } from "./handlers/interfaces";
 import { registerServiceWorker } from "./registerServiceWorker";
 import { AGGREGATE_VERIFIER_TYPE, ETHEREUM_NETWORK, LOGIN_TYPE } from "./utils/enums";
-import { createHandler } from "./utils/helpers";
+import { padUrlString } from "./utils/helpers";
 import log from "./utils/loglevel";
 
 class DirectWebSDK {
@@ -40,7 +41,7 @@ class DirectWebSDK {
     this.isInitialized = false;
     const baseUri = new URL(baseUrl);
     this.config = {
-      baseUrl: baseUri.href.endsWith("/") ? baseUri.href : `${baseUri.href}/`,
+      baseUrl: padUrlString(baseUri),
       get redirect_uri() {
         return `${this.baseUrl}redirect`;
       },
@@ -98,7 +99,7 @@ class DirectWebSDK {
     );
     const loginParams = await loginHandler.handleLoginWindow();
     const { accessToken, idToken } = loginParams;
-    const userInfo = await loginHandler.getUserInfo(accessToken || idToken);
+    const userInfo = await loginHandler.getUserInfo(loginParams);
     const torusKey = await this.getTorusKey(verifier, userInfo.verifierId, { verifier_id: userInfo.verifierId }, idToken || accessToken);
     return {
       ...torusKey,
@@ -124,8 +125,7 @@ class DirectWebSDK {
       const loginHandler: ILoginHandler = createHandler(typeOfLogin, clientId, verifier, this.config.redirect_uri, this.config.redirectToOpener);
       // eslint-disable-next-line no-await-in-loop
       const loginParams = await loginHandler.handleLoginWindow();
-      const { accessToken, idToken } = loginParams;
-      userInfoPromises.push(loginHandler.getUserInfo(accessToken || idToken));
+      userInfoPromises.push(loginHandler.getUserInfo(loginParams));
       loginParamsArray.push(loginParams);
     }
     const userInfoArray = await Promise.all(userInfoPromises);

@@ -1,14 +1,24 @@
 import deepmerge from "deepmerge";
 import jwtDecode from "jwt-decode";
 
+import { loginToConnectionMap, padUrlString } from "../utils/helpers";
+import { get } from "../utils/httpHelpers";
+import log from "../utils/loglevel";
 import AbstractLoginHandler from "./AbstractLoginHandler";
-import { Auth0ClientOptions, TorusVerifierResponse } from "./interfaces";
+import { Auth0ClientOptions, LoginWindowResponse, TorusVerifierResponse } from "./interfaces";
 
 export default class JwtHandler extends AbstractLoginHandler {
+  private readonly SCOPE: string = "openid profile email";
+
+  private readonly RESPONSE_TYPE: string = "token id_token";
+
+  private readonly PROMPT: string = "login";
+
   constructor(
     readonly clientId: string,
     readonly verifier: string,
     readonly redirect_uri: string,
+    readonly typeofLogin: string,
     readonly redirectToOpener?: boolean,
     readonly jwtParams?: Auth0ClientOptions
   ) {
@@ -17,22 +27,59 @@ export default class JwtHandler extends AbstractLoginHandler {
   }
 
   setFinalUrl(): void {
-    const finalUrl = new URL(this.redirect_uri);
-    const jwtParams = deepmerge({ client_id: this.clientId, prompt: "login", redirect_uri: this.redirect_uri }, this.jwtParams);
-    finalUrl.searchParams.append("auth0Login", window.btoa(JSON.stringify({ appState: this.state })));
-    finalUrl.searchParams.append("auth0Params", window.btoa(JSON.stringify(jwtParams)));
+    const { domain } = this.jwtParams;
+    const finalUrl = new URL(domain);
+    finalUrl.pathname = "/authorize";
+    const clonedParams = JSON.parse(JSON.stringify(this.jwtParams));
+    delete clonedParams.domain;
+    const finalJwtParams = deepmerge(
+      {
+        state: this.state,
+        response_type: this.RESPONSE_TYPE,
+        client_id: this.clientId,
+        prompt: this.PROMPT,
+        redirect_uri: this.redirect_uri,
+        scope: this.SCOPE,
+        connection: loginToConnectionMap[this.typeofLogin],
+        nonce: this.nonce,
+      },
+      clonedParams
+    );
+    Object.keys(finalJwtParams).forEach((key) => {
+      finalUrl.searchParams.append(key, finalJwtParams[key]);
+    });
     this.finalURL = finalUrl;
   }
 
-  async getUserInfo(accessToken: string): Promise<TorusVerifierResponse> {
-    const decodedToken: { name: string; email: string; picture: string } = jwtDecode(accessToken);
-    const { name, email, picture } = decodedToken;
-    return {
-      profileImage: picture,
-      name,
-      email,
-      verifierId: email.toLowerCase(),
-      verifier: this.verifier,
-    };
+  async getUserInfo(params: LoginWindowResponse): Promise<TorusVerifierResponse> {
+    const { idToken, accessToken } = params;
+    try {
+      const { domain } = this.jwtParams;
+      const domainUrl = new URL(domain);
+      const userInfo = await get<{ picture: string; email: string; name: string; sub: string }>(`${padUrlString(domainUrl)}userinfo`, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+      const { sub, picture, name, email } = userInfo;
+      return {
+        email,
+        name,
+        profileImage: picture,
+        verifierId: sub,
+        verifier: this.verifier,
+      };
+    } catch (error) {
+      log.error(error);
+      const decodedToken: { name: string; email: string; picture: string; sub: string } = jwtDecode(idToken);
+      const { name, email, picture, sub } = decodedToken;
+      return {
+        profileImage: picture,
+        name,
+        email,
+        verifierId: sub,
+        verifier: this.verifier,
+      };
+    }
   }
 }

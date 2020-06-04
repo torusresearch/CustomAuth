@@ -1,5 +1,7 @@
 {
   "extends": [
+    "plugin:@typescript-eslint/recommended",
+    "prettier/@typescript-eslint",
     "standard",
     "eslint:recommended",
     "plugin:prettier/recommended",
@@ -10,8 +12,6 @@
     "plugin:flowtype/recommended",
     "plugin:promise/recommended",
     "airbnb-base",
-    "plugin:@typescript-eslint/recommended",
-    "prettier/@typescript-eslint",
     "prettier"
   ],
   "plugins": ["prettier", "babel", "standard", "promise", "import", "flowtype", "standard", "simple-import-sort", "@typescript-eslint"],
@@ -71,6 +71,17 @@
       }
     }
   },
+  "overrides": [
+    {
+      "files": ["*.js"],
+      "rules": {
+        "@typescript-eslint/explicit-function-return-type": "off",
+        "@typescript-eslint/no-var-requires": "off",
+        "@typescript-eslint/no-empty-function": "off",
+        "@typescript-eslint/camelcase": "off"
+      }
+    }
+  ],
   "env": {
     "es6": true,
     "browser": true,

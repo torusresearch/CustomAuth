@@ -2,6 +2,8 @@ import { ETHEREUM_NETWORK, LOGIN_TYPE } from "../utils/enums";
 
 type NETWORK_TYPE = ETHEREUM_NETWORK.MAINNET | ETHEREUM_NETWORK.RINKEBY | ETHEREUM_NETWORK.ROPSTEN | ETHEREUM_NETWORK.KOVAN | ETHEREUM_NETWORK.GOERLI;
 
+export type PopupResponse = { hashParams: { access_token: string; id_token?: string }; instanceParams: { verifier: string } };
+
 // @flow
 export interface TorusVerifierResponse {
   email: string;
@@ -18,7 +20,7 @@ export interface LoginWindowResponse {
 // @flow
 export interface ILoginHandler {
   clientId: string;
-  getUserInfo(accessToken: string): Promise<TorusVerifierResponse>;
+  getUserInfo(params: LoginWindowResponse): Promise<TorusVerifierResponse>;
   handleLoginWindow(): Promise<LoginWindowResponse>;
 }
 
@@ -118,16 +120,6 @@ export interface BaseLoginOptions {
   [key: string]: unknown;
 }
 
-interface AdvancedOptions {
-  /**
-   * The default scope to be included with all requests.
-   * If not provided, 'openid profile email' is used. This can be set to `null` in order to effectively remove the default scopes.
-   *
-   * Note: The `openid` scope is **always applied** regardless of this setting.
-   */
-  defaultScope?: string;
-}
-
 export interface Auth0ClientOptions extends BaseLoginOptions {
   /**
    * Your Auth0 account domain such as `'example.auth0.com'`,
@@ -136,13 +128,9 @@ export interface Auth0ClientOptions extends BaseLoginOptions {
    */
   domain: string;
   /**
-   * The issuer to be used for validation of JWTs, optionally defaults to the domain above
-   */
-  issuer?: string;
-  /**
    * The Client ID found on your Application settings page
    */
-  client_id: string;
+  client_id?: string;
   /**
    * The default URL where Auth0 will redirect your browser to with
    * the authentication result. It must be whitelisted in
@@ -157,35 +145,4 @@ export interface Auth0ClientOptions extends BaseLoginOptions {
    * Defaults to 60s.
    */
   leeway?: number;
-
-  /**
-   * The location to use when storing cache data. Valid values are `memory` or `localstorage`.
-   * The default setting is `memory`.
-   */
-  cacheLocation?: CacheLocation;
-
-  /**
-   * If true, refresh tokens are used to fetch new access tokens from the Auth0 server.
-   * If false, the legacy technique of using a hidden iframe and the `authorization_code` grant with `prompt=none` is used.
-   * The default setting is `false`.
-   *
-   * **Note**: Use of refresh tokens must be enabled by an administrator on your Auth0 client application.
-   */
-  useRefreshTokens?: boolean;
-
-  /**
-   * A maximum number of seconds to wait before declaring background calls to /authorize as failed for timeout
-   * Defaults to 60s.
-   */
-  authorizeTimeoutInSeconds?: number;
-
-  /**
-   * Changes to recommended defaults, like defaultScope
-   */
-  advancedOptions?: AdvancedOptions;
 }
-
-/**
- * The possible locations where tokens can be stored
- */
-export type CacheLocation = "memory" | "localstorage";

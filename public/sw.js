@@ -108,7 +108,6 @@ self.addEventListener("fetch", function (event) {
         h1.title {
           font-size: 14px;
         }
-
         p.info {
           font-size: 28px;
         }
@@ -128,14 +127,13 @@ self.addEventListener("fetch", function (event) {
         <div class="beat beat-even"></div>
         <div class="beat beat-odd"></div>
       </div>
-      <h1 class="title content">Loading</h1>
+      <h1 class="title content" id="closeText" style="display: none;">You can close this window now</h1>
     </div>
     <script
-      src="https://scripts.toruswallet.io/broadcastChannel_3_0_3.js"
-      integrity="sha384-0K6Rk9RWgqHNox5iV2NGWKP7OVZOzcuH0kNkH8BoSQv1LmRfhu6DWp5oyQ90hKv9"
+      src="https://scripts.toruswallet.io/broadcastChannel_3_1_0.js"
+      integrity="sha384-xZA9e8T2sQ3eBH6+D8PNECKbFOogWEHbtcYOFp1lB1bifyxBKzWRIHnk9ecVUse4"
       crossorigin="anonymous"
     ></script>
-    <script src="https://cdn.auth0.com/js/auth0-spa-js/1.8/auth0-spa-js.production.js"></script>
     <script>
       function storageAvailable(type) {
         var storage;
@@ -163,6 +161,12 @@ self.addEventListener("fetch", function (event) {
           );
         }
       }
+      function showCloseText() {
+        var closeText = document.getElementById("closeText");
+        if (closeText) {
+          closeText.style.display = "block";
+        }
+      }
       var isLocalStorageAvailable = storageAvailable("localStorage");
       var isSessionStorageAvailable = storageAvailable("sessionStorage");
       // set theme
@@ -175,7 +179,6 @@ self.addEventListener("fetch", function (event) {
       }
 
       if (theme === "dark") {
-        document.querySelector("h1.title").style.color = "#d3d3d4";
         document.querySelector("body").style.backgroundColor = "#24252A";
       }
       var bc;
@@ -185,80 +188,20 @@ self.addEventListener("fetch", function (event) {
       };
       var instanceParams = {};
       var preopenInstanceId = new URL(window.location.href).searchParams.get("preopenInstanceId");
-      var auth0Params = new URL(window.location.href).searchParams.get("auth0Params");
-      var auth0Login = new URL(window.location.href).searchParams.get("auth0Login");
-      var auth0ParamsObj;
-      var auth0LoginObj;
-      if (isLocalStorageAvailable) {
-        if (!auth0Params) {
-          auth0Params = window.localStorage.getItem("auth0Params");
-        }
-        if (auth0Params) {
-          auth0ParamsObj = JSON.parse(window.atob(auth0Params));
-          window.localStorage.setItem("auth0Params", auth0Params);
-        }
-      }
-      if (isSessionStorageAvailable) {
-        if (!auth0Login) {
-          auth0Login = window.sessionStorage.getItem("auth0Login");
-        }
-        if (auth0Login) {
-          auth0LoginObj = JSON.parse(window.atob(auth0Login));
-          window.sessionStorage.setItem("auth0Login", auth0Login);
-        }
-      }
-
-      // trying to get a new auth0 login
-      if (auth0ParamsObj && auth0LoginObj) {
-        new Promise(function (resolve, reject) {
-          // wait for page load
-          // can't we use document.onload event?
-          var readyInterval = setInterval(function () {
-            if (document.readyState === "complete") {
-              clearInterval(readyInterval);
-              resolve();
-            }
-          }, 100);
-          setTimeout(function () {
-            reject("timed out waiting for document to load");
-          }, 5000);
-        })
-          .then(function () {
-            // create auth0 client
-            return new window.Auth0Client(auth0ParamsObj);
-          })
-          .then(function (auth0Client) {
-            // check if already authenticated
-            window.auth0 = auth0Client;
-            return auth0Client.isAuthenticated();
-          })
-          .then(function (isAuthenticated) {
-            if (isAuthenticated) {
-              // if already authenticated but trying to get a login, then logout and refresh page
-              alert("logging out"); //TODO: Do we need the alert.?
-              window.auth0.logout({
-                returnTo: auth0ParamsObj.redirect_uri,
-              });
-            } else {
-              // not authenticated yet and trying to get a login
-              if (!auth0LoginObj.appState) {
-                auth0LoginObj.appState = {};
-              }
-              if (isSessionStorageAvailable) window.sessionStorage.removeItem("auth0Login");
-              return window.auth0.loginWithRedirect(auth0LoginObj);
-            }
-          });
-      } else if (!preopenInstanceId) {
+      if (!preopenInstanceId) {
         document.getElementById("message").style.visibility = "visible";
         // in general oauth redirect
         try {
           var url = new URL(location.href);
           var hash = url.hash.substr(1);
-          var hashParams = hash.split("&").reduce(function (result, item) {
-            var parts = item.split("=");
-            result[parts[0]] = parts[1];
-            return result;
-          }, {});
+          var hashParams = {};
+          if (hash) {
+            hashParams = hash.split("&").reduce(function (result, item) {
+              var parts = item.split("=");
+              result[parts[0]] = parts[1];
+              return result;
+            }, {});
+          }
           var queryParams = {};
           for (var key of url.searchParams.keys()) {
             queryParams[key] = url.searchParams.get(key);
@@ -274,82 +217,9 @@ self.addEventListener("fetch", function (event) {
               if (queryParams.error) error = queryParams.error;
             }
           } catch (e) {
-            // might be an auth0 redirect, which has a non-JSON state
-            var query = window.location.search;
-            auth0ShouldParseResult = query.includes("code=") && query.includes("state=");
+            console.error(e);
           }
-          if (auth0ShouldParseResult) {
-            // auth0 redirect
-            new Promise(function (resolve, reject) {
-              // wait for page load
-              var readyInterval = setInterval(function () {
-                if (document.readyState === "complete") {
-                  clearInterval(readyInterval);
-                  resolve();
-                }
-              }, 100);
-              setTimeout(function () {
-                reject("timed out waiting for document to load");
-              }, 5000);
-            })
-              .then(function () {
-                // create auth0 client
-                return new window.Auth0Client(auth0ParamsObj);
-              })
-              .then(function (auth0Client) {
-                window.auth0 = auth0Client;
-                return window.auth0.handleRedirectCallback();
-              })
-              .then(function (result) {
-                instanceParams = JSON.parse(window.atob(decodeURIComponent(decodeURIComponent(result.appState))));
-                return window.auth0.getIdTokenClaims();
-              })
-              .then(function (claim) {
-                if (!claim || !claim.__raw) {
-                  throw new Error("invalid idtoken claim");
-                }
-                hashParams.id_token = claim.__raw;
-                if (instanceParams.redirectToOpener) {
-                  window.opener.postMessage(
-                    {
-                      channel: "redirect_channel_" + instanceParams.instanceId,
-                      data: {
-                        instanceParams: instanceParams,
-                        hashParams: hashParams,
-                        queryParams: queryParams,
-                      },
-                      error: error,
-                    },
-                    "*"
-                  );
-                  return Promise.resolve();
-                } else {
-                  bc = new broadcastChannelLib.BroadcastChannel("redirect_channel_" + instanceParams.instanceId, broadcastChannelOptions);
-                  return bc.postMessage({
-                    data: {
-                      instanceParams,
-                      queryParams: {},
-                      hashParams: hashParams,
-                    },
-                    error: "",
-                  });
-                }
-              })
-              .then(function () {
-                bc && bc.close();
-                console.log("posted", {
-                  queryParams,
-                  instanceParams,
-                  hashParams,
-                });
-                setTimeout(function () {
-                  window.close();
-                }, 1000);
-              })
-              .catch(function (e) {
-                console.error("could not handle auth0 redirect", e);
-              });
-          } else if (instanceParams.redirectToOpener) {
+          if (instanceParams.redirectToOpener) {
             // communicate to window.opener
             window.opener.postMessage(
               {
@@ -382,14 +252,15 @@ self.addEventListener("fetch", function (event) {
               });
               setTimeout(function () {
                 window.close();
+                showCloseText();
               }, 30000);
             });
           }
         } catch (err) {
           console.error(err, "service worker error in redirect");
           bc && bc.close();
-          // TODO PUT BACK
-          // window.close()
+          window.close();
+          showCloseText();
         }
       } else {
         // in preopen, awaiting redirect
@@ -416,6 +287,7 @@ self.addEventListener("fetch", function (event) {
           console.error(err, "service worker error in preopen");
           bc && bc.close();
           window.close();
+          showCloseText();
         }
       }
     </script>

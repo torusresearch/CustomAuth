@@ -1,16 +1,11 @@
+/* eslint-disable no-empty-function */
 import randomId from "@chaitanyapotti/random-id";
 import { BroadcastChannel } from "broadcast-channel";
 
+import { broadcastChannelOptions } from "../utils/helpers";
 import log from "../utils/loglevel";
 import PopupHandler from "../utils/PopupHandler";
-import { ILoginHandler, LoginWindowResponse, TorusVerifierResponse } from "./interfaces";
-
-const broadcastChannelOptions = {
-  // type: 'localstorage', // (optional) enforce a type, oneOf['native', 'idb', 'localstorage', 'node']
-  webWorkerSupport: false, // (optional) set this to false if you know that your channel will never be used in a WebWorker (increases performance)
-};
-
-type PopupResponse = { hashParams: { access_token: string; id_token?: string }; instanceParams: { verifier: string } };
+import { ILoginHandler, LoginWindowResponse, PopupResponse, TorusVerifierResponse } from "./interfaces";
 
 export default abstract class AbstractLoginHandler implements ILoginHandler {
   protected nonce: string = randomId();
@@ -31,7 +26,7 @@ export default abstract class AbstractLoginHandler implements ILoginHandler {
     );
   }
 
-  abstract getUserInfo(accessToken: string): Promise<TorusVerifierResponse>;
+  abstract getUserInfo(params: LoginWindowResponse): Promise<TorusVerifierResponse>;
 
   abstract setFinalUrl(): void;
 

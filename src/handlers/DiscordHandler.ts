@@ -1,6 +1,6 @@
 import { get } from "../utils/httpHelpers";
 import AbstractLoginHandler from "./AbstractLoginHandler";
-import { TorusVerifierResponse } from "./interfaces";
+import { LoginWindowResponse, TorusVerifierResponse } from "./interfaces";
 
 export default class DiscordHandler extends AbstractLoginHandler {
   private readonly RESPONSE_TYPE: string = "token";
@@ -22,7 +22,8 @@ export default class DiscordHandler extends AbstractLoginHandler {
     this.finalURL = finalUrl;
   }
 
-  async getUserInfo(accessToken: string): Promise<TorusVerifierResponse> {
+  async getUserInfo(params: LoginWindowResponse): Promise<TorusVerifierResponse> {
+    const { accessToken } = params;
     const userInfo = await get<{ id: string; username: string; discriminator: string; avatar?: string; email?: string }>(
       "https://discordapp.com/api/users/@me",
       {

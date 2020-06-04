@@ -1,6 +1,6 @@
 import { get } from "../utils/httpHelpers";
 import AbstractLoginHandler from "./AbstractLoginHandler";
-import { TorusVerifierResponse } from "./interfaces";
+import { LoginWindowResponse, TorusVerifierResponse } from "./interfaces";
 
 export default class TwitchHandler extends AbstractLoginHandler {
   private readonly RESPONSE_TYPE: string = "token";
@@ -23,7 +23,8 @@ export default class TwitchHandler extends AbstractLoginHandler {
     this.finalURL = finalUrl;
   }
 
-  async getUserInfo(accessToken: string): Promise<TorusVerifierResponse> {
+  async getUserInfo(params: LoginWindowResponse): Promise<TorusVerifierResponse> {
+    const { accessToken } = params;
     const userInfo = await get<{ data: [{ profile_image_url: string; display_name: string; email: string; id: string }] }>(
       "https://api.twitch.tv/helix/users",
       {
