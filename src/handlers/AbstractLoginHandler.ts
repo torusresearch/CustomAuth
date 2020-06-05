@@ -12,6 +12,8 @@ export default abstract class AbstractLoginHandler implements ILoginHandler {
 
   protected finalURL: URL;
 
+  // Not using object constructor because of this issue
+  // https://github.com/microsoft/TypeScript/issues/5326
   constructor(readonly clientId: string, readonly verifier: string, readonly redirect_uri: string, readonly redirectToOpener?: boolean) {}
 
   get state(): string {
