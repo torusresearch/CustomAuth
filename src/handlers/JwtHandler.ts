@@ -18,7 +18,7 @@ export default class JwtHandler extends AbstractLoginHandler {
     readonly clientId: string,
     readonly verifier: string,
     readonly redirect_uri: string,
-    readonly typeofLogin: string,
+    readonly typeOfLogin: string,
     readonly redirectToOpener?: boolean,
     readonly jwtParams?: Auth0ClientOptions
   ) {
@@ -40,7 +40,7 @@ export default class JwtHandler extends AbstractLoginHandler {
         prompt: this.PROMPT,
         redirect_uri: this.redirect_uri,
         scope: this.SCOPE,
-        connection: loginToConnectionMap[this.typeofLogin],
+        connection: loginToConnectionMap[this.typeOfLogin],
         nonce: this.nonce,
       },
       clonedParams

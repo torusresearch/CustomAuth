@@ -89,14 +89,14 @@ class DirectWebSDK {
     if (!clientId) {
       throw new Error("Client id is not available");
     }
-    const loginHandler: ILoginHandler = createHandler(
+    const loginHandler: ILoginHandler = createHandler({
       typeOfLogin,
       clientId,
       verifier,
-      this.config.redirect_uri,
-      this.config.redirectToOpener,
-      jwtParams
-    );
+      redirect_uri: this.config.redirect_uri,
+      redirectToOpener: this.config.redirectToOpener,
+      jwtParams,
+    });
     const loginParams = await loginHandler.handleLoginWindow();
     const { accessToken, idToken } = loginParams;
     const userInfo = await loginHandler.getUserInfo(loginParams);

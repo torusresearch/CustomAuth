@@ -19,7 +19,7 @@ export default class JwtHandler extends AbstractLoginHandler {
     readonly clientId: string,
     readonly verifier: string,
     readonly redirect_uri: string,
-    readonly typeofLogin: string,
+    readonly typeOfLogin: string,
     readonly redirectToOpener?: boolean,
     readonly jwtParams?: Auth0ClientOptions
   ) {

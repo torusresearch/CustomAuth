@@ -56,6 +56,15 @@ export interface SubVerifierDetails {
   jwtParams?: Auth0ClientOptions;
 }
 
+export interface CreateHandlerParams {
+  typeOfLogin: LOGIN_TYPE;
+  clientId: string;
+  verifier: string;
+  redirect_uri: string;
+  redirectToOpener?: boolean;
+  jwtParams?: Auth0ClientOptions;
+}
+
 // REGION: AUTH0 PARAMS
 export interface BaseLoginOptions {
   /**
