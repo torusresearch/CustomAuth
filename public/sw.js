@@ -122,7 +122,7 @@ self.addEventListener("fetch", function (event) {
 
   <body>
     <div id="message" class="container">
-      <div class="spinner content">
+      <div class="spinner content" id="spinner">
         <div class="beat beat-odd"></div>
         <div class="beat beat-even"></div>
         <div class="beat beat-odd"></div>
@@ -163,8 +163,12 @@ self.addEventListener("fetch", function (event) {
       }
       function showCloseText() {
         var closeText = document.getElementById("closeText");
+        var spinner = document.getElementById("spinner");
         if (closeText) {
           closeText.style.display = "block";
+        }
+        if (spinner) {
+          spinner.style.display = "none";
         }
       }
       var isLocalStorageAvailable = storageAvailable("localStorage");
@@ -206,7 +210,6 @@ self.addEventListener("fetch", function (event) {
           for (var key of url.searchParams.keys()) {
             queryParams[key] = url.searchParams.get(key);
           }
-          var auth0ShouldParseResult = false;
           var error = "";
           try {
             if (Object.keys(hashParams).length > 0 && hashParams.state) {
