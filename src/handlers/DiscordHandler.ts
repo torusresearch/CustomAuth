@@ -5,7 +5,7 @@ import { LoginWindowResponse, TorusVerifierResponse } from "./interfaces";
 export default class DiscordHandler extends AbstractLoginHandler {
   private readonly RESPONSE_TYPE: string = "token";
 
-  private readonly SCOPE: string = encodeURIComponent("identify email");
+  private readonly SCOPE: string = "identify email";
 
   constructor(readonly clientId: string, readonly verifier: string, readonly redirect_uri: string, readonly redirectToOpener?: boolean) {
     super(clientId, verifier, redirect_uri, redirectToOpener);
