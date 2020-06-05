@@ -28,10 +28,7 @@ export default class JwtHandler extends AbstractLoginHandler {
   }
 
   setFinalUrl(): void {
-    const { domain, login_hint } = this.jwtParams;
-    if (!login_hint) {
-      throw new Error("Pls provide login_hint");
-    }
+    const { domain } = this.jwtParams;
     const domainUrl = new URL(domain);
     domainUrl.pathname = "/passwordless/start";
     this.finalURL = domainUrl;
@@ -116,6 +113,7 @@ export default class JwtHandler extends AbstractLoginHandler {
               response_type: this.RESPONSE_TYPE,
               redirect_uri: this.redirect_uri,
               nonce: this.nonce,
+              prompt: this.PROMPT,
             },
           },
           {
@@ -123,7 +121,16 @@ export default class JwtHandler extends AbstractLoginHandler {
           }
         );
         // using stringify and parse to remove undefined params
-        post(this.finalURL.href, JSON.parse(JSON.stringify(finalJwtParams)));
+        // This method is only resolved when the user clicks the email link
+        post(this.finalURL.href, JSON.parse(JSON.stringify(finalJwtParams)))
+          .then((response) => {
+            log.info("posted", response);
+            return undefined;
+          })
+          .catch((error) => {
+            log.error(error);
+            reject(error);
+          });
       } catch (error) {
         log.error(error);
         reject(error);

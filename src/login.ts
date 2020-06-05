@@ -83,12 +83,6 @@ class DirectWebSDK {
     if (!this.isInitialized) {
       throw new Error("Not initialized yet");
     }
-    if (!verifier || !typeOfLogin) {
-      throw new Error("Invalid params");
-    }
-    if (!clientId) {
-      throw new Error("Client id is not available");
-    }
     const loginHandler: ILoginHandler = createHandler({
       typeOfLogin,
       clientId,
@@ -112,6 +106,9 @@ class DirectWebSDK {
     verifierIdentifier: string,
     subVerifierDetailsArray: SubVerifierDetails[]
   ): Promise<TorusAggregateLoginResponse> {
+    if (!this.isInitialized) {
+      throw new Error("Not initialized yet");
+    }
     if (!aggregateVerifierType || !verifierIdentifier || !Array.isArray(subVerifierDetailsArray)) {
       throw new Error("Invalid params");
     }
@@ -121,10 +118,19 @@ class DirectWebSDK {
     const userInfoPromises: Promise<TorusVerifierResponse>[] = [];
     const loginParamsArray: LoginWindowResponse[] = [];
     for (const subVerifierDetail of subVerifierDetailsArray) {
-      const { clientId, typeOfLogin, verifier } = subVerifierDetail;
-      const loginHandler: ILoginHandler = createHandler(typeOfLogin, clientId, verifier, this.config.redirect_uri, this.config.redirectToOpener);
+      const { clientId, typeOfLogin, verifier, jwtParams } = subVerifierDetail;
+      const loginHandler: ILoginHandler = createHandler({
+        typeOfLogin,
+        clientId,
+        verifier,
+        redirect_uri: this.config.redirect_uri,
+        redirectToOpener: this.config.redirectToOpener,
+        jwtParams,
+      });
+      // We let the user login to each verifier in a loop. Don't wait for key derivation here.!
       // eslint-disable-next-line no-await-in-loop
       const loginParams = await loginHandler.handleLoginWindow();
+      // Fail the method even if one promise fails
       userInfoPromises.push(loginHandler.getUserInfo(loginParams));
       loginParamsArray.push(loginParams);
     }
