@@ -12,7 +12,7 @@ const createHandler = ({ clientId, redirect_uri, typeOfLogin, verifier, jwtParam
   if (!verifier || !typeOfLogin || !clientId) {
     throw new Error("Invalid params");
   }
-  const { domain, login_hint } = jwtParams;
+  const { domain, login_hint } = jwtParams || {};
   switch (typeOfLogin) {
     case LOGIN_TYPE.GOOGLE:
       return new GoogleHandler(clientId, verifier, redirect_uri, redirectToOpener);
