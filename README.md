@@ -79,12 +79,12 @@ await torus.init();
 ```js
 const userInfo = await torus.triggerLogin({
   typeOfLogin: "google",
-  verifier: "google",
+  verifier: "YOUR VERIFER DEPLOYED BY TORUS",
   clientId: "MY CLIENT ID GOOGLE",
 });
 ```
 
-Reach out to hello@tor.us to get your verifier spun up on the testnet today!
+7. Reach out to hello@tor.us to get your verifier spun up on the testnet today!
 
 ## Requirements
 
