@@ -3,10 +3,7 @@
     <div>
       <span :style="{ marginRight: '20px' }">verifier:</span>
       <select v-model="selectedVerifier">
-        <option value="google">Google</option>
-        <option value="github">Github</option>
-        <option value="email_password">Email Password</option>
-        <option value="passwordless">Passwordless</option>
+        <option :key="login" v-for="login in Object.keys(typesOfLogin)" :value="login">{{ typesOfLogin[login] }}</option>
       </select>
     </div>
     <div :style="{ marginTop: '20px' }">
@@ -21,88 +18,86 @@
 <script>
 import TorusSdk from "@toruslabs/torus-direct-web-sdk";
 
+const GOOGLE = "google";
+const FACEBOOK = "facebook";
+const DISCORD = "discord";
+const TWITCH = "twitch";
+const GITHUB = "github";
+const LINKEDIN = "linkedin";
+const TWITTER = "twitter";
+const WEIBO = "weibo";
+const EMAIL_PASSWORD = "email_password";
+const PASSWORDLESS = "passwordless";
+
 export default {
   name: "App",
   data() {
     return {
       selectedVerifier: "passwordless",
+      typesOfLogin: {
+        [GOOGLE]: "Google",
+        [FACEBOOK]: "Facebook",
+        [TWITCH]: "Twitch",
+        [DISCORD]: "Discord",
+        [EMAIL_PASSWORD]: "Email Password",
+        [PASSWORDLESS]: "Passwordless",
+        [GITHUB]: "Github",
+        [LINKEDIN]: "Linkedin",
+        [TWITTER]: "Twitter",
+        [WEIBO]: "Weibo",
+      },
+      clientIdMap: {
+        [GOOGLE]: "876733105116-i0hj3s53qiio5k95prpfmj0hp0gmgtor.apps.googleusercontent.com",
+        [FACEBOOK]: "2554219104599979",
+        [TWITCH]: "tfppratfiloo53g1x133ofa4rc29px",
+        [DISCORD]: "630308572013527060",
+        [EMAIL_PASSWORD]: "sqKRBVSdwa4WLkaq419U7Bamlh5vK1H7",
+        [PASSWORDLESS]: "P7PJuBCXIHP41lcyty0NEb7Lgf7Zme8Q",
+        [GITHUB]: "PC2a4tfNRvXbT48t89J5am0oFM21Nxff",
+        [LINKEDIN]: "59YxSgx79Vl3Wi7tQUBqQTRTxWroTuoc",
+        [TWITTER]: "A7H8kkcmyFRlusJQ9dZiqBLraG2yWIsO",
+        [WEIBO]: "dhFGlWQMoACOI5oS5A1jFglp772OAWr1",
+      },
+      loginToConnectionMap: {
+        [EMAIL_PASSWORD]: { connection: "Username-Password-Authentication", domain: "https://torus-test.auth0.com" },
+        [PASSWORDLESS]: { connection: "email", domain: "https://torus-test.auth0.com", login_hint: "chai@tor.us" },
+        [GITHUB]: { connection: "github", domain: "https://torus-test.auth0.com" },
+        [LINKEDIN]: { connection: "linkedin", domain: "https://torus-test.auth0.com" },
+        [TWITTER]: { connection: "twitter", domain: "https://torus-test.auth0.com" },
+        [WEIBO]: { connection: "weibo", domain: "https://torus-test.auth0.com" },
+      },
+      verifierMap: {
+        [GOOGLE]: "google",
+        [FACEBOOK]: "facebook",
+        [TWITCH]: "twitch",
+        [DISCORD]: "discord",
+        [EMAIL_PASSWORD]: "torus-auth0-email-password",
+        [PASSWORDLESS]: "torus-auth0-passwordless",
+        [GITHUB]: "torus-auth0-github",
+        [LINKEDIN]: "torus-auth0-linkedin",
+        [TWITTER]: "torus-auth0-twitter",
+        [WEIBO]: "torus-auth0-weibo",
+      },
     };
   },
   methods: {
     async login() {
       try {
-        // AUTH0_DOMAIN: "torus-test.auth0.com"
-        // AUTH0_CLIENT_ID: "sqKRBVSdwa4WLkaq419U7Bamlh5vK1H7"
-        // GOOGLE_CLIENT_ID: "876733105116-i0hj3s53qiio5k95prpfmj0hp0gmgtor.apps.googleusercontent.com",
-        // FACEBOOK_CLIENT_ID: "2554219104599979",
+        const torusdirectsdk = new TorusSdk({
+          baseUrl: "http://localhost:3000/serviceworker",
+          enableLogging: true,
+          proxyContractAddress: "0x4023d2a0D330bF11426B12C6144Cfb96B7fa6183", // details for test net
+          network: "ropsten", // details for test net
+        });
 
-        let loginDetails;
-        // AUTH0
-        if (this.selectedVerifier === "github") {
-          const torusdirectsdk = new TorusSdk({
-            baseUrl: "http://localhost:3000/serviceworker",
-            enableLogging: true,
-            proxyContractAddress: "0x4023d2a0D330bF11426B12C6144Cfb96B7fa6183", // details for test net
-            network: "ropsten", // details for test net
-          });
-          await torusdirectsdk.init();
-          loginDetails = await torusdirectsdk.triggerLogin({
-            typeOfLogin: this.selectedVerifier,
-            verifier: "torus-auth0",
-            clientId: "PC2a4tfNRvXbT48t89J5am0oFM21Nxff",
-            jwtParams: {
-              domain: "https://torus-test.auth0.com",
-            },
-          });
-        } else if (this.selectedVerifier === "email_password") {
-          const torusdirectsdk = new TorusSdk({
-            baseUrl: "http://localhost:3000/serviceworker",
-            enableLogging: true,
-            proxyContractAddress: "0x4023d2a0D330bF11426B12C6144Cfb96B7fa6183", // details for test net
-            network: "ropsten", // details for test net
-          });
-          await torusdirectsdk.init();
-          loginDetails = await torusdirectsdk.triggerLogin({
-            typeOfLogin: this.selectedVerifier,
-            verifier: "torus-auth0",
-            clientId: "sqKRBVSdwa4WLkaq419U7Bamlh5vK1H7",
-            jwtParams: {
-              domain: "https://torus-test.auth0.com",
-            },
-          });
-        } else if (this.selectedVerifier === "passwordless") {
-          const torusdirectsdk = new TorusSdk({
-            baseUrl: "http://localhost:3000/serviceworker",
-            enableLogging: true,
-            proxyContractAddress: "0x4023d2a0D330bF11426B12C6144Cfb96B7fa6183", // details for test net
-            network: "ropsten", // details for test net
-          });
-          await torusdirectsdk.init();
-          loginDetails = await torusdirectsdk.triggerLogin({
-            typeOfLogin: this.selectedVerifier,
-            verifier: "torus-auth0",
-            clientId: "P7PJuBCXIHP41lcyty0NEb7Lgf7Zme8Q",
-            jwtParams: {
-              domain: "https://torus-test.auth0.com",
-              connection: "email",
-              login_hint: "chai@tor.us",
-            },
-          });
-        } else if (this.selectedVerifier === "google") {
-          // GOOGLE
-          const torusdirectsdk = new TorusSdk({
-            baseUrl: "http://localhost:3000/serviceworker",
-            enableLogging: true,
-            // proxyContractAddress: "0x4023d2a0D330bF11426B12C6144Cfb96B7fa6183", // details for test net
-            // network: "ropsten", // details for test net
-          });
-          await torusdirectsdk.init();
-          loginDetails = await torusdirectsdk.triggerLogin({
-            typeOfLogin: this.selectedVerifier,
-            verifier: this.selectedVerifier,
-            clientId: "876733105116-i0hj3s53qiio5k95prpfmj0hp0gmgtor.apps.googleusercontent.com",
-          });
-        }
+        await torusdirectsdk.init();
+        const jwtParams = this.loginToConnectionMap[this.selectedVerifier] || {};
+        const loginDetails = await torusdirectsdk.triggerLogin({
+          typeOfLogin: this.selectedVerifier,
+          verifier: this.verifierMap[this.selectedVerifier],
+          clientId: this.clientIdMap[this.selectedVerifier],
+          jwtParams: jwtParams,
+        });
 
         // AGGREGATE LOGIN
         // const loginDetails = await torusdirectsdk.triggerAggregateLogin("single_id_verifier", "google-google", [

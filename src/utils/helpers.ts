@@ -43,15 +43,14 @@ export const broadcastChannelOptions = {
 };
 
 export const getVerifierId = (userInfo: Auth0UserInfo, typeOfLogin: LOGIN_TYPE): string => {
-  const { email, name, nickname, sub } = userInfo;
+  const { name, nickname, sub } = userInfo;
   switch (typeOfLogin) {
-    case LOGIN_TYPE.PASSWORDLESS:
-    case LOGIN_TYPE.EMAIL_PASSWORD:
-      return email;
     case LOGIN_TYPE.GITHUB:
     case LOGIN_TYPE.TWITTER:
       return nickname;
     case LOGIN_TYPE.WEIBO:
+    case LOGIN_TYPE.PASSWORDLESS:
+    case LOGIN_TYPE.EMAIL_PASSWORD:
       return name;
     case LOGIN_TYPE.LINKEDIN:
     case LOGIN_TYPE.JWT:
