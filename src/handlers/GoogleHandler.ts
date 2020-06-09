@@ -39,7 +39,7 @@ export default class GoogleHandler extends AbstractLoginHandler {
       name,
       profileImage,
       verifier: this.verifier,
-      verifierId: email.toString().toLowerCase(),
+      verifierId: email.toLowerCase(),
     };
   }
 }

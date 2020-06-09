@@ -4,6 +4,14 @@ type NETWORK_TYPE = ETHEREUM_NETWORK.MAINNET | ETHEREUM_NETWORK.RINKEBY | ETHERE
 
 export type PopupResponse = { hashParams: { access_token: string; id_token?: string }; instanceParams: { verifier: string } };
 
+export interface Auth0UserInfo {
+  picture: string;
+  email: string;
+  name: string;
+  sub: string;
+  nickname: string;
+}
+
 // @flow
 export interface TorusVerifierResponse {
   email: string;

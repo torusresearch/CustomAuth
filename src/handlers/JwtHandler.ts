@@ -1,11 +1,12 @@
 import deepmerge from "deepmerge";
 import jwtDecode from "jwt-decode";
 
-import { loginToConnectionMap, padUrlString } from "../utils/helpers";
+import { LOGIN_TYPE } from "../utils/enums";
+import { getVerifierId, loginToConnectionMap, padUrlString } from "../utils/helpers";
 import { get } from "../utils/httpHelpers";
 import log from "../utils/loglevel";
 import AbstractLoginHandler from "./AbstractLoginHandler";
-import { Auth0ClientOptions, LoginWindowResponse, TorusVerifierResponse } from "./interfaces";
+import { Auth0ClientOptions, Auth0UserInfo, LoginWindowResponse, TorusVerifierResponse } from "./interfaces";
 
 export default class JwtHandler extends AbstractLoginHandler {
   private readonly SCOPE: string = "openid profile email";
@@ -18,7 +19,7 @@ export default class JwtHandler extends AbstractLoginHandler {
     readonly clientId: string,
     readonly verifier: string,
     readonly redirect_uri: string,
-    readonly typeOfLogin: string,
+    readonly typeOfLogin: LOGIN_TYPE,
     readonly redirectToOpener?: boolean,
     readonly jwtParams?: Auth0ClientOptions
   ) {
@@ -56,28 +57,28 @@ export default class JwtHandler extends AbstractLoginHandler {
     try {
       const { domain } = this.jwtParams;
       const domainUrl = new URL(domain);
-      const userInfo = await get<{ picture: string; email: string; name: string; sub: string }>(`${padUrlString(domainUrl)}userinfo`, {
+      const userInfo = await get<Auth0UserInfo>(`${padUrlString(domainUrl)}userinfo`, {
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },
       });
-      const { sub, picture, name, email } = userInfo;
+      const { picture, name, email } = userInfo;
       return {
         email,
         name,
         profileImage: picture,
-        verifierId: sub,
+        verifierId: getVerifierId(userInfo, this.typeOfLogin),
         verifier: this.verifier,
       };
     } catch (error) {
       log.error(error);
-      const decodedToken: { name: string; email: string; picture: string; sub: string } = jwtDecode(idToken);
-      const { name, email, picture, sub } = decodedToken;
+      const decodedToken: Auth0UserInfo = jwtDecode(idToken);
+      const { name, email, picture } = decodedToken;
       return {
         profileImage: picture,
         name,
         email,
-        verifierId: sub,
+        verifierId: getVerifierId(decodedToken, this.typeOfLogin),
         verifier: this.verifier,
       };
     }

@@ -1,3 +1,4 @@
+import { Auth0UserInfo } from "../handlers/interfaces";
 import { LOGIN_TYPE } from "./enums";
 
 interface CustomMessageEvent extends MessageEvent {
@@ -39,4 +40,23 @@ export const padUrlString = (url: URL): string => {
 export const broadcastChannelOptions = {
   // type: 'localstorage', // (optional) enforce a type, oneOf['native', 'idb', 'localstorage', 'node']
   webWorkerSupport: false, // (optional) set this to false if you know that your channel will never be used in a WebWorker (increases performance)
+};
+
+export const getVerifierId = (userInfo: Auth0UserInfo, typeOfLogin: LOGIN_TYPE): string => {
+  const { email, name, nickname, sub } = userInfo;
+  switch (typeOfLogin) {
+    case LOGIN_TYPE.PASSWORDLESS:
+    case LOGIN_TYPE.EMAIL_PASSWORD:
+      return email;
+    case LOGIN_TYPE.GITHUB:
+    case LOGIN_TYPE.TWITTER:
+      return nickname;
+    case LOGIN_TYPE.WEIBO:
+      return name;
+    case LOGIN_TYPE.LINKEDIN:
+    case LOGIN_TYPE.JWT:
+      return sub;
+    default:
+      throw new Error("Invalid login type");
+  }
 };

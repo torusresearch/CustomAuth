@@ -86,6 +86,23 @@ const userInfo = await torus.triggerLogin({
 
 7. Reach out to hello@tor.us to get your verifier spun up on the testnet today!
 
+## Info
+
+The following links help you create OAuth accounts with different login providers
+ - [Google](https://support.google.com/googleapi/answer/6158849)
+ - [Facebook](https://developers.facebook.com/docs/apps)
+ - [Reddit](https://github.com/reddit-archive/reddit/wiki/oauth2)
+ - [Twitch](https://dev.twitch.tv/docs/authentication/#registration)
+ - [Discord](https://discord.com/developers/docs/topics/oauth2)
+
+ For other verifiers,
+ - you'll need to create an [Auth0 account](https://auth0.com/)
+ - [create an application](https://auth0.com/docs/connections) for the login type you want
+ - Pass in the clientId, domain of the Auth0 application into the torus login request
+
+ Please refer to [examples](examples/vue-app/src/App.vue) for configuration
+
+
 ## Requirements
 
 - This package requires a peer dependency of `@babel/runtime`
