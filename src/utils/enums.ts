@@ -11,6 +11,13 @@ export enum LOGIN_TYPE {
   REDDIT = "reddit",
   DISCORD = "discord",
   TWITCH = "twitch",
+  GITHUB = "github",
+  LINKEDIN = "linkedin",
+  TWITTER = "twitter",
+  WEIBO = "weibo",
+  LINE = "line",
+  EMAIL_PASSWORD = "email_password",
+  PASSWORDLESS = "passwordless",
   JWT = "jwt",
 }
 

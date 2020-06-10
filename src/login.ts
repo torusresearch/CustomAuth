@@ -2,9 +2,11 @@ import NodeDetailManager from "@toruslabs/fetch-node-details";
 import Torus from "@toruslabs/torus.js";
 import { keccak256 } from "web3-utils";
 
+import createHandler from "./handlers/HandlerFactory";
 import {
   DirectWebSDKArgs,
   ILoginHandler,
+  InitParams,
   LoginWindowResponse,
   SubVerifierDetails,
   TorusAggregateLoginResponse,
@@ -14,7 +16,7 @@ import {
 } from "./handlers/interfaces";
 import { registerServiceWorker } from "./registerServiceWorker";
 import { AGGREGATE_VERIFIER_TYPE, ETHEREUM_NETWORK, LOGIN_TYPE } from "./utils/enums";
-import { createHandler } from "./utils/helpers";
+import { padUrlString } from "./utils/helpers";
 import log from "./utils/loglevel";
 
 class DirectWebSDK {
@@ -40,7 +42,7 @@ class DirectWebSDK {
     this.isInitialized = false;
     const baseUri = new URL(baseUrl);
     this.config = {
-      baseUrl: baseUri.href.endsWith("/") ? baseUri.href : `${baseUri.href}/`,
+      baseUrl: padUrlString(baseUri),
       get redirect_uri() {
         return `${this.baseUrl}redirect`;
       },
@@ -54,27 +56,33 @@ class DirectWebSDK {
     else log.disableAll();
   }
 
-  async init(): Promise<void> {
-    const fetchSwResponse = await fetch(`${this.config.baseUrl}sw.js`, { cache: "reload" });
-    if (fetchSwResponse.ok) {
-      try {
-        await registerServiceWorker(this.config.baseUrl);
-        this.isInitialized = true;
-        return;
-      } catch (error) {
-        log.error(error);
-        const response2 = await fetch(this.config.redirect_uri, { cache: "reload" });
-        if (response2.ok) {
+  async init({ skipSw = false }: InitParams = {}): Promise<void> {
+    if (!skipSw) {
+      const fetchSwResponse = await fetch(`${this.config.baseUrl}sw.js`, { cache: "reload" });
+      if (fetchSwResponse.ok) {
+        try {
+          await registerServiceWorker(this.config.baseUrl);
           this.isInitialized = true;
           return;
+        } catch (error) {
+          log.error(error);
+          await this.handleRedirectCheck();
         }
-        throw new Error(
-          `Service worker not supported. Please serve redirect.html present in public folder of this package on ${this.config.redirect_uri}`
-        );
+      } else {
+        throw new Error("Service worker is not being served. Please serve it");
       }
     } else {
-      throw new Error("Service worker is not being served. Checking for fallback");
+      await this.handleRedirectCheck();
     }
+  }
+
+  private async handleRedirectCheck(): Promise<void> {
+    const response2 = await fetch(this.config.redirect_uri, { cache: "reload" });
+    if (response2.ok) {
+      this.isInitialized = true;
+      return;
+    }
+    throw new Error(`Please serve redirect.html present in public folder of this package on ${this.config.redirect_uri}`);
   }
 
   async triggerLogin({ verifier, typeOfLogin, clientId, jwtParams }: SubVerifierDetails): Promise<TorusLoginResponse> {
@@ -82,23 +90,17 @@ class DirectWebSDK {
     if (!this.isInitialized) {
       throw new Error("Not initialized yet");
     }
-    if (!verifier || !typeOfLogin) {
-      throw new Error("Invalid params");
-    }
-    if (!clientId) {
-      throw new Error("Client id is not available");
-    }
-    const loginHandler: ILoginHandler = createHandler(
+    const loginHandler: ILoginHandler = createHandler({
       typeOfLogin,
       clientId,
       verifier,
-      this.config.redirect_uri,
-      this.config.redirectToOpener,
-      jwtParams
-    );
+      redirect_uri: this.config.redirect_uri,
+      redirectToOpener: this.config.redirectToOpener,
+      jwtParams,
+    });
     const loginParams = await loginHandler.handleLoginWindow();
     const { accessToken, idToken } = loginParams;
-    const userInfo = await loginHandler.getUserInfo(accessToken || idToken);
+    const userInfo = await loginHandler.getUserInfo(loginParams);
     const torusKey = await this.getTorusKey(verifier, userInfo.verifierId, { verifier_id: userInfo.verifierId }, idToken || accessToken);
     return {
       ...torusKey,
@@ -111,6 +113,9 @@ class DirectWebSDK {
     verifierIdentifier: string,
     subVerifierDetailsArray: SubVerifierDetails[]
   ): Promise<TorusAggregateLoginResponse> {
+    if (!this.isInitialized) {
+      throw new Error("Not initialized yet");
+    }
     if (!aggregateVerifierType || !verifierIdentifier || !Array.isArray(subVerifierDetailsArray)) {
       throw new Error("Invalid params");
     }
@@ -120,12 +125,20 @@ class DirectWebSDK {
     const userInfoPromises: Promise<TorusVerifierResponse>[] = [];
     const loginParamsArray: LoginWindowResponse[] = [];
     for (const subVerifierDetail of subVerifierDetailsArray) {
-      const { clientId, typeOfLogin, verifier } = subVerifierDetail;
-      const loginHandler: ILoginHandler = createHandler(typeOfLogin, clientId, verifier, this.config.redirect_uri, this.config.redirectToOpener);
+      const { clientId, typeOfLogin, verifier, jwtParams } = subVerifierDetail;
+      const loginHandler: ILoginHandler = createHandler({
+        typeOfLogin,
+        clientId,
+        verifier,
+        redirect_uri: this.config.redirect_uri,
+        redirectToOpener: this.config.redirectToOpener,
+        jwtParams,
+      });
+      // We let the user login to each verifier in a loop. Don't wait for key derivation here.!
       // eslint-disable-next-line no-await-in-loop
       const loginParams = await loginHandler.handleLoginWindow();
-      const { accessToken, idToken } = loginParams;
-      userInfoPromises.push(loginHandler.getUserInfo(accessToken || idToken));
+      // Fail the method even if one promise fails
+      userInfoPromises.push(loginHandler.getUserInfo(loginParams));
       loginParamsArray.push(loginParams);
     }
     const userInfoArray = await Promise.all(userInfoPromises);

@@ -1,6 +1,6 @@
 import { get } from "../utils/httpHelpers";
 import AbstractLoginHandler from "./AbstractLoginHandler";
-import { TorusVerifierResponse } from "./interfaces";
+import { LoginWindowResponse, TorusVerifierResponse } from "./interfaces";
 
 export default class RedditHandler extends AbstractLoginHandler {
   private readonly RESPONSE_TYPE: string = "token";
@@ -22,7 +22,8 @@ export default class RedditHandler extends AbstractLoginHandler {
     this.finalURL = finalUrl;
   }
 
-  async getUserInfo(accessToken: string): Promise<TorusVerifierResponse> {
+  async getUserInfo(params: LoginWindowResponse): Promise<TorusVerifierResponse> {
+    const { accessToken } = params;
     const userInfo = await get<{ icon_img: string; name: string }>("https://oauth.reddit.com/api/v1/me", {
       headers: {
         Authorization: `Bearer ${accessToken}`,

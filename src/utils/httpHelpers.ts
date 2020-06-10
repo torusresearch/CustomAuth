@@ -15,6 +15,28 @@ export const get = async <T>(url = "", options_: RequestInit = {}): Promise<T> =
   throw response;
 };
 
+export const post = async <T>(url = "", data = {}, options_: RequestInit = {}): Promise<T> => {
+  const defaultOptions = {
+    mode: "cors",
+    cache: "no-cache",
+    headers: {
+      "Content-Type": "application/json; charset=utf-8",
+    },
+    body: JSON.stringify(data),
+  };
+  const options = {
+    ...defaultOptions,
+    ...options_,
+    ...{ method: "POST" },
+  };
+
+  const response = await fetch(url, options as RequestInit);
+  if (response.ok) {
+    return response.json() as Promise<T>;
+  }
+  throw response;
+};
+
 export const remove = async <T>(url = "", options_: RequestInit = {}): Promise<T> => {
   const defaultOptions = {
     mode: "cors",

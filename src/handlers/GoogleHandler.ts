@@ -1,6 +1,6 @@
 import { get } from "../utils/httpHelpers";
 import AbstractLoginHandler from "./AbstractLoginHandler";
-import { TorusVerifierResponse } from "./interfaces";
+import { LoginWindowResponse, TorusVerifierResponse } from "./interfaces";
 
 export default class GoogleHandler extends AbstractLoginHandler {
   private readonly RESPONSE_TYPE: string = "token id_token";
@@ -26,7 +26,8 @@ export default class GoogleHandler extends AbstractLoginHandler {
     this.finalURL = finalUrl;
   }
 
-  async getUserInfo(accessToken: string): Promise<TorusVerifierResponse> {
+  async getUserInfo(params: LoginWindowResponse): Promise<TorusVerifierResponse> {
+    const { accessToken } = params;
     const userInfo = await get<{ picture: string; email: string; name: string }>("https://www.googleapis.com/userinfo/v2/me", {
       headers: {
         Authorization: `Bearer ${accessToken}`,
@@ -38,7 +39,7 @@ export default class GoogleHandler extends AbstractLoginHandler {
       name,
       profileImage,
       verifier: this.verifier,
-      verifierId: email.toString().toLowerCase(),
+      verifierId: email.toLowerCase(),
     };
   }
 }

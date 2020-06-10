@@ -1,10 +1,4 @@
-import DiscordHandler from "../handlers/DiscordHandler";
-import FacebookHandler from "../handlers/FacebookHandler";
-import GoogleHandler from "../handlers/GoogleHandler";
-import { Auth0ClientOptions, ILoginHandler } from "../handlers/interfaces";
-import JwtHandler from "../handlers/JwtHandler";
-import RedditHandler from "../handlers/RedditHandler";
-import TwitchHandler from "../handlers/TwitchHandler";
+import { Auth0UserInfo } from "../handlers/interfaces";
 import { LOGIN_TYPE } from "./enums";
 
 interface CustomMessageEvent extends MessageEvent {
@@ -29,19 +23,42 @@ export function eventToPromise<T>(emitter: EmitterType): Promise<T> {
   });
 }
 
-export const createHandler = (
-  typeofLogin: string,
-  clientId: string,
-  verifier: string,
-  redirect_uri: string,
-  redirectToOpener?: boolean,
-  jwtParams?: Auth0ClientOptions
-): ILoginHandler => {
-  if (typeofLogin === LOGIN_TYPE.GOOGLE) return new GoogleHandler(clientId, verifier, redirect_uri, redirectToOpener);
-  if (typeofLogin === LOGIN_TYPE.FACEBOOK) return new FacebookHandler(clientId, verifier, redirect_uri, redirectToOpener);
-  if (typeofLogin === LOGIN_TYPE.TWITCH) return new TwitchHandler(clientId, verifier, redirect_uri, redirectToOpener);
-  if (typeofLogin === LOGIN_TYPE.REDDIT) return new RedditHandler(clientId, verifier, redirect_uri, redirectToOpener);
-  if (typeofLogin === LOGIN_TYPE.DISCORD) return new DiscordHandler(clientId, verifier, redirect_uri, redirectToOpener);
-  if (typeofLogin === LOGIN_TYPE.JWT) return new JwtHandler(clientId, verifier, redirect_uri, redirectToOpener, jwtParams);
-  throw new Error("Invalid login type");
+// These are the connection names used by auth0
+export const loginToConnectionMap = {
+  [LOGIN_TYPE.GITHUB]: "github",
+  [LOGIN_TYPE.LINKEDIN]: "linkedin",
+  [LOGIN_TYPE.TWITTER]: "twitter",
+  [LOGIN_TYPE.WEIBO]: "weibo",
+  [LOGIN_TYPE.LINE]: "line",
+  [LOGIN_TYPE.EMAIL_PASSWORD]: "Username-Password-Authentication",
+  [LOGIN_TYPE.PASSWORDLESS]: "email",
+};
+
+export const padUrlString = (url: URL): string => {
+  return url.href.endsWith("/") ? url.href : `${url.href}/`;
+};
+
+export const broadcastChannelOptions = {
+  // type: 'localstorage', // (optional) enforce a type, oneOf['native', 'idb', 'localstorage', 'node']
+  webWorkerSupport: false, // (optional) set this to false if you know that your channel will never be used in a WebWorker (increases performance)
+};
+
+export const getVerifierId = (userInfo: Auth0UserInfo, typeOfLogin: LOGIN_TYPE, verifierIdField?: string): string => {
+  const { name, nickname, sub } = userInfo;
+  if (verifierIdField) return userInfo[verifierIdField];
+  switch (typeOfLogin) {
+    case LOGIN_TYPE.GITHUB:
+    case LOGIN_TYPE.TWITTER:
+      return nickname;
+    case LOGIN_TYPE.WEIBO:
+    case LOGIN_TYPE.PASSWORDLESS:
+    case LOGIN_TYPE.EMAIL_PASSWORD:
+      return name;
+    case LOGIN_TYPE.LINKEDIN:
+    case LOGIN_TYPE.LINE:
+    case LOGIN_TYPE.JWT:
+      return sub;
+    default:
+      throw new Error("Invalid login type");
+  }
 };
