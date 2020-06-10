@@ -105,7 +105,24 @@ The following links help you create OAuth accounts with different login provider
  Hosted Example for testing is [here](https://vue-direct.tor.us/)
 
 ## Best practices
-Due to browser restrictions on popups, you should reduce the time taken between user interaction and the login popups being opened. This is highly browser dependent, but the best practice for this is to separate the initialization of the SDK and the user login method calls.
+- Due to browser restrictions on popups, you should reduce the time taken between user interaction and the login popups being opened. This is highly browser dependent, but the best practice for this is to separate the initialization of the SDK and the user login method calls.
+
+- Please check if redirect.html is being served correctly by navigating to `baseUrl/redirect#a=123`
+
+For nginx, here is a simple server configuration
+```nginx
+    location ~* (/serviceworker/redirect) {
+            add_header 'Access-Control-Allow-Origin' '*';
+            add_header Content-Security-Policy "default-src https:; script-src https: 'unsafe-inline' 'unsafe-eval'; style-src https: 'unsafe-inline';";
+            add_header X-Content-Type-Options nosniff;
+            add_header X-XSS-Protection "1; mode=block";
+            add_header Strict-Transport-Security "max-age=31536000; includeSubdomains; preload";
+            default_type "text/html";
+            alias PATH_TO_REDIRECT_HTML_FILE;
+            autoindex off;
+    }
+
+```
 
 ## Requirements
 
