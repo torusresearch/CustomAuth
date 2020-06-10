@@ -100,7 +100,7 @@ The following links help you create OAuth accounts with different login provider
  - [create an application](https://auth0.com/docs/connections) for the login type you want
  - Pass in the clientId, domain of the Auth0 application into the torus login request
 
- Please refer to [examples](examples/vue-app/src/App.vue) for configuration
+ Please refer to examples, [vue.js](examples/vue-app/src/App.vue), [gatsby](https://github.com/jamespfarrell/gatsby-torus-direct) for configuration
 
 
 ## Requirements
