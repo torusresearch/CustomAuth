@@ -56,7 +56,7 @@ class DirectWebSDK {
     else log.disableAll();
   }
 
-  async init({ skipSw = false }: InitParams): Promise<void> {
+  async init({ skipSw = false }: InitParams = {}): Promise<void> {
     if (!skipSw) {
       const fetchSwResponse = await fetch(`${this.config.baseUrl}sw.js`, { cache: "reload" });
       if (fetchSwResponse.ok) {
@@ -66,17 +66,17 @@ class DirectWebSDK {
           return;
         } catch (error) {
           log.error(error);
-          this.handleRedirect();
+          await this.handleRedirectCheck();
         }
       } else {
         throw new Error("Service worker is not being served. Please serve it");
       }
     } else {
-      this.handleRedirect();
+      await this.handleRedirectCheck();
     }
   }
 
-  private async handleRedirect(): Promise<void> {
+  private async handleRedirectCheck(): Promise<void> {
     const response2 = await fetch(this.config.redirect_uri, { cache: "reload" });
     if (response2.ok) {
       this.isInitialized = true;

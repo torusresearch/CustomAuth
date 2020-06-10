@@ -33,7 +33,7 @@ export default {
   name: "App",
   data() {
     return {
-      selectedVerifier: "passwordless",
+      selectedVerifier: "google",
       typesOfLogin: {
         [GOOGLE]: "Google",
         [FACEBOOK]: "Facebook",
@@ -90,7 +90,7 @@ export default {
           network: "ropsten", // details for test net
         });
 
-        await torusdirectsdk.init();
+        await torusdirectsdk.init({ skipSw: false });
         const jwtParams = this.loginToConnectionMap[this.selectedVerifier] || {};
         const loginDetails = await torusdirectsdk.triggerLogin({
           typeOfLogin: this.selectedVerifier,
