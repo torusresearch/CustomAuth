@@ -31,6 +31,7 @@ const createHandler = ({ clientId, redirect_uri, typeOfLogin, verifier, jwtParam
     case LOGIN_TYPE.LINKEDIN:
     case LOGIN_TYPE.TWITTER:
     case LOGIN_TYPE.WEIBO:
+    case LOGIN_TYPE.LINE:
     case LOGIN_TYPE.EMAIL_PASSWORD:
     case LOGIN_TYPE.JWT:
       if (!domain) throw new Error("Invalid params");

@@ -78,6 +78,7 @@ export enum LOGIN_TYPE {
   LINKEDIN = "linkedin",
   TWITTER = "twitter",
   WEIBO = "weibo",
+  LINE = "line",
   EMAIL_PASSWORD = "email_password",
   PASSWORDLESS = "passwordless",
   JWT = "jwt",

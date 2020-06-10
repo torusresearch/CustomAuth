@@ -29,6 +29,7 @@ export const loginToConnectionMap = {
   [LOGIN_TYPE.LINKEDIN]: "linkedin",
   [LOGIN_TYPE.TWITTER]: "twitter",
   [LOGIN_TYPE.WEIBO]: "weibo",
+  [LOGIN_TYPE.LINE]: "line",
   [LOGIN_TYPE.EMAIL_PASSWORD]: "Username-Password-Authentication",
   [LOGIN_TYPE.PASSWORDLESS]: "email",
 };
@@ -53,6 +54,7 @@ export const getVerifierId = (userInfo: Auth0UserInfo, typeOfLogin: LOGIN_TYPE):
     case LOGIN_TYPE.EMAIL_PASSWORD:
       return name;
     case LOGIN_TYPE.LINKEDIN:
+    case LOGIN_TYPE.LINE:
     case LOGIN_TYPE.JWT:
       return sub;
     default:

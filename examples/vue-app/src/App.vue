@@ -29,6 +29,7 @@ const GITHUB = "github";
 const LINKEDIN = "linkedin";
 const TWITTER = "twitter";
 const WEIBO = "weibo";
+const LINE =  "line";
 const EMAIL_PASSWORD = "email_password";
 const PASSWORDLESS = "passwordless";
 
@@ -50,6 +51,7 @@ export default {
         [LINKEDIN]: "Linkedin",
         [TWITTER]: "Twitter",
         [WEIBO]: "Weibo",
+        [LINE]: "Line"
       },
       clientIdMap: {
         [GOOGLE]: "876733105116-i0hj3s53qiio5k95prpfmj0hp0gmgtor.apps.googleusercontent.com",
@@ -62,6 +64,7 @@ export default {
         [LINKEDIN]: "59YxSgx79Vl3Wi7tQUBqQTRTxWroTuoc",
         [TWITTER]: "A7H8kkcmyFRlusJQ9dZiqBLraG2yWIsO",
         [WEIBO]: "dhFGlWQMoACOI5oS5A1jFglp772OAWr1",
+        [LINE]: "WN8bOmXKNRH1Gs8k475glfBP5gDZr9H1"
       },
       verifierMap: {
         [GOOGLE]: "google",
@@ -74,6 +77,7 @@ export default {
         [LINKEDIN]: "torus-auth0-linkedin",
         [TWITTER]: "torus-auth0-twitter",
         [WEIBO]: "torus-auth0-weibo",
+        [LINE]: "torus-auth0-line"
       },
     };
   },
@@ -86,6 +90,7 @@ export default {
         [LINKEDIN]: { connection: "linkedin", domain: "https://torus-test.auth0.com" },
         [TWITTER]: { connection: "twitter", domain: "https://torus-test.auth0.com" },
         [WEIBO]: { connection: "weibo", domain: "https://torus-test.auth0.com" },
+        [LINE]: { connection: "line", domain: "https://torus-test.auth0.com" },
       };
     },
   },
