@@ -6,6 +6,7 @@ import createHandler from "./handlers/HandlerFactory";
 import {
   DirectWebSDKArgs,
   ILoginHandler,
+  InitParams,
   LoginWindowResponse,
   SubVerifierDetails,
   TorusAggregateLoginResponse,
@@ -55,27 +56,33 @@ class DirectWebSDK {
     else log.disableAll();
   }
 
-  async init(): Promise<void> {
-    const fetchSwResponse = await fetch(`${this.config.baseUrl}sw.js`, { cache: "reload" });
-    if (fetchSwResponse.ok) {
-      try {
-        await registerServiceWorker(this.config.baseUrl);
-        this.isInitialized = true;
-        return;
-      } catch (error) {
-        log.error(error);
-        const response2 = await fetch(this.config.redirect_uri, { cache: "reload" });
-        if (response2.ok) {
+  async init({ skipSw = false }: InitParams): Promise<void> {
+    if (!skipSw) {
+      const fetchSwResponse = await fetch(`${this.config.baseUrl}sw.js`, { cache: "reload" });
+      if (fetchSwResponse.ok) {
+        try {
+          await registerServiceWorker(this.config.baseUrl);
           this.isInitialized = true;
           return;
+        } catch (error) {
+          log.error(error);
+          this.handleRedirect();
         }
-        throw new Error(
-          `Service worker not supported. Please serve redirect.html present in public folder of this package on ${this.config.redirect_uri}`
-        );
+      } else {
+        throw new Error("Service worker is not being served. Please serve it");
       }
     } else {
-      throw new Error("Service worker is not being served. Checking for fallback");
+      this.handleRedirect();
     }
+  }
+
+  private async handleRedirect(): Promise<void> {
+    const response2 = await fetch(this.config.redirect_uri, { cache: "reload" });
+    if (response2.ok) {
+      this.isInitialized = true;
+      return;
+    }
+    throw new Error(`Please serve redirect.html present in public folder of this package on ${this.config.redirect_uri}`);
   }
 
   async triggerLogin({ verifier, typeOfLogin, clientId, jwtParams }: SubVerifierDetails): Promise<TorusLoginResponse> {

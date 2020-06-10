@@ -49,6 +49,10 @@ export interface DirectWebSDKArgs {
   redirectToOpener?: boolean;
 }
 
+export interface InitParams {
+  skipSw?: boolean;
+}
+
 export interface SubVerifierDetails {
   typeOfLogin: LOGIN_TYPE;
   verifier: string;

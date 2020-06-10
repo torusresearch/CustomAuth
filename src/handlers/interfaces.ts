@@ -73,6 +73,10 @@ export interface CreateHandlerParams {
   jwtParams?: Auth0ClientOptions;
 }
 
+export interface InitParams {
+  skipSw?: boolean;
+}
+
 // REGION: AUTH0 PARAMS
 export interface BaseLoginOptions {
   /**
