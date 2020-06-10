@@ -104,6 +104,9 @@ The following links help you create OAuth accounts with different login provider
 
  Hosted Example for testing is [here](https://vue-direct.tor.us/)
 
+## Best practices
+Due to browser restrictions on popups, you should reduce the time taken between user interaction and the login popups being opened. This is highly browser dependent, but the best practice for this is to separate the initialization of the SDK and the user login method calls.
+
 ## Requirements
 
 - This package requires a peer dependency of `@babel/runtime`
