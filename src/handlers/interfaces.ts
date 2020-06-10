@@ -1,6 +1,4 @@
-import { ETHEREUM_NETWORK, LOGIN_TYPE } from "../utils/enums";
-
-type NETWORK_TYPE = ETHEREUM_NETWORK.MAINNET | ETHEREUM_NETWORK.RINKEBY | ETHEREUM_NETWORK.ROPSTEN | ETHEREUM_NETWORK.KOVAN | ETHEREUM_NETWORK.GOERLI;
+import { AGGREGATE_VERIFIER_TYPE, ETHEREUM_NETWORK_TYPE, LOGIN_TYPE } from "../utils/enums";
 
 export type PopupResponse = { hashParams: { access_token: string; id_token?: string }; instanceParams: { verifier: string } };
 
@@ -51,7 +49,7 @@ export type TorusAggregateLoginResponse = TorusAggregateVerifierResponse & Torus
 
 export interface DirectWebSDKArgs {
   baseUrl: string;
-  network?: NETWORK_TYPE | string;
+  network?: ETHEREUM_NETWORK_TYPE | string;
   proxyContractAddress?: string;
   enableLogging?: boolean;
   redirectToOpener?: boolean;
@@ -62,6 +60,12 @@ export interface SubVerifierDetails {
   verifier: string;
   clientId: string;
   jwtParams?: Auth0ClientOptions;
+}
+
+export interface AggregateLoginParams {
+  aggregateVerifierType: AGGREGATE_VERIFIER_TYPE;
+  verifierIdentifier: string;
+  subVerifierDetailsArray: SubVerifierDetails[];
 }
 
 export interface CreateHandlerParams {

@@ -1,11 +1,31 @@
 // @flow
-export type NETWORK_TYPE =
-  | ETHEREUM_NETWORK.MAINNET
-  | ETHEREUM_NETWORK.RINKEBY
-  | ETHEREUM_NETWORK.ROPSTEN
-  | ETHEREUM_NETWORK.KOVAN
-  | ETHEREUM_NETWORK.GOERLI;
+export type ETHEREUM_NETWORK_TYPE = "ropsten" | "rinkeby" | "kovan" | "mainnet" | "goerli";
+export type LOGIN_TYPE =
+  | "google"
+  | "facebook"
+  | "reddit"
+  | "discord"
+  | "twitch"
+  | "github"
+  | "linkedin"
+  | "twitter"
+  | "weibo"
+  | "line"
+  | "email_password"
+  | "passwordless"
+  | "jwt";
+export type AGGREGATE_VERIFIER_TYPE = "single_id_verifier";
+export type PopupResponse = { hashParams: { access_token: string; id_token?: string }; instanceParams: { verifier: string } };
 
+export interface Auth0UserInfo {
+  picture: string;
+  email: string;
+  name: string;
+  sub: string;
+  nickname: string;
+}
+
+// @flow
 export interface TorusVerifierResponse {
   email: string;
   name: string;
@@ -13,25 +33,26 @@ export interface TorusVerifierResponse {
   verifier: string;
   verifierId: string;
 }
-
-export interface TorusAggregateVerifierResponse {
-  userInfo: TorusVerifierResponse[];
-}
-
 export interface LoginWindowResponse {
   accessToken: string;
   idToken?: string;
 }
 
+// @flow
 export interface ILoginHandler {
   clientId: string;
   getUserInfo(params: LoginWindowResponse): Promise<TorusVerifierResponse>;
   handleLoginWindow(): Promise<LoginWindowResponse>;
 }
 
+// @flow
 export interface TorusKey {
   publicAddress: string;
   privateKey: string;
+}
+
+export interface TorusAggregateVerifierResponse {
+  userInfo: TorusVerifierResponse[];
 }
 
 export interface TorusSingleVerifierResponse {
@@ -43,14 +64,10 @@ export type TorusAggregateLoginResponse = TorusAggregateVerifierResponse & Torus
 
 export interface DirectWebSDKArgs {
   baseUrl: string;
-  network?: NETWORK_TYPE | string;
+  network?: ETHEREUM_NETWORK_TYPE | string;
   proxyContractAddress?: string;
   enableLogging?: boolean;
   redirectToOpener?: boolean;
-}
-
-export interface InitParams {
-  skipSw?: boolean;
 }
 
 export interface SubVerifierDetails {
@@ -60,34 +77,23 @@ export interface SubVerifierDetails {
   jwtParams?: Auth0ClientOptions;
 }
 
-export enum ETHEREUM_NETWORK {
-  ROPSTEN = "ropsten",
-  RINKEBY = "rinkeby",
-  KOVAN = "kovan",
-  MAINNET = "mainnet",
-  GOERLI = "goerli",
+export interface AggregateLoginParams {
+  aggregateVerifierType: AGGREGATE_VERIFIER_TYPE;
+  verifierIdentifier: string;
+  subVerifierDetailsArray: SubVerifierDetails[];
 }
 
-export enum LOGIN_TYPE {
-  GOOGLE = "google",
-  FACEBOOK = "facebook",
-  REDDIT = "reddit",
-  DISCORD = "discord",
-  TWITCH = "twitch",
-  GITHUB = "github",
-  LINKEDIN = "linkedin",
-  TWITTER = "twitter",
-  WEIBO = "weibo",
-  LINE = "line",
-  EMAIL_PASSWORD = "email_password",
-  PASSWORDLESS = "passwordless",
-  JWT = "jwt",
+export interface CreateHandlerParams {
+  typeOfLogin: LOGIN_TYPE;
+  clientId: string;
+  verifier: string;
+  redirect_uri: string;
+  redirectToOpener?: boolean;
+  jwtParams?: Auth0ClientOptions;
 }
 
-export enum AGGREGATE_VERIFIER_TYPE {
-  SINGLE_VERIFIER_ID = "single_id_verifier",
-  // AND_AGGREGATE_VERIFIER = "and_aggregate_verifier",
-  // OR_AGGREGATE_VERIFIER = "or_aggregate_verifier",
+export interface InitParams {
+  skipSw?: boolean;
 }
 
 // REGION: AUTH0 PARAMS
@@ -179,4 +185,7 @@ export interface Auth0ClientOptions extends BaseLoginOptions {
    * Defaults to 60s.
    */
   leeway?: number;
+
+  // The field in jwt token which maps to verifier id
+  verifierIdField?: string;
 }

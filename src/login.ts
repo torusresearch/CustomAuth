@@ -4,6 +4,7 @@ import { keccak256 } from "web3-utils";
 
 import createHandler from "./handlers/HandlerFactory";
 import {
+  AggregateLoginParams,
   DirectWebSDKArgs,
   ILoginHandler,
   InitParams,
@@ -15,7 +16,7 @@ import {
   TorusVerifierResponse,
 } from "./handlers/interfaces";
 import { registerServiceWorker } from "./registerServiceWorker";
-import { AGGREGATE_VERIFIER_TYPE, ETHEREUM_NETWORK, LOGIN_TYPE } from "./utils/enums";
+import { AGGREGATE_VERIFIER, ETHEREUM_NETWORK, LOGIN_TYPE } from "./utils/enums";
 import { padUrlString } from "./utils/helpers";
 import log from "./utils/loglevel";
 
@@ -108,18 +109,18 @@ class DirectWebSDK {
     };
   }
 
-  async triggerAggregateLogin(
-    aggregateVerifierType: AGGREGATE_VERIFIER_TYPE,
-    verifierIdentifier: string,
-    subVerifierDetailsArray: SubVerifierDetails[]
-  ): Promise<TorusAggregateLoginResponse> {
+  async triggerAggregateLogin({
+    aggregateVerifierType,
+    verifierIdentifier,
+    subVerifierDetailsArray,
+  }: AggregateLoginParams): Promise<TorusAggregateLoginResponse> {
     if (!this.isInitialized) {
       throw new Error("Not initialized yet");
     }
     if (!aggregateVerifierType || !verifierIdentifier || !Array.isArray(subVerifierDetailsArray)) {
       throw new Error("Invalid params");
     }
-    if (aggregateVerifierType === AGGREGATE_VERIFIER_TYPE.SINGLE_VERIFIER_ID && subVerifierDetailsArray.length !== 1) {
+    if (aggregateVerifierType === AGGREGATE_VERIFIER.SINGLE_VERIFIER_ID && subVerifierDetailsArray.length !== 1) {
       throw new Error("Single id verifier can only have one sub verifier");
     }
     const userInfoPromises: Promise<TorusVerifierResponse>[] = [];
