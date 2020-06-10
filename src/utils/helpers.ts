@@ -43,8 +43,9 @@ export const broadcastChannelOptions = {
   webWorkerSupport: false, // (optional) set this to false if you know that your channel will never be used in a WebWorker (increases performance)
 };
 
-export const getVerifierId = (userInfo: Auth0UserInfo, typeOfLogin: LOGIN_TYPE): string => {
+export const getVerifierId = (userInfo: Auth0UserInfo, typeOfLogin: LOGIN_TYPE, verifierIdField?: string): string => {
   const { name, nickname, sub } = userInfo;
+  if (verifierIdField) return userInfo[verifierIdField];
   switch (typeOfLogin) {
     case LOGIN_TYPE.GITHUB:
     case LOGIN_TYPE.TWITTER:

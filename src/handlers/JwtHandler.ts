@@ -54,8 +54,8 @@ export default class JwtHandler extends AbstractLoginHandler {
 
   async getUserInfo(params: LoginWindowResponse): Promise<TorusVerifierResponse> {
     const { idToken, accessToken } = params;
+    const { domain, verifierIdField } = this.jwtParams;
     try {
-      const { domain } = this.jwtParams;
       const domainUrl = new URL(domain);
       const userInfo = await get<Auth0UserInfo>(`${padUrlString(domainUrl)}userinfo`, {
         headers: {
@@ -67,7 +67,7 @@ export default class JwtHandler extends AbstractLoginHandler {
         email,
         name,
         profileImage: picture,
-        verifierId: getVerifierId(userInfo, this.typeOfLogin),
+        verifierId: getVerifierId(userInfo, this.typeOfLogin, verifierIdField),
         verifier: this.verifier,
       };
     } catch (error) {
@@ -78,7 +78,7 @@ export default class JwtHandler extends AbstractLoginHandler {
         profileImage: picture,
         name,
         email,
-        verifierId: getVerifierId(decodedToken, this.typeOfLogin),
+        verifierId: getVerifierId(decodedToken, this.typeOfLogin, verifierIdField),
         verifier: this.verifier,
       };
     }
