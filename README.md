@@ -102,6 +102,7 @@ The following links help you create OAuth accounts with different login provider
 
  Please refer to examples, [vue.js](examples/vue-app/src/App.vue), [gatsby](https://github.com/jamespfarrell/gatsby-torus-direct) for configuration
 
+ Hosted Example for testing is [here](https://vue-direct.tor.us/)
 
 ## Requirements
 
