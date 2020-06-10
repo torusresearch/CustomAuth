@@ -33,6 +33,7 @@ export default {
   name: "App",
   data() {
     return {
+      torusdirectsdk: undefined,
       selectedVerifier: "google",
       typesOfLogin: {
         [GOOGLE]: "Google",
@@ -83,16 +84,9 @@ export default {
   methods: {
     async login() {
       try {
-        const torusdirectsdk = new TorusSdk({
-          baseUrl: `${location.origin}/serviceworker`,
-          enableLogging: true,
-          proxyContractAddress: "0x4023d2a0D330bF11426B12C6144Cfb96B7fa6183", // details for test net
-          network: "ropsten", // details for test net
-        });
-
-        await torusdirectsdk.init({ skipSw: false });
+        if (!this.torusdirectsdk) return;
         const jwtParams = this.loginToConnectionMap[this.selectedVerifier] || {};
-        const loginDetails = await torusdirectsdk.triggerLogin({
+        const loginDetails = await this.torusdirectsdk.triggerLogin({
           typeOfLogin: this.selectedVerifier,
           verifier: this.verifierMap[this.selectedVerifier],
           clientId: this.clientIdMap[this.selectedVerifier],
@@ -115,6 +109,21 @@ export default {
     console(text) {
       document.querySelector("#console>p").innerHTML = typeof text === "object" ? JSON.stringify(text) : text;
     },
+  },
+  async mounted() {
+    try {
+      const torusdirectsdk = new TorusSdk({
+        baseUrl: `${location.origin}/serviceworker`,
+        enableLogging: true,
+        proxyContractAddress: "0x4023d2a0D330bF11426B12C6144Cfb96B7fa6183", // details for test net
+        network: "ropsten", // details for test net
+      });
+
+      await torusdirectsdk.init({ skipSw: false });
+      this.torusdirectsdk = torusdirectsdk;
+    } catch (error) {
+      console.error(error, "mounted caught");
+    }
   },
 };
 </script>
