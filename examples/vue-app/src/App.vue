@@ -63,14 +63,6 @@ export default {
         [TWITTER]: "A7H8kkcmyFRlusJQ9dZiqBLraG2yWIsO",
         [WEIBO]: "dhFGlWQMoACOI5oS5A1jFglp772OAWr1",
       },
-      loginToConnectionMap: {
-        [EMAIL_PASSWORD]: { connection: "Username-Password-Authentication", domain: "https://torus-test.auth0.com" },
-        [PASSWORDLESS]: { connection: "email", domain: "https://torus-test.auth0.com", login_hint: "chai@tor.us" },
-        [GITHUB]: { connection: "github", domain: "https://torus-test.auth0.com" },
-        [LINKEDIN]: { connection: "linkedin", domain: "https://torus-test.auth0.com" },
-        [TWITTER]: { connection: "twitter", domain: "https://torus-test.auth0.com" },
-        [WEIBO]: { connection: "weibo", domain: "https://torus-test.auth0.com" },
-      },
       verifierMap: {
         [GOOGLE]: "google",
         [FACEBOOK]: "facebook",
@@ -84,6 +76,18 @@ export default {
         [WEIBO]: "torus-auth0-weibo",
       },
     };
+  },
+  computed: {
+    loginToConnectionMap() {
+      return {
+        [EMAIL_PASSWORD]: { connection: "Username-Password-Authentication", domain: "https://torus-test.auth0.com" },
+        [PASSWORDLESS]: { connection: "email", domain: "https://torus-test.auth0.com", login_hint: this.loginHint },
+        [GITHUB]: { connection: "github", domain: "https://torus-test.auth0.com" },
+        [LINKEDIN]: { connection: "linkedin", domain: "https://torus-test.auth0.com" },
+        [TWITTER]: { connection: "twitter", domain: "https://torus-test.auth0.com" },
+        [WEIBO]: { connection: "weibo", domain: "https://torus-test.auth0.com" },
+      };
+    },
   },
   methods: {
     async login() {
