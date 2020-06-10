@@ -261,7 +261,7 @@ self.addEventListener("fetch", function (event) {
               setTimeout(function () {
                 window.close();
                 showCloseText();
-              }, 30000);
+              }, 5000);
             });
           }
         } catch (err) {
