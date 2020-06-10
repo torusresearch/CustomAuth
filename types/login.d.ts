@@ -1,9 +1,17 @@
+/* eslint-disable import/extensions */
 /* eslint-disable import/no-unresolved */
 import NodeDetailManager from "@toruslabs/fetch-node-details";
 import Torus from "@toruslabs/torus.js";
 
-// eslint-disable-next-line import/extensions
-import { AGGREGATE_VERIFIER_TYPE, DirectWebSDKArgs, SubVerifierDetails, TorusAggregateLoginResponse, TorusKey, TorusLoginResponse } from "./helpers";
+import {
+  AggregateLoginParams,
+  DirectWebSDKArgs,
+  InitParams,
+  SubVerifierDetails,
+  TorusAggregateLoginResponse,
+  TorusKey,
+  TorusLoginResponse,
+} from "./helpers";
 
 declare class DirectWebSDK {
   torus: Torus;
@@ -12,15 +20,15 @@ declare class DirectWebSDK {
 
   constructor({ baseUrl, network, proxyContractAddress, enableLogging, redirectToOpener }: DirectWebSDKArgs);
 
-  init(): Promise<void>;
+  init({ skipSw }: InitParams): Promise<void>;
 
   triggerLogin({ typeOfLogin, verifier, clientId, jwtParams }: SubVerifierDetails): Promise<TorusLoginResponse>;
 
-  triggerAggregateLogin(
-    aggregateVerifierType: AGGREGATE_VERIFIER_TYPE,
-    verifierIdentifier: string,
-    subVerifierDetailsArray: SubVerifierDetails[]
-  ): Promise<TorusAggregateLoginResponse>;
+  triggerAggregateLogin({
+    aggregateVerifierType,
+    verifierIdentifier,
+    subVerifierDetailsArray,
+  }: AggregateLoginParams): Promise<TorusAggregateLoginResponse>;
 
   getTorusKey(
     verifier: string,

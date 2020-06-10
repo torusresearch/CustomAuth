@@ -1,4 +1,4 @@
-import { LOGIN_TYPE } from "../utils/enums";
+import { LOGIN } from "../utils/enums";
 import DiscordHandler from "./DiscordHandler";
 import FacebookHandler from "./FacebookHandler";
 import GoogleHandler from "./GoogleHandler";
@@ -14,26 +14,26 @@ const createHandler = ({ clientId, redirect_uri, typeOfLogin, verifier, jwtParam
   }
   const { domain, login_hint } = jwtParams || {};
   switch (typeOfLogin) {
-    case LOGIN_TYPE.GOOGLE:
+    case LOGIN.GOOGLE:
       return new GoogleHandler(clientId, verifier, redirect_uri, redirectToOpener);
-    case LOGIN_TYPE.FACEBOOK:
+    case LOGIN.FACEBOOK:
       return new FacebookHandler(clientId, verifier, redirect_uri, redirectToOpener);
-    case LOGIN_TYPE.TWITCH:
+    case LOGIN.TWITCH:
       return new TwitchHandler(clientId, verifier, redirect_uri, redirectToOpener);
-    case LOGIN_TYPE.REDDIT:
+    case LOGIN.REDDIT:
       return new RedditHandler(clientId, verifier, redirect_uri, redirectToOpener);
-    case LOGIN_TYPE.DISCORD:
+    case LOGIN.DISCORD:
       return new DiscordHandler(clientId, verifier, redirect_uri, redirectToOpener);
-    case LOGIN_TYPE.PASSWORDLESS:
+    case LOGIN.PASSWORDLESS:
       if (!domain || !login_hint) throw new Error("Invalid params");
       return new PasswordlessHandler(clientId, verifier, redirect_uri, typeOfLogin, redirectToOpener, jwtParams);
-    case LOGIN_TYPE.GITHUB:
-    case LOGIN_TYPE.LINKEDIN:
-    case LOGIN_TYPE.TWITTER:
-    case LOGIN_TYPE.WEIBO:
-    case LOGIN_TYPE.LINE:
-    case LOGIN_TYPE.EMAIL_PASSWORD:
-    case LOGIN_TYPE.JWT:
+    case LOGIN.GITHUB:
+    case LOGIN.LINKEDIN:
+    case LOGIN.TWITTER:
+    case LOGIN.WEIBO:
+    case LOGIN.LINE:
+    case LOGIN.EMAIL_PASSWORD:
+    case LOGIN.JWT:
       if (!domain) throw new Error("Invalid params");
       return new JwtHandler(clientId, verifier, redirect_uri, typeOfLogin, redirectToOpener, jwtParams);
     default:
