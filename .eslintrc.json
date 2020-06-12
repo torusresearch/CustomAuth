@@ -15,9 +15,10 @@
     "prettier"
   ],
   "plugins": ["prettier", "babel", "standard", "promise", "import", "flowtype", "standard", "simple-import-sort", "@typescript-eslint"],
-  "parser": "@typescript-eslint/parser",
+  "parser": "babel-eslint",
   "parserOptions": {
     "sourceType": "module",
+    "parser": "@typescript-eslint/parser",
     "ecmaVersion": 9,
     "project": "./tsconfig.json"
   },
@@ -73,13 +74,8 @@
   },
   "overrides": [
     {
-      "files": ["*.js"],
-      "rules": {
-        "@typescript-eslint/explicit-function-return-type": "off",
-        "@typescript-eslint/no-var-requires": "off",
-        "@typescript-eslint/no-empty-function": "off",
-        "@typescript-eslint/camelcase": "off"
-      }
+      "files": ["examples"],
+      "parser": "vue-eslint-parser"
     }
   ],
   "env": {

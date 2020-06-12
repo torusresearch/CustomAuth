@@ -3,7 +3,11 @@
     <div>
       <span :style="{ marginRight: '20px' }">verifier:</span>
       <select v-model="selectedVerifier">
-        <option :key="login" v-for="login in Object.keys(typesOfLogin)" :value="login">{{ typesOfLogin[login] }}</option>
+        <option
+          :key="login"
+          v-for="login in Object.keys(typesOfLogin)"
+          :value="login"
+        >{{ typesOfLogin[login] }}</option>
       </select>
     </div>
     <div :style="{ marginTop: '20px' }" v-if="selectedVerifier === 'passwordless'">
