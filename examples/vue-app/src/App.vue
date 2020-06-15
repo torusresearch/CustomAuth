@@ -3,11 +3,7 @@
     <div>
       <span :style="{ marginRight: '20px' }">verifier:</span>
       <select v-model="selectedVerifier">
-        <option
-          :key="login"
-          v-for="login in Object.keys(typesOfLogin)"
-          :value="login"
-        >{{ typesOfLogin[login] }}</option>
+        <option :key="login" v-for="login in Object.keys(typesOfLogin)" :value="login">{{ typesOfLogin[login] }}</option>
       </select>
     </div>
     <div :style="{ marginTop: '20px' }" v-if="selectedVerifier === 'passwordless'">
@@ -30,12 +26,16 @@ const FACEBOOK = "facebook";
 const DISCORD = "discord";
 const TWITCH = "twitch";
 const GITHUB = "github";
+const APPLE = "apple";
 const LINKEDIN = "linkedin";
 const TWITTER = "twitter";
 const WEIBO = "weibo";
-const LINE =  "line";
+const LINE = "line";
 const EMAIL_PASSWORD = "email_password";
 const PASSWORDLESS = "passwordless";
+const JWT = "jwt";
+
+const AUTH_DOMAIN = "https://torus-test.auth0.com";
 
 export default {
   name: "App",
@@ -51,11 +51,13 @@ export default {
         [DISCORD]: "Discord",
         [EMAIL_PASSWORD]: "Email Password",
         [PASSWORDLESS]: "Passwordless",
+        [APPLE]: "Apple",
         [GITHUB]: "Github",
         [LINKEDIN]: "Linkedin",
         [TWITTER]: "Twitter",
         [WEIBO]: "Weibo",
-        [LINE]: "Line"
+        [LINE]: "Line",
+        [JWT]: "JWT",
       },
       clientIdMap: {
         [GOOGLE]: "876733105116-i0hj3s53qiio5k95prpfmj0hp0gmgtor.apps.googleusercontent.com",
@@ -64,11 +66,13 @@ export default {
         [DISCORD]: "630308572013527060",
         [EMAIL_PASSWORD]: "sqKRBVSdwa4WLkaq419U7Bamlh5vK1H7",
         [PASSWORDLESS]: "P7PJuBCXIHP41lcyty0NEb7Lgf7Zme8Q",
+        [APPLE]: "m1Q0gvDfOyZsJCZ3cucSQEe9XMvl9d9L",
         [GITHUB]: "PC2a4tfNRvXbT48t89J5am0oFM21Nxff",
         [LINKEDIN]: "59YxSgx79Vl3Wi7tQUBqQTRTxWroTuoc",
         [TWITTER]: "A7H8kkcmyFRlusJQ9dZiqBLraG2yWIsO",
         [WEIBO]: "dhFGlWQMoACOI5oS5A1jFglp772OAWr1",
-        [LINE]: "WN8bOmXKNRH1Gs8k475glfBP5gDZr9H1"
+        [LINE]: "WN8bOmXKNRH1Gs8k475glfBP5gDZr9H1",
+        [JWT]: "P7PJuBCXIHP41lcyty0NEb7Lgf7Zme8Q",
       },
       verifierMap: {
         [GOOGLE]: "google",
@@ -77,24 +81,28 @@ export default {
         [DISCORD]: "discord",
         [EMAIL_PASSWORD]: "torus-auth0-email-password",
         [PASSWORDLESS]: "torus-auth0-passwordless",
+        [APPLE]: "torus-auth0-apple",
         [GITHUB]: "torus-auth0-github",
         [LINKEDIN]: "torus-auth0-linkedin",
         [TWITTER]: "torus-auth0-twitter",
         [WEIBO]: "torus-auth0-weibo",
-        [LINE]: "torus-auth0-line"
+        [LINE]: "torus-auth0-line",
+        [JWT]: "torus-auth0-passwordless",
       },
     };
   },
   computed: {
     loginToConnectionMap() {
       return {
-        [EMAIL_PASSWORD]: { connection: "Username-Password-Authentication", domain: "https://torus-test.auth0.com" },
-        [PASSWORDLESS]: { connection: "email", domain: "https://torus-test.auth0.com", login_hint: this.loginHint },
-        [GITHUB]: { connection: "github", domain: "https://torus-test.auth0.com" },
-        [LINKEDIN]: { connection: "linkedin", domain: "https://torus-test.auth0.com" },
-        [TWITTER]: { connection: "twitter", domain: "https://torus-test.auth0.com" },
-        [WEIBO]: { connection: "weibo", domain: "https://torus-test.auth0.com" },
-        [LINE]: { connection: "line", domain: "https://torus-test.auth0.com" },
+        [EMAIL_PASSWORD]: { domain: AUTH_DOMAIN },
+        [PASSWORDLESS]: { domain: AUTH_DOMAIN, login_hint: this.loginHint },
+        [JWT]: { domain: AUTH_DOMAIN },
+        [APPLE]: { domain: AUTH_DOMAIN },
+        [GITHUB]: { domain: AUTH_DOMAIN },
+        [LINKEDIN]: { domain: AUTH_DOMAIN },
+        [TWITTER]: { domain: AUTH_DOMAIN },
+        [WEIBO]: { domain: AUTH_DOMAIN },
+        [LINE]: { domain: AUTH_DOMAIN },
       };
     },
   },
@@ -111,13 +119,31 @@ export default {
         });
 
         // AGGREGATE LOGIN
-        // const loginDetails = await torusdirectsdk.triggerAggregateLogin("single_id_verifier", "google-google", [
-        //   {
-        //     clientId: "238941746713-qqe4a7rduuk256d8oi5l0q34qtu9gpfg.apps.googleusercontent.com",
-        //     typeOfLogin: "google",
-        //     verifier: "google-shubs",
-        //   },
-        // ]);
+        // const loginDetails = await torusdirectsdk.triggerAggregateLogin({
+        //   aggregateVerifierType: "single_id_verifier",
+        //   verifierIdentifier: "google-google",
+        //   subVerifierDetailsArray: [
+        //     {
+        //       clientId: "238941746713-qqe4a7rduuk256d8oi5l0q34qtu9gpfg.apps.googleusercontent.com",
+        //       typeOfLogin: "google",
+        //       verifier: "google-shubs",
+        //     },
+        //   ],
+        // });
+
+        // AGGREGATE LOGIN - AUTH0 (Not working - Sample only)
+        // const loginDetails = await torusdirectsdk.triggerAggregateLogin({
+        //   aggregateVerifierType: "single_id_verifier",
+        //   verifierIdentifier: "google-auth0-gooddollar",
+        //   subVerifierDetailsArray: [
+        //     {
+        //       clientId: config.auth0ClientId,
+        //       typeOfLogin: "email_password",
+        //       verifier: "auth0",
+        //       jwtParams: { domain: config.auth0Domain },
+        //     },
+        //   ],
+        // });
         this.console(loginDetails);
       } catch (error) {
         console.error(error, "caught");

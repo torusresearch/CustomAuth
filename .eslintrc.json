@@ -15,10 +15,9 @@
     "prettier"
   ],
   "plugins": ["prettier", "babel", "standard", "promise", "import", "flowtype", "standard", "simple-import-sort", "@typescript-eslint"],
-  "parser": "babel-eslint",
+  "parser": "@typescript-eslint/parser",
   "parserOptions": {
     "sourceType": "module",
-    "parser": "@typescript-eslint/parser",
     "ecmaVersion": 9,
     "project": "./tsconfig.json"
   },

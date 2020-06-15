@@ -47,7 +47,7 @@ export default class JwtHandler extends AbstractLoginHandler {
       clonedParams
     );
     Object.keys(finalJwtParams).forEach((key) => {
-      finalUrl.searchParams.append(key, finalJwtParams[key]);
+      if (finalJwtParams[key]) finalUrl.searchParams.append(key, finalJwtParams[key]);
     });
     this.finalURL = finalUrl;
   }

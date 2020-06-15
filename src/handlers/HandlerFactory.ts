@@ -27,6 +27,7 @@ const createHandler = ({ clientId, redirect_uri, typeOfLogin, verifier, jwtParam
     case LOGIN.PASSWORDLESS:
       if (!domain || !login_hint) throw new Error("Invalid params");
       return new PasswordlessHandler(clientId, verifier, redirect_uri, typeOfLogin, redirectToOpener, jwtParams);
+    case LOGIN.APPLE:
     case LOGIN.GITHUB:
     case LOGIN.LINKEDIN:
     case LOGIN.TWITTER:

@@ -12,6 +12,7 @@ export const LOGIN = {
   REDDIT: "reddit",
   DISCORD: "discord",
   TWITCH: "twitch",
+  APPLE: "apple",
   GITHUB: "github",
   LINKEDIN: "linkedin",
   TWITTER: "twitter",
