@@ -28,7 +28,7 @@ export default class JwtHandler extends AbstractLoginHandler {
   }
 
   setFinalUrl(): void {
-    const { domain } = this.jwtParams;
+    const { domain, connection } = this.jwtParams;
     const finalUrl = new URL(domain);
     finalUrl.pathname = "/authorize";
     const clonedParams = JSON.parse(JSON.stringify(this.jwtParams));
@@ -41,7 +41,7 @@ export default class JwtHandler extends AbstractLoginHandler {
         prompt: this.PROMPT,
         redirect_uri: this.redirect_uri,
         scope: this.SCOPE,
-        connection: loginToConnectionMap[this.typeOfLogin],
+        connection: loginToConnectionMap[this.typeOfLogin] || connection,
         nonce: this.nonce,
       },
       clonedParams
