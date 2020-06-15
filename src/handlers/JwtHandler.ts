@@ -28,7 +28,7 @@ export default class JwtHandler extends AbstractLoginHandler {
   }
 
   setFinalUrl(): void {
-    const { domain, connection } = this.jwtParams;
+    const { domain } = this.jwtParams;
     const finalUrl = new URL(domain);
     finalUrl.pathname = "/authorize";
     const clonedParams = JSON.parse(JSON.stringify(this.jwtParams));
@@ -41,13 +41,13 @@ export default class JwtHandler extends AbstractLoginHandler {
         prompt: this.PROMPT,
         redirect_uri: this.redirect_uri,
         scope: this.SCOPE,
-        connection: loginToConnectionMap[this.typeOfLogin] || connection,
+        connection: loginToConnectionMap[this.typeOfLogin],
         nonce: this.nonce,
       },
       clonedParams
     );
     Object.keys(finalJwtParams).forEach((key) => {
-      finalUrl.searchParams.append(key, finalJwtParams[key]);
+      if (finalJwtParams[key]) finalUrl.searchParams.append(key, finalJwtParams[key]);
     });
     this.finalURL = finalUrl;
   }
