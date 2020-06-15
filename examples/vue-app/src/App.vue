@@ -90,14 +90,14 @@ export default {
   computed: {
     loginToConnectionMap() {
       return {
-        [EMAIL_PASSWORD]: { connection: "Username-Password-Authentication", domain: AUTH_DOMAIN },
-        [PASSWORDLESS]: { connection: "email", domain: AUTH_DOMAIN, login_hint: this.loginHint },
-        [APPLE]: { connection: "apple", domain: AUTH_DOMAIN },
-        [GITHUB]: { connection: "github", domain: AUTH_DOMAIN },
-        [LINKEDIN]: { connection: "linkedin", domain: AUTH_DOMAIN },
-        [TWITTER]: { connection: "twitter", domain: AUTH_DOMAIN },
-        [WEIBO]: { connection: "weibo", domain: AUTH_DOMAIN },
-        [LINE]: { connection: "line", domain: AUTH_DOMAIN },
+        [EMAIL_PASSWORD]: { domain: AUTH_DOMAIN },
+        [PASSWORDLESS]: { domain: AUTH_DOMAIN, login_hint: this.loginHint },
+        [APPLE]: { domain: AUTH_DOMAIN },
+        [GITHUB]: { domain: AUTH_DOMAIN },
+        [LINKEDIN]: { domain: AUTH_DOMAIN },
+        [TWITTER]: { domain: AUTH_DOMAIN },
+        [WEIBO]: { domain: AUTH_DOMAIN },
+        [LINE]: { domain: AUTH_DOMAIN },
       };
     },
   },
@@ -127,18 +127,18 @@ export default {
         // });
 
         // // AGGREGATE LOGIN - AUTH0 (Not working - Sample only)
-        // const loginDetails = await torusdirectsdk.triggerAggregateLogin({
-        //   aggregateVerifierType: "single_id_verifier",
-        //   verifierIdentifier: "apple-auth0-shubs",
-        //   subVerifierDetailsArray: [
-        //     {
-        //       clientId: this.clientIdMap[APPLE],
-        //       typeOfLogin: "jwt",
-        //       verifier: "auth0-shubs",
-        //       jwtParams: { domain: AUTH_DOMAIN, connection: APPLE }
-        //     },
-        //   ],
-        // });
+        const loginDetails = await torusdirectsdk.triggerAggregateLogin({
+          aggregateVerifierType: "single_id_verifier",
+          verifierIdentifier: "google-auth0-gooddollar",
+          subVerifierDetailsArray: [
+            {
+              clientId: config.auth0ClientId,
+              typeOfLogin: "email_password",
+              verifier: "auth0",
+              jwtParams: { domain: config.auth0Domain },
+            },
+          ],
+        });
         this.console(loginDetails);
       } catch (error) {
         console.error(error, "caught");
