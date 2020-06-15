@@ -126,19 +126,19 @@ export default {
         //   ],
         // });
 
-        // // AGGREGATE LOGIN - AUTH0 (Not working - Sample only)
-        const loginDetails = await torusdirectsdk.triggerAggregateLogin({
-          aggregateVerifierType: "single_id_verifier",
-          verifierIdentifier: "google-auth0-gooddollar",
-          subVerifierDetailsArray: [
-            {
-              clientId: config.auth0ClientId,
-              typeOfLogin: "email_password",
-              verifier: "auth0",
-              jwtParams: { domain: config.auth0Domain },
-            },
-          ],
-        });
+        // AGGREGATE LOGIN - AUTH0 (Not working - Sample only)
+        // const loginDetails = await torusdirectsdk.triggerAggregateLogin({
+        //   aggregateVerifierType: "single_id_verifier",
+        //   verifierIdentifier: "google-auth0-gooddollar",
+        //   subVerifierDetailsArray: [
+        //     {
+        //       clientId: config.auth0ClientId,
+        //       typeOfLogin: "email_password",
+        //       verifier: "auth0",
+        //       jwtParams: { domain: config.auth0Domain },
+        //     },
+        //   ],
+        // });
         this.console(loginDetails);
       } catch (error) {
         console.error(error, "caught");
