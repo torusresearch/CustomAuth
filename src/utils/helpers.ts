@@ -25,6 +25,7 @@ export function eventToPromise<T>(emitter: EmitterType): Promise<T> {
 
 // These are the connection names used by auth0
 export const loginToConnectionMap = {
+  [LOGIN.APPLE]: "apple",
   [LOGIN.GITHUB]: "github",
   [LOGIN.LINKEDIN]: "linkedin",
   [LOGIN.TWITTER]: "twitter",
@@ -54,6 +55,7 @@ export const getVerifierId = (userInfo: Auth0UserInfo, typeOfLogin: LOGIN_TYPE, 
     case LOGIN.PASSWORDLESS:
     case LOGIN.EMAIL_PASSWORD:
       return name;
+    case LOGIN.APPLE:
     case LOGIN.LINKEDIN:
     case LOGIN.LINE:
     case LOGIN.JWT:

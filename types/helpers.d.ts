@@ -6,6 +6,7 @@ export type LOGIN_TYPE =
   | "reddit"
   | "discord"
   | "twitch"
+  | "apple"
   | "github"
   | "linkedin"
   | "twitter"
