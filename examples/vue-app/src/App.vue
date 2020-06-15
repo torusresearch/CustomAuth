@@ -96,7 +96,7 @@ export default {
       return {
         [EMAIL_PASSWORD]: { domain: AUTH_DOMAIN },
         [PASSWORDLESS]: { domain: AUTH_DOMAIN, login_hint: this.loginHint },
-        [JWT]: { domain: AUTH_DOMAIN },
+        [JWT]: { domain: AUTH_DOMAIN, verifierIdField: "name", connection: "" },
         [APPLE]: { domain: AUTH_DOMAIN },
         [GITHUB]: { domain: AUTH_DOMAIN },
         [LINKEDIN]: { domain: AUTH_DOMAIN },
