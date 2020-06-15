@@ -3,7 +3,7 @@
     <div>
       <span :style="{ marginRight: '20px' }">verifier:</span>
       <select v-model="selectedVerifier">
-        <option :key="login" v-for="login in Object.keys(typesOfLogin)" :value="login">{{ typesOfLogin[login] }}</option>
+        <option :key="login" v-for="login in Object.keys(verifierMap)" :value="login">{{ verifierMap[login].name }}</option>
       </select>
     </div>
     <div :style="{ marginTop: '20px' }" v-if="selectedVerifier === 'passwordless'">
@@ -33,7 +33,8 @@ const WEIBO = "weibo";
 const LINE = "line";
 const EMAIL_PASSWORD = "email_password";
 const PASSWORDLESS = "passwordless";
-const JWT = "jwt";
+const HOSTED_EMAIL_PASSWORDLESS = "hosted_email_passwordless";
+const HOSTED_SMS_PASSWORDLESS = "hosted_sms_passwordless";
 
 const AUTH_DOMAIN = "https://torus-test.auth0.com";
 
@@ -44,50 +45,46 @@ export default {
       torusdirectsdk: undefined,
       selectedVerifier: "google",
       loginHint: "",
-      typesOfLogin: {
-        [GOOGLE]: "Google",
-        [FACEBOOK]: "Facebook",
-        [TWITCH]: "Twitch",
-        [DISCORD]: "Discord",
-        [EMAIL_PASSWORD]: "Email Password",
-        [PASSWORDLESS]: "Passwordless",
-        [APPLE]: "Apple",
-        [GITHUB]: "Github",
-        [LINKEDIN]: "Linkedin",
-        [TWITTER]: "Twitter",
-        [WEIBO]: "Weibo",
-        [LINE]: "Line",
-        [JWT]: "JWT",
-      },
-      clientIdMap: {
-        [GOOGLE]: "876733105116-i0hj3s53qiio5k95prpfmj0hp0gmgtor.apps.googleusercontent.com",
-        [FACEBOOK]: "2554219104599979",
-        [TWITCH]: "tfppratfiloo53g1x133ofa4rc29px",
-        [DISCORD]: "630308572013527060",
-        [EMAIL_PASSWORD]: "sqKRBVSdwa4WLkaq419U7Bamlh5vK1H7",
-        [PASSWORDLESS]: "P7PJuBCXIHP41lcyty0NEb7Lgf7Zme8Q",
-        [APPLE]: "m1Q0gvDfOyZsJCZ3cucSQEe9XMvl9d9L",
-        [GITHUB]: "PC2a4tfNRvXbT48t89J5am0oFM21Nxff",
-        [LINKEDIN]: "59YxSgx79Vl3Wi7tQUBqQTRTxWroTuoc",
-        [TWITTER]: "A7H8kkcmyFRlusJQ9dZiqBLraG2yWIsO",
-        [WEIBO]: "dhFGlWQMoACOI5oS5A1jFglp772OAWr1",
-        [LINE]: "WN8bOmXKNRH1Gs8k475glfBP5gDZr9H1",
-        [JWT]: "P7PJuBCXIHP41lcyty0NEb7Lgf7Zme8Q",
-      },
       verifierMap: {
-        [GOOGLE]: "google",
-        [FACEBOOK]: "facebook",
-        [TWITCH]: "twitch",
-        [DISCORD]: "discord",
-        [EMAIL_PASSWORD]: "torus-auth0-email-password",
-        [PASSWORDLESS]: "torus-auth0-passwordless",
-        [APPLE]: "torus-auth0-apple",
-        [GITHUB]: "torus-auth0-github",
-        [LINKEDIN]: "torus-auth0-linkedin",
-        [TWITTER]: "torus-auth0-twitter",
-        [WEIBO]: "torus-auth0-weibo",
-        [LINE]: "torus-auth0-line",
-        [JWT]: "torus-auth0-passwordless",
+        [GOOGLE]: {
+          name: "Google",
+          typeOfLogin: "google",
+          clientId: "876733105116-i0hj3s53qiio5k95prpfmj0hp0gmgtor.apps.googleusercontent.com",
+          verifier: "google",
+        },
+        [FACEBOOK]: { name: "Facebook", typeOfLogin: "facebook", clientId: "2554219104599979", verifier: "facebook" },
+        [TWITCH]: { name: "Twitch", typeOfLogin: "discord", clientId: "tfppratfiloo53g1x133ofa4rc29px", verifier: "twitch" },
+        [DISCORD]: { name: "Discord", typeOfLogin: "twitch", clientId: "630308572013527060", verifier: "discord" },
+        [EMAIL_PASSWORD]: {
+          name: "Email Password",
+          typeOfLogin: "github",
+          clientId: "sqKRBVSdwa4WLkaq419U7Bamlh5vK1H7",
+          verifier: "torus-auth0-email-password",
+        },
+        [PASSWORDLESS]: {
+          name: "Passwordless",
+          typeOfLogin: "apple",
+          clientId: "P7PJuBCXIHP41lcyty0NEb7Lgf7Zme8Q",
+          verifier: "torus-auth0-passwordless",
+        },
+        [APPLE]: { name: "Apple", typeOfLogin: "linkedin", clientId: "m1Q0gvDfOyZsJCZ3cucSQEe9XMvl9d9L", verifier: "torus-auth0-apple" },
+        [GITHUB]: { name: "Github", typeOfLogin: "twitter", clientId: "PC2a4tfNRvXbT48t89J5am0oFM21Nxff", verifier: "torus-auth0-github" },
+        [LINKEDIN]: { name: "Linkedin", typeOfLogin: "weibo", clientId: "59YxSgx79Vl3Wi7tQUBqQTRTxWroTuoc", verifier: "torus-auth0-linkedin" },
+        [TWITTER]: { name: "Twitter", typeOfLogin: "line", clientId: "A7H8kkcmyFRlusJQ9dZiqBLraG2yWIsO", verifier: "torus-auth0-twitter" },
+        [WEIBO]: { name: "Weibo", typeOfLogin: "email_password", clientId: "dhFGlWQMoACOI5oS5A1jFglp772OAWr1", verifier: "torus-auth0-weibo" },
+        [LINE]: { name: "Line", typeOfLogin: "passwordless", clientId: "WN8bOmXKNRH1Gs8k475glfBP5gDZr9H1", verifier: "torus-auth0-line" },
+        [HOSTED_EMAIL_PASSWORDLESS]: {
+          name: "Hosted Email Passwordless",
+          typeOfLogin: "jwt",
+          clientId: "P7PJuBCXIHP41lcyty0NEb7Lgf7Zme8Q",
+          verifier: "torus-auth0-passwordless",
+        },
+        [HOSTED_SMS_PASSWORDLESS]: {
+          name: "Hosted SMS Passwordless",
+          typeOfLogin: "jwt",
+          clientId: "nSYBFalV2b1MSg5b2raWqHl63tfH3KQa",
+          verifier: "torus-auth0-sms-passwordless",
+        },
       },
     };
   },
@@ -96,7 +93,8 @@ export default {
       return {
         [EMAIL_PASSWORD]: { domain: AUTH_DOMAIN },
         [PASSWORDLESS]: { domain: AUTH_DOMAIN, login_hint: this.loginHint },
-        [JWT]: { domain: AUTH_DOMAIN, verifierIdField: "name", connection: "" },
+        [HOSTED_EMAIL_PASSWORDLESS]: { domain: AUTH_DOMAIN, verifierIdField: "name", connection: "" },
+        [HOSTED_SMS_PASSWORDLESS]: { domain: AUTH_DOMAIN, verifierIdField: "name", connection: "" },
         [APPLE]: { domain: AUTH_DOMAIN },
         [GITHUB]: { domain: AUTH_DOMAIN },
         [LINKEDIN]: { domain: AUTH_DOMAIN },
@@ -111,11 +109,12 @@ export default {
       try {
         if (!this.torusdirectsdk) return;
         const jwtParams = this.loginToConnectionMap[this.selectedVerifier] || {};
+        const { typeOfLogin, clientId, verifier } = this.verifierMap[this.selectedVerifier];
         const loginDetails = await this.torusdirectsdk.triggerLogin({
-          typeOfLogin: this.selectedVerifier,
-          verifier: this.verifierMap[this.selectedVerifier],
-          clientId: this.clientIdMap[this.selectedVerifier],
-          jwtParams: jwtParams,
+          typeOfLogin,
+          verifier,
+          clientId,
+          jwtParams,
         });
 
         // AGGREGATE LOGIN
