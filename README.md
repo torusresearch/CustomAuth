@@ -89,27 +89,37 @@ const userInfo = await torus.triggerLogin({
 ## Info
 
 The following links help you create OAuth accounts with different login providers
- - [Google](https://support.google.com/googleapi/answer/6158849)
- - [Facebook](https://developers.facebook.com/docs/apps)
- - [Reddit](https://github.com/reddit-archive/reddit/wiki/oauth2)
- - [Twitch](https://dev.twitch.tv/docs/authentication/#registration)
- - [Discord](https://discord.com/developers/docs/topics/oauth2)
 
- For other verifiers,
- - you'll need to create an [Auth0 account](https://auth0.com/)
- - [create an application](https://auth0.com/docs/connections) for the login type you want
- - Pass in the clientId, domain of the Auth0 application into the torus login request
+- [Google](https://support.google.com/googleapi/answer/6158849)
+- [Facebook](https://developers.facebook.com/docs/apps)
+- [Reddit](https://github.com/reddit-archive/reddit/wiki/oauth2)
+- [Twitch](https://dev.twitch.tv/docs/authentication/#registration)
+- [Discord](https://discord.com/developers/docs/topics/oauth2)
 
- Please refer to examples, [vue.js](examples/vue-app/src/App.vue), [gatsby](https://github.com/jamespfarrell/gatsby-torus-direct) for configuration
+For other verifiers,
 
- Hosted Example for testing is [here](https://vue-direct.tor.us/)
+- you'll need to create an [Auth0 account](https://auth0.com/)
+- [create an application](https://auth0.com/docs/connections) for the login type you want
+- Pass in the clientId, domain of the Auth0 application into the torus login request
+
+Please refer to examples, [vue.js](examples/vue-app/src/App.vue), [gatsby](https://github.com/jamespfarrell/gatsby-torus-direct) for configuration
+
+Hosted Example for testing is [here](https://vue-direct.tor.us/)
 
 ## Best practices
+
 - Due to browser restrictions on popups, you should reduce the time taken between user interaction and the login popups being opened. This is highly browser dependent, but the best practice for this is to separate the initialization of the SDK and the user login method calls.
 
-- Please check if redirect.html is being served correctly by navigating to `baseUrl/redirect#a=123`
+## FAQ
+
+**Question:** My Redirect page is stuck in iOS Chrome
+
+**Answer:**
+iOS Chrome doesn't support service workers. So, you need to serve a fallback html page `redirect.html`
+Please check if redirect.html is being served correctly by navigating to `baseUrl/redirect#a=123`. It should show a loader
 
 For nginx, here is a simple server configuration
+
 ```nginx
     location ~* (/serviceworker/redirect) {
             add_header 'Access-Control-Allow-Origin' '*';
@@ -122,6 +132,29 @@ For nginx, here is a simple server configuration
             autoindex off;
     }
 
+```
+
+##
+
+**Question:** Discord Login only works once in 30 min
+
+**Answer:**
+Torus Login requires a new token for every login attempt. Discord returns the same access token for 30 min unless it's revoked. Unfortunately, it needs to be revoked from the backend since it needs a client secret. Here's some sample code which does it
+
+```js
+const axios = require("axios").default;
+const FormData = require("form-data");
+
+const { DISCORD_CLIENT_SECRET, DISCORD_CLIENT_ID } = process.env;
+const { token } = req.body;
+const formData = new FormData();
+formData.append("token", token);
+await axios.post("https://discordapp.com/api/oauth2/token/revoke", formData, {
+  headers: {
+    ...formData.getHeaders(),
+    Authorization: `Basic ${Buffer.from(`${DISCORD_CLIENT_ID}:${DISCORD_CLIENT_SECRET}`, "binary").toString("base64")}`,
+  },
+});
 ```
 
 ## Requirements

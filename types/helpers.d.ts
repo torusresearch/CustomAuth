@@ -53,11 +53,11 @@ export interface TorusKey {
 }
 
 export interface TorusAggregateVerifierResponse {
-  userInfo: TorusVerifierResponse[];
+  userInfo: (TorusVerifierResponse & LoginWindowResponse)[];
 }
 
 export interface TorusSingleVerifierResponse {
-  userInfo: TorusVerifierResponse;
+  userInfo: TorusVerifierResponse & LoginWindowResponse;
 }
 
 export type TorusLoginResponse = TorusSingleVerifierResponse & TorusKey;
