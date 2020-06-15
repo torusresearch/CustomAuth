@@ -105,7 +105,10 @@ class DirectWebSDK {
     const torusKey = await this.getTorusKey(verifier, userInfo.verifierId, { verifier_id: userInfo.verifierId }, idToken || accessToken);
     return {
       ...torusKey,
-      userInfo,
+      userInfo: {
+        ...userInfo,
+        ...loginParams,
+      },
     };
   }
 
@@ -114,6 +117,7 @@ class DirectWebSDK {
     verifierIdentifier,
     subVerifierDetailsArray,
   }: AggregateLoginParams): Promise<TorusAggregateLoginResponse> {
+    // This method shall break if any of the promises fail. This behaviour is intended
     if (!this.isInitialized) {
       throw new Error("Not initialized yet");
     }
@@ -161,7 +165,9 @@ class DirectWebSDK {
     const torusKey = await this.getTorusKey(verifierIdentifier, aggregateVerifierId, aggregateVerifierParams, aggregateIdToken);
     return {
       ...torusKey,
-      userInfo: userInfoArray,
+      userInfo: userInfoArray.map((x, index) => {
+        return { ...x, ...loginParamsArray[index] };
+      }),
     };
   }
 
