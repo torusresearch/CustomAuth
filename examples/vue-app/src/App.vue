@@ -33,6 +33,7 @@ const WEIBO = "weibo";
 const LINE = "line";
 const EMAIL_PASSWORD = "email_password";
 const PASSWORDLESS = "passwordless";
+const JWT = "jwt";
 
 const AUTH_DOMAIN = "https://torus-test.auth0.com";
 
@@ -56,6 +57,7 @@ export default {
         [TWITTER]: "Twitter",
         [WEIBO]: "Weibo",
         [LINE]: "Line",
+        [JWT]: "JWT",
       },
       clientIdMap: {
         [GOOGLE]: "876733105116-i0hj3s53qiio5k95prpfmj0hp0gmgtor.apps.googleusercontent.com",
@@ -70,6 +72,7 @@ export default {
         [TWITTER]: "A7H8kkcmyFRlusJQ9dZiqBLraG2yWIsO",
         [WEIBO]: "dhFGlWQMoACOI5oS5A1jFglp772OAWr1",
         [LINE]: "WN8bOmXKNRH1Gs8k475glfBP5gDZr9H1",
+        [JWT]: "P7PJuBCXIHP41lcyty0NEb7Lgf7Zme8Q",
       },
       verifierMap: {
         [GOOGLE]: "google",
@@ -84,6 +87,7 @@ export default {
         [TWITTER]: "torus-auth0-twitter",
         [WEIBO]: "torus-auth0-weibo",
         [LINE]: "torus-auth0-line",
+        [JWT]: "torus-auth0-passwordless",
       },
     };
   },
@@ -92,6 +96,7 @@ export default {
       return {
         [EMAIL_PASSWORD]: { domain: AUTH_DOMAIN },
         [PASSWORDLESS]: { domain: AUTH_DOMAIN, login_hint: this.loginHint },
+        [JWT]: { domain: AUTH_DOMAIN },
         [APPLE]: { domain: AUTH_DOMAIN },
         [GITHUB]: { domain: AUTH_DOMAIN },
         [LINKEDIN]: { domain: AUTH_DOMAIN },
