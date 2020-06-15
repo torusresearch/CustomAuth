@@ -16,8 +16,8 @@
       "prettier"
     ],
     "plugins": ["prettier", "babel", "standard", "promise", "import", "flowtype", "standard", "simple-import-sort", "@typescript-eslint"],
-    "parser": "@typescript-eslint/parser",
     "parserOptions": {
+      "parser": "@typescript-eslint/parser",
       "sourceType": "module",
       "ecmaVersion": 9
     },
