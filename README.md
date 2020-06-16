@@ -86,6 +86,12 @@ const userInfo = await torus.triggerLogin({
 
 7. Reach out to hello@tor.us to get your verifier spun up on the testnet today!
 
+## Examples
+
+Please refer to examples, [vue.js](examples/vue-app/src/App.vue), [gatsby](https://github.com/jamespfarrell/gatsby-torus-direct) for configuration
+
+Hosted Example for testing is [here](https://vue-direct.tor.us/)
+
 ## Info
 
 The following links help you create OAuth accounts with different login providers
@@ -101,10 +107,6 @@ For other verifiers,
 - you'll need to create an [Auth0 account](https://auth0.com/)
 - [create an application](https://auth0.com/docs/connections) for the login type you want
 - Pass in the clientId, domain of the Auth0 application into the torus login request
-
-Please refer to examples, [vue.js](examples/vue-app/src/App.vue), [gatsby](https://github.com/jamespfarrell/gatsby-torus-direct) for configuration
-
-Hosted Example for testing is [here](https://vue-direct.tor.us/)
 
 ## Best practices
 
