@@ -18,11 +18,16 @@ const baseConfig = {
     library: libraryName,
     libraryExport: "default",
   },
-  module: {
-    rules: [],
-  },
   resolve: {
     extensions: [".ts", ".js", ".json"],
+    alias: {
+      "bn.js": path.resolve(__dirname, "node_modules/bn.js"),
+      lodash: path.resolve(__dirname, "node_modules/lodash"),
+      "js-sha3": path.resolve(__dirname, "node_modules/js-sha3"),
+    },
+  },
+  module: {
+    rules: [],
   },
 };
 
