@@ -57,13 +57,15 @@ To allow your web app to retrieve keys:
 1. Install the package
    `npm i @toruslabs/torus-direct-web-sdk`
 
-2. Serve [service worker](public/sw.js) from `baseUrl` where baseUrl is the one passed while instantiating `DirectWebSdk` for specific login (example http://localhost:3000/serviceworker/). If you're already using a sw, pls ensure to port over the fetch override from [our service worker](public/sw.js)
+2. If you're using `redirectToOpener`, modify the origin of postMessage from `"http://localhost:3000"` to your hosted domain in redirect.html and sw.js
 
-3. For browsers where service workers are not supported or if you wish to not use service workers, create and serve [redirect page](public/redirect.html) from `baseUrl/redirect` where baseUrl is the one passed while instantiating `DirectWebSdk` for specific login ( example http://localhost:3000/serviceworker/)
+3. Serve [service worker](public/sw.js) from `baseUrl` where baseUrl is the one passed while instantiating `DirectWebSdk` for specific login (example http://localhost:3000/serviceworker/). If you're already using a sw, pls ensure to port over the fetch override from [our service worker](public/sw.js)
 
-4. At verifier's interface (where you obtain client id), please use `baseUrl/redirect` (eg: http://localhost:3000/serviceworker/redirect) as the redirect_uri where baseUrl is the one passed while instantiating `DirectWebSdk`
+4. For browsers where service workers are not supported or if you wish to not use service workers, create and serve [redirect page](public/redirect.html) from `baseUrl/redirect` where baseUrl is the one passed while instantiating `DirectWebSdk` for specific login ( example http://localhost:3000/serviceworker/)
 
-5. Instantiate the package with your own specific client-id
+5. At verifier's interface (where you obtain client id), please use `baseUrl/redirect` (eg: http://localhost:3000/serviceworker/redirect) as the redirect_uri where baseUrl is the one passed while instantiating `DirectWebSdk`
+
+6. Instantiate the package with your own specific client-id
 
 ```js
 const torus = new DirectWebSdk({
@@ -74,7 +76,7 @@ const torus = new DirectWebSdk({
 await torus.init();
 ```
 
-6. Trigger the login
+7. Trigger the login
 
 ```js
 const userInfo = await torus.triggerLogin({
@@ -84,7 +86,7 @@ const userInfo = await torus.triggerLogin({
 });
 ```
 
-7. Reach out to hello@tor.us to get your verifier spun up on the testnet today!
+8. Reach out to hello@tor.us to get your verifier spun up on the testnet today!
 
 ## Examples
 
