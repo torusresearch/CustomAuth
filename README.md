@@ -163,3 +163,6 @@ await axios.post("https://discordapp.com/api/oauth2/token/revoke", formData, {
 
 - This package requires a peer dependency of `@babel/runtime`
 - Node 10+
+
+### Note
+If you are using the redirectToOpener option, you *must* update your redirect.html to [allow whitelisted URIs](https://github.com/torusresearch/serviceworker-server/blob/2d1b5e886a96d544f9fbd04f8a59cdc2d794240e/public/redirect.html#L222)
