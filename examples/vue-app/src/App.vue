@@ -23,6 +23,7 @@ import TorusSdk from "@toruslabs/torus-direct-web-sdk";
 
 const GOOGLE = "google";
 const FACEBOOK = "facebook";
+const REDDIT = "reddit";
 const DISCORD = "discord";
 const TWITCH = "twitch";
 const GITHUB = "github";
@@ -53,6 +54,7 @@ export default {
           verifier: "google",
         },
         [FACEBOOK]: { name: "Facebook", typeOfLogin: "facebook", clientId: "2554219104599979", verifier: "facebook" },
+        [REDDIT]: { name: "Reddit", typeOfLogin: "reddit", clientId: "YNsv1YtA_o66fA", verifier: "torus-reddit-test" },
         [TWITCH]: { name: "Twitch", typeOfLogin: "twitch", clientId: "tfppratfiloo53g1x133ofa4rc29px", verifier: "twitch" },
         [DISCORD]: { name: "Discord", typeOfLogin: "discord", clientId: "630308572013527060", verifier: "discord" },
         [EMAIL_PASSWORD]: {
