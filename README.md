@@ -138,6 +138,9 @@ For nginx, here is a simple server configuration
 
 ```
 
+Alternatively, you can configure your redirect url to include redirect.html by passing in an option `redirectPathName: 'redirect.html'` while instantiating the sdk.
+Please remember to change the oauth redirect url to reflect this change
+
 ##
 
 **Question:** Discord Login only works once in 30 min
