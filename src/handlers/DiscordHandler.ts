@@ -1,3 +1,4 @@
+import { LOGIN_TYPE } from "../utils/enums";
 import { get } from "../utils/httpHelpers";
 import AbstractLoginHandler from "./AbstractLoginHandler";
 import { LoginWindowResponse, TorusVerifierResponse } from "./interfaces";
@@ -7,8 +8,14 @@ export default class DiscordHandler extends AbstractLoginHandler {
 
   private readonly SCOPE: string = "identify email";
 
-  constructor(readonly clientId: string, readonly verifier: string, readonly redirect_uri: string, readonly redirectToOpener?: boolean) {
-    super(clientId, verifier, redirect_uri, redirectToOpener);
+  constructor(
+    readonly clientId: string,
+    readonly verifier: string,
+    readonly redirect_uri: string,
+    readonly typeOfLogin: LOGIN_TYPE,
+    redirectToOpener?: boolean
+  ) {
+    super(clientId, verifier, redirect_uri, typeOfLogin, redirectToOpener);
     this.setFinalUrl();
   }
 
@@ -43,6 +50,7 @@ export default class DiscordHandler extends AbstractLoginHandler {
       email,
       verifierId: id,
       verifier: this.verifier,
+      typeOfLogin: this.typeOfLogin,
     };
   }
 }

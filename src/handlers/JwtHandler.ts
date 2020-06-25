@@ -23,7 +23,7 @@ export default class JwtHandler extends AbstractLoginHandler {
     readonly redirectToOpener?: boolean,
     readonly jwtParams?: Auth0ClientOptions
   ) {
-    super(clientId, verifier, redirect_uri, redirectToOpener);
+    super(clientId, verifier, redirect_uri, typeOfLogin, redirectToOpener);
     this.setFinalUrl();
   }
 
@@ -69,6 +69,7 @@ export default class JwtHandler extends AbstractLoginHandler {
         profileImage: picture,
         verifierId: getVerifierId(userInfo, this.typeOfLogin, verifierIdField),
         verifier: this.verifier,
+        typeOfLogin: this.typeOfLogin,
       };
     } catch (error) {
       log.error(error);
@@ -80,6 +81,7 @@ export default class JwtHandler extends AbstractLoginHandler {
         email,
         verifierId: getVerifierId(decodedToken, this.typeOfLogin, verifierIdField),
         verifier: this.verifier,
+        typeOfLogin: this.typeOfLogin,
       };
     }
   }

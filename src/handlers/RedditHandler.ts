@@ -1,3 +1,4 @@
+import { LOGIN_TYPE } from "../utils/enums";
 import { get } from "../utils/httpHelpers";
 import AbstractLoginHandler from "./AbstractLoginHandler";
 import { LoginWindowResponse, TorusVerifierResponse } from "./interfaces";
@@ -7,8 +8,14 @@ export default class RedditHandler extends AbstractLoginHandler {
 
   private readonly SCOPE: string = "identity";
 
-  constructor(readonly clientId: string, readonly verifier: string, readonly redirect_uri: string, readonly redirectToOpener?: boolean) {
-    super(clientId, verifier, redirect_uri, redirectToOpener);
+  constructor(
+    readonly clientId: string,
+    readonly verifier: string,
+    readonly redirect_uri: string,
+    readonly typeOfLogin: LOGIN_TYPE,
+    readonly redirectToOpener?: boolean
+  ) {
+    super(clientId, verifier, redirect_uri, typeOfLogin, redirectToOpener);
     this.setFinalUrl();
   }
 
@@ -36,6 +43,7 @@ export default class RedditHandler extends AbstractLoginHandler {
       profileImage: profileImage.split("?").length > 0 ? profileImage.split("?")[0] : profileImage,
       verifier: this.verifier,
       verifierId: name.toLowerCase(),
+      typeOfLogin: this.typeOfLogin,
     };
   }
 }

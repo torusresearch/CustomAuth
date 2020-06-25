@@ -2,6 +2,7 @@
 import randomId from "@chaitanyapotti/random-id";
 import { BroadcastChannel } from "broadcast-channel";
 
+import { LOGIN_TYPE } from "../utils/enums";
 import { broadcastChannelOptions } from "../utils/helpers";
 import log from "../utils/loglevel";
 import PopupHandler from "../utils/PopupHandler";
@@ -14,7 +15,13 @@ export default abstract class AbstractLoginHandler implements ILoginHandler {
 
   // Not using object constructor because of this issue
   // https://github.com/microsoft/TypeScript/issues/5326
-  constructor(readonly clientId: string, readonly verifier: string, readonly redirect_uri: string, readonly redirectToOpener?: boolean) {}
+  constructor(
+    readonly clientId: string,
+    readonly verifier: string,
+    readonly redirect_uri: string,
+    readonly typeOfLogin: LOGIN_TYPE,
+    readonly redirectToOpener?: boolean
+  ) {}
 
   get state(): string {
     return encodeURIComponent(
