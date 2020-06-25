@@ -15,7 +15,7 @@ export default class DiscordHandler extends AbstractLoginHandler {
     readonly typeOfLogin: LOGIN_TYPE,
     redirectToOpener?: boolean
   ) {
-    super(clientId, verifier, redirect_uri, redirectToOpener);
+    super(clientId, verifier, redirect_uri, typeOfLogin, redirectToOpener);
     this.setFinalUrl();
   }
 
