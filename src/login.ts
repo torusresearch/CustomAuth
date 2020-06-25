@@ -39,13 +39,14 @@ class DirectWebSDK {
     proxyContractAddress = "0x638646503746d5456209e33a2ff5e3226d698bea",
     enableLogging = false,
     redirectToOpener = false,
+    redirectPathName = "redirect",
   }: DirectWebSDKArgs) {
     this.isInitialized = false;
     const baseUri = new URL(baseUrl);
     this.config = {
       baseUrl: padUrlString(baseUri),
       get redirect_uri() {
-        return `${this.baseUrl}redirect`;
+        return `${this.baseUrl}${redirectPathName}`;
       },
       redirectToOpener,
     };

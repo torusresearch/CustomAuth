@@ -55,6 +55,7 @@ export interface DirectWebSDKArgs {
   proxyContractAddress?: string;
   enableLogging?: boolean;
   redirectToOpener?: boolean;
+  redirectPathName?: string;
 }
 
 export interface SubVerifierDetails {
