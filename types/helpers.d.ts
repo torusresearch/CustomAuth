@@ -33,6 +33,7 @@ export interface TorusVerifierResponse {
   profileImage: string;
   verifier: string;
   verifierId: string;
+  typeOfLogin: LOGIN_TYPE;
 }
 export interface LoginWindowResponse {
   accessToken: string;

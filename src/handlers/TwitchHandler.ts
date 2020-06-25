@@ -1,3 +1,4 @@
+import { LOGIN_TYPE } from "../utils/enums";
 import { get } from "../utils/httpHelpers";
 import AbstractLoginHandler from "./AbstractLoginHandler";
 import { LoginWindowResponse, TorusVerifierResponse } from "./interfaces";
@@ -7,7 +8,13 @@ export default class TwitchHandler extends AbstractLoginHandler {
 
   private readonly SCOPE: string = "user:read:email";
 
-  constructor(readonly clientId: string, readonly verifier: string, readonly redirect_uri: string, readonly redirectToOpener?: boolean) {
+  constructor(
+    readonly clientId: string,
+    readonly verifier: string,
+    readonly redirect_uri: string,
+    readonly typeOfLogin: LOGIN_TYPE,
+    readonly redirectToOpener?: boolean
+  ) {
     super(clientId, verifier, redirect_uri, redirectToOpener);
     this.setFinalUrl();
   }
@@ -41,6 +48,7 @@ export default class TwitchHandler extends AbstractLoginHandler {
       email,
       verifierId,
       verifier: this.verifier,
+      typeOfLogin: this.typeOfLogin,
     };
   }
 }

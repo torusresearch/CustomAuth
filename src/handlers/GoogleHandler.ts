@@ -1,3 +1,4 @@
+import { LOGIN_TYPE } from "../utils/enums";
 import { get } from "../utils/httpHelpers";
 import AbstractLoginHandler from "./AbstractLoginHandler";
 import { LoginWindowResponse, TorusVerifierResponse } from "./interfaces";
@@ -9,7 +10,13 @@ export default class GoogleHandler extends AbstractLoginHandler {
 
   private readonly PROMPT: string = "consent select_account";
 
-  constructor(readonly clientId: string, readonly verifier: string, readonly redirect_uri: string, readonly redirectToOpener?: boolean) {
+  constructor(
+    readonly clientId: string,
+    readonly verifier: string,
+    readonly redirect_uri: string,
+    readonly typeOfLogin: LOGIN_TYPE,
+    readonly redirectToOpener?: boolean
+  ) {
     super(clientId, verifier, redirect_uri, redirectToOpener);
     this.setFinalUrl();
   }
@@ -40,6 +47,7 @@ export default class GoogleHandler extends AbstractLoginHandler {
       profileImage,
       verifier: this.verifier,
       verifierId: email.toLowerCase(),
+      typeOfLogin: this.typeOfLogin,
     };
   }
 }
