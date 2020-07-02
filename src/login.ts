@@ -84,7 +84,7 @@ class DirectWebSDK {
       this.isInitialized = true;
       return;
     }
-    throw new Error(`Please serve redirect.html present in public folder of this package on ${this.config.redirect_uri}`);
+    throw new Error(`Please serve redirect.html present in serviceworker folder of this package on ${this.config.redirect_uri}`);
   }
 
   async triggerLogin({ verifier, typeOfLogin, clientId, jwtParams }: SubVerifierDetails): Promise<TorusLoginResponse> {
