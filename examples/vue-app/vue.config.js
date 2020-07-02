@@ -13,5 +13,18 @@ module.exports = {
         { from: /./, to: "/index.html" },
       ],
     },
+    quiet: true
   },
+  configureWebpack: (config) => {
+    config.devtool = 'source-map'
+  },
+  chainWebpack: config => {
+    config.module
+      .rule('sourcemap')
+      .test(/\.js$/)
+      .enforce('pre')
+      .use('source-map-loader')
+      .loader('source-map-loader')
+      .end()
+  }
 };

@@ -7,10 +7,13 @@ const pkg = require("./package.json");
 const pkgName = "directWebSdk";
 const libraryName = pkgName.charAt(0).toUpperCase() + pkgName.slice(1);
 
-const packagesToInclude = ["broadcast-channel"];
+const packagesToInclude = ["broadcast-channel", "@toruslabs/torus.js", "@toruslabs/fetch-node-details"];
+
+const { NODE_ENV = "production" } = process.env;
 
 const baseConfig = {
-  mode: "production",
+  mode: NODE_ENV,
+  devtool: NODE_ENV === "production" ? false : "source-map",
   entry: "./index.ts",
   target: "web",
   output: {
@@ -60,6 +63,7 @@ const tsLoader = {
     options: {
       // disable type checker - we will use it in fork plugin
       transpileOnly: true,
+      configFile: NODE_ENV === "production" ? "tsconfig.prod.json" : "tsconfig.json",
     },
   },
 };
@@ -101,11 +105,29 @@ const cjsConfig = {
   module: {
     rules: [tsLoader, eslintLoader, babelLoader],
   },
-  externals: [...Object.keys(pkg.dependencies).filter((x) => !packagesToInclude.includes(x)), /^(@babel\/runtime)/i],
+  externals: [...Object.keys(pkg.dependencies), /^(@babel\/runtime)/i],
   plugins: [new ForkTsCheckerWebpackPlugin()],
+  node: {
+    ...baseConfig.node,
+    Buffer: false,
+  },
 };
 
-module.exports = [umdPolyfilledConfig, umdConfig, cjsConfig];
+const cjsBundledConfig = {
+  ...baseConfig,
+  // ...optimization,
+  output: {
+    ...baseConfig.output,
+    filename: `${pkgName}-bundled.cjs.js`,
+    libraryTarget: "commonjs2",
+  },
+  module: {
+    rules: [tsLoader, eslintLoader, babelLoader],
+  },
+  externals: [...Object.keys(pkg.dependencies).filter((x) => !packagesToInclude.includes(x)), /^(@babel\/runtime)/i],
+};
+
+module.exports = [umdPolyfilledConfig, umdConfig, cjsConfig, cjsBundledConfig];
 // module.exports = [cjsConfig];
 // V5
 // experiments: {

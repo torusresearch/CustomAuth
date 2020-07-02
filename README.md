@@ -19,6 +19,7 @@ This repo allows web applications to directly retrieve keys stored on the Torus 
 This module is distributed in 3 formats
 
 - `commonjs` build `dist/directWebSdk.cjs.js` in es5 format
+- `commonjs` build `dist/directWebSdk-bundled.cjs.js` in es5 format with problematic packages bundled (benfits non-webpack users)
 - `umd` build `dist/directWebSdk.umd.min.js` in es5 format without polyfilling corejs minified
 - `umd` build `dist/directWebSdk.polyfill.umd.min.js` in es5 format with polyfilling corejs minified
 
@@ -59,9 +60,9 @@ To allow your web app to retrieve keys:
 
 2. If you're using `redirectToOpener`, modify the origin of postMessage from `"http://localhost:3000"` to your hosted domain in redirect.html and sw.js
 
-3. Serve [service worker](public/sw.js) from `baseUrl` where baseUrl is the one passed while instantiating `DirectWebSdk` for specific login (example http://localhost:3000/serviceworker/). If you're already using a sw, pls ensure to port over the fetch override from [our service worker](public/sw.js)
+3. Serve [service worker](serviceworker/sw.js) from `baseUrl` where baseUrl is the one passed while instantiating `DirectWebSdk` for specific login (example http://localhost:3000/serviceworker/). If you're already using a sw, pls ensure to port over the fetch override from [our service worker](serviceworker/sw.js)
 
-4. For browsers where service workers are not supported or if you wish to not use service workers, create and serve [redirect page](public/redirect.html) from `baseUrl/redirect` where baseUrl is the one passed while instantiating `DirectWebSdk` for specific login ( example http://localhost:3000/serviceworker/)
+4. For browsers where service workers are not supported or if you wish to not use service workers, create and serve [redirect page](serviceworker/redirect.html) from `baseUrl/redirect` where baseUrl is the one passed while instantiating `DirectWebSdk` for specific login ( example http://localhost:3000/serviceworker/)
 
 5. At verifier's interface (where you obtain client id), please use `baseUrl/redirect` (eg: http://localhost:3000/serviceworker/redirect) as the redirect_uri where baseUrl is the one passed while instantiating `DirectWebSdk`
 
@@ -170,4 +171,4 @@ await axios.post("https://discordapp.com/api/oauth2/token/revoke", formData, {
 - Node 10+
 
 ### Note
-If you are using the redirectToOpener option, you *must* update your redirect.html to [allow whitelisted URIs](https://github.com/torusresearch/serviceworker-server/blob/2d1b5e886a96d544f9fbd04f8a59cdc2d794240e/public/redirect.html#L222)
+If you are using the redirectToOpener option, you *must* update your redirect.html to [allow whitelisted URIs](serviceworker/redirect.html#L222)
