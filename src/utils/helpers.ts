@@ -44,22 +44,31 @@ export const broadcastChannelOptions = {
   webWorkerSupport: false, // (optional) set this to false if you know that your channel will never be used in a WebWorker (increases performance)
 };
 
-export const getVerifierId = (userInfo: Auth0UserInfo, typeOfLogin: LOGIN_TYPE, verifierIdField?: string): string => {
+function caseSensitiveField(field: string, isCaseSensitive?: boolean): string {
+  return isCaseSensitive ? field : field.toLowerCase();
+}
+
+export const getVerifierId = (
+  userInfo: Auth0UserInfo,
+  typeOfLogin: LOGIN_TYPE,
+  verifierIdField?: string,
+  isVerifierIdCaseSensitive = true
+): string => {
   const { name, nickname, sub } = userInfo;
-  if (verifierIdField) return userInfo[verifierIdField];
+  if (verifierIdField) return caseSensitiveField(userInfo[verifierIdField], isVerifierIdCaseSensitive);
   switch (typeOfLogin) {
     case LOGIN.GITHUB:
     case LOGIN.TWITTER:
-      return nickname;
+      return caseSensitiveField(nickname, isVerifierIdCaseSensitive);
     case LOGIN.WEIBO:
     case LOGIN.PASSWORDLESS:
     case LOGIN.EMAIL_PASSWORD:
-      return name;
+      return caseSensitiveField(name, isVerifierIdCaseSensitive);
     case LOGIN.APPLE:
     case LOGIN.LINKEDIN:
     case LOGIN.LINE:
     case LOGIN.JWT:
-      return sub;
+      return caseSensitiveField(sub, isVerifierIdCaseSensitive);
     default:
       throw new Error("Invalid login type");
   }

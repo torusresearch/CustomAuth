@@ -25,5 +25,5 @@ export declare const padUrlString: (url: URL) => string;
 export declare const broadcastChannelOptions: {
     webWorkerSupport: boolean;
 };
-export declare const getVerifierId: (userInfo: Auth0UserInfo, typeOfLogin: LOGIN_TYPE, verifierIdField?: string) => string;
+export declare const getVerifierId: (userInfo: Auth0UserInfo, typeOfLogin: LOGIN_TYPE, verifierIdField?: string, isVerifierIdCaseSensitive?: boolean) => string;
 export {};
