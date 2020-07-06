@@ -26,6 +26,7 @@
     "@chaitanyapotti/random-id": "^1.0.3",
     "@chaitanyapotti/register-service-worker": "^1.7.3",
     "@toruslabs/fetch-node-details": "^2.3.0",
+    "@toruslabs/http-helpers": "^1.2.1",
     "@toruslabs/torus.js": "^2.2.1",
     "broadcast-channel": "^3.1.0",
     "deepmerge": "^4.2.2",
