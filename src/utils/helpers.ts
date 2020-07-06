@@ -57,10 +57,10 @@ export const getVerifierId = (
   const { name, sub } = userInfo;
   if (verifierIdField) return caseSensitiveField(userInfo[verifierIdField], isVerifierIdCaseSensitive);
   switch (typeOfLogin) {
-    case LOGIN.WEIBO:
     case LOGIN.PASSWORDLESS:
     case LOGIN.EMAIL_PASSWORD:
       return caseSensitiveField(name, isVerifierIdCaseSensitive);
+    case LOGIN.WEIBO:
     case LOGIN.GITHUB:
     case LOGIN.TWITTER:
     case LOGIN.APPLE:
