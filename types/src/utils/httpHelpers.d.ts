@@ -1,3 +1,2 @@
-export declare const get: <T>(url?: string, options_?: RequestInit) => Promise<T>;
-export declare const post: <T>(url?: string, data?: {}, options_?: RequestInit) => Promise<T>;
-export declare const remove: <T>(url?: string, options_?: RequestInit) => Promise<T>;
+import { get, post, remove } from "@toruslabs/http-helpers";
+export { get, post, remove };
