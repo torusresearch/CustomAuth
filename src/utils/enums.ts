@@ -1,9 +1,6 @@
 export const ETHEREUM_NETWORK = {
   ROPSTEN: "ropsten",
-  RINKEBY: "rinkeby",
-  KOVAN: "kovan",
   MAINNET: "mainnet",
-  GOERLI: "goerli",
 } as const;
 
 export const LOGIN = {

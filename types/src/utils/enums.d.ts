@@ -1,9 +1,6 @@
 export declare const ETHEREUM_NETWORK: {
     readonly ROPSTEN: "ropsten";
-    readonly RINKEBY: "rinkeby";
-    readonly KOVAN: "kovan";
     readonly MAINNET: "mainnet";
-    readonly GOERLI: "goerli";
 };
 export declare const LOGIN: {
     readonly GOOGLE: "google";
