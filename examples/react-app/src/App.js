@@ -1,5 +1,5 @@
-import React from 'react';
-import './App.css';
+import React from "react";
+import "./App.css";
 import TorusSdk from "@toruslabs/torus-direct-web-sdk";
 
 const GOOGLE = "google";
@@ -61,16 +61,52 @@ const verifierMap = {
     clientId: "nSYBFalV2b1MSg5b2raWqHl63tfH3KQa",
     verifier: "torus-auth0-sms-passwordless",
   },
-}
-class App extends React.Component {
+};
 
+class App extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { selectedVerifier: GOOGLE, torusdirectsdk: null, loginHint: "" }
+    this.state = { selectedVerifier: GOOGLE, torusdirectsdk: null, loginHint: "", consoleText: "" };
   }
 
-  loginToConnectionMap = () => {
-    const { loginHint } = this.state
+  componentDidMount = async () => {
+    try {
+      const torusdirectsdk = new TorusSdk({
+        baseUrl: `${window.location.origin}/serviceworker`,
+        enableLogging: true,
+        proxyContractAddress: "0x4023d2a0D330bF11426B12C6144Cfb96B7fa6183", // details for test net
+        network: "ropsten", // details for test net
+      });
+
+      await torusdirectsdk.init({ skipSw: false });
+
+      this.setState({ torusdirectsdk: torusdirectsdk });
+    } catch (error) {
+      console.error(error, "mounted caught");
+    }
+  };
+
+  login = async (e) => {
+    e.preventDefault();
+    const { selectedVerifier, torusdirectsdk } = this.state;
+
+    try {
+      const jwtParams = this._loginToConnectionMap()[selectedVerifier] || {};
+      const { typeOfLogin, clientId, verifier } = verifierMap[selectedVerifier];
+      const loginDetails = await torusdirectsdk.triggerLogin({
+        typeOfLogin,
+        verifier,
+        clientId,
+        jwtParams,
+      });
+      this.setState({ consoleText: typeof loginDetails === "object" ? JSON.stringify(loginDetails) : loginDetails });
+    } catch (error) {
+      console.error(error, "login caught");
+    }
+  };
+
+  _loginToConnectionMap = () => {
+    const { loginHint } = this.state;
     return {
       [EMAIL_PASSWORD]: { domain: AUTH_DOMAIN },
       [PASSWORDLESS]: { domain: AUTH_DOMAIN, login_hint: loginHint },
@@ -83,51 +119,41 @@ class App extends React.Component {
       [WEIBO]: { domain: AUTH_DOMAIN },
       [LINE]: { domain: AUTH_DOMAIN },
     };
-  }
-  
-  login = async e =>  {
-    const { selectedVerifier } = this.state
-    e.preventDefault()
-
-    try {
-      const torusdirectsdk = new TorusSdk({
-        baseUrl: `${window.location.origin}/serviceworker`,
-        enableLogging: true,
-        proxyContractAddress: "0x4023d2a0D330bF11426B12C6144Cfb96B7fa6183", // details for test net
-        network: "ropsten", // details for test net
-      });
-
-      await torusdirectsdk.init({ skipSw: false });
-
-      const jwtParams = this.loginToConnectionMap[selectedVerifier] || {};
-      const { typeOfLogin, clientId, verifier } = verifierMap[selectedVerifier];
-      const loginDetails = await torusdirectsdk.triggerLogin({
-        typeOfLogin,
-        verifier,
-        clientId,
-        jwtParams,
-      });
-      this.console(loginDetails);
-    } catch (error) {
-      console.error(error, "mounted caught");
-    }
-  }
+  };
 
   render() {
-    const { selectedVerifier } = this.state
+    const { selectedVerifier, loginHint, consoleText } = this.state;
+    let emailField = "";
+
+    if (selectedVerifier === PASSWORDLESS) {
+      emailField = (
+        <div style={{ marginTop: "20px" }}>
+          <input type="email" value={loginHint} onChange={(e) => this.setState({ loginHint: e.target.value })} placeholder="Enter your email" />
+        </div>
+      );
+    }
+
     return (
       <div className="App">
         <form onSubmit={this.login}>
           <div>
-            <span style={{ marginRight: '10px' }}>Verifier:</span>
-            <select value={selectedVerifier} onChange={e => this.setState({ selectedVerifier: e.target.value })}>
-              {Object.keys(verifierMap).map((login) => <option value={login} key={login.toString()}>{verifierMap[login].name}</option>)}
+            <span style={{ marginRight: "10px" }}>Verifier:</span>
+            <select value={selectedVerifier} onChange={(e) => this.setState({ selectedVerifier: e.target.value })}>
+              {Object.keys(verifierMap).map((login) => (
+                <option value={login} key={login.toString()}>
+                  {verifierMap[login].name}
+                </option>
+              ))}
             </select>
           </div>
-          <div style={{ marginTop: '20px' }}>
+          {emailField}
+          <div style={{ marginTop: "20px" }}>
             <button>Login with Torus</button>
           </div>
         </form>
+        <div className="console">
+          <p>{consoleText}</p>
+        </div>
       </div>
     );
   }
