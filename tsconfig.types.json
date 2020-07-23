@@ -3,5 +3,8 @@
   "compilerOptions": {
     "emitDeclarationOnly": true,
     "declarationDir": "./types",
-  }
+  },
+  "exclude": [
+    "examples"
+  ]
 }
