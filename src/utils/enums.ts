@@ -1,5 +1,5 @@
 export const ETHEREUM_NETWORK = {
-  ROPSTEN: "ropsten",
+  TESTNET: "testnet",
   MAINNET: "mainnet",
 } as const;
 

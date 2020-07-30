@@ -35,7 +35,7 @@ class DirectWebSDK {
 
   constructor({
     baseUrl,
-    network = ETHEREUM_NETWORK.MAINNET,
+    network = ETHEREUM_NETWORK.TESTNET,
     proxyContractAddress = "0x638646503746d5456209e33a2ff5e3226d698bea",
     enableLogging = false,
     redirectToOpener = false,
@@ -52,7 +52,8 @@ class DirectWebSDK {
     };
     const torus = new Torus();
     this.torus = torus;
-    this.nodeDetailManager = new NodeDetailManager({ network, proxyAddress: proxyContractAddress });
+    const ethNetwork = network === "testnet" ? "ropsten" : network;
+    this.nodeDetailManager = new NodeDetailManager({ network: ethNetwork, proxyAddress: proxyContractAddress });
     this.nodeDetailManager.getNodeDetails();
     if (enableLogging) log.enableAll();
     else log.disableAll();

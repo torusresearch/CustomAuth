@@ -1,5 +1,5 @@
 export declare const ETHEREUM_NETWORK: {
-    readonly ROPSTEN: "ropsten";
+    readonly TESTNET: "ropsten";
     readonly MAINNET: "mainnet";
 };
 export declare const LOGIN: {
