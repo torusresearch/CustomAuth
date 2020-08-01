@@ -165,6 +165,17 @@ await axios.post("https://discordapp.com/api/oauth2/token/revoke", formData, {
 });
 ```
 
+##
+
+**Question:** How to initialise web3 with private key (returned after login) ?
+
+**Answer:**
+One can use privateKeyToAccount method to initialise web3 with a privatekey. If you are supplying a hexadecimal number, it must have 0x prefix in order to be in line with other Ethereum libraries. 
+
+```js
+web3.eth.accounts.privateKeyToAccount(PRIVATE_KEY);
+```
+
 ## Requirements
 
 - This package requires a peer dependency of `@babel/runtime`
