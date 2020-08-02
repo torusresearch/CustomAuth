@@ -1,4 +1,4 @@
-import { AGGREGATE_VERIFIER_TYPE, ETHEREUM_NETWORK_TYPE, LOGIN_TYPE } from "../utils/enums";
+import { AGGREGATE_VERIFIER_TYPE, LOGIN_TYPE, TORUS_NETWORK_TYPE } from "../utils/enums";
 export declare type PopupResponse = {
     hashParams: {
         access_token: string;
@@ -46,7 +46,7 @@ export declare type TorusLoginResponse = TorusSingleVerifierResponse & TorusKey;
 export declare type TorusAggregateLoginResponse = TorusAggregateVerifierResponse & TorusKey;
 export interface DirectWebSDKArgs {
     baseUrl: string;
-    network?: ETHEREUM_NETWORK_TYPE | string;
+    network?: TORUS_NETWORK_TYPE;
     proxyContractAddress?: string;
     enableLogging?: boolean;
     redirectToOpener?: boolean;

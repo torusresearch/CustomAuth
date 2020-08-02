@@ -1,5 +1,9 @@
+export declare const TORUS_NETWORK: {
+    readonly TESTNET: "testnet";
+    readonly MAINNET: "mainnet";
+};
 export declare const ETHEREUM_NETWORK: {
-    readonly TESTNET: "ropsten";
+    readonly ROPSTEN: "ropsten";
     readonly MAINNET: "mainnet";
 };
 export declare const LOGIN: {
@@ -21,6 +25,6 @@ export declare const LOGIN: {
 export declare const AGGREGATE_VERIFIER: {
     readonly SINGLE_VERIFIER_ID: "single_id_verifier";
 };
-export declare type ETHEREUM_NETWORK_TYPE = typeof ETHEREUM_NETWORK[keyof typeof ETHEREUM_NETWORK];
+export declare type TORUS_NETWORK_TYPE = typeof TORUS_NETWORK[keyof typeof TORUS_NETWORK];
 export declare type LOGIN_TYPE = typeof LOGIN[keyof typeof LOGIN];
 export declare type AGGREGATE_VERIFIER_TYPE = typeof AGGREGATE_VERIFIER[keyof typeof AGGREGATE_VERIFIER];
