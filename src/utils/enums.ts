@@ -1,3 +1,8 @@
+export const TORUS_NETWORK = {
+  TESTNET: "testnet",
+  MAINNET: "mainnet",
+} as const;
+
 export const ETHEREUM_NETWORK = {
   ROPSTEN: "ropsten",
   MAINNET: "mainnet",
@@ -27,6 +32,6 @@ export const AGGREGATE_VERIFIER = {
 } as const;
 
 // @flow
-export type ETHEREUM_NETWORK_TYPE = typeof ETHEREUM_NETWORK[keyof typeof ETHEREUM_NETWORK];
+export type TORUS_NETWORK_TYPE = typeof TORUS_NETWORK[keyof typeof TORUS_NETWORK];
 export type LOGIN_TYPE = typeof LOGIN[keyof typeof LOGIN];
 export type AGGREGATE_VERIFIER_TYPE = typeof AGGREGATE_VERIFIER[keyof typeof AGGREGATE_VERIFIER];
