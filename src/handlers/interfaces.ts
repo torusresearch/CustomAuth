@@ -56,6 +56,7 @@ export interface DirectWebSDKArgs {
   enableLogging?: boolean;
   redirectToOpener?: boolean;
   redirectPathName?: string;
+  apiKey?: string;
 }
 
 export interface SubVerifierDetails {
