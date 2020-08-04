@@ -40,6 +40,7 @@ class DirectWebSDK {
     enableLogging = false,
     redirectToOpener = false,
     redirectPathName = "redirect",
+    apiKey = "torus-default",
   }: DirectWebSDKArgs) {
     this.isInitialized = false;
     const baseUri = new URL(baseUrl);
@@ -50,7 +51,12 @@ class DirectWebSDK {
       },
       redirectToOpener,
     };
-    const torus = new Torus();
+    const torus = new Torus({
+      enableLogging,
+      metadataHost: "https://metadata.tor.us",
+      allowHost: "https://signer.tor.us/api/allow",
+    });
+    Torus.setAPIKey(apiKey);
     this.torus = torus;
     const ethNetwork = network === TORUS_NETWORK.TESTNET ? ETHEREUM_NETWORK.ROPSTEN : network;
     this.nodeDetailManager = new NodeDetailManager({ network: ethNetwork, proxyAddress: proxyContractAddress });
