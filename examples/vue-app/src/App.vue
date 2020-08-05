@@ -160,7 +160,7 @@ export default {
         baseUrl: `${location.origin}/serviceworker`,
         enableLogging: true,
         proxyContractAddress: "0x4023d2a0D330bF11426B12C6144Cfb96B7fa6183", // details for test net
-        network: "ropsten", // details for test net
+        network: "testnet", // details for test net
       });
 
       await torusdirectsdk.init({ skipSw: false });
