@@ -25,8 +25,10 @@ const AUTH_DOMAIN = "https://torus-test.auth0.com";
   styleUrls: ["./app.component.css"],
 })
 export class AppComponent {
+  torusdirectsdk = null;
   selectedVerifier = GOOGLE;
   loginHint = "";
+  consoleText = "";
 
   verifierMap = {
     [GOOGLE]: {
@@ -73,20 +75,7 @@ export class AppComponent {
 
   verifierMapKeys = Object.keys(this.verifierMap);
 
-  loginToConnectionMap = {
-    [EMAIL_PASSWORD]: { domain: AUTH_DOMAIN },
-    [PASSWORDLESS]: { domain: AUTH_DOMAIN, login_hint: this.loginHint },
-    [HOSTED_EMAIL_PASSWORDLESS]: { domain: AUTH_DOMAIN, verifierIdField: "name", connection: "", isVerifierIdCaseSensitive: false },
-    [HOSTED_SMS_PASSWORDLESS]: { domain: AUTH_DOMAIN, verifierIdField: "name", connection: "" },
-    [APPLE]: { domain: AUTH_DOMAIN },
-    [GITHUB]: { domain: AUTH_DOMAIN },
-    [LINKEDIN]: { domain: AUTH_DOMAIN },
-    [TWITTER]: { domain: AUTH_DOMAIN },
-    [WEIBO]: { domain: AUTH_DOMAIN },
-    [LINE]: { domain: AUTH_DOMAIN },
-  };
-
-  async login() {
+  async ngOnInit() {
     try {
       const torusdirectsdk = new TorusSdk({
         baseUrl: `${location.origin}/serviceworker`,
@@ -96,22 +85,45 @@ export class AppComponent {
       });
 
       await torusdirectsdk.init({ skipSw: false });
+      this.torusdirectsdk = torusdirectsdk;
+    } catch (error) {
+      console.error(error, "oninit caught");
+    }
+  }
 
-      const jwtParams = this.loginToConnectionMap[this.selectedVerifier] || {};
+  async login() {
+    try {
+      const jwtParams = this._loginToConnectionMap()[this.selectedVerifier] || {};
       const { typeOfLogin, clientId, verifier } = this.verifierMap[this.selectedVerifier];
-      const loginDetails = await torusdirectsdk.triggerLogin({
+      const loginDetails = await this.torusdirectsdk.triggerLogin({
         typeOfLogin,
         verifier,
         clientId,
         jwtParams,
       });
-      console.log(loginDetails);
+
+      this.consoleText = typeof loginDetails === "object" ? JSON.stringify(loginDetails) : loginDetails;
     } catch (error) {
-      console.error(error, "caught");
+      console.error(error, "login caught");
     }
   }
 
   onSelectedVerifierChanged = (event) => {
     this.selectedVerifier = event.target.value;
+  };
+
+  _loginToConnectionMap = () => {
+    return {
+      [EMAIL_PASSWORD]: { domain: AUTH_DOMAIN },
+      [PASSWORDLESS]: { domain: AUTH_DOMAIN, login_hint: this.loginHint },
+      [HOSTED_EMAIL_PASSWORDLESS]: { domain: AUTH_DOMAIN, verifierIdField: "name", connection: "", isVerifierIdCaseSensitive: false },
+      [HOSTED_SMS_PASSWORDLESS]: { domain: AUTH_DOMAIN, verifierIdField: "name", connection: "" },
+      [APPLE]: { domain: AUTH_DOMAIN },
+      [GITHUB]: { domain: AUTH_DOMAIN },
+      [LINKEDIN]: { domain: AUTH_DOMAIN },
+      [TWITTER]: { domain: AUTH_DOMAIN },
+      [WEIBO]: { domain: AUTH_DOMAIN },
+      [LINE]: { domain: AUTH_DOMAIN },
+    };
   };
 }
