@@ -1,4 +1,8 @@
-# vue-app
+# Direct Web SDK - Vue App Notes
+
+For installation instructions [click here](https://github.com/torusresearch/torus-direct-web-sdk)
+
+# Vue App Guide
 
 ## Project setup
 ```
