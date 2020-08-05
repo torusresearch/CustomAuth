@@ -17,7 +17,7 @@ import {
 } from "./handlers/interfaces";
 import { registerServiceWorker } from "./registerServiceWorker";
 import { AGGREGATE_VERIFIER, ETHEREUM_NETWORK, LOGIN_TYPE } from "./utils/enums";
-import { padUrlString } from "./utils/helpers";
+import { padUrlString, sanitizeUrl } from "./utils/helpers";
 import log from "./utils/loglevel";
 
 class DirectWebSDK {
@@ -44,7 +44,7 @@ class DirectWebSDK {
     this.isInitialized = false;
     const baseUri = new URL(baseUrl);
     this.config = {
-      baseUrl: padUrlString(baseUri),
+      baseUrl: padUrlString(sanitizeUrl(baseUri)),
       get redirect_uri() {
         return `${this.baseUrl}${redirectPathName}`;
       },

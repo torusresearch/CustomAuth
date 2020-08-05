@@ -72,3 +72,12 @@ export const getVerifierId = (
       throw new Error("Invalid login type");
   }
 };
+
+export const sanitizeUrl = (url: URL): URL => {
+  url.hash = "";
+  url.search = "";
+  url.password = "";
+  url.username = "";
+
+  return url;
+};

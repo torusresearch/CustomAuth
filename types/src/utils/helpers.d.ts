@@ -26,4 +26,5 @@ export declare const broadcastChannelOptions: {
     webWorkerSupport: boolean;
 };
 export declare const getVerifierId: (userInfo: Auth0UserInfo, typeOfLogin: LOGIN_TYPE, verifierIdField?: string, isVerifierIdCaseSensitive?: boolean) => string;
+export declare const sanitizeUrl: (url: URL) => URL;
 export {};
