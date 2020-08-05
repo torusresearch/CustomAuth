@@ -1,10 +1,12 @@
-# PROJECT README
+# Direct Web SDK - React App Notes
 
-## Known Issue
+For installation instructions [click here](https://github.com/torusresearch/torus-direct-web-sdk)
+
+## Setting up
 
 If there's an issue with project dependecy tree. Create a `.env` file and add this `SKIP_PREFLIGHT_CHECK=true` line inside.
 
-# REACT README
+# React Guide
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
