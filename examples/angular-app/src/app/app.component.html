@@ -1,0 +1,17 @@
+<div class="login-container">
+  <div>
+    <span [ngStyle]="{ 'margin-right': '10px' }">Verifier:</span>
+    <select (change)="onSelectedVerifierChanged($event)">
+      <option *ngFor="let verifier of verifierMapKeys" [value]="verifier">{{ verifierMap[verifier].name }}</option>
+    </select>
+  </div>
+  <div *ngIf="selectedVerifier === 'passwordless'" [ngStyle]="{ marginTop: '20px' }">
+    <input type="email" [(ngModel)]="loginHint" placeholder="Enter your email" />
+  </div>
+  <div [ngStyle]="{ 'margin-top': '20px' }">
+    <button (click)="login()">Login with Torus</button>
+  </div>
+  <div class="console">
+    <p>{{ consoleText }}</p>
+  </div>
+</div>
