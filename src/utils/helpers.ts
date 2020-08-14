@@ -1,5 +1,6 @@
-import { Auth0UserInfo } from "../handlers/interfaces";
+import { Auth0UserInfo, TorusGenericObject } from "../handlers/interfaces";
 import { LOGIN, LOGIN_TYPE } from "./enums";
+import log from "./loglevel";
 
 interface CustomMessageEvent extends MessageEvent {
   error: string;
@@ -71,4 +72,28 @@ export const getVerifierId = (
     default:
       throw new Error("Invalid login type");
   }
+};
+
+export const handleRedirectParameters = (
+  hash: string,
+  queryParameters: TorusGenericObject
+): { error: string; instanceParameters: TorusGenericObject; hashParameters: TorusGenericObject } => {
+  const hashParameters: TorusGenericObject = hash.split("&").reduce((result, item) => {
+    const [part0, part1] = item.split("=");
+    result[part0] = part1;
+    return result;
+  }, {});
+  log.info(hashParameters, queryParameters);
+  let instanceParameters: TorusGenericObject = {};
+  let error = "";
+  if (!queryParameters.preopenInstanceId) {
+    if (Object.keys(hashParameters).length > 0 && hashParameters.state) {
+      instanceParameters = JSON.parse(atob(decodeURIComponent(decodeURIComponent(hashParameters.state)))) || {};
+      error = hashParameters.error_description || hashParameters.error || error;
+    } else if (Object.keys(queryParameters).length > 0 && queryParameters.state) {
+      instanceParameters = JSON.parse(atob(decodeURIComponent(decodeURIComponent(queryParameters.state)))) || {};
+      if (queryParameters.error) error = queryParameters.error;
+    }
+  }
+  return { error, instanceParameters, hashParameters };
 };

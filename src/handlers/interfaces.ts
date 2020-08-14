@@ -49,6 +49,10 @@ export interface TorusSingleVerifierResponse {
 export type TorusLoginResponse = TorusSingleVerifierResponse & TorusKey;
 export type TorusAggregateLoginResponse = TorusAggregateVerifierResponse & TorusKey;
 
+export type TorusGenericObject = {
+  [key: string]: string;
+};
+
 export interface DirectWebSDKArgs {
   baseUrl: string;
   network?: TORUS_NETWORK_TYPE;
@@ -64,6 +68,8 @@ export interface SubVerifierDetails {
   verifier: string;
   clientId: string;
   jwtParams?: Auth0ClientOptions;
+  hash?: string;
+  queryParameters?: TorusGenericObject;
 }
 
 export interface AggregateLoginParams {

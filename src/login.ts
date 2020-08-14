@@ -17,7 +17,7 @@ import {
 } from "./handlers/interfaces";
 import { registerServiceWorker } from "./registerServiceWorker";
 import { AGGREGATE_VERIFIER, ETHEREUM_NETWORK, LOGIN_TYPE, TORUS_NETWORK } from "./utils/enums";
-import { padUrlString } from "./utils/helpers";
+import { handleRedirectParameters, padUrlString } from "./utils/helpers";
 import log from "./utils/loglevel";
 
 class DirectWebSDK {
@@ -94,7 +94,7 @@ class DirectWebSDK {
     throw new Error(`Please serve redirect.html present in serviceworker folder of this package on ${this.config.redirect_uri}`);
   }
 
-  async triggerLogin({ verifier, typeOfLogin, clientId, jwtParams }: SubVerifierDetails): Promise<TorusLoginResponse> {
+  async triggerLogin({ verifier, typeOfLogin, clientId, jwtParams, hash, queryParameters }: SubVerifierDetails): Promise<TorusLoginResponse> {
     log.info("Verifier: ", verifier);
     if (!this.isInitialized) {
       throw new Error("Not initialized yet");
@@ -107,10 +107,20 @@ class DirectWebSDK {
       redirectToOpener: this.config.redirectToOpener,
       jwtParams,
     });
-    const loginParams = await loginHandler.handleLoginWindow();
-    const { accessToken, idToken } = loginParams;
+    let loginParams: LoginWindowResponse;
+    if (hash && queryParameters) {
+      const { error, hashParameters } = handleRedirectParameters(hash, queryParameters);
+      if (error) throw new Error(error);
+      const { access_token: accessToken, id_token: idToken } = hashParameters;
+      loginParams = { accessToken, idToken };
+    } else loginParams = await loginHandler.handleLoginWindow();
     const userInfo = await loginHandler.getUserInfo(loginParams);
-    const torusKey = await this.getTorusKey(verifier, userInfo.verifierId, { verifier_id: userInfo.verifierId }, idToken || accessToken);
+    const torusKey = await this.getTorusKey(
+      verifier,
+      userInfo.verifierId,
+      { verifier_id: userInfo.verifierId },
+      loginParams.idToken || loginParams.accessToken
+    );
     return {
       ...torusKey,
       userInfo: {
@@ -138,7 +148,7 @@ class DirectWebSDK {
     const userInfoPromises: Promise<TorusVerifierResponse>[] = [];
     const loginParamsArray: LoginWindowResponse[] = [];
     for (const subVerifierDetail of subVerifierDetailsArray) {
-      const { clientId, typeOfLogin, verifier, jwtParams } = subVerifierDetail;
+      const { clientId, typeOfLogin, verifier, jwtParams, hash, queryParameters } = subVerifierDetail;
       const loginHandler: ILoginHandler = createHandler({
         typeOfLogin,
         clientId,
@@ -148,8 +158,14 @@ class DirectWebSDK {
         jwtParams,
       });
       // We let the user login to each verifier in a loop. Don't wait for key derivation here.!
-      // eslint-disable-next-line no-await-in-loop
-      const loginParams = await loginHandler.handleLoginWindow();
+      let loginParams: LoginWindowResponse;
+      if (hash && queryParameters) {
+        const { error, hashParameters } = handleRedirectParameters(hash, queryParameters);
+        if (error) throw new Error(error);
+        const { access_token: accessToken, id_token: idToken } = hashParameters;
+        loginParams = { accessToken, idToken };
+        // eslint-disable-next-line no-await-in-loop
+      } else loginParams = await loginHandler.handleLoginWindow();
       // Fail the method even if one promise fails
       userInfoPromises.push(loginHandler.getUserInfo(loginParams));
       loginParamsArray.push(loginParams);
