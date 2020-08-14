@@ -1,4 +1,4 @@
-import { Auth0UserInfo } from "../handlers/interfaces";
+import { Auth0UserInfo, TorusGenericObject } from "../handlers/interfaces";
 import { LOGIN, LOGIN_TYPE } from "./enums";
 interface CustomMessageEvent extends MessageEvent {
     error: string;
@@ -26,4 +26,9 @@ export declare const broadcastChannelOptions: {
     webWorkerSupport: boolean;
 };
 export declare const getVerifierId: (userInfo: Auth0UserInfo, typeOfLogin: LOGIN_TYPE, verifierIdField?: string, isVerifierIdCaseSensitive?: boolean) => string;
+export declare const handleRedirectParameters: (hash: string, queryParameters: TorusGenericObject) => {
+    error: string;
+    instanceParameters: TorusGenericObject;
+    hashParameters: TorusGenericObject;
+};
 export {};

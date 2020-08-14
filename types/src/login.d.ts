@@ -13,7 +13,7 @@ declare class DirectWebSDK {
     constructor({ baseUrl, network, proxyContractAddress, enableLogging, redirectToOpener, redirectPathName, apiKey, }: DirectWebSDKArgs);
     init({ skipSw }?: InitParams): Promise<void>;
     private handleRedirectCheck;
-    triggerLogin({ verifier, typeOfLogin, clientId, jwtParams }: SubVerifierDetails): Promise<TorusLoginResponse>;
+    triggerLogin({ verifier, typeOfLogin, clientId, jwtParams, hash, queryParameters }: SubVerifierDetails): Promise<TorusLoginResponse>;
     triggerAggregateLogin({ aggregateVerifierType, verifierIdentifier, subVerifierDetailsArray, }: AggregateLoginParams): Promise<TorusAggregateLoginResponse>;
     getTorusKey(verifier: string, verifierId: string, verifierParams: {
         verifier_id: string;

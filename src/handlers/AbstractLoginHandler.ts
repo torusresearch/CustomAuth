@@ -41,7 +41,8 @@ export default abstract class AbstractLoginHandler implements ILoginHandler {
 
   handleLoginWindow(): Promise<LoginWindowResponse> {
     return new Promise<LoginWindowResponse>((resolve, reject) => {
-      const handleData = (ev: { error: string; data: PopupResponse }) => {
+      let bc: BroadcastChannel;
+      const handleData = async (ev: { error: string; data: PopupResponse }) => {
         try {
           const { error, data } = ev;
           const {
@@ -55,6 +56,7 @@ export default abstract class AbstractLoginHandler implements ILoginHandler {
           }
           if (ev.data && returnedVerifier === this.verifier) {
             log.info(ev.data);
+            if (!this.redirectToOpener && bc) await bc.postMessage({ success: true });
             resolve({ accessToken, idToken: idToken || "" });
           }
         } catch (error) {
@@ -63,11 +65,11 @@ export default abstract class AbstractLoginHandler implements ILoginHandler {
         }
       };
       const verifierWindow = new PopupHandler({ url: this.finalURL });
-      let bc: BroadcastChannel;
+
       if (!this.redirectToOpener) {
         bc = new BroadcastChannel(`redirect_channel_${this.nonce}`, broadcastChannelOptions);
         bc.addEventListener("message", async (ev) => {
-          handleData(ev);
+          await handleData(ev);
           bc.close();
           verifierWindow.close();
         });

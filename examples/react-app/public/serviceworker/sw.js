@@ -244,6 +244,19 @@ self.addEventListener("fetch", function (event) {
           } else {
             // communicate via broadcast channel
             bc = new broadcastChannelLib.BroadcastChannel("redirect_channel_" + instanceParams.instanceId, broadcastChannelOptions);
+            bc.addEventListener("message", function (ev) {
+              if (ev.success) {
+                bc.close();
+                console.log("posted", {
+                  queryParams,
+                  instanceParams,
+                  hashParams,
+                });
+              } else {
+                window.close();
+                showCloseText();
+              }
+            });
             bc.postMessage({
               data: {
                 instanceParams: instanceParams,
@@ -252,15 +265,8 @@ self.addEventListener("fetch", function (event) {
               },
               error: error,
             }).then(function () {
-              bc.close();
-              console.log("posted", {
-                queryParams,
-                instanceParams,
-                hashParams,
-              });
               setTimeout(function () {
-                window.close();
-                showCloseText();
+                window.location.href = url.origin + location.search + location.hash;
               }, 5000);
             });
           }
