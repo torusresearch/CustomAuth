@@ -1,7 +1,9 @@
+import deepmerge from "deepmerge";
+
 import { LOGIN_TYPE } from "../utils/enums";
 import { get } from "../utils/httpHelpers";
 import AbstractLoginHandler from "./AbstractLoginHandler";
-import { LoginWindowResponse, TorusVerifierResponse } from "./interfaces";
+import { Auth0ClientOptions, LoginWindowResponse, TorusVerifierResponse } from "./interfaces";
 
 export default class GoogleHandler extends AbstractLoginHandler {
   private readonly RESPONSE_TYPE: string = "token id_token";
@@ -15,21 +17,31 @@ export default class GoogleHandler extends AbstractLoginHandler {
     readonly verifier: string,
     readonly redirect_uri: string,
     readonly typeOfLogin: LOGIN_TYPE,
-    readonly redirectToOpener?: boolean
+    readonly redirectToOpener?: boolean,
+    readonly jwtParams?: Auth0ClientOptions
   ) {
-    super(clientId, verifier, redirect_uri, typeOfLogin, redirectToOpener);
+    super(clientId, verifier, redirect_uri, typeOfLogin, redirectToOpener, jwtParams);
     this.setFinalUrl();
   }
 
   setFinalUrl(): void {
     const finalUrl = new URL("https://accounts.google.com/o/oauth2/v2/auth");
-    finalUrl.searchParams.append("response_type", this.RESPONSE_TYPE);
-    finalUrl.searchParams.append("client_id", this.clientId);
-    finalUrl.searchParams.append("state", this.state);
-    finalUrl.searchParams.append("scope", this.SCOPE);
-    finalUrl.searchParams.append("redirect_uri", this.redirect_uri);
-    finalUrl.searchParams.append("nonce", this.nonce);
-    finalUrl.searchParams.append("prompt", this.PROMPT);
+    const clonedParams = JSON.parse(JSON.stringify(this.jwtParams || {}));
+    const finalJwtParams = deepmerge(
+      {
+        state: this.state,
+        response_type: this.RESPONSE_TYPE,
+        client_id: this.clientId,
+        prompt: this.PROMPT,
+        redirect_uri: this.redirect_uri,
+        scope: this.SCOPE,
+        nonce: this.nonce,
+      },
+      clonedParams
+    );
+    Object.keys(finalJwtParams).forEach((key) => {
+      if (finalJwtParams[key]) finalUrl.searchParams.append(key, finalJwtParams[key]);
+    });
     this.finalURL = finalUrl;
   }
 

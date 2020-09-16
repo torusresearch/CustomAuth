@@ -1,7 +1,9 @@
+import deepmerge from "deepmerge";
+
 import { LOGIN_TYPE } from "../utils/enums";
 import { get } from "../utils/httpHelpers";
 import AbstractLoginHandler from "./AbstractLoginHandler";
-import { LoginWindowResponse, TorusVerifierResponse } from "./interfaces";
+import { Auth0ClientOptions, LoginWindowResponse, TorusVerifierResponse } from "./interfaces";
 
 export default class RedditHandler extends AbstractLoginHandler {
   private readonly RESPONSE_TYPE: string = "token";
@@ -13,19 +15,29 @@ export default class RedditHandler extends AbstractLoginHandler {
     readonly verifier: string,
     readonly redirect_uri: string,
     readonly typeOfLogin: LOGIN_TYPE,
-    readonly redirectToOpener?: boolean
+    readonly redirectToOpener?: boolean,
+    readonly jwtParams?: Auth0ClientOptions
   ) {
-    super(clientId, verifier, redirect_uri, typeOfLogin, redirectToOpener);
+    super(clientId, verifier, redirect_uri, typeOfLogin, redirectToOpener, jwtParams);
     this.setFinalUrl();
   }
 
   setFinalUrl(): void {
     const finalUrl = new URL(`https://www.reddit.com/api/v1/authorize${window.innerWidth < 600 ? ".compact" : ""}`);
-    finalUrl.searchParams.append("response_type", this.RESPONSE_TYPE);
-    finalUrl.searchParams.append("client_id", this.clientId);
-    finalUrl.searchParams.append("state", this.state);
-    finalUrl.searchParams.append("scope", this.SCOPE);
-    finalUrl.searchParams.append("redirect_uri", this.redirect_uri);
+    const clonedParams = JSON.parse(JSON.stringify(this.jwtParams || {}));
+    const finalJwtParams = deepmerge(
+      {
+        state: this.state,
+        response_type: this.RESPONSE_TYPE,
+        client_id: this.clientId,
+        redirect_uri: this.redirect_uri,
+        scope: this.SCOPE,
+      },
+      clonedParams
+    );
+    Object.keys(finalJwtParams).forEach((key) => {
+      if (finalJwtParams[key]) finalUrl.searchParams.append(key, finalJwtParams[key]);
+    });
     this.finalURL = finalUrl;
   }
 

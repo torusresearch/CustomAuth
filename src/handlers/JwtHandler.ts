@@ -23,7 +23,7 @@ export default class JwtHandler extends AbstractLoginHandler {
     readonly redirectToOpener?: boolean,
     readonly jwtParams?: Auth0ClientOptions
   ) {
-    super(clientId, verifier, redirect_uri, typeOfLogin, redirectToOpener);
+    super(clientId, verifier, redirect_uri, typeOfLogin, redirectToOpener, jwtParams);
     this.setFinalUrl();
   }
 
