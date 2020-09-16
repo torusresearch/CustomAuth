@@ -6,7 +6,7 @@ import { LOGIN_TYPE } from "../utils/enums";
 import { broadcastChannelOptions } from "../utils/helpers";
 import log from "../utils/loglevel";
 import PopupHandler from "../utils/PopupHandler";
-import { ILoginHandler, LoginWindowResponse, PopupResponse, TorusVerifierResponse } from "./interfaces";
+import { Auth0ClientOptions, ILoginHandler, LoginWindowResponse, PopupResponse, TorusVerifierResponse } from "./interfaces";
 
 export default abstract class AbstractLoginHandler implements ILoginHandler {
   protected nonce: string = randomId();
@@ -20,7 +20,8 @@ export default abstract class AbstractLoginHandler implements ILoginHandler {
     readonly verifier: string,
     readonly redirect_uri: string,
     readonly typeOfLogin: LOGIN_TYPE,
-    readonly redirectToOpener?: boolean
+    readonly redirectToOpener?: boolean,
+    readonly jwtParams?: Auth0ClientOptions
   ) {}
 
   get state(): string {

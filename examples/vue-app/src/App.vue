@@ -93,6 +93,7 @@ export default {
   computed: {
     loginToConnectionMap() {
       return {
+        // [GOOGLE]: { login_hint: 'hello@tor.us', prompt: 'none' }, // This allows seamless login with google
         [EMAIL_PASSWORD]: { domain: AUTH_DOMAIN },
         [PASSWORDLESS]: { domain: AUTH_DOMAIN, login_hint: this.loginHint },
         [HOSTED_EMAIL_PASSWORDLESS]: { domain: AUTH_DOMAIN, verifierIdField: "name", connection: "", isVerifierIdCaseSensitive: false },
