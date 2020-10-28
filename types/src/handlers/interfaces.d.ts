@@ -69,6 +69,10 @@ export interface AggregateLoginParams {
     verifierIdentifier: string;
     subVerifierDetailsArray: SubVerifierDetails[];
 }
+export interface HybridAggregateLoginParams {
+    singleLogin: SubVerifierDetails;
+    aggregateLoginParams: AggregateLoginParams;
+}
 export interface CreateHandlerParams {
     typeOfLogin: LOGIN_TYPE;
     clientId: string;

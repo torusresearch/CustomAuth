@@ -6,6 +6,7 @@ import createHandler from "./handlers/HandlerFactory";
 import {
   AggregateLoginParams,
   DirectWebSDKArgs,
+  HybridAggregateLoginParams,
   ILoginHandler,
   InitParams,
   LoginWindowResponse,
@@ -192,6 +193,65 @@ class DirectWebSDK {
       userInfo: userInfoArray.map((x, index) => {
         return { ...x, ...loginParamsArray[index] };
       }),
+    };
+  }
+
+  async triggerHybridAggregateLogin({ singleLogin, aggregateLoginParams }: HybridAggregateLoginParams): Promise<unknown> {
+    // This method shall break if any of the promises fail. This behaviour is intended
+    // eslint-disable-next-line no-debugger
+    debugger;
+    if (!this.isInitialized) {
+      throw new Error("Not initialized yet");
+    }
+    // if (!Array.isArray(aggregateLoginParams)) {
+    //   throw new Error("Invalid params");
+    // }
+    const { typeOfLogin, clientId, verifier, jwtParams, hash, queryParameters } = singleLogin;
+    const loginHandler: ILoginHandler = createHandler({
+      typeOfLogin,
+      clientId,
+      verifier,
+      redirect_uri: this.config.redirect_uri,
+      redirectToOpener: this.config.redirectToOpener,
+      jwtParams,
+    });
+    let loginParams: LoginWindowResponse;
+    if (hash && queryParameters) {
+      const { error, hashParameters } = handleRedirectParameters(hash, queryParameters);
+      if (error) throw new Error(error);
+      const { access_token: accessToken, id_token: idToken } = hashParameters;
+      loginParams = { accessToken, idToken };
+    } else loginParams = await loginHandler.handleLoginWindow();
+    const userInfo = await loginHandler.getUserInfo(loginParams);
+    const torusKey1 = await this.getTorusKey(
+      verifier,
+      userInfo.verifierId,
+      { verifier_id: userInfo.verifierId },
+      loginParams.idToken || loginParams.accessToken
+    );
+    log.info("toruskey1", torusKey1);
+
+    const { verifierIdentifier, subVerifierDetailsArray } = aggregateLoginParams;
+    const aggregateVerifierParams = { verify_params: [], sub_verifier_ids: [], verifier_id: "" };
+    const aggregateIdTokenSeeds = [];
+    let aggregateVerifierId = "";
+    for (let index = 0; index < subVerifierDetailsArray.length; index += 1) {
+      // const loginParams = loginParamsArray[index];
+      const { idToken, accessToken } = loginParams;
+      // const userInfo = userInfoArray[index];
+      aggregateVerifierParams.verify_params.push({ verifier_id: userInfo.verifierId, idtoken: idToken || accessToken });
+      aggregateVerifierParams.sub_verifier_ids.push(userInfo.verifier);
+      aggregateIdTokenSeeds.push(idToken || accessToken);
+      aggregateVerifierId = userInfo.verifierId; // using last because idk
+    }
+    aggregateIdTokenSeeds.sort();
+    const aggregateIdToken = keccak256(aggregateIdTokenSeeds.join(String.fromCharCode(29))).slice(2);
+    aggregateVerifierParams.verifier_id = aggregateVerifierId;
+    const torusKey2 = await this.getTorusKey(verifierIdentifier, aggregateVerifierId, aggregateVerifierParams, aggregateIdToken);
+    log.info("toruskey2", torusKey2);
+    return {
+      ...torusKey2,
+      userInfo,
     };
   }
 
