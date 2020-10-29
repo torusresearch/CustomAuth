@@ -12,6 +12,7 @@ import {
   LoginWindowResponse,
   SubVerifierDetails,
   TorusAggregateLoginResponse,
+  TorusHybridAggregateLoginResponse,
   TorusKey,
   TorusLoginResponse,
   TorusVerifierResponse,
@@ -196,16 +197,25 @@ class DirectWebSDK {
     };
   }
 
-  async triggerHybridAggregateLogin({ singleLogin, aggregateLoginParams }: HybridAggregateLoginParams): Promise<unknown> {
+  //
+  async triggerHybridAggregateLogin({ singleLogin, aggregateLoginParams }: HybridAggregateLoginParams): Promise<TorusHybridAggregateLoginResponse> {
     // This method shall break if any of the promises fail. This behaviour is intended
-    // eslint-disable-next-line no-debugger
-    debugger;
     if (!this.isInitialized) {
       throw new Error("Not initialized yet");
     }
-    // if (!Array.isArray(aggregateLoginParams)) {
-    //   throw new Error("Invalid params");
-    // }
+    if (
+      !aggregateLoginParams.aggregateVerifierType ||
+      !aggregateLoginParams.verifierIdentifier ||
+      !Array.isArray(aggregateLoginParams.subVerifierDetailsArray)
+    ) {
+      throw new Error("Invalid params");
+    }
+    if (
+      aggregateLoginParams.aggregateVerifierType === AGGREGATE_VERIFIER.SINGLE_VERIFIER_ID &&
+      aggregateLoginParams.subVerifierDetailsArray.length !== 1
+    ) {
+      throw new Error("Single id verifier can only have one sub verifier");
+    }
     const { typeOfLogin, clientId, verifier, jwtParams, hash, queryParameters } = singleLogin;
     const loginHandler: ILoginHandler = createHandler({
       typeOfLogin,
@@ -229,18 +239,16 @@ class DirectWebSDK {
       { verifier_id: userInfo.verifierId },
       loginParams.idToken || loginParams.accessToken
     );
-    log.info("toruskey1", torusKey1);
 
     const { verifierIdentifier, subVerifierDetailsArray } = aggregateLoginParams;
     const aggregateVerifierParams = { verify_params: [], sub_verifier_ids: [], verifier_id: "" };
     const aggregateIdTokenSeeds = [];
     let aggregateVerifierId = "";
     for (let index = 0; index < subVerifierDetailsArray.length; index += 1) {
-      // const loginParams = loginParamsArray[index];
+      const sub = subVerifierDetailsArray[index];
       const { idToken, accessToken } = loginParams;
-      // const userInfo = userInfoArray[index];
       aggregateVerifierParams.verify_params.push({ verifier_id: userInfo.verifierId, idtoken: idToken || accessToken });
-      aggregateVerifierParams.sub_verifier_ids.push(userInfo.verifier);
+      aggregateVerifierParams.sub_verifier_ids.push(sub.verifier);
       aggregateIdTokenSeeds.push(idToken || accessToken);
       aggregateVerifierId = userInfo.verifierId; // using last because idk
     }
@@ -248,10 +256,12 @@ class DirectWebSDK {
     const aggregateIdToken = keccak256(aggregateIdTokenSeeds.join(String.fromCharCode(29))).slice(2);
     aggregateVerifierParams.verifier_id = aggregateVerifierId;
     const torusKey2 = await this.getTorusKey(verifierIdentifier, aggregateVerifierId, aggregateVerifierParams, aggregateIdToken);
-    log.info("toruskey2", torusKey2);
     return {
-      ...torusKey2,
-      userInfo,
+      singleLogin: {
+        userInfo: { ...userInfo, ...loginParams },
+        ...torusKey1,
+      },
+      aggregateLogins: [torusKey2],
     };
   }
 

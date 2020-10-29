@@ -48,7 +48,7 @@ export interface TorusSingleVerifierResponse {
 
 export type TorusLoginResponse = TorusSingleVerifierResponse & TorusKey;
 export type TorusAggregateLoginResponse = TorusAggregateVerifierResponse & TorusKey;
-
+export type TorusHybridAggregateLoginResponse = { singleLogin: TorusLoginResponse; aggregateLogins: TorusKey[] };
 export type TorusGenericObject = {
   [key: string]: string;
 };

@@ -7,7 +7,7 @@
   "jsdelivr": "dist/directWebSdk.umd.min.js",
   "types": "types/index.d.ts",
   "scripts": {
-    "dev": "rimraf dist/ && cross-env NODE_ENV=development parallel-webpack --no-stats",
+    "build:dev": "rimraf dist/ && cross-env NODE_ENV=development parallel-webpack --no-stats",
     "build": "rimraf dist/ && cross-env NODE_ENV=production parallel-webpack --no-stats",
     "build:types": "rimraf types/ && tsc --project tsconfig.types.json",
     "lint:ts": "eslint --fix 'src/**/*.ts'",

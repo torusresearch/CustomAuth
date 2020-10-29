@@ -16,11 +16,11 @@
   ],
   "plugins": ["prettier", "babel", "standard", "promise", "import", "flowtype", "standard", "simple-import-sort", "@typescript-eslint"],
   "parser": "@typescript-eslint/parser",
-  "parserOptions": {
-    "sourceType": "module",
-    "ecmaVersion": 9,
-    "project": "./tsconfig.json"
-  },
+  // "parserOptions": {
+  //   "sourceType": "module",
+  //   "ecmaVersion": 9,
+  //   "project": "./tsconfig.json"
+  // },
   "rules": {
     "camelcase": 0,
     "no-useless-constructor": 0,
