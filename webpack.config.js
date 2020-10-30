@@ -34,11 +34,11 @@ const baseConfig = {
   },
 };
 
-// const optimization = {
-//   optimization: {
-//     minimize: false,
-//   },
-// };
+const optimization = {
+  optimization: {
+    minimize: false,
+  },
+};
 
 const babelLoaderWithPolyfills = {
   test: /\.(ts|js)x?$/,
@@ -76,7 +76,7 @@ const umdConfig = {
 
 const cjsConfig = {
   ...baseConfig,
-  // ...optimization,
+  ...optimization,
   output: {
     ...baseConfig.output,
     filename: `${pkgName}.cjs.js`,
@@ -99,7 +99,7 @@ const cjsConfig = {
 
 const cjsBundledConfig = {
   ...baseConfig,
-  // ...optimization,
+  ...optimization,
   output: {
     ...baseConfig.output,
     filename: `${pkgName}-bundled.cjs.js`,
