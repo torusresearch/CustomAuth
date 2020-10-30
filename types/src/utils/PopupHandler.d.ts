@@ -5,7 +5,7 @@ declare class PopupHandler extends EventEmitter {
     target: string;
     features: string;
     window: Window;
-    windowTimer: NodeJS.Timeout;
+    windowTimer: number;
     iClosedWindow: boolean;
     constructor({ url, target, features }: {
         url: URL;
