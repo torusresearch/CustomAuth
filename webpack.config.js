@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 const path = require("path");
-const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
+const ESLintPlugin = require("eslint-webpack-plugin");
 
 const pkg = require("./package.json");
 
@@ -40,31 +40,11 @@ const baseConfig = {
 //   },
 // };
 
-const eslintLoader = {
-  enforce: "pre",
-  test: /\.js$/,
-  exclude: /node_modules/,
-  loader: "eslint-loader",
-};
-
 const babelLoaderWithPolyfills = {
-  test: /\.m?js$/,
+  test: /\.(ts|js)x?$/,
   exclude: /(node_modules|bower_components)/,
   use: {
     loader: "babel-loader",
-  },
-};
-
-const tsLoader = {
-  test: /\.ts?$/,
-  exclude: /(node_modules|bower_components)/,
-  use: {
-    loader: "ts-loader",
-    options: {
-      // disable type checker - we will use it in fork plugin
-      transpileOnly: true,
-      configFile: NODE_ENV === "production" ? "tsconfig.prod.json" : "tsconfig.json",
-    },
   },
 };
 
@@ -78,7 +58,7 @@ const umdPolyfilledConfig = {
     libraryTarget: "umd",
   },
   module: {
-    rules: [tsLoader, eslintLoader, babelLoaderWithPolyfills],
+    rules: [babelLoaderWithPolyfills],
   },
 };
 
@@ -90,7 +70,7 @@ const umdConfig = {
     libraryTarget: "umd",
   },
   module: {
-    rules: [tsLoader, eslintLoader, babelLoader],
+    rules: [babelLoader],
   },
 };
 
@@ -103,10 +83,14 @@ const cjsConfig = {
     libraryTarget: "commonjs2",
   },
   module: {
-    rules: [tsLoader, eslintLoader, babelLoader],
+    rules: [babelLoader],
   },
   externals: [...Object.keys(pkg.dependencies), /^(@babel\/runtime)/i],
-  plugins: [new ForkTsCheckerWebpackPlugin()],
+  plugins: [
+    new ESLintPlugin({
+      extensions: ".ts",
+    }),
+  ],
   node: {
     ...baseConfig.node,
     Buffer: false,
@@ -122,7 +106,7 @@ const cjsBundledConfig = {
     libraryTarget: "commonjs2",
   },
   module: {
-    rules: [tsLoader, eslintLoader, babelLoader],
+    rules: [babelLoader],
   },
   externals: [...Object.keys(pkg.dependencies).filter((x) => !packagesToInclude.includes(x)), /^(@babel\/runtime)/i],
 };

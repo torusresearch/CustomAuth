@@ -9,7 +9,7 @@ class PopupHandler extends EventEmitter {
 
   window: Window;
 
-  windowTimer: NodeJS.Timeout; // Not picking up browser overload for some reason
+  windowTimer: number;
 
   iClosedWindow: boolean;
 
@@ -25,17 +25,19 @@ class PopupHandler extends EventEmitter {
   }
 
   _setupTimer(): void {
-    this.windowTimer = setInterval(() => {
-      if (this.window && this.window.closed) {
-        clearInterval(this.windowTimer);
-        if (!this.iClosedWindow) {
-          this.emit("close");
+    this.windowTimer = Number(
+      setInterval(() => {
+        if (this.window && this.window.closed) {
+          clearInterval(this.windowTimer);
+          if (!this.iClosedWindow) {
+            this.emit("close");
+          }
+          this.iClosedWindow = false;
+          this.window = undefined;
         }
-        this.iClosedWindow = false;
-        this.window = undefined;
-      }
-      if (this.window === undefined) clearInterval(this.windowTimer);
-    }, 500);
+        if (this.window === undefined) clearInterval(this.windowTimer);
+      }, 500)
+    );
   }
 
   open(): Promise<void> {
