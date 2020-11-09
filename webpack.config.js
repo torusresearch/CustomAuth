@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 const path = require("path");
-const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
+const ESLintPlugin = require("eslint-webpack-plugin");
 
 const pkg = require("./package.json");
 
@@ -34,37 +34,17 @@ const baseConfig = {
   },
 };
 
-// const optimization = {
-//   optimization: {
-//     minimize: false,
-//   },
-// };
-
-const eslintLoader = {
-  enforce: "pre",
-  test: /\.js$/,
-  exclude: /node_modules/,
-  loader: "eslint-loader",
-};
-
-const babelLoaderWithPolyfills = {
-  test: /\.m?js$/,
-  exclude: /(node_modules|bower_components)/,
-  use: {
-    loader: "babel-loader",
+const optimization = {
+  optimization: {
+    minimize: false,
   },
 };
 
-const tsLoader = {
-  test: /\.ts?$/,
+const babelLoaderWithPolyfills = {
+  test: /\.(ts|js)x?$/,
   exclude: /(node_modules|bower_components)/,
   use: {
-    loader: "ts-loader",
-    options: {
-      // disable type checker - we will use it in fork plugin
-      transpileOnly: true,
-      configFile: NODE_ENV === "production" ? "tsconfig.prod.json" : "tsconfig.json",
-    },
+    loader: "babel-loader",
   },
 };
 
@@ -78,7 +58,7 @@ const umdPolyfilledConfig = {
     libraryTarget: "umd",
   },
   module: {
-    rules: [tsLoader, eslintLoader, babelLoaderWithPolyfills],
+    rules: [babelLoaderWithPolyfills],
   },
 };
 
@@ -90,23 +70,27 @@ const umdConfig = {
     libraryTarget: "umd",
   },
   module: {
-    rules: [tsLoader, eslintLoader, babelLoader],
+    rules: [babelLoader],
   },
 };
 
 const cjsConfig = {
   ...baseConfig,
-  // ...optimization,
+  ...optimization,
   output: {
     ...baseConfig.output,
     filename: `${pkgName}.cjs.js`,
     libraryTarget: "commonjs2",
   },
   module: {
-    rules: [tsLoader, eslintLoader, babelLoader],
+    rules: [babelLoader],
   },
   externals: [...Object.keys(pkg.dependencies), /^(@babel\/runtime)/i],
-  plugins: [new ForkTsCheckerWebpackPlugin()],
+  plugins: [
+    new ESLintPlugin({
+      extensions: ".ts",
+    }),
+  ],
   node: {
     ...baseConfig.node,
     Buffer: false,
@@ -115,14 +99,14 @@ const cjsConfig = {
 
 const cjsBundledConfig = {
   ...baseConfig,
-  // ...optimization,
+  ...optimization,
   output: {
     ...baseConfig.output,
     filename: `${pkgName}-bundled.cjs.js`,
     libraryTarget: "commonjs2",
   },
   module: {
-    rules: [tsLoader, eslintLoader, babelLoader],
+    rules: [babelLoader],
   },
   externals: [...Object.keys(pkg.dependencies).filter((x) => !packagesToInclude.includes(x)), /^(@babel\/runtime)/i],
 };

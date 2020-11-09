@@ -63,35 +63,6 @@ export interface DirectWebSDKArgs {
   apiKey?: string;
 }
 
-export interface SubVerifierDetails {
-  typeOfLogin: LOGIN_TYPE;
-  verifier: string;
-  clientId: string;
-  jwtParams?: Auth0ClientOptions;
-  hash?: string;
-  queryParameters?: TorusGenericObject;
-}
-
-export interface AggregateLoginParams {
-  aggregateVerifierType: AGGREGATE_VERIFIER_TYPE;
-  verifierIdentifier: string;
-  subVerifierDetailsArray: SubVerifierDetails[];
-}
-
-export interface HybridAggregateLoginParams {
-  singleLogin: SubVerifierDetails;
-  aggregateLoginParams: AggregateLoginParams;
-}
-
-export interface CreateHandlerParams {
-  typeOfLogin: LOGIN_TYPE;
-  clientId: string;
-  verifier: string;
-  redirect_uri: string;
-  redirectToOpener?: boolean;
-  jwtParams?: Auth0ClientOptions;
-}
-
 export interface InitParams {
   skipSw?: boolean;
 }
@@ -196,4 +167,32 @@ export interface Auth0ClientOptions extends BaseLoginOptions {
    * @default true
    */
   isVerifierIdCaseSensitive?: boolean;
+}
+
+export interface SubVerifierDetails {
+  typeOfLogin: LOGIN_TYPE;
+  verifier: string;
+  clientId: string;
+  jwtParams?: Auth0ClientOptions;
+  hash?: string;
+  queryParameters?: TorusGenericObject;
+}
+export interface CreateHandlerParams {
+  typeOfLogin: LOGIN_TYPE;
+  clientId: string;
+  verifier: string;
+  redirect_uri: string;
+  redirectToOpener?: boolean;
+  jwtParams?: Auth0ClientOptions;
+}
+
+export interface AggregateLoginParams {
+  aggregateVerifierType: AGGREGATE_VERIFIER_TYPE;
+  verifierIdentifier: string;
+  subVerifierDetailsArray: SubVerifierDetails[];
+}
+
+export interface HybridAggregateLoginParams {
+  singleLogin: SubVerifierDetails;
+  aggregateLoginParams: AggregateLoginParams;
 }
