@@ -9,7 +9,7 @@ const libraryName = pkgName.charAt(0).toUpperCase() + pkgName.slice(1);
 
 const packagesToInclude = ["broadcast-channel", "@toruslabs/torus.js", "@toruslabs/fetch-node-details"];
 
-const { NODE_ENV = "development" } = process.env;
+const { NODE_ENV = "production" } = process.env;
 
 const baseConfig = {
   mode: NODE_ENV,
