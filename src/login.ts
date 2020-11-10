@@ -233,7 +233,7 @@ class DirectWebSDK {
       loginParams = { accessToken, idToken };
     } else loginParams = await loginHandler.handleLoginWindow();
     const userInfo = await loginHandler.getUserInfo(loginParams);
-    const torusKey1 = await this.getTorusKey(
+    const torusKey1Promise = this.getTorusKey(
       verifier,
       userInfo.verifierId,
       { verifier_id: userInfo.verifierId },
@@ -255,7 +255,8 @@ class DirectWebSDK {
     aggregateIdTokenSeeds.sort();
     const aggregateIdToken = keccak256(aggregateIdTokenSeeds.join(String.fromCharCode(29))).slice(2);
     aggregateVerifierParams.verifier_id = aggregateVerifierId;
-    const torusKey2 = await this.getTorusKey(verifierIdentifier, aggregateVerifierId, aggregateVerifierParams, aggregateIdToken);
+    const torusKey2Promise = this.getTorusKey(verifierIdentifier, aggregateVerifierId, aggregateVerifierParams, aggregateIdToken);
+    const [torusKey1, torusKey2] = await Promise.all([torusKey1Promise, torusKey2Promise]);
     return {
       singleLogin: {
         userInfo: { ...userInfo, ...loginParams },

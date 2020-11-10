@@ -51,7 +51,7 @@ export default {
           name: "Google",
           typeOfLogin: "google",
           clientId: "221898609709-obfn3p63741l5333093430j3qeiinaa8.apps.googleusercontent.com",
-          verifier: "google-lrc"
+          verifier: "google-lrc",
         },
         [FACEBOOK]: { name: "Facebook", typeOfLogin: "facebook", clientId: "617201755556395", verifier: "facebook-lrc" },
         [REDDIT]: { name: "Reddit", typeOfLogin: "reddit", clientId: "YNsv1YtA_o66fA", verifier: "torus-reddit-test" },
@@ -61,13 +61,13 @@ export default {
           name: "Email Password",
           typeOfLogin: "email_password",
           clientId: "sqKRBVSdwa4WLkaq419U7Bamlh5vK1H7",
-          verifier: "torus-auth0-email-password"
+          verifier: "torus-auth0-email-password",
         },
         [PASSWORDLESS]: {
           name: "Passwordless",
           typeOfLogin: "passwordless",
           clientId: "P7PJuBCXIHP41lcyty0NEb7Lgf7Zme8Q",
-          verifier: "torus-auth0-passwordless"
+          verifier: "torus-auth0-passwordless",
         },
         [APPLE]: { name: "Apple", typeOfLogin: "apple", clientId: "m1Q0gvDfOyZsJCZ3cucSQEe9XMvl9d9L", verifier: "torus-auth0-apple-lrc" },
         [GITHUB]: { name: "Github", typeOfLogin: "github", clientId: "PC2a4tfNRvXbT48t89J5am0oFM21Nxff", verifier: "torus-auth0-github-lrc" },
@@ -79,15 +79,15 @@ export default {
           name: "Hosted Email Passwordless",
           typeOfLogin: "jwt",
           clientId: "P7PJuBCXIHP41lcyty0NEb7Lgf7Zme8Q",
-          verifier: "torus-auth0-passwordless"
+          verifier: "torus-auth0-passwordless",
         },
         [HOSTED_SMS_PASSWORDLESS]: {
           name: "Hosted SMS Passwordless",
           typeOfLogin: "jwt",
           clientId: "nSYBFalV2b1MSg5b2raWqHl63tfH3KQa",
-          verifier: "torus-auth0-sms-passwordless"
-        }
-      }
+          verifier: "torus-auth0-sms-passwordless",
+        },
+      },
     };
   },
   computed: {
@@ -103,9 +103,9 @@ export default {
         [LINKEDIN]: { domain: AUTH_DOMAIN },
         [TWITTER]: { domain: AUTH_DOMAIN },
         [WEIBO]: { domain: AUTH_DOMAIN },
-        [LINE]: { domain: AUTH_DOMAIN }
+        [LINE]: { domain: AUTH_DOMAIN },
       };
-    }
+    },
   },
   methods: {
     async login(hash, queryParameters) {
@@ -113,7 +113,7 @@ export default {
         if (!this.torusdirectsdk) return;
         const jwtParams = this.loginToConnectionMap[this.selectedVerifier] || {};
         const { typeOfLogin, clientId, verifier } = this.verifierMap[this.selectedVerifier];
-        console.log(hash, queryParameters, typeOfLogin, clientId, verifier, jwtParams)
+        console.log(hash, queryParameters, typeOfLogin, clientId, verifier, jwtParams);
         // const loginDetails = await this.torusdirectsdk.triggerLogin({
         //   typeOfLogin,
         //   verifier,
@@ -130,7 +130,7 @@ export default {
             clientId,
             jwtParams,
             hash,
-            queryParameters
+            queryParameters,
           },
           aggregateLoginParams: {
             aggregateVerifierType: "single_id_verifier",
@@ -139,10 +139,10 @@ export default {
               {
                 clientId: "221898609709-obfn3p63741l5333093430j3qeiinaa8.apps.googleusercontent.com",
                 typeOfLogin: "google",
-                verifier: "torus"
-              }
-            ]
-          }
+                verifier: "torus",
+              },
+            ],
+          },
         });
 
         // AGGREGATE LOGIN
@@ -198,7 +198,7 @@ export default {
         }
       }
       return { error, instanceParameters, hashParameters };
-    }
+    },
   },
   async mounted() {
     try {
@@ -213,7 +213,7 @@ export default {
         baseUrl: `${location.origin}/serviceworker`,
         enableLogging: true,
         proxyContractAddress: "0x4023d2a0D330bF11426B12C6144Cfb96B7fa6183", // details for test net
-        network: "testnet" // details for test net
+        network: "testnet", // details for test net
       });
 
       await torusdirectsdk.init({ skipSw: false });
@@ -221,13 +221,13 @@ export default {
       if (hash) {
         if (error) throw new Error(error);
         const { verifier: returnedVerifier } = instanceParameters;
-        this.selectedVerifier = Object.keys(this.verifierMap).find(x => this.verifierMap[x].verifier === returnedVerifier);
+        this.selectedVerifier = Object.keys(this.verifierMap).find((x) => this.verifierMap[x].verifier === returnedVerifier);
         this.login(hash, queryParams);
       }
     } catch (error) {
       console.error(error, "mounted caught");
     }
-  }
+  },
 };
 </script>
 

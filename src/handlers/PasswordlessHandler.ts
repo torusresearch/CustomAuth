@@ -56,7 +56,7 @@ export default class JwtHandler extends AbstractLoginHandler {
       };
     } catch (error) {
       log.error(error);
-      const decodedToken: Auth0UserInfo = jwtDecode(idToken);
+      const decodedToken = jwtDecode(idToken) as Auth0UserInfo;
       const { name, email, picture } = decodedToken;
       return {
         profileImage: picture,
