@@ -51,6 +51,8 @@ This is a plugin that works [only on the client side](https://nuxtjs.org/guide/p
 
 ## Usage
 
+For more in-depth documentation, please refer to docs [here](https://docs.tor.us/direct-auth/quick-start)
+
 Add [`@toruslabs/torus-direct-web-sdk`](https://www.npmjs.com/package/@toruslabs/torus-direct-web-sdk) to your project:
 
 To allow your web app to retrieve keys:
@@ -58,15 +60,13 @@ To allow your web app to retrieve keys:
 1. Install the package
    `npm i @toruslabs/torus-direct-web-sdk`
 
-2. If you're using `redirectToOpener`, modify the origin of postMessage from `"http://localhost:3000"` to your hosted domain in redirect.html and sw.js
+2. Serve [service worker](serviceworker/sw.js) from `baseUrl` where baseUrl is the one passed while instantiating `DirectWebSdk` for specific login (example http://localhost:3000/serviceworker/). If you're already using a sw, pls ensure to port over the fetch override from [our service worker](serviceworker/sw.js)
 
-3. Serve [service worker](serviceworker/sw.js) from `baseUrl` where baseUrl is the one passed while instantiating `DirectWebSdk` for specific login (example http://localhost:3000/serviceworker/). If you're already using a sw, pls ensure to port over the fetch override from [our service worker](serviceworker/sw.js)
+3. For browsers where service workers are not supported or if you wish to not use service workers, create and serve [redirect page](serviceworker/redirect.html) from `baseUrl/redirect` where baseUrl is the one passed while instantiating `DirectWebSdk` for specific login ( example http://localhost:3000/serviceworker/)
 
-4. For browsers where service workers are not supported or if you wish to not use service workers, create and serve [redirect page](serviceworker/redirect.html) from `baseUrl/redirect` where baseUrl is the one passed while instantiating `DirectWebSdk` for specific login ( example http://localhost:3000/serviceworker/)
+4. At verifier's interface (where you obtain client id), please use `baseUrl/redirect` (eg: http://localhost:3000/serviceworker/redirect) as the redirect_uri where baseUrl is the one passed while instantiating `DirectWebSdk`
 
-5. At verifier's interface (where you obtain client id), please use `baseUrl/redirect` (eg: http://localhost:3000/serviceworker/redirect) as the redirect_uri where baseUrl is the one passed while instantiating `DirectWebSdk`
-
-6. Instantiate the package with your own specific client-id
+5. Instantiate the package with your own specific client-id
 
 ```js
 const torus = new DirectWebSdk({
@@ -77,7 +77,7 @@ const torus = new DirectWebSdk({
 await torus.init();
 ```
 
-7. Trigger the login
+6. Trigger the login
 
 ```js
 const userInfo = await torus.triggerLogin({
@@ -87,7 +87,7 @@ const userInfo = await torus.triggerLogin({
 });
 ```
 
-8. Reach out to hello@tor.us to get your verifier spun up on the testnet today!
+Note: If you're using `redirectToOpener`, modify the origin of postMessage from `"http://localhost:3000"` to your hosted domain in redirect.html and sw.js
 
 ## Examples
 
