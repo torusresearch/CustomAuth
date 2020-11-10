@@ -12,6 +12,13 @@
     <div :style="{ marginTop: '20px' }">
       <button @click="login">Login with Torus</button>
     </div>
+    <p>Please note that the verifiers listed in the example have http://localhost:3000/serviceworker/redirect configured as the redirect uri.</p>
+    <p>If you use any other domains, they won't work.</p>
+    <p>The verifiers listed here are for example reference only. Please don't use them for anything other than testing purposes.</p>
+    <div>
+      Reach out to us at <a href="mailto:hello@tor.us">hello@tor.us</a> or <a href="https://t.me/torusdev">telegram group</a> to get your verifier
+      deployed.
+    </div>
     <div id="console">
       <p></p>
     </div>
@@ -114,36 +121,36 @@ export default {
         const jwtParams = this.loginToConnectionMap[this.selectedVerifier] || {};
         const { typeOfLogin, clientId, verifier } = this.verifierMap[this.selectedVerifier];
         console.log(hash, queryParameters, typeOfLogin, clientId, verifier, jwtParams);
-        // const loginDetails = await this.torusdirectsdk.triggerLogin({
-        //   typeOfLogin,
-        //   verifier,
-        //   clientId,
-        //   jwtParams,
-        //   hash,
-        //   queryParameters,
-        // });
-
-        const loginDetails = await this.torusdirectsdk.triggerHybridAggregateLogin({
-          singleLogin: {
-            typeOfLogin,
-            verifier,
-            clientId,
-            jwtParams,
-            hash,
-            queryParameters,
-          },
-          aggregateLoginParams: {
-            aggregateVerifierType: "single_id_verifier",
-            verifierIdentifier: "tkey-google",
-            subVerifierDetailsArray: [
-              {
-                clientId: "221898609709-obfn3p63741l5333093430j3qeiinaa8.apps.googleusercontent.com",
-                typeOfLogin: "google",
-                verifier: "torus",
-              },
-            ],
-          },
+        const loginDetails = await this.torusdirectsdk.triggerLogin({
+          typeOfLogin,
+          verifier,
+          clientId,
+          jwtParams,
+          hash,
+          queryParameters,
         });
+
+        // const loginDetails = await this.torusdirectsdk.triggerHybridAggregateLogin({
+        //   singleLogin: {
+        //     typeOfLogin,
+        //     verifier,
+        //     clientId,
+        //     jwtParams,
+        //     hash,
+        //     queryParameters,
+        //   },
+        //   aggregateLoginParams: {
+        //     aggregateVerifierType: "single_id_verifier",
+        //     verifierIdentifier: "tkey-google",
+        //     subVerifierDetailsArray: [
+        //       {
+        //         clientId: "221898609709-obfn3p63741l5333093430j3qeiinaa8.apps.googleusercontent.com",
+        //         typeOfLogin: "google",
+        //         verifier: "torus",
+        //       },
+        //     ],
+        //   },
+        // });
 
         // AGGREGATE LOGIN
         // const loginDetails = await this.torusdirectsdk.triggerAggregateLogin({
