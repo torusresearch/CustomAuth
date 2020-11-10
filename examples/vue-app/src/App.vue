@@ -3,11 +3,7 @@
     <div>
       <span :style="{ marginRight: '20px' }">verifier:</span>
       <select v-model="selectedVerifier">
-        <option
-          :key="login"
-          v-for="login in Object.keys(verifierMap)"
-          :value="login"
-        >{{ verifierMap[login].name }}</option>
+        <option :key="login" v-for="login in Object.keys(verifierMap)" :value="login">{{ verifierMap[login].name }}</option>
       </select>
     </div>
     <div :style="{ marginTop: '20px' }" v-if="selectedVerifier === 'passwordless'">
@@ -117,26 +113,49 @@ export default {
         if (!this.torusdirectsdk) return;
         const jwtParams = this.loginToConnectionMap[this.selectedVerifier] || {};
         const { typeOfLogin, clientId, verifier } = this.verifierMap[this.selectedVerifier];
-        const loginDetails = await this.torusdirectsdk.triggerLogin({
-          typeOfLogin,
-          verifier,
-          clientId,
-          jwtParams,
-          hash,
-          queryParameters,
+        console.log(hash, queryParameters, typeOfLogin, clientId, verifier, jwtParams);
+        // const loginDetails = await this.torusdirectsdk.triggerLogin({
+        //   typeOfLogin,
+        //   verifier,
+        //   clientId,
+        //   jwtParams,
+        //   hash,
+        //   queryParameters,
+        // });
+
+        const loginDetails = await this.torusdirectsdk.triggerHybridAggregateLogin({
+          singleLogin: {
+            typeOfLogin,
+            verifier,
+            clientId,
+            jwtParams,
+            hash,
+            queryParameters,
+          },
+          aggregateLoginParams: {
+            aggregateVerifierType: "single_id_verifier",
+            verifierIdentifier: "tkey-google",
+            subVerifierDetailsArray: [
+              {
+                clientId: "221898609709-obfn3p63741l5333093430j3qeiinaa8.apps.googleusercontent.com",
+                typeOfLogin: "google",
+                verifier: "torus",
+              },
+            ],
+          },
         });
 
         // AGGREGATE LOGIN
-        // const loginDetails = await torusdirectsdk.triggerAggregateLogin({
+        // const loginDetails = await this.torusdirectsdk.triggerAggregateLogin({
         //   aggregateVerifierType: "single_id_verifier",
-        //   verifierIdentifier: "google-google",
+        //   verifierIdentifier: "tkey-google",
         //   subVerifierDetailsArray: [
         //     {
-        //       clientId: "238941746713-qqe4a7rduuk256d8oi5l0q34qtu9gpfg.apps.googleusercontent.com",
+        //       clientId: "221898609709-obfn3p63741l5333093430j3qeiinaa8.apps.googleusercontent.com",
         //       typeOfLogin: "google",
-        //       verifier: "google-shubs",
-        //     },
-        //   ],
+        //       verifier: "torus"
+        //     }
+        //   ]
         // });
 
         // AGGREGATE LOGIN - AUTH0 (Not working - Sample only)

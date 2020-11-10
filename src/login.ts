@@ -6,11 +6,13 @@ import createHandler from "./handlers/HandlerFactory";
 import {
   AggregateLoginParams,
   DirectWebSDKArgs,
+  HybridAggregateLoginParams,
   ILoginHandler,
   InitParams,
   LoginWindowResponse,
   SubVerifierDetails,
   TorusAggregateLoginResponse,
+  TorusHybridAggregateLoginResponse,
   TorusKey,
   TorusLoginResponse,
   TorusVerifierResponse,
@@ -192,6 +194,75 @@ class DirectWebSDK {
       userInfo: userInfoArray.map((x, index) => {
         return { ...x, ...loginParamsArray[index] };
       }),
+    };
+  }
+
+  //
+  async triggerHybridAggregateLogin({ singleLogin, aggregateLoginParams }: HybridAggregateLoginParams): Promise<TorusHybridAggregateLoginResponse> {
+    // This method shall break if any of the promises fail. This behaviour is intended
+    if (!this.isInitialized) {
+      throw new Error("Not initialized yet");
+    }
+    if (
+      !aggregateLoginParams.aggregateVerifierType ||
+      !aggregateLoginParams.verifierIdentifier ||
+      !Array.isArray(aggregateLoginParams.subVerifierDetailsArray)
+    ) {
+      throw new Error("Invalid params");
+    }
+    if (
+      aggregateLoginParams.aggregateVerifierType === AGGREGATE_VERIFIER.SINGLE_VERIFIER_ID &&
+      aggregateLoginParams.subVerifierDetailsArray.length !== 1
+    ) {
+      throw new Error("Single id verifier can only have one sub verifier");
+    }
+    const { typeOfLogin, clientId, verifier, jwtParams, hash, queryParameters } = singleLogin;
+    const loginHandler: ILoginHandler = createHandler({
+      typeOfLogin,
+      clientId,
+      verifier,
+      redirect_uri: this.config.redirect_uri,
+      redirectToOpener: this.config.redirectToOpener,
+      jwtParams,
+    });
+    let loginParams: LoginWindowResponse;
+    if (hash && queryParameters) {
+      const { error, hashParameters } = handleRedirectParameters(hash, queryParameters);
+      if (error) throw new Error(error);
+      const { access_token: accessToken, id_token: idToken } = hashParameters;
+      loginParams = { accessToken, idToken };
+    } else loginParams = await loginHandler.handleLoginWindow();
+    const userInfo = await loginHandler.getUserInfo(loginParams);
+    const torusKey1Promise = this.getTorusKey(
+      verifier,
+      userInfo.verifierId,
+      { verifier_id: userInfo.verifierId },
+      loginParams.idToken || loginParams.accessToken
+    );
+
+    const { verifierIdentifier, subVerifierDetailsArray } = aggregateLoginParams;
+    const aggregateVerifierParams = { verify_params: [], sub_verifier_ids: [], verifier_id: "" };
+    const aggregateIdTokenSeeds = [];
+    let aggregateVerifierId = "";
+    for (let index = 0; index < subVerifierDetailsArray.length; index += 1) {
+      const sub = subVerifierDetailsArray[index];
+      const { idToken, accessToken } = loginParams;
+      aggregateVerifierParams.verify_params.push({ verifier_id: userInfo.verifierId, idtoken: idToken || accessToken });
+      aggregateVerifierParams.sub_verifier_ids.push(sub.verifier);
+      aggregateIdTokenSeeds.push(idToken || accessToken);
+      aggregateVerifierId = userInfo.verifierId; // using last because idk
+    }
+    aggregateIdTokenSeeds.sort();
+    const aggregateIdToken = keccak256(aggregateIdTokenSeeds.join(String.fromCharCode(29))).slice(2);
+    aggregateVerifierParams.verifier_id = aggregateVerifierId;
+    const torusKey2Promise = this.getTorusKey(verifierIdentifier, aggregateVerifierId, aggregateVerifierParams, aggregateIdToken);
+    const [torusKey1, torusKey2] = await Promise.all([torusKey1Promise, torusKey2Promise]);
+    return {
+      singleLogin: {
+        userInfo: { ...userInfo, ...loginParams },
+        ...torusKey1,
+      },
+      aggregateLogins: [torusKey2],
     };
   }
 

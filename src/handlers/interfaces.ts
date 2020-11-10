@@ -48,7 +48,7 @@ export interface TorusSingleVerifierResponse {
 
 export type TorusLoginResponse = TorusSingleVerifierResponse & TorusKey;
 export type TorusAggregateLoginResponse = TorusAggregateVerifierResponse & TorusKey;
-
+export type TorusHybridAggregateLoginResponse = { singleLogin: TorusLoginResponse; aggregateLogins: TorusKey[] };
 export type TorusGenericObject = {
   [key: string]: string;
 };
@@ -169,6 +169,14 @@ export interface Auth0ClientOptions extends BaseLoginOptions {
   isVerifierIdCaseSensitive?: boolean;
 }
 
+export interface SubVerifierDetails {
+  typeOfLogin: LOGIN_TYPE;
+  verifier: string;
+  clientId: string;
+  jwtParams?: Auth0ClientOptions;
+  hash?: string;
+  queryParameters?: TorusGenericObject;
+}
 export interface CreateHandlerParams {
   typeOfLogin: LOGIN_TYPE;
   clientId: string;
@@ -178,17 +186,13 @@ export interface CreateHandlerParams {
   jwtParams?: Auth0ClientOptions;
 }
 
-export interface SubVerifierDetails {
-  typeOfLogin: LOGIN_TYPE;
-  verifier: string;
-  clientId: string;
-  jwtParams?: Auth0ClientOptions;
-  hash?: string;
-  queryParameters?: TorusGenericObject;
-}
-
 export interface AggregateLoginParams {
   aggregateVerifierType: AGGREGATE_VERIFIER_TYPE;
   verifierIdentifier: string;
   subVerifierDetailsArray: SubVerifierDetails[];
+}
+
+export interface HybridAggregateLoginParams {
+  singleLogin: SubVerifierDetails;
+  aggregateLoginParams: AggregateLoginParams;
 }
