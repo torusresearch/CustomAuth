@@ -10,6 +10,10 @@ export interface Auth0UserInfo {
   nickname: string;
 }
 
+export interface extraParams {
+  [key: string]: unknown;
+}
+
 // @flow
 export interface TorusVerifierResponse {
   email: string;

@@ -15,6 +15,9 @@ export interface Auth0UserInfo {
     sub: string;
     nickname: string;
 }
+export interface extraParams {
+    [key: string]: unknown;
+}
 export interface TorusVerifierResponse {
     email: string;
     name: string;

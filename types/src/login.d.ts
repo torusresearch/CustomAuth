@@ -1,6 +1,6 @@
 import NodeDetailManager from "@toruslabs/fetch-node-details";
 import Torus from "@toruslabs/torus.js";
-import { AggregateLoginParams, DirectWebSDKArgs, HybridAggregateLoginParams, InitParams, SubVerifierDetails, TorusAggregateLoginResponse, TorusHybridAggregateLoginResponse, TorusKey, TorusLoginResponse } from "./handlers/interfaces";
+import { AggregateLoginParams, DirectWebSDKArgs, extraParams, HybridAggregateLoginParams, InitParams, SubVerifierDetails, TorusAggregateLoginResponse, TorusHybridAggregateLoginResponse, TorusKey, TorusLoginResponse } from "./handlers/interfaces";
 declare class DirectWebSDK {
     isInitialized: boolean;
     config: {
@@ -18,6 +18,6 @@ declare class DirectWebSDK {
     triggerHybridAggregateLogin({ singleLogin, aggregateLoginParams }: HybridAggregateLoginParams): Promise<TorusHybridAggregateLoginResponse>;
     getTorusKey(verifier: string, verifierId: string, verifierParams: {
         verifier_id: string;
-    }, idToken: string): Promise<TorusKey>;
+    }, idToken: string, additionalParams?: extraParams): Promise<TorusKey>;
 }
 export default DirectWebSDK;

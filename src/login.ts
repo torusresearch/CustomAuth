@@ -1,11 +1,12 @@
 import NodeDetailManager from "@toruslabs/fetch-node-details";
-import Torus, { extraParams } from "@toruslabs/torus.js";
+import Torus from "@toruslabs/torus.js";
 import { keccak256 } from "web3-utils";
 
 import createHandler from "./handlers/HandlerFactory";
 import {
   AggregateLoginParams,
   DirectWebSDKArgs,
+  extraParams,
   HybridAggregateLoginParams,
   ILoginHandler,
   InitParams,
