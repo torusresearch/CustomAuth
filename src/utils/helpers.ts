@@ -36,9 +36,7 @@ export const loginToConnectionMap = {
   [LOGIN.PASSWORDLESS]: "email",
 };
 
-export const padUrlString = (url: URL): string => {
-  return url.href.endsWith("/") ? url.href : `${url.href}/`;
-};
+export const padUrlString = (url: URL): string => (url.href.endsWith("/") ? url.href : `${url.href}/`);
 
 export const broadcastChannelOptions = {
   // type: 'localstorage', // (optional) enforce a type, oneOf['native', 'idb', 'localstorage', 'node']

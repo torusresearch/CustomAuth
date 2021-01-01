@@ -191,9 +191,7 @@ class DirectWebSDK {
     const torusKey = await this.getTorusKey(verifierIdentifier, aggregateVerifierId, aggregateVerifierParams, aggregateIdToken);
     return {
       ...torusKey,
-      userInfo: userInfoArray.map((x, index) => {
-        return { ...x, ...loginParamsArray[index] };
-      }),
+      userInfo: userInfoArray.map((x, index) => ({ ...x, ...loginParamsArray[index] })),
     };
   }
 

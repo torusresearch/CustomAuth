@@ -4,8 +4,8 @@ import { register } from "@chaitanyapotti/register-service-worker";
 
 import log from "./utils/loglevel";
 
-export const registerServiceWorker = (baseUrl: string) => {
-  return new Promise((resolve, reject) => {
+export const registerServiceWorker = (baseUrl: string) =>
+  new Promise((resolve, reject) => {
     const swUrl = `${baseUrl}sw.js`;
 
     if ("serviceWorker" in navigator) {
@@ -13,15 +13,15 @@ export const registerServiceWorker = (baseUrl: string) => {
       register(swUrl, {
         ready() {
           log.info("App is being served from cache by a service worker.\n For more details, visit https://goo.gl/AFskqB");
-          resolve();
+          resolve(undefined);
         },
         registered() {
           log.info("Service worker has been registered.");
-          resolve();
+          resolve(undefined);
         },
         cached() {
           log.info("Content has been cached for offline use.");
-          resolve();
+          resolve(undefined);
         },
         updatefound() {
           log.info("New content is downloading.");
@@ -42,4 +42,3 @@ export const registerServiceWorker = (baseUrl: string) => {
       reject(new Error("Service workers are not supported"));
     }
   });
-};
