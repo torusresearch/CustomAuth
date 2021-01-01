@@ -1,5 +1,5 @@
 import NodeDetailManager from "@toruslabs/fetch-node-details";
-import Torus from "@toruslabs/torus.js";
+import Torus, { extraParams } from "@toruslabs/torus.js";
 import { keccak256 } from "web3-utils";
 
 import createHandler from "./handlers/HandlerFactory";
@@ -264,11 +264,17 @@ class DirectWebSDK {
     };
   }
 
-  async getTorusKey(verifier: string, verifierId: string, verifierParams: { verifier_id: string }, idToken: string): Promise<TorusKey> {
+  async getTorusKey(
+    verifier: string,
+    verifierId: string,
+    verifierParams: { verifier_id: string },
+    idToken: string,
+    additionalParams?: extraParams
+  ): Promise<TorusKey> {
     const { torusNodeEndpoints, torusNodePub, torusIndexes } = await this.nodeDetailManager.getNodeDetails();
     const response = await this.torus.getPublicAddress(torusNodeEndpoints, torusNodePub, { verifier: verifier as LOGIN_TYPE, verifierId }, false);
     log.info("New private key assigned to user at address ", response);
-    const data = await this.torus.retrieveShares(torusNodeEndpoints, torusIndexes, verifier as LOGIN_TYPE, verifierParams, idToken);
+    const data = await this.torus.retrieveShares(torusNodeEndpoints, torusIndexes, verifier as LOGIN_TYPE, verifierParams, idToken, additionalParams);
     if (data.ethAddress.toLowerCase() !== response.toString().toLowerCase()) throw new Error("Invalid");
     log.info(data);
     return { publicAddress: data.ethAddress.toString(), privateKey: data.privKey.toString() };
