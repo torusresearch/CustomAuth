@@ -51,8 +51,8 @@ export default abstract class AbstractLoginHandler implements ILoginHandler {
             hashParams: { access_token: accessToken, id_token: idToken },
           } = data || {};
           if (error) {
-            log.error(ev.error);
-            reject(new Error(error));
+            log.error(ev);
+            reject(new Error(`Error: ${error}. Info: ${JSON.stringify(ev.data || {})}`));
             return;
           }
           if (ev.data && returnedVerifier === this.verifier) {
