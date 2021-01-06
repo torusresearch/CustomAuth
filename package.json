@@ -1,6 +1,6 @@
 {
   "name": "@toruslabs/torus-direct-web-sdk",
-  "version": "3.5.3",
+  "version": "3.5.4",
   "description": "Direct login with torus to get user private key",
   "main": "dist/directWebSdk.cjs.js",
   "unpkg": "dist/directWebSdk.umd.min.js",
