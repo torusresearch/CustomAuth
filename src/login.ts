@@ -19,7 +19,7 @@ import {
   TorusVerifierResponse,
 } from "./handlers/interfaces";
 import { registerServiceWorker } from "./registerServiceWorker";
-import { AGGREGATE_VERIFIER, ETHEREUM_NETWORK, LOGIN_TYPE, TORUS_NETWORK } from "./utils/enums";
+import { AGGREGATE_VERIFIER, CONTRACT_MAP, ETHEREUM_NETWORK, LOGIN_TYPE, TORUS_NETWORK } from "./utils/enums";
 import { handleRedirectParameters, padUrlString } from "./utils/helpers";
 import log from "./utils/loglevel";
 
@@ -39,7 +39,7 @@ class DirectWebSDK {
   constructor({
     baseUrl,
     network = TORUS_NETWORK.MAINNET,
-    proxyContractAddress = "0x638646503746d5456209e33a2ff5e3226d698bea",
+    proxyContractAddress = CONTRACT_MAP[TORUS_NETWORK.MAINNET],
     enableLogging = false,
     redirectToOpener = false,
     redirectPathName = "redirect",
@@ -62,7 +62,7 @@ class DirectWebSDK {
     Torus.setAPIKey(apiKey);
     this.torus = torus;
     const ethNetwork = network === TORUS_NETWORK.TESTNET ? ETHEREUM_NETWORK.ROPSTEN : network;
-    this.nodeDetailManager = new NodeDetailManager({ network: ethNetwork, proxyAddress: proxyContractAddress });
+    this.nodeDetailManager = new NodeDetailManager({ network: ethNetwork, proxyAddress: proxyContractAddress || CONTRACT_MAP[network] });
     this.nodeDetailManager.getNodeDetails();
     if (enableLogging) log.enableAll();
     else log.disableAll();
