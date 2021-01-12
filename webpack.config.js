@@ -14,7 +14,7 @@ const { NODE_ENV = "production" } = process.env;
 
 const baseConfig = {
   mode: NODE_ENV,
-  devtool: "source-map",
+  devtool: NODE_ENV === "production" ? false : "source-map",
   entry: "./index.ts",
   target: "web",
   output: {
