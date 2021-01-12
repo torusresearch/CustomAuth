@@ -1,5 +1,3 @@
-import * as Sentry from "@sentry/browser";
-import { Integrations } from "@sentry/tracing";
 import NodeDetailManager from "@toruslabs/fetch-node-details";
 import Torus from "@toruslabs/torus.js";
 import { keccak256 } from "web3-utils";
@@ -66,14 +64,8 @@ class DirectWebSDK {
     const ethNetwork = network === TORUS_NETWORK.TESTNET ? ETHEREUM_NETWORK.ROPSTEN : network;
     this.nodeDetailManager = new NodeDetailManager({ network: ethNetwork, proxyAddress: proxyContractAddress || CONTRACT_MAP[network] });
     this.nodeDetailManager.getNodeDetails();
-    if (enableLogging) {
-      log.enableAll();
-      Sentry.init({
-        dsn: "https://34f0eda2f95c46a89cabc806bed5618c@o503105.ingest.sentry.io/5587711",
-        integrations: [new Integrations.BrowserTracing()],
-        tracesSampleRate: 1.0,
-      });
-    } else log.disableAll();
+    if (enableLogging) log.enableAll();
+    else log.disableAll();
   }
 
   async init({ skipSw = false }: InitParams = {}): Promise<void> {

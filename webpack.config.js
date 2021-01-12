@@ -2,6 +2,7 @@
 const path = require("path");
 const ESLintPlugin = require("eslint-webpack-plugin");
 
+const webpack = require("webpack");
 const pkg = require("./package.json");
 
 const pkgName = "directWebSdk";
@@ -32,6 +33,12 @@ const baseConfig = {
   module: {
     rules: [],
   },
+  plugins: [
+    new webpack.DefinePlugin({
+      "process.env.NODE_ENV": JSON.stringify(process.env.NODE_ENV),
+      "process.env.SENTRY_DSN": JSON.stringify(process.env.SENTRY_DSN),
+    }),
+  ],
 };
 
 const optimization = {
@@ -87,6 +94,7 @@ const cjsConfig = {
   },
   externals: [...Object.keys(pkg.dependencies), /^(@babel\/runtime)/i],
   plugins: [
+    ...baseConfig.plugins,
     new ESLintPlugin({
       extensions: ".ts",
     }),

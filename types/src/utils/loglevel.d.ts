@@ -1,3 +1,3 @@
 import loglevel from "loglevel";
-declare const _default: loglevel.Logger;
-export default _default;
+declare const log: loglevel.Logger;
+export default log;
