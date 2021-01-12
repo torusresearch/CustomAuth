@@ -8,6 +8,7 @@ export default log;
 let sentry: Hub;
 
 export const enableErrorTracking = (): void => {
+  if (process.env.NODE_ENV !== "production") return; // Always disabled in development.
   if (sentry) return; // Already setup.
 
   // Setup Sentry.
@@ -16,6 +17,7 @@ export const enableErrorTracking = (): void => {
   sentry = new Hub(
     new BrowserClient({
       dsn,
+      release: process.env.SENTRY_RELEASE,
       sampleRate: 1,
     })
   );
