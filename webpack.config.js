@@ -14,7 +14,7 @@ const { NODE_ENV = "production" } = process.env;
 
 const baseConfig = {
   mode: NODE_ENV,
-  devtool: NODE_ENV === "production" ? false : "source-map",
+  devtool: "source-map",
   entry: "./index.ts",
   target: "web",
   output: {
@@ -37,7 +37,7 @@ const baseConfig = {
     new webpack.DefinePlugin({
       "process.env.NODE_ENV": JSON.stringify(process.env.NODE_ENV),
       "process.env.SENTRY_DSN": JSON.stringify(process.env.SENTRY_DSN),
-      "process.env.SENTRY_RELEASE": JSON.stringify(pkg.version),
+      "process.env.SENTRY_RELEASE": JSON.stringify(process.env.SENTRY_RELEASE),
     }),
   ],
 };

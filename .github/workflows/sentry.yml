@@ -1,0 +1,46 @@
+name: Sentry Integration
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+env:
+  NODE_VERSION: 12
+  FORCE_COLOR: 3
+
+jobs:
+  upload-sourcemaps:
+    name: Upload sourcemaps to Sentry
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Setup Node.js ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      - name: Cache Node.js modules
+        uses: actions/cache@v2
+        with:
+          path: ~/.npm
+          key: "${{ runner.os }}-node-${{ env.NODE_VERSION }}-npm-\
+            ${{ hashFiles('**/package-lock.json') }}"
+          restore-keys: |
+            ${{ runner.os }}-node-${{ env.NODE_VERSION }}-npm-
+      - run: npm ci
+      - name: Prepare Sentry release
+        id: prepare-sentry-release
+        run: |
+          npm i -g @sentry/cli
+          echo "::set-output name=version::$(sentry-cli releases propose-version)"
+      - name: Build production
+        run: |
+          export SENTRY_RELEASE="${{ steps.prepare-sentry-release.outputs.version }}"
+          npm run build
+      - name: Upload sourcemaps
+        run: |
+          sentry-cli releases -o torus -p torus-direct-web-sdk \
+            files "${{ steps.prepare-sentry-release.outputs.version }}" \
+            upload-sourcemaps dist
