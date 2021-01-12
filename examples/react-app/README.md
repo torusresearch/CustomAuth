@@ -2,6 +2,10 @@
 
 For installation instructions [click here](https://github.com/torusresearch/torus-direct-web-sdk)
 
+How to run example
+
+1. Build the outer project using `npm pack`
+2. Install the built tgz file in this folder using `npm i ../../toruslabs-.......`
 ## Setting up
 
 If there's an issue with project dependecy tree. Create a `.env` file and add this `SKIP_PREFLIGHT_CHECK=true` line inside.

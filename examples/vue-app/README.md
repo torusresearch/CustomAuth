@@ -4,6 +4,11 @@ For installation instructions [click here](https://github.com/torusresearch/toru
 
 # Vue App Guide
 
+How to run example
+
+1. Build the outer project using `npm pack`
+2. Install the built tgz file in this folder using `npm i ../../toruslabs-.......`
+
 ## Project setup
 ```
 npm install

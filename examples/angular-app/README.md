@@ -2,7 +2,10 @@
 
 For general instructions [click here](https://github.com/torusresearch/torus-direct-web-sdk)
 
+How to run example
 
+1. Build the outer project using `npm pack`
+2. Install the built tgz file in this folder using `npm i ../../toruslabs-.......`
 ## Running the App locally
 Requires [http-server](https://github.com/http-party/http-server) installed globally.
 
