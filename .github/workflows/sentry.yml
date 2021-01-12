@@ -40,6 +40,8 @@ jobs:
           export SENTRY_RELEASE="${{ steps.prepare-sentry-release.outputs.version }}"
           npm run build
       - name: Upload sourcemaps
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
         run: |
           sentry-cli releases -o torus -p torus-direct-web-sdk \
             files "${{ steps.prepare-sentry-release.outputs.version }}" \
