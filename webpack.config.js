@@ -36,8 +36,7 @@ const baseConfig = {
   plugins: [
     new webpack.DefinePlugin({
       "process.env.NODE_ENV": JSON.stringify(process.env.NODE_ENV),
-      "process.env.SENTRY_DSN": JSON.stringify(process.env.SENTRY_DSN),
-      "process.env.SENTRY_RELEASE": JSON.stringify(process.env.SENTRY_RELEASE),
+      "process.env.SENTRY_DSN": JSON.stringify(process.env.SENTRY_DSN || "https://c806006328f941cc8e4da01bf9d3009d@o503538.ingest.sentry.io/5588794"),
     }),
   ],
 };

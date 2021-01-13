@@ -14,7 +14,6 @@ const sentry = {
     hub = new Hub(
       new BrowserClient({
         dsn,
-        release: process.env.SENTRY_RELEASE,
         sampleRate: 1,
       })
     );
