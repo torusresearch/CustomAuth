@@ -21,7 +21,8 @@ import {
 import { registerServiceWorker } from "./registerServiceWorker";
 import { AGGREGATE_VERIFIER, CONTRACT_MAP, ETHEREUM_NETWORK, LOGIN_TYPE, TORUS_NETWORK } from "./utils/enums";
 import { handleRedirectParameters, padUrlString } from "./utils/helpers";
-import log, { enableErrorTracking as enableErrorTrackingWhileLogging } from "./utils/loglevel";
+import log from "./utils/loglevel";
+import sentry from "./utils/sentry";
 
 class DirectWebSDK {
   isInitialized: boolean;
@@ -67,7 +68,7 @@ class DirectWebSDK {
     this.nodeDetailManager.getNodeDetails();
     if (enableLogging) {
       log.enableAll();
-      if (enableErrorTracking) enableErrorTrackingWhileLogging();
+      if (enableErrorTracking) sentry.enable();
     } else log.disableAll();
   }
 

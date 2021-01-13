@@ -1,4 +1,3 @@
 import loglevel from "loglevel";
-declare const log: loglevel.Logger;
-export default log;
-export declare const enableErrorTracking: () => void;
+declare const _default: loglevel.Logger;
+export default _default;
