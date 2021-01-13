@@ -68,7 +68,11 @@ class DirectWebSDK {
     this.nodeDetailManager.getNodeDetails();
     if (enableLogging) {
       log.enableAll();
-      if (enableErrorTracking) sentry.enable();
+      if (enableErrorTracking) {
+        sentry.enable();
+      } else {
+        log.setLevel("debug");
+      }
     } else log.disableAll();
   }
 
