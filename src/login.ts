@@ -73,6 +73,8 @@ class DirectWebSDK {
   }
 
   async init({ skipSw = false }: InitParams = {}): Promise<void> {
+    log.trace("DirectWebSDK.init", { skipSw });
+
     if (!skipSw) {
       const fetchSwResponse = await fetch(`${this.config.baseUrl}sw.js`, { cache: "reload" });
       if (fetchSwResponse.ok) {
@@ -93,6 +95,8 @@ class DirectWebSDK {
   }
 
   private async handleRedirectCheck(): Promise<void> {
+    log.trace("DirectWebSDK.handleRedirectCheck");
+
     const response2 = await fetch(this.config.redirect_uri, { cache: "reload" });
     if (response2.ok) {
       this.isInitialized = true;
@@ -102,7 +106,8 @@ class DirectWebSDK {
   }
 
   async triggerLogin({ verifier, typeOfLogin, clientId, jwtParams, hash, queryParameters }: SubVerifierDetails): Promise<TorusLoginResponse> {
-    log.info("Verifier: ", verifier);
+    log.trace("DirectWebSDK.triggerLogin", { typeOfLogin, verifier, clientId });
+
     if (!this.isInitialized) {
       throw new Error("Not initialized yet");
     }
@@ -142,6 +147,8 @@ class DirectWebSDK {
     verifierIdentifier,
     subVerifierDetailsArray,
   }: AggregateLoginParams): Promise<TorusAggregateLoginResponse> {
+    log.trace("DirectWebSDK.triggerAggregateLogin", { aggregateVerifierType, verifierIdentifier });
+
     // This method shall break if any of the promises fail. This behaviour is intended
     if (!this.isInitialized) {
       throw new Error("Not initialized yet");
@@ -202,6 +209,8 @@ class DirectWebSDK {
 
   //
   async triggerHybridAggregateLogin({ singleLogin, aggregateLoginParams }: HybridAggregateLoginParams): Promise<TorusHybridAggregateLoginResponse> {
+    log.trace("DirectWebSDK.triggerHybridAggregateLogin");
+
     // This method shall break if any of the promises fail. This behaviour is intended
     if (!this.isInitialized) {
       throw new Error("Not initialized yet");
@@ -276,6 +285,8 @@ class DirectWebSDK {
     idToken: string,
     additionalParams?: extraParams
   ): Promise<TorusKey> {
+    log.trace("DirectWebSDK.getTorusKey", { verifier, verifierId });
+
     const { torusNodeEndpoints, torusNodePub, torusIndexes } = await this.nodeDetailManager.getNodeDetails();
     const response = await this.torus.getPublicAddress(torusNodeEndpoints, torusNodePub, { verifier: verifier as LOGIN_TYPE, verifierId }, false);
     log.info("New private key assigned to user at address ", response);
