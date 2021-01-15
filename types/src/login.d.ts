@@ -19,5 +19,6 @@ declare class DirectWebSDK {
     getTorusKey(verifier: string, verifierId: string, verifierParams: {
         verifier_id: string;
     }, idToken: string, additionalParams?: extraParams): Promise<TorusKey>;
+    onlyLogin({ verifier, typeOfLogin, clientId, jwtParams, hash, queryParameters }: SubVerifierDetails): Promise<void>;
 }
 export default DirectWebSDK;

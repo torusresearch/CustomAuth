@@ -280,6 +280,33 @@ class DirectWebSDK {
     log.info(data);
     return { publicAddress: data.ethAddress.toString(), privateKey: data.privKey.toString() };
   }
+
+  async onlyLogin({ verifier, typeOfLogin, clientId, jwtParams, hash, queryParameters }: SubVerifierDetails): Promise<void> {
+    log.info("Verifier: ", verifier);
+    if (!this.isInitialized) {
+      throw new Error("Not initialized yet");
+    }
+    const loginHandler: ILoginHandler = createHandler({
+      typeOfLogin,
+      clientId,
+      verifier,
+      redirect_uri: this.config.redirect_uri,
+      redirectToOpener: this.config.redirectToOpener,
+      jwtParams,
+    });
+    // let loginParams: LoginWindowResponse;
+    // if (hash && queryParameters) {
+    //   const { error, hashParameters } = handleRedirectParameters(hash, queryParameters);
+    //   if (error) throw new Error(error);
+    //   const { access_token: accessToken, id_token: idToken } = hashParameters;
+    // loginParams = { accessToken, idToken };
+    // } else loginParams = await loginHandler.handleLoginWindow();
+    try {
+      await loginHandler.handleLoginWindow();
+    } catch (e) {
+      console.log("TODO: FIX", e, hash, queryParameters);
+    }
+  }
 }
 
 export default DirectWebSDK;
