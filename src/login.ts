@@ -283,9 +283,9 @@ class DirectWebSDK {
 
   async onlyLogin({ verifier, typeOfLogin, clientId, jwtParams, hash, queryParameters }: SubVerifierDetails): Promise<void> {
     log.info("Verifier: ", verifier);
-    if (!this.isInitialized) {
-      throw new Error("Not initialized yet");
-    }
+    // if (!this.isInitialized) {
+    //   throw new Error("Not initialized yet");
+    // }
     const loginHandler: ILoginHandler = createHandler({
       typeOfLogin,
       clientId,
