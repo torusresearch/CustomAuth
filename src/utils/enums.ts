@@ -31,10 +31,16 @@ export const AGGREGATE_VERIFIER = {
   // OR_AGGREGATE_VERIFIER : "or_aggregate_verifier",
 } as const;
 
+export const UX_MODE = {
+  POPUP: "popup",
+  REDIRECT: "redirect",
+} as const;
+
 // @flow
 export type TORUS_NETWORK_TYPE = typeof TORUS_NETWORK[keyof typeof TORUS_NETWORK];
 export type LOGIN_TYPE = typeof LOGIN[keyof typeof LOGIN];
 export type AGGREGATE_VERIFIER_TYPE = typeof AGGREGATE_VERIFIER[keyof typeof AGGREGATE_VERIFIER];
+export type UX_MODE_TYPE = typeof UX_MODE[keyof typeof UX_MODE];
 
 export const CONTRACT_MAP = {
   [TORUS_NETWORK.MAINNET]: "0x638646503746d5456209e33a2ff5e3226d698bea",

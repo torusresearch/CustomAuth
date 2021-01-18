@@ -1,4 +1,4 @@
-import { AGGREGATE_VERIFIER_TYPE, LOGIN_TYPE, TORUS_NETWORK_TYPE } from "../utils/enums";
+import { AGGREGATE_VERIFIER_TYPE, LOGIN_TYPE, TORUS_NETWORK_TYPE, UX_MODE_TYPE } from "../utils/enums";
 
 export type PopupResponse = { hashParams: { access_token: string; id_token?: string }; instanceParams: { verifier: string } };
 
@@ -65,6 +65,7 @@ export interface DirectWebSDKArgs {
   redirectToOpener?: boolean;
   redirectPathName?: string;
   apiKey?: string;
+  uxMode?: UX_MODE_TYPE;
 }
 
 export interface InitParams {

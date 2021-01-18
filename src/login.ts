@@ -304,6 +304,7 @@ class DirectWebSDK {
     try {
       await loginHandler.handleLoginWindow();
     } catch (e) {
+      // eslint-disable-next-line no-console
       console.log("TODO: FIX", e, hash, queryParameters);
     }
   }
