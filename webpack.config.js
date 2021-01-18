@@ -2,12 +2,13 @@
 const path = require("path");
 const ESLintPlugin = require("eslint-webpack-plugin");
 
+const webpack = require("webpack");
 const pkg = require("./package.json");
 
 const pkgName = "directWebSdk";
 const libraryName = pkgName.charAt(0).toUpperCase() + pkgName.slice(1);
 
-const packagesToInclude = ["broadcast-channel", "@toruslabs/torus.js", "@toruslabs/fetch-node-details","@toruslabs/loglevel-sentry"];
+const packagesToInclude = ["broadcast-channel", "@toruslabs/torus.js", "@toruslabs/fetch-node-details", "@toruslabs/loglevel-sentry"];
 
 const { NODE_ENV = "production" } = process.env;
 
@@ -32,6 +33,11 @@ const baseConfig = {
   module: {
     rules: [],
   },
+  plugins: [
+    new webpack.DefinePlugin({
+      "process.env.SENTRY_RELEASE": JSON.stringify(`torus-direct-web-sdk@v${pkg.version}`),
+    }),
+  ],
 };
 
 const optimization = {
@@ -87,6 +93,7 @@ const cjsConfig = {
   },
   externals: [...Object.keys(pkg.dependencies), /^(@babel\/runtime)/i],
   plugins: [
+    ...baseConfig.plugins,
     new ESLintPlugin({
       extensions: ".ts",
     }),
