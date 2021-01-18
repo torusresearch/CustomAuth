@@ -10,7 +10,7 @@ declare class DirectWebSDK {
     };
     torus: Torus;
     nodeDetailManager: NodeDetailManager;
-    constructor({ baseUrl, network, proxyContractAddress, enableLogging, redirectToOpener, redirectPathName, apiKey, }: DirectWebSDKArgs);
+    constructor({ baseUrl, network, proxyContractAddress, enableLogging, enableErrorReporter, redirectToOpener, redirectPathName, apiKey, }: DirectWebSDKArgs);
     init({ skipSw }?: InitParams): Promise<void>;
     private handleRedirectCheck;
     triggerLogin({ verifier, typeOfLogin, clientId, jwtParams, hash, queryParameters }: SubVerifierDetails): Promise<TorusLoginResponse>;

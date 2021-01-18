@@ -59,6 +59,7 @@ export interface DirectWebSDKArgs {
     network?: TORUS_NETWORK_TYPE;
     proxyContractAddress?: string;
     enableLogging?: boolean;
+    enableErrorReporter?: boolean;
     redirectToOpener?: boolean;
     redirectPathName?: string;
     apiKey?: string;

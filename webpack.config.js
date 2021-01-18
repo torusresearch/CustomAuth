@@ -7,7 +7,7 @@ const pkg = require("./package.json");
 const pkgName = "directWebSdk";
 const libraryName = pkgName.charAt(0).toUpperCase() + pkgName.slice(1);
 
-const packagesToInclude = ["broadcast-channel", "@toruslabs/torus.js", "@toruslabs/fetch-node-details"];
+const packagesToInclude = ["broadcast-channel", "@toruslabs/torus.js", "@toruslabs/fetch-node-details","@toruslabs/loglevel-sentry"];
 
 const { NODE_ENV = "production" } = process.env;
 

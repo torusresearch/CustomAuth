@@ -1,3 +1,5 @@
+import Sentry from "@toruslabs/loglevel-sentry";
 import loglevel from "loglevel";
-declare const _default: loglevel.Logger;
-export default _default;
+declare const logger: loglevel.Logger;
+export declare const sentry: Sentry;
+export default logger;

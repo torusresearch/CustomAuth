@@ -21,7 +21,7 @@ import {
 import { registerServiceWorker } from "./registerServiceWorker";
 import { AGGREGATE_VERIFIER, CONTRACT_MAP, ETHEREUM_NETWORK, LOGIN_TYPE, TORUS_NETWORK } from "./utils/enums";
 import { handleRedirectParameters, padUrlString } from "./utils/helpers";
-import log from "./utils/loglevel";
+import log, { sentry } from "./utils/loglevel";
 
 class DirectWebSDK {
   isInitialized: boolean;
@@ -41,6 +41,7 @@ class DirectWebSDK {
     network = TORUS_NETWORK.MAINNET,
     proxyContractAddress = CONTRACT_MAP[TORUS_NETWORK.MAINNET],
     enableLogging = false,
+    enableErrorReporter = false,
     redirectToOpener = false,
     redirectPathName = "redirect",
     apiKey = "torus-default",
@@ -64,8 +65,11 @@ class DirectWebSDK {
     const ethNetwork = network === TORUS_NETWORK.TESTNET ? ETHEREUM_NETWORK.ROPSTEN : network;
     this.nodeDetailManager = new NodeDetailManager({ network: ethNetwork, proxyAddress: proxyContractAddress || CONTRACT_MAP[network] });
     this.nodeDetailManager.getNodeDetails();
+
     if (enableLogging) log.enableAll();
     else log.disableAll();
+
+    sentry.setEnabled(enableErrorReporter);
   }
 
   async init({ skipSw = false }: InitParams = {}): Promise<void> {
