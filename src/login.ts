@@ -39,7 +39,7 @@ class DirectWebSDK {
   constructor({
     baseUrl,
     network = TORUS_NETWORK.MAINNET,
-    proxyContractAddress = CONTRACT_MAP[TORUS_NETWORK.MAINNET],
+    proxyContractAddress,
     enableLogging = false,
     redirectToOpener = false,
     redirectPathName = "redirect",
