@@ -1,4 +1,4 @@
-import { AGGREGATE_VERIFIER_TYPE, LOGIN_TYPE, TORUS_NETWORK_TYPE, UX_MODE_TYPE } from "../utils/enums";
+import { AGGREGATE_VERIFIER_TYPE, LOGIN_TYPE, TORUS_METHOD_TYPE, TORUS_NETWORK_TYPE, UX_MODE_TYPE } from "../utils/enums";
 export declare type PopupResponse = {
     hashParams: {
         access_token: string;
@@ -66,6 +66,7 @@ export interface DirectWebSDKArgs {
 }
 export interface InitParams {
     skipSw?: boolean;
+    skipInit?: boolean;
 }
 export interface BaseLoginOptions {
     /**
@@ -178,6 +179,7 @@ export interface CreateHandlerParams {
     redirect_uri: string;
     redirectToOpener?: boolean;
     jwtParams?: Auth0ClientOptions;
+    uxMode?: UX_MODE_TYPE;
 }
 export interface AggregateLoginParams {
     aggregateVerifierType: AGGREGATE_VERIFIER_TYPE;
@@ -187,4 +189,15 @@ export interface AggregateLoginParams {
 export interface HybridAggregateLoginParams {
     singleLogin: SubVerifierDetails;
     aggregateLoginParams: AggregateLoginParams;
+}
+export interface RedirectResultParams {
+    replaceUrl?: boolean;
+}
+export declare type LoginDetails = {
+    method: TORUS_METHOD_TYPE;
+    args: unknown;
+};
+export interface RedirectResult {
+    method: TORUS_METHOD_TYPE;
+    result: unknown;
 }

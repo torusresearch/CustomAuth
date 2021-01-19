@@ -2,7 +2,7 @@ import { BroadcastChannel } from "broadcast-channel";
 import deepmerge from "deepmerge";
 import jwtDecode from "jwt-decode";
 
-import { LOGIN_TYPE } from "../utils/enums";
+import { LOGIN_TYPE, UX_MODE_TYPE } from "../utils/enums";
 import { broadcastChannelOptions, getVerifierId, padUrlString } from "../utils/helpers";
 import { get, post } from "../utils/httpHelpers";
 import log from "../utils/loglevel";
@@ -21,10 +21,11 @@ export default class JwtHandler extends AbstractLoginHandler {
     readonly verifier: string,
     readonly redirect_uri: string,
     readonly typeOfLogin: LOGIN_TYPE,
+    readonly uxMode: UX_MODE_TYPE,
     readonly redirectToOpener?: boolean,
     readonly jwtParams?: Auth0ClientOptions
   ) {
-    super(clientId, verifier, redirect_uri, typeOfLogin, redirectToOpener, jwtParams);
+    super(clientId, verifier, redirect_uri, typeOfLogin, uxMode, redirectToOpener, jwtParams);
     this.setFinalUrl();
   }
 

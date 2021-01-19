@@ -8,25 +8,33 @@ import PasswordlessHandler from "./PasswordlessHandler";
 import RedditHandler from "./RedditHandler";
 import TwitchHandler from "./TwitchHandler";
 
-const createHandler = ({ clientId, redirect_uri, typeOfLogin, verifier, jwtParams, redirectToOpener }: CreateHandlerParams): ILoginHandler => {
+const createHandler = ({
+  clientId,
+  redirect_uri,
+  typeOfLogin,
+  verifier,
+  jwtParams,
+  redirectToOpener,
+  uxMode,
+}: CreateHandlerParams): ILoginHandler => {
   if (!verifier || !typeOfLogin || !clientId) {
     throw new Error("Invalid params");
   }
   const { domain, login_hint } = jwtParams || {};
   switch (typeOfLogin) {
     case LOGIN.GOOGLE:
-      return new GoogleHandler(clientId, verifier, redirect_uri, typeOfLogin, redirectToOpener, jwtParams);
+      return new GoogleHandler(clientId, verifier, redirect_uri, typeOfLogin, uxMode, redirectToOpener, jwtParams);
     case LOGIN.FACEBOOK:
-      return new FacebookHandler(clientId, verifier, redirect_uri, typeOfLogin, redirectToOpener, jwtParams);
+      return new FacebookHandler(clientId, verifier, redirect_uri, typeOfLogin, uxMode, redirectToOpener, jwtParams);
     case LOGIN.TWITCH:
-      return new TwitchHandler(clientId, verifier, redirect_uri, typeOfLogin, redirectToOpener, jwtParams);
+      return new TwitchHandler(clientId, verifier, redirect_uri, typeOfLogin, uxMode, redirectToOpener, jwtParams);
     case LOGIN.REDDIT:
-      return new RedditHandler(clientId, verifier, redirect_uri, typeOfLogin, redirectToOpener, jwtParams);
+      return new RedditHandler(clientId, verifier, redirect_uri, typeOfLogin, uxMode, redirectToOpener, jwtParams);
     case LOGIN.DISCORD:
-      return new DiscordHandler(clientId, verifier, redirect_uri, typeOfLogin, redirectToOpener, jwtParams);
+      return new DiscordHandler(clientId, verifier, redirect_uri, typeOfLogin, uxMode, redirectToOpener, jwtParams);
     case LOGIN.PASSWORDLESS:
       if (!domain || !login_hint) throw new Error("Invalid params");
-      return new PasswordlessHandler(clientId, verifier, redirect_uri, typeOfLogin, redirectToOpener, jwtParams);
+      return new PasswordlessHandler(clientId, verifier, redirect_uri, typeOfLogin, uxMode, redirectToOpener, jwtParams);
     case LOGIN.APPLE:
     case LOGIN.GITHUB:
     case LOGIN.LINKEDIN:
@@ -36,7 +44,7 @@ const createHandler = ({ clientId, redirect_uri, typeOfLogin, verifier, jwtParam
     case LOGIN.EMAIL_PASSWORD:
     case LOGIN.JWT:
       if (!domain) throw new Error("Invalid params");
-      return new JwtHandler(clientId, verifier, redirect_uri, typeOfLogin, redirectToOpener, jwtParams);
+      return new JwtHandler(clientId, verifier, redirect_uri, typeOfLogin, uxMode, redirectToOpener, jwtParams);
     default:
       throw new Error("Invalid login type");
   }

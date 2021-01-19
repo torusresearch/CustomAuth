@@ -11,6 +11,8 @@ import {
   ILoginHandler,
   InitParams,
   LoginWindowResponse,
+  RedirectResult,
+  RedirectResultParams,
   SubVerifierDetails,
   TorusAggregateLoginResponse,
   TorusHybridAggregateLoginResponse,
@@ -19,8 +21,8 @@ import {
   TorusVerifierResponse,
 } from "./handlers/interfaces";
 import { registerServiceWorker } from "./registerServiceWorker";
-import { AGGREGATE_VERIFIER, CONTRACT_MAP, ETHEREUM_NETWORK, LOGIN_TYPE, TORUS_NETWORK } from "./utils/enums";
-import { handleRedirectParameters, padUrlString } from "./utils/helpers";
+import { AGGREGATE_VERIFIER, CONTRACT_MAP, ETHEREUM_NETWORK, LOGIN_TYPE, TORUS_METHOD, TORUS_NETWORK, UX_MODE, UX_MODE_TYPE } from "./utils/enums";
+import { clearLocalStorage, handleRedirectParameters, padUrlString, retrieveLoginDetails, storeLoginDetails } from "./utils/helpers";
 import log from "./utils/loglevel";
 
 class DirectWebSDK {
@@ -30,6 +32,7 @@ class DirectWebSDK {
     baseUrl: string;
     redirectToOpener: boolean;
     redirect_uri: string;
+    uxMode: UX_MODE_TYPE;
   };
 
   torus: Torus;
@@ -44,6 +47,7 @@ class DirectWebSDK {
     redirectToOpener = false,
     redirectPathName = "redirect",
     apiKey = "torus-default",
+    uxMode = "popup",
   }: DirectWebSDKArgs) {
     this.isInitialized = false;
     const baseUri = new URL(baseUrl);
@@ -53,6 +57,7 @@ class DirectWebSDK {
         return `${this.baseUrl}${redirectPathName}`;
       },
       redirectToOpener,
+      uxMode,
     };
     const torus = new Torus({
       enableLogging,
@@ -68,7 +73,11 @@ class DirectWebSDK {
     else log.disableAll();
   }
 
-  async init({ skipSw = false }: InitParams = {}): Promise<void> {
+  async init({ skipSw = false, skipInit = false }: InitParams = {}): Promise<void> {
+    if (skipInit) {
+      this.isInitialized = true;
+      return;
+    }
     if (!skipSw) {
       const fetchSwResponse = await fetch(`${this.config.baseUrl}sw.js`, { cache: "reload" });
       if (fetchSwResponse.ok) {
@@ -97,11 +106,13 @@ class DirectWebSDK {
     throw new Error(`Please serve redirect.html present in serviceworker folder of this package on ${this.config.redirect_uri}`);
   }
 
-  async triggerLogin({ verifier, typeOfLogin, clientId, jwtParams, hash, queryParameters }: SubVerifierDetails): Promise<TorusLoginResponse> {
+  async triggerLogin(args: SubVerifierDetails): Promise<TorusLoginResponse> {
+    const { verifier, typeOfLogin, clientId, jwtParams, hash, queryParameters } = args;
     log.info("Verifier: ", verifier);
     if (!this.isInitialized) {
       throw new Error("Not initialized yet");
     }
+    storeLoginDetails({ method: TORUS_METHOD.TRIGGER_LOGIN, args });
     const loginHandler: ILoginHandler = createHandler({
       typeOfLogin,
       clientId,
@@ -109,6 +120,7 @@ class DirectWebSDK {
       redirect_uri: this.config.redirect_uri,
       redirectToOpener: this.config.redirectToOpener,
       jwtParams,
+      uxMode: this.config.uxMode,
     });
     let loginParams: LoginWindowResponse;
     if (hash && queryParameters) {
@@ -116,7 +128,11 @@ class DirectWebSDK {
       if (error) throw new Error(error);
       const { access_token: accessToken, id_token: idToken } = hashParameters;
       loginParams = { accessToken, idToken };
-    } else loginParams = await loginHandler.handleLoginWindow();
+    } else {
+      loginParams = await loginHandler.handleLoginWindow();
+      if (this.config.uxMode === UX_MODE.REDIRECT) return null;
+    }
+
     const userInfo = await loginHandler.getUserInfo(loginParams);
     const torusKey = await this.getTorusKey(
       verifier,
@@ -133,12 +149,9 @@ class DirectWebSDK {
     };
   }
 
-  async triggerAggregateLogin({
-    aggregateVerifierType,
-    verifierIdentifier,
-    subVerifierDetailsArray,
-  }: AggregateLoginParams): Promise<TorusAggregateLoginResponse> {
+  async triggerAggregateLogin(args: AggregateLoginParams): Promise<TorusAggregateLoginResponse> {
     // This method shall break if any of the promises fail. This behaviour is intended
+    const { aggregateVerifierType, verifierIdentifier, subVerifierDetailsArray } = args;
     if (!this.isInitialized) {
       throw new Error("Not initialized yet");
     }
@@ -148,6 +161,7 @@ class DirectWebSDK {
     if (aggregateVerifierType === AGGREGATE_VERIFIER.SINGLE_VERIFIER_ID && subVerifierDetailsArray.length !== 1) {
       throw new Error("Single id verifier can only have one sub verifier");
     }
+    storeLoginDetails({ method: TORUS_METHOD.TRIGGER_AGGREGATE_LOGIN, args });
     const userInfoPromises: Promise<TorusVerifierResponse>[] = [];
     const loginParamsArray: LoginWindowResponse[] = [];
     for (const subVerifierDetail of subVerifierDetailsArray) {
@@ -168,8 +182,13 @@ class DirectWebSDK {
         const { access_token: accessToken, id_token: idToken } = hashParameters;
         loginParams = { accessToken, idToken };
         // eslint-disable-next-line no-await-in-loop
-      } else loginParams = await loginHandler.handleLoginWindow();
+      } else {
+        // eslint-disable-next-line no-await-in-loop
+        loginParams = await loginHandler.handleLoginWindow();
+        if (this.config.uxMode === UX_MODE.REDIRECT) return null;
+      }
       // Fail the method even if one promise fails
+
       userInfoPromises.push(loginHandler.getUserInfo(loginParams));
       loginParamsArray.push(loginParams);
     }
@@ -197,7 +216,8 @@ class DirectWebSDK {
   }
 
   //
-  async triggerHybridAggregateLogin({ singleLogin, aggregateLoginParams }: HybridAggregateLoginParams): Promise<TorusHybridAggregateLoginResponse> {
+  async triggerHybridAggregateLogin(args: HybridAggregateLoginParams): Promise<TorusHybridAggregateLoginResponse> {
+    const { singleLogin, aggregateLoginParams } = args;
     // This method shall break if any of the promises fail. This behaviour is intended
     if (!this.isInitialized) {
       throw new Error("Not initialized yet");
@@ -215,6 +235,7 @@ class DirectWebSDK {
     ) {
       throw new Error("Single id verifier can only have one sub verifier");
     }
+    storeLoginDetails({ method: TORUS_METHOD.TRIGGER_AGGREGATE_HYBRID_LOGIN, args });
     const { typeOfLogin, clientId, verifier, jwtParams, hash, queryParameters } = singleLogin;
     const loginHandler: ILoginHandler = createHandler({
       typeOfLogin,
@@ -230,7 +251,11 @@ class DirectWebSDK {
       if (error) throw new Error(error);
       const { access_token: accessToken, id_token: idToken } = hashParameters;
       loginParams = { accessToken, idToken };
-    } else loginParams = await loginHandler.handleLoginWindow();
+    } else {
+      loginParams = await loginHandler.handleLoginWindow();
+      if (this.config.uxMode === UX_MODE.REDIRECT) return null;
+    }
+
     const userInfo = await loginHandler.getUserInfo(loginParams);
     const torusKey1Promise = this.getTorusKey(
       verifier,
@@ -281,32 +306,53 @@ class DirectWebSDK {
     return { publicAddress: data.ethAddress.toString(), privateKey: data.privKey.toString() };
   }
 
-  async onlyLogin({ verifier, typeOfLogin, clientId, jwtParams, hash, queryParameters }: SubVerifierDetails): Promise<void> {
-    log.info("Verifier: ", verifier);
-    // if (!this.isInitialized) {
-    //   throw new Error("Not initialized yet");
-    // }
-    const loginHandler: ILoginHandler = createHandler({
-      typeOfLogin,
-      clientId,
-      verifier,
-      redirect_uri: this.config.redirect_uri,
-      redirectToOpener: this.config.redirectToOpener,
-      jwtParams,
+  async getRedirectResult({ replaceUrl = true }: RedirectResultParams = {}): Promise<RedirectResult> {
+    const { args, method } = retrieveLoginDetails();
+    await this.init({ skipInit: true });
+    const url = new URL(window.location.href);
+    const hash = url.hash.substr(1);
+    const queryParams = {};
+    url.searchParams.forEach((value, key) => {
+      queryParams[key] = value;
     });
-    // let loginParams: LoginWindowResponse;
-    // if (hash && queryParameters) {
-    //   const { error, hashParameters } = handleRedirectParameters(hash, queryParameters);
-    //   if (error) throw new Error(error);
-    //   const { access_token: accessToken, id_token: idToken } = hashParameters;
-    // loginParams = { accessToken, idToken };
-    // } else loginParams = await loginHandler.handleLoginWindow();
-    try {
-      await loginHandler.handleLoginWindow();
-    } catch (e) {
-      // eslint-disable-next-line no-console
-      console.log("TODO: FIX", e, hash, queryParameters);
+
+    if (replaceUrl) {
+      const cleanUrl = window.location.origin + window.location.pathname;
+      window.history.replaceState(null, "", cleanUrl);
     }
+
+    if (!hash && Object.keys(queryParams).length === 0) {
+      throw new Error("Unable to fetch result from redirect");
+    }
+
+    log.info(args, method);
+
+    let result: unknown;
+
+    if (method === TORUS_METHOD.TRIGGER_LOGIN) {
+      const methodArgs = args as SubVerifierDetails;
+      methodArgs.hash = hash;
+      methodArgs.queryParameters = queryParams;
+      result = await this.triggerLogin(methodArgs);
+    } else if (method === TORUS_METHOD.TRIGGER_AGGREGATE_LOGIN) {
+      const methodArgs = args as AggregateLoginParams;
+      methodArgs.subVerifierDetailsArray.forEach((x) => {
+        x.hash = hash;
+        x.queryParameters = queryParams;
+      });
+      result = await this.triggerAggregateLogin(methodArgs);
+    } else if (method === TORUS_METHOD.TRIGGER_AGGREGATE_HYBRID_LOGIN) {
+      const methodArgs = args as HybridAggregateLoginParams;
+      methodArgs.singleLogin.hash = hash;
+      methodArgs.singleLogin.queryParameters = queryParams;
+      result = await this.triggerHybridAggregateLogin(methodArgs);
+    }
+
+    if (!result) throw new Error("Unsupported method type");
+
+    clearLocalStorage();
+
+    return { method, result };
   }
 }
 

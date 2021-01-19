@@ -1,4 +1,4 @@
-import { Auth0UserInfo, TorusGenericObject } from "../handlers/interfaces";
+import { Auth0UserInfo, LoginDetails, TorusGenericObject } from "../handlers/interfaces";
 import { LOGIN, LOGIN_TYPE } from "./enums";
 import log from "./loglevel";
 
@@ -95,3 +95,50 @@ export const handleRedirectParameters = (
   }
   return { error, instanceParameters, hashParameters };
 };
+
+export function storageAvailable(type: "localStorage" | "sessionStorage"): boolean {
+  let storage: Storage;
+  try {
+    storage = window[type];
+    const x = "__storage_test__";
+    storage.setItem(x, x);
+    storage.removeItem(x);
+    return true;
+  } catch (e) {
+    return (
+      e &&
+      // everything except Firefox
+      (e.code === 22 ||
+        // Firefox
+        e.code === 1014 ||
+        // test name field too, because code might not be present
+        // everything except Firefox
+        e.name === "QuotaExceededError" ||
+        // Firefox
+        e.name === "NS_ERROR_DOM_QUOTA_REACHED") &&
+      // acknowledge QuotaExceededError only if there's something already stored
+      storage &&
+      storage.length !== 0
+    );
+  }
+}
+
+export function storeLoginDetails(params: LoginDetails): void {
+  if (storageAvailable("localStorage")) {
+    window.localStorage.setItem("torus_login", JSON.stringify(params));
+  }
+}
+
+export function retrieveLoginDetails(): LoginDetails {
+  if (storageAvailable("localStorage")) {
+    const loginDetails = window.localStorage.getItem("torus_login");
+    return JSON.parse(loginDetails) as LoginDetails;
+  }
+  throw new Error("Unable to retrieve stored login details");
+}
+
+export function clearLocalStorage(): void {
+  if (storageAvailable("localStorage")) {
+    window.localStorage.removeItem("torus_login");
+  }
+}

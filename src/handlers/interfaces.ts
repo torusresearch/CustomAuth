@@ -1,4 +1,4 @@
-import { AGGREGATE_VERIFIER_TYPE, LOGIN_TYPE, TORUS_NETWORK_TYPE, UX_MODE_TYPE } from "../utils/enums";
+import { AGGREGATE_VERIFIER_TYPE, LOGIN_TYPE, TORUS_METHOD_TYPE, TORUS_NETWORK_TYPE, UX_MODE_TYPE } from "../utils/enums";
 
 export type PopupResponse = { hashParams: { access_token: string; id_token?: string }; instanceParams: { verifier: string } };
 
@@ -14,7 +14,6 @@ export interface extraParams {
   [key: string]: unknown;
 }
 
-// @flow
 export interface TorusVerifierResponse {
   email: string;
   name: string;
@@ -29,14 +28,12 @@ export interface LoginWindowResponse {
   idToken?: string;
 }
 
-// @flow
 export interface ILoginHandler {
   clientId: string;
   getUserInfo(params: LoginWindowResponse): Promise<TorusVerifierResponse>;
   handleLoginWindow(): Promise<LoginWindowResponse>;
 }
 
-// @flow
 export interface TorusKey {
   publicAddress: string;
   privateKey: string;
@@ -70,6 +67,7 @@ export interface DirectWebSDKArgs {
 
 export interface InitParams {
   skipSw?: boolean;
+  skipInit?: boolean;
 }
 
 // REGION: AUTH0 PARAMS
@@ -189,6 +187,7 @@ export interface CreateHandlerParams {
   redirect_uri: string;
   redirectToOpener?: boolean;
   jwtParams?: Auth0ClientOptions;
+  uxMode?: UX_MODE_TYPE;
 }
 
 export interface AggregateLoginParams {
@@ -200,4 +199,14 @@ export interface AggregateLoginParams {
 export interface HybridAggregateLoginParams {
   singleLogin: SubVerifierDetails;
   aggregateLoginParams: AggregateLoginParams;
+}
+
+export interface RedirectResultParams {
+  replaceUrl?: boolean;
+}
+
+export type LoginDetails = { method: TORUS_METHOD_TYPE; args: unknown };
+export interface RedirectResult {
+  method: TORUS_METHOD_TYPE;
+  result: unknown;
 }
