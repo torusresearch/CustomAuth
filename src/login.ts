@@ -307,7 +307,7 @@ class DirectWebSDK {
   }
 
   async getRedirectResult({ replaceUrl = true }: RedirectResultParams = {}): Promise<RedirectResult> {
-    const { args, method } = retrieveLoginDetails();
+    const { args, method, ...rest } = retrieveLoginDetails();
     await this.init({ skipInit: true });
     const url = new URL(window.location.href);
     const hash = url.hash.substr(1);
@@ -352,7 +352,7 @@ class DirectWebSDK {
 
     clearLocalStorage();
 
-    return { method, result };
+    return { method, result, ...rest };
   }
 }
 
