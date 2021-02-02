@@ -36,13 +36,13 @@ CDN's serve the non-core-js polyfilled version by default. You can use a differe
 jsdeliver
 
 ```js
-<script src="https://cdn.jsdelivr.net/npm/@toruslabs/torus-direct-web-sdk"></script>
+<script src="https://cdn.jsdelivr.net/npm/@toruslabs/torus-direct-web-sdk@3"></script>
 ```
 
 unpkg
 
 ```js
-<script src="https://unpkg.com/@toruslabs/torus-direct-web-sdk"></script>
+<script src="https://unpkg.com/@toruslabs/torus-direct-web-sdk@3"></script>
 ```
 
 ### Tips for NUXT
