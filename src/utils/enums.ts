@@ -31,10 +31,28 @@ export const AGGREGATE_VERIFIER = {
   // OR_AGGREGATE_VERIFIER : "or_aggregate_verifier",
 } as const;
 
-// @flow
+export const UX_MODE = {
+  POPUP: "popup",
+  REDIRECT: "redirect",
+} as const;
+
+export const REDIRECT_PARAMS_STORAGE_METHOD = {
+  LOCAL_STORAGE: "localStorage",
+  SESSION_STORAGE: "sessionStorage",
+};
+
+export const TORUS_METHOD = {
+  TRIGGER_LOGIN: "triggerLogin",
+  TRIGGER_AGGREGATE_LOGIN: "triggerAggregateLogin",
+  TRIGGER_AGGREGATE_HYBRID_LOGIN: "triggerHybridAggregateLogin",
+} as const;
+
 export type TORUS_NETWORK_TYPE = typeof TORUS_NETWORK[keyof typeof TORUS_NETWORK];
 export type LOGIN_TYPE = typeof LOGIN[keyof typeof LOGIN];
 export type AGGREGATE_VERIFIER_TYPE = typeof AGGREGATE_VERIFIER[keyof typeof AGGREGATE_VERIFIER];
+export type UX_MODE_TYPE = typeof UX_MODE[keyof typeof UX_MODE];
+export type TORUS_METHOD_TYPE = typeof TORUS_METHOD[keyof typeof TORUS_METHOD];
+export type REDIRECT_PARAMS_STORAGE_METHOD_TYPE = typeof REDIRECT_PARAMS_STORAGE_METHOD[keyof typeof REDIRECT_PARAMS_STORAGE_METHOD];
 
 export const CONTRACT_MAP = {
   [TORUS_NETWORK.MAINNET]: "0x638646503746d5456209e33a2ff5e3226d698bea",

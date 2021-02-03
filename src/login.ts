@@ -11,6 +11,8 @@ import {
   ILoginHandler,
   InitParams,
   LoginWindowResponse,
+  RedirectResult,
+  RedirectResultParams,
   SubVerifierDetails,
   TorusAggregateLoginResponse,
   TorusHybridAggregateLoginResponse,
@@ -19,8 +21,19 @@ import {
   TorusVerifierResponse,
 } from "./handlers/interfaces";
 import { registerServiceWorker } from "./registerServiceWorker";
-import { AGGREGATE_VERIFIER, CONTRACT_MAP, ETHEREUM_NETWORK, LOGIN_TYPE, TORUS_NETWORK } from "./utils/enums";
-import { handleRedirectParameters, padUrlString } from "./utils/helpers";
+import {
+  AGGREGATE_VERIFIER,
+  CONTRACT_MAP,
+  ETHEREUM_NETWORK,
+  LOGIN_TYPE,
+  REDIRECT_PARAMS_STORAGE_METHOD,
+  REDIRECT_PARAMS_STORAGE_METHOD_TYPE,
+  TORUS_METHOD,
+  TORUS_NETWORK,
+  UX_MODE,
+  UX_MODE_TYPE,
+} from "./utils/enums";
+import { clearLoginDetailsStorage, handleRedirectParameters, padUrlString, retrieveLoginDetails, storeLoginDetails } from "./utils/helpers";
 import log from "./utils/loglevel";
 
 class DirectWebSDK {
@@ -30,6 +43,8 @@ class DirectWebSDK {
     baseUrl: string;
     redirectToOpener: boolean;
     redirect_uri: string;
+    uxMode: UX_MODE_TYPE;
+    redirectParamsStorageMethod: REDIRECT_PARAMS_STORAGE_METHOD_TYPE;
   };
 
   torus: Torus;
@@ -44,6 +59,8 @@ class DirectWebSDK {
     redirectToOpener = false,
     redirectPathName = "redirect",
     apiKey = "torus-default",
+    uxMode = UX_MODE.POPUP,
+    redirectParamsStorageMethod = REDIRECT_PARAMS_STORAGE_METHOD.SESSION_STORAGE,
   }: DirectWebSDKArgs) {
     this.isInitialized = false;
     const baseUri = new URL(baseUrl);
@@ -53,6 +70,8 @@ class DirectWebSDK {
         return `${this.baseUrl}${redirectPathName}`;
       },
       redirectToOpener,
+      uxMode,
+      redirectParamsStorageMethod,
     };
     const torus = new Torus({
       enableLogging,
@@ -68,7 +87,11 @@ class DirectWebSDK {
     else log.disableAll();
   }
 
-  async init({ skipSw = false }: InitParams = {}): Promise<void> {
+  async init({ skipSw = false, skipInit = false }: InitParams = {}): Promise<void> {
+    if (skipInit) {
+      this.isInitialized = true;
+      return;
+    }
     if (!skipSw) {
       const fetchSwResponse = await fetch(`${this.config.baseUrl}sw.js`, { cache: "reload" });
       if (fetchSwResponse.ok) {
@@ -89,15 +112,41 @@ class DirectWebSDK {
   }
 
   private async handleRedirectCheck(): Promise<void> {
-    const response2 = await fetch(this.config.redirect_uri, { cache: "reload" });
-    if (response2.ok) {
-      this.isInitialized = true;
-      return;
-    }
-    throw new Error(`Please serve redirect.html present in serviceworker folder of this package on ${this.config.redirect_uri}`);
+    if (!document) return Promise.resolve();
+    return new Promise((resolve, reject) => {
+      const redirectHtml = document.createElement("link");
+      redirectHtml.href = this.config.redirect_uri;
+      redirectHtml.crossOrigin = "anonymous";
+      redirectHtml.type = "text/html";
+      redirectHtml.rel = "prefetch";
+      const resolveFn = () => {
+        this.isInitialized = true;
+        resolve();
+      };
+      try {
+        if (redirectHtml.relList && redirectHtml.relList.supports) {
+          if (redirectHtml.relList.supports("prefetch")) {
+            redirectHtml.onload = resolveFn;
+            redirectHtml.onerror = () => {
+              reject(new Error(`Please serve redirect.html present in serviceworker folder of this package on ${this.config.redirect_uri}`));
+            };
+            document.head.appendChild(redirectHtml);
+          } else {
+            // Link prefetch is not supported. pass through
+            resolveFn();
+          }
+        } else {
+          // Link prefetch is not detectable. pass through
+          resolveFn();
+        }
+      } catch (err) {
+        resolveFn();
+      }
+    });
   }
 
-  async triggerLogin({ verifier, typeOfLogin, clientId, jwtParams, hash, queryParameters }: SubVerifierDetails): Promise<TorusLoginResponse> {
+  async triggerLogin(args: SubVerifierDetails): Promise<TorusLoginResponse> {
+    const { verifier, typeOfLogin, clientId, jwtParams, hash, queryParameters } = args;
     log.info("Verifier: ", verifier);
     if (!this.isInitialized) {
       throw new Error("Not initialized yet");
@@ -109,6 +158,7 @@ class DirectWebSDK {
       redirect_uri: this.config.redirect_uri,
       redirectToOpener: this.config.redirectToOpener,
       jwtParams,
+      uxMode: this.config.uxMode,
     });
     let loginParams: LoginWindowResponse;
     if (hash && queryParameters) {
@@ -116,7 +166,12 @@ class DirectWebSDK {
       if (error) throw new Error(error);
       const { access_token: accessToken, id_token: idToken } = hashParameters;
       loginParams = { accessToken, idToken };
-    } else loginParams = await loginHandler.handleLoginWindow();
+    } else {
+      storeLoginDetails({ method: TORUS_METHOD.TRIGGER_LOGIN, args }, this.config.redirectParamsStorageMethod, loginHandler.nonce);
+      loginParams = await loginHandler.handleLoginWindow();
+      if (this.config.uxMode === UX_MODE.REDIRECT) return null;
+    }
+
     const userInfo = await loginHandler.getUserInfo(loginParams);
     const torusKey = await this.getTorusKey(
       verifier,
@@ -133,12 +188,9 @@ class DirectWebSDK {
     };
   }
 
-  async triggerAggregateLogin({
-    aggregateVerifierType,
-    verifierIdentifier,
-    subVerifierDetailsArray,
-  }: AggregateLoginParams): Promise<TorusAggregateLoginResponse> {
+  async triggerAggregateLogin(args: AggregateLoginParams): Promise<TorusAggregateLoginResponse> {
     // This method shall break if any of the promises fail. This behaviour is intended
+    const { aggregateVerifierType, verifierIdentifier, subVerifierDetailsArray } = args;
     if (!this.isInitialized) {
       throw new Error("Not initialized yet");
     }
@@ -168,8 +220,14 @@ class DirectWebSDK {
         const { access_token: accessToken, id_token: idToken } = hashParameters;
         loginParams = { accessToken, idToken };
         // eslint-disable-next-line no-await-in-loop
-      } else loginParams = await loginHandler.handleLoginWindow();
+      } else {
+        storeLoginDetails({ method: TORUS_METHOD.TRIGGER_AGGREGATE_LOGIN, args }, this.config.redirectParamsStorageMethod, loginHandler.nonce);
+        // eslint-disable-next-line no-await-in-loop
+        loginParams = await loginHandler.handleLoginWindow();
+        if (this.config.uxMode === UX_MODE.REDIRECT) return null;
+      }
       // Fail the method even if one promise fails
+
       userInfoPromises.push(loginHandler.getUserInfo(loginParams));
       loginParamsArray.push(loginParams);
     }
@@ -197,7 +255,8 @@ class DirectWebSDK {
   }
 
   //
-  async triggerHybridAggregateLogin({ singleLogin, aggregateLoginParams }: HybridAggregateLoginParams): Promise<TorusHybridAggregateLoginResponse> {
+  async triggerHybridAggregateLogin(args: HybridAggregateLoginParams): Promise<TorusHybridAggregateLoginResponse> {
+    const { singleLogin, aggregateLoginParams } = args;
     // This method shall break if any of the promises fail. This behaviour is intended
     if (!this.isInitialized) {
       throw new Error("Not initialized yet");
@@ -230,7 +289,12 @@ class DirectWebSDK {
       if (error) throw new Error(error);
       const { access_token: accessToken, id_token: idToken } = hashParameters;
       loginParams = { accessToken, idToken };
-    } else loginParams = await loginHandler.handleLoginWindow();
+    } else {
+      storeLoginDetails({ method: TORUS_METHOD.TRIGGER_AGGREGATE_HYBRID_LOGIN, args }, this.config.redirectParamsStorageMethod, loginHandler.nonce);
+      loginParams = await loginHandler.handleLoginWindow();
+      if (this.config.uxMode === UX_MODE.REDIRECT) return null;
+    }
+
     const userInfo = await loginHandler.getUserInfo(loginParams);
     const torusKey1Promise = this.getTorusKey(
       verifier,
@@ -279,6 +343,60 @@ class DirectWebSDK {
     if (data.ethAddress.toLowerCase() !== response.toString().toLowerCase()) throw new Error("Invalid");
     log.info(data);
     return { publicAddress: data.ethAddress.toString(), privateKey: data.privKey.toString() };
+  }
+
+  async getRedirectResult({ replaceUrl = true }: RedirectResultParams = {}): Promise<RedirectResult> {
+    await this.init({ skipInit: true });
+    const url = new URL(window.location.href);
+    const hash = url.hash.substr(1);
+    const queryParams = {};
+    url.searchParams.forEach((value, key) => {
+      queryParams[key] = value;
+    });
+
+    if (replaceUrl) {
+      const cleanUrl = window.location.origin + window.location.pathname;
+      window.history.replaceState(null, "", cleanUrl);
+    }
+
+    if (!hash && Object.keys(queryParams).length === 0) {
+      throw new Error("Unable to fetch result from redirect");
+    }
+
+    const { instanceParameters } = handleRedirectParameters(hash, queryParams);
+
+    const { instanceId } = instanceParameters;
+
+    log.info(instanceId, "instanceId");
+
+    const { args, method, ...rest } = retrieveLoginDetails(this.config.redirectParamsStorageMethod, instanceId);
+    log.info(args, method);
+    clearLoginDetailsStorage(this.config.redirectParamsStorageMethod, instanceId);
+
+    let result: unknown;
+
+    if (method === TORUS_METHOD.TRIGGER_LOGIN) {
+      const methodArgs = args as SubVerifierDetails;
+      methodArgs.hash = hash;
+      methodArgs.queryParameters = queryParams;
+      result = await this.triggerLogin(methodArgs);
+    } else if (method === TORUS_METHOD.TRIGGER_AGGREGATE_LOGIN) {
+      const methodArgs = args as AggregateLoginParams;
+      methodArgs.subVerifierDetailsArray.forEach((x) => {
+        x.hash = hash;
+        x.queryParameters = queryParams;
+      });
+      result = await this.triggerAggregateLogin(methodArgs);
+    } else if (method === TORUS_METHOD.TRIGGER_AGGREGATE_HYBRID_LOGIN) {
+      const methodArgs = args as HybridAggregateLoginParams;
+      methodArgs.singleLogin.hash = hash;
+      methodArgs.singleLogin.queryParameters = queryParams;
+      result = await this.triggerHybridAggregateLogin(methodArgs);
+    }
+
+    if (!result) throw new Error("Unsupported method type");
+
+    return { method, result, ...rest };
   }
 }
 

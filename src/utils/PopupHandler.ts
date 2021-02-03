@@ -49,6 +49,10 @@ class PopupHandler extends EventEmitter {
     this.iClosedWindow = true;
     if (this.window) this.window.close();
   }
+
+  redirect(): void {
+    window.location.href = this.url.href;
+  }
 }
 
 export default PopupHandler;

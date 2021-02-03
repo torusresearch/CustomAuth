@@ -15,5 +15,6 @@ declare class PopupHandler extends EventEmitter {
     _setupTimer(): void;
     open(): Promise<void>;
     close(): void;
+    redirect(): void;
 }
 export default PopupHandler;

@@ -1,7 +1,7 @@
 import deepmerge from "deepmerge";
 import jwtDecode from "jwt-decode";
 
-import { LOGIN_TYPE } from "../utils/enums";
+import { LOGIN_TYPE, UX_MODE_TYPE } from "../utils/enums";
 import { getVerifierId, loginToConnectionMap, padUrlString } from "../utils/helpers";
 import { get } from "../utils/httpHelpers";
 import log from "../utils/loglevel";
@@ -20,10 +20,11 @@ export default class JwtHandler extends AbstractLoginHandler {
     readonly verifier: string,
     readonly redirect_uri: string,
     readonly typeOfLogin: LOGIN_TYPE,
+    readonly uxMode: UX_MODE_TYPE,
     readonly redirectToOpener?: boolean,
     readonly jwtParams?: Auth0ClientOptions
   ) {
-    super(clientId, verifier, redirect_uri, typeOfLogin, redirectToOpener, jwtParams);
+    super(clientId, verifier, redirect_uri, typeOfLogin, uxMode, redirectToOpener, jwtParams);
     this.setFinalUrl();
   }
 
@@ -73,7 +74,7 @@ export default class JwtHandler extends AbstractLoginHandler {
       };
     } catch (error) {
       log.error(error);
-      const decodedToken = jwtDecode(idToken) as Auth0UserInfo;
+      const decodedToken = jwtDecode<Auth0UserInfo>(idToken);
       const { name, email, picture } = decodedToken;
       return {
         profileImage: picture,
