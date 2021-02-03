@@ -8,10 +8,10 @@ import log from "../utils/loglevel";
 import PopupHandler from "../utils/PopupHandler";
 import { Auth0ClientOptions, ILoginHandler, LoginWindowResponse, PopupResponse, TorusVerifierResponse } from "./interfaces";
 
-export default abstract class AbstractLoginHandler implements ILoginHandler {
-  protected nonce: string = randomId();
+abstract class AbstractLoginHandler implements ILoginHandler {
+  public nonce: string = randomId();
 
-  protected finalURL: URL;
+  public finalURL: URL;
 
   // Not using object constructor because of this issue
   // https://github.com/microsoft/TypeScript/issues/5326
@@ -101,3 +101,5 @@ export default abstract class AbstractLoginHandler implements ILoginHandler {
     return null;
   }
 }
+
+export default AbstractLoginHandler;

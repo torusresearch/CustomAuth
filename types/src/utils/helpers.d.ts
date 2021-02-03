@@ -1,5 +1,5 @@
 import { Auth0UserInfo, LoginDetails, TorusGenericObject } from "../handlers/interfaces";
-import { LOGIN, LOGIN_TYPE } from "./enums";
+import { LOGIN, LOGIN_TYPE, REDIRECT_PARAMS_STORAGE_METHOD_TYPE } from "./enums";
 interface CustomMessageEvent extends MessageEvent {
     error: string;
 }
@@ -31,8 +31,8 @@ export declare const handleRedirectParameters: (hash: string, queryParameters: T
     instanceParameters: TorusGenericObject;
     hashParameters: TorusGenericObject;
 };
-export declare function storageAvailable(type: "localStorage" | "sessionStorage"): boolean;
-export declare function storeLoginDetails(params: LoginDetails): void;
-export declare function retrieveLoginDetails(): LoginDetails;
-export declare function clearLocalStorage(): void;
+export declare function storageAvailable(type: REDIRECT_PARAMS_STORAGE_METHOD_TYPE): boolean;
+export declare function storeLoginDetails(params: LoginDetails, storageMethod: REDIRECT_PARAMS_STORAGE_METHOD_TYPE, scope: string): void;
+export declare function retrieveLoginDetails(storageMethod: REDIRECT_PARAMS_STORAGE_METHOD_TYPE, scope: string): LoginDetails;
+export declare function clearLoginDetailsStorage(storageMethod: REDIRECT_PARAMS_STORAGE_METHOD_TYPE, scope: string): void;
 export {};

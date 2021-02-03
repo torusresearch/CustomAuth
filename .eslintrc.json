@@ -21,7 +21,6 @@
     "project": "./tsconfig.json"
   },
   "rules": {
-    "no-undef": 0,
     "camelcase": 0,
     "no-useless-constructor": 0,
     "@typescript-eslint/no-useless-constructor": 2,
