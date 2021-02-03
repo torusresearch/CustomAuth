@@ -146,7 +146,7 @@ Please refer to examples
 
 Hosted Example for testing 
 - [Popup Flow](https://vue-direct.tor.us/)
-- [Redirect Flow](https://vue-direct.tor.us/)
+- [Redirect Flow](https://vue-redirect.tor.us/)
 
 ## Info
 
