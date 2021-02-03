@@ -119,14 +119,29 @@ class DirectWebSDK {
       redirectHtml.crossOrigin = "anonymous";
       redirectHtml.type = "text/html";
       redirectHtml.rel = "prefetch";
-      redirectHtml.onload = () => {
+      const resolveFn = () => {
         this.isInitialized = true;
         resolve();
       };
-      redirectHtml.onerror = () => {
-        reject(new Error(`Please serve redirect.html present in serviceworker folder of this package on ${this.config.redirect_uri}`));
-      };
-      document.head.appendChild(redirectHtml);
+      try {
+        if (redirectHtml.relList && redirectHtml.relList.supports) {
+          if (redirectHtml.relList.supports("prefetch")) {
+            redirectHtml.onload = resolveFn;
+            redirectHtml.onerror = () => {
+              reject(new Error(`Please serve redirect.html present in serviceworker folder of this package on ${this.config.redirect_uri}`));
+            };
+            document.head.appendChild(redirectHtml);
+          } else {
+            // Link prefetch is not supported. pass through
+            resolveFn();
+          }
+        } else {
+          // Link prefetch is not detectable. pass through
+          resolveFn();
+        }
+      } catch (err) {
+        resolveFn();
+      }
     });
   }
 
