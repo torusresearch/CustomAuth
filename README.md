@@ -144,7 +144,9 @@ Please refer to examples
 - [vue](examples/vue-app-redirect-flow/src/App.vue) for redirect flow
 - [gatsby](https://github.com/jamespfarrell/gatsby-torus-direct) for configuration
 
-Hosted Example for testing is [here](https://vue-direct.tor.us/) (uses popup flow)
+Hosted Example for testing 
+- [Popup Flow](https://vue-direct.tor.us/)
+- [Redirect Flow](https://vue-direct.tor.us/)
 
 ## Info
 
