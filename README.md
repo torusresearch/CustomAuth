@@ -137,9 +137,14 @@ const loginDetails = await torusdirectsdk.getRedirectResult();
    
 ## Examples
 
-Please refer to examples, [vue.js](examples/vue-app/src/App.vue), [gatsby](https://github.com/jamespfarrell/gatsby-torus-direct) for configuration
+Please refer to examples
+- [vue](examples/vue-app/src/App.vue) for popup flow
+- [react](examples/react-app/src/App.js) for popup flow
+- [angular](examples/angular-app/src/app/app.component.ts) for popup flow
+- [vue](examples/vue-app-redirect-flow/src/App.vue) for redirect flow
+- [gatsby](https://github.com/jamespfarrell/gatsby-torus-direct) for configuration
 
-Hosted Example for testing is [here](https://vue-direct.tor.us/)
+Hosted Example for testing is [here](https://vue-direct.tor.us/) (uses popup flow)
 
 ## Info
 
