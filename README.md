@@ -36,13 +36,13 @@ CDN's serve the non-core-js polyfilled version by default. You can use a differe
 jsdeliver
 
 ```js
-<script src="https://cdn.jsdelivr.net/npm/@toruslabs/torus-direct-web-sdk@3"></script>
+<script src="https://cdn.jsdelivr.net/npm/@toruslabs/torus-direct-web-sdk@4"></script>
 ```
 
 unpkg
 
 ```js
-<script src="https://unpkg.com/@toruslabs/torus-direct-web-sdk@3"></script>
+<script src="https://unpkg.com/@toruslabs/torus-direct-web-sdk@4"></script>
 ```
 
 ### Tips for NUXT
@@ -57,17 +57,23 @@ Add [`@toruslabs/torus-direct-web-sdk`](https://www.npmjs.com/package/@toruslabs
 
 To allow your web app to retrieve keys:
 
-1. Install the package
+Install the package
    `npm i @toruslabs/torus-direct-web-sdk`
+   or
+   `yarn add @toruslabs/torus-direct-web-sdk`
 
-2. Serve [service worker](serviceworker/sw.js) from `baseUrl` where baseUrl is the one passed while instantiating `DirectWebSdk` for specific login (example http://localhost:3000/serviceworker/). If you're already using a sw, pls ensure to port over the fetch override from [our service worker](serviceworker/sw.js)
+Direct Web Sdk supports two modes of login (`uxMode: "popup"` and `uxMode: "redirect"`) (default: `popup`)
 
-3. For browsers where service workers are not supported or if you wish to not use service workers, create and serve [redirect page](serviceworker/redirect.html) from `baseUrl/redirect` where baseUrl is the one passed while instantiating `DirectWebSdk` for specific login ( example http://localhost:3000/serviceworker/)
+#### Popup Flow:
 
-4. At verifier's interface (where you obtain client id), please use `baseUrl/redirect` (eg: http://localhost:3000/serviceworker/redirect) as the redirect_uri where baseUrl is the one passed while instantiating `DirectWebSdk`
+1. Serve [service worker](serviceworker/sw.js) from `baseUrl` where baseUrl is the one passed while instantiating `DirectWebSdk` for specific login (example http://localhost:3000/serviceworker/). If you're already using a sw, pls ensure to port over the fetch override from [our service worker](serviceworker/sw.js)
 
-5. Instantiate the package with your own specific client-id
+2. For browsers where service workers are not supported or if you wish to not use service workers, create and serve [redirect page](serviceworker/redirect.html) from `baseUrl/redirect` where baseUrl is the one passed while instantiating `DirectWebSdk` for specific login ( example http://localhost:3000/serviceworker/)
 
+3. At verifier's interface (where you obtain client id), please use `baseUrl/redirect` (eg: http://localhost:3000/serviceworker/redirect) as the redirect_uri where baseUrl is the one passed while instantiating `DirectWebSdk`
+
+4. Instantiate the package
+   
 ```js
 const torus = new DirectWebSdk({
   baseUrl: "http://localhost:3000/serviceworker/",
@@ -76,10 +82,10 @@ const torus = new DirectWebSdk({
 await torus.init();
 ```
 
-6. Trigger the login
+5. Trigger the login with your own client id (This opens a popup of OAuth provider page)
 
 ```js
-const userInfo = await torus.triggerLogin({
+const loginDetails = await torus.triggerLogin({
   typeOfLogin: "google",
   verifier: "YOUR VERIFER DEPLOYED BY TORUS",
   clientId: "MY CLIENT ID GOOGLE",
@@ -88,6 +94,47 @@ const userInfo = await torus.triggerLogin({
 
 Note: If you're using `redirectToOpener`, modify the origin of postMessage from `"http://localhost:3000"` to your hosted domain in redirect.html and sw.js
 
+#### Redirect flow
+
+1. At verifier's interface (where you obtain client id), please use `baseUrl/auth` (eg: http://localhost:3000/auth) as the redirect_uri where baseUrl is the one passed while instantiating `DirectWebSdk`
+
+2. Instantiate the package
+   
+```js
+const torus = new DirectWebSdk({
+  baseUrl: "http://localhost:3000/serviceworker/",
+  redirectPathName: "auth",
+  network: "testnet", // details for test net
+  uxMode: "redirect"
+});
+await torusdirectsdk.init({ skipSw: true });
+```
+
+3. Trigger the login with your client id. (This redirects the user to OAuth provider page)
+
+```js
+await torus.triggerLogin({
+  typeOfLogin: "google",
+  verifier: "YOUR VERIFER DEPLOYED BY TORUS",
+  clientId: "MY CLIENT ID GOOGLE",
+});
+```
+
+4. The OAuth login completes and the OAuth provider will redirect you to  `baseUrl/auth` with hashParams
+   In this page, use the following code to get the login details
+
+```js
+const torusdirectsdk = new DirectWebSdk({
+  baseUrl: location.origin,
+  redirectPathName: "auth",
+  uxMode: "redirect",
+  network: "testnet"
+});
+const loginDetails = await torusdirectsdk.getRedirectResult();
+```
+
+5. Once you get the login details, you can choose to take the user anywhere else in your app
+   
 ## Examples
 
 Please refer to examples, [vue.js](examples/vue-app/src/App.vue), [gatsby](https://github.com/jamespfarrell/gatsby-torus-direct) for configuration
