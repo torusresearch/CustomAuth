@@ -212,6 +212,7 @@ class DirectWebSDK {
         redirect_uri: this.config.redirect_uri,
         redirectToOpener: this.config.redirectToOpener,
         jwtParams,
+        uxMode: this.config.uxMode,
       });
       // We let the user login to each verifier in a loop. Don't wait for key derivation here.!
       let loginParams: LoginWindowResponse;
@@ -285,6 +286,7 @@ class DirectWebSDK {
       redirect_uri: this.config.redirect_uri,
       redirectToOpener: this.config.redirectToOpener,
       jwtParams,
+      uxMode: this.config.uxMode,
     });
     let loginParams: LoginWindowResponse;
     if (hash && queryParameters) {

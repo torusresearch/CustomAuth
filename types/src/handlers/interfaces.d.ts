@@ -193,9 +193,9 @@ export interface CreateHandlerParams {
     clientId: string;
     verifier: string;
     redirect_uri: string;
+    uxMode: UX_MODE_TYPE;
     redirectToOpener?: boolean;
     jwtParams?: Auth0ClientOptions;
-    uxMode?: UX_MODE_TYPE;
 }
 export interface AggregateLoginParams {
     aggregateVerifierType: AGGREGATE_VERIFIER_TYPE;
