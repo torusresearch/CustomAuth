@@ -7,6 +7,7 @@ import JwtHandler from "./JwtHandler";
 import PasswordlessHandler from "./PasswordlessHandler";
 import RedditHandler from "./RedditHandler";
 import TwitchHandler from "./TwitchHandler";
+import WebAuthnHandler from "./WebAuthnHandler";
 
 const createHandler = ({
   clientId,
@@ -45,6 +46,8 @@ const createHandler = ({
     case LOGIN.JWT:
       if (!domain) throw new Error("Invalid params");
       return new JwtHandler(clientId, verifier, redirect_uri, typeOfLogin, uxMode, redirectToOpener, jwtParams);
+    case LOGIN.WEBAUTHN:
+      return new WebAuthnHandler(clientId, verifier, redirect_uri, typeOfLogin, uxMode, redirectToOpener, jwtParams);
     default:
       throw new Error("Invalid login type");
   }

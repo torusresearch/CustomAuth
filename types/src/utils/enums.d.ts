@@ -21,6 +21,7 @@ export declare const LOGIN: {
     readonly EMAIL_PASSWORD: "email_password";
     readonly PASSWORDLESS: "passwordless";
     readonly JWT: "jwt";
+    readonly WEBAUTHN: "webauthn";
 };
 export declare const AGGREGATE_VERIFIER: {
     readonly SINGLE_VERIFIER_ID: "single_id_verifier";
