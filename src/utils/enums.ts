@@ -23,6 +23,7 @@ export const LOGIN = {
   EMAIL_PASSWORD: "email_password",
   PASSWORDLESS: "passwordless",
   JWT: "jwt",
+  WEBAUTHN: "webauthn",
 } as const;
 
 export const AGGREGATE_VERIFIER = {

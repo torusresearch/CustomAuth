@@ -8,7 +8,7 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
-    "@toruslabs/torus-direct-web-sdk": "file:../../toruslabs-torus-direct-web-sdk-3.6.0.tgz",
+    "@toruslabs/torus-direct-web-sdk": "file:../../toruslabs-torus-direct-web-sdk-4.0.0.tgz",
     "core-js": "^3.8.2",
     "vue": "^2.6.12"
   },

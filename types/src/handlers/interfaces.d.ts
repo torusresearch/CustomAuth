@@ -18,6 +18,14 @@ export interface Auth0UserInfo {
 export interface extraParams {
     [key: string]: unknown;
 }
+export declare type WebAuthnExtraParams = {
+    signature?: string;
+    clientDataJSON?: string;
+    authenticatorData?: string;
+    publicKey?: string;
+    challenge?: string;
+    rpOrigin?: string;
+};
 export interface TorusVerifierResponse {
     email: string;
     name: string;
@@ -25,10 +33,18 @@ export interface TorusVerifierResponse {
     verifier: string;
     verifierId: string;
     typeOfLogin: LOGIN_TYPE;
+    ref?: string;
+    extraVerifierParams?: WebAuthnExtraParams;
 }
+export declare type TorusGenericObject = {
+    [key: string]: string;
+};
 export interface LoginWindowResponse {
     accessToken: string;
     idToken?: string;
+    ref?: string;
+    extraParams?: string;
+    extraParamsPassed?: string;
 }
 export interface ILoginHandler {
     clientId: string;
@@ -52,9 +68,6 @@ export declare type TorusAggregateLoginResponse = TorusAggregateVerifierResponse
 export declare type TorusHybridAggregateLoginResponse = {
     singleLogin: TorusLoginResponse;
     aggregateLogins: TorusKey[];
-};
-export declare type TorusGenericObject = {
-    [key: string]: string;
 };
 export interface DirectWebSDKArgs {
     baseUrl: string;

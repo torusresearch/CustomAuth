@@ -52,7 +52,7 @@ abstract class AbstractLoginHandler implements ILoginHandler {
             const { error, data } = ev;
             const {
               instanceParams: { verifier: returnedVerifier },
-              hashParams: { access_token: accessToken, id_token: idToken },
+              hashParams: { access_token: accessToken, id_token: idToken, ...rest },
             } = data || {};
             if (error) {
               log.error(ev);
@@ -62,7 +62,7 @@ abstract class AbstractLoginHandler implements ILoginHandler {
             if (ev.data && returnedVerifier === this.verifier) {
               log.info(ev.data);
               if (!this.redirectToOpener && bc) await bc.postMessage({ success: true });
-              resolve({ accessToken, idToken: idToken || "" });
+              resolve({ accessToken, idToken: idToken || "", ...rest });
             }
           } catch (error) {
             log.error(error);

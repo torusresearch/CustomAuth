@@ -44,6 +44,7 @@ const EMAIL_PASSWORD = "email_password";
 const PASSWORDLESS = "passwordless";
 const HOSTED_EMAIL_PASSWORDLESS = "hosted_email_passwordless";
 const HOSTED_SMS_PASSWORDLESS = "hosted_sms_passwordless";
+const WEBAUTHN = "webauthn";
 
 const AUTH_DOMAIN = "https://torus-test.auth0.com";
 
@@ -95,6 +96,12 @@ export default {
           clientId: "nSYBFalV2b1MSg5b2raWqHl63tfH3KQa",
           verifier: "torus-auth0-sms-passwordless",
         },
+        [WEBAUTHN]: {
+          name: "WebAuthn",
+          typeOfLogin: "webauthn",
+          clientId: "webauthn",
+          verifier: "webauthn-lrc",
+        }
       },
     };
   },

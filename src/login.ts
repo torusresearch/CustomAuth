@@ -164,8 +164,8 @@ class DirectWebSDK {
     if (hash && queryParameters) {
       const { error, hashParameters } = handleRedirectParameters(hash, queryParameters);
       if (error) throw new Error(error);
-      const { access_token: accessToken, id_token: idToken } = hashParameters;
-      loginParams = { accessToken, idToken };
+      const { access_token: accessToken, id_token: idToken, ...rest } = hashParameters;
+      loginParams = { accessToken, idToken, ...rest };
     } else {
       storeLoginDetails({ method: TORUS_METHOD.TRIGGER_LOGIN, args }, this.config.redirectParamsStorageMethod, loginHandler.nonce);
       loginParams = await loginHandler.handleLoginWindow();
@@ -177,7 +177,8 @@ class DirectWebSDK {
       verifier,
       userInfo.verifierId,
       { verifier_id: userInfo.verifierId },
-      loginParams.idToken || loginParams.accessToken
+      loginParams.idToken || loginParams.accessToken,
+      userInfo.extraVerifierParams
     );
     return {
       ...torusKey,
@@ -217,8 +218,8 @@ class DirectWebSDK {
       if (hash && queryParameters) {
         const { error, hashParameters } = handleRedirectParameters(hash, queryParameters);
         if (error) throw new Error(error);
-        const { access_token: accessToken, id_token: idToken } = hashParameters;
-        loginParams = { accessToken, idToken };
+        const { access_token: accessToken, id_token: idToken, ...rest } = hashParameters;
+        loginParams = { accessToken, idToken, ...rest };
         // eslint-disable-next-line no-await-in-loop
       } else {
         storeLoginDetails({ method: TORUS_METHOD.TRIGGER_AGGREGATE_LOGIN, args }, this.config.redirectParamsStorageMethod, loginHandler.nonce);
@@ -235,6 +236,7 @@ class DirectWebSDK {
     const aggregateVerifierParams = { verify_params: [], sub_verifier_ids: [], verifier_id: "" };
     const aggregateIdTokenSeeds = [];
     let aggregateVerifierId = "";
+    let extraVerifierParams = {};
     for (let index = 0; index < subVerifierDetailsArray.length; index += 1) {
       const loginParams = loginParamsArray[index];
       const { idToken, accessToken } = loginParams;
@@ -243,11 +245,12 @@ class DirectWebSDK {
       aggregateVerifierParams.sub_verifier_ids.push(userInfo.verifier);
       aggregateIdTokenSeeds.push(idToken || accessToken);
       aggregateVerifierId = userInfo.verifierId; // using last because idk
+      extraVerifierParams = userInfo.extraVerifierParams;
     }
     aggregateIdTokenSeeds.sort();
     const aggregateIdToken = keccak256(aggregateIdTokenSeeds.join(String.fromCharCode(29))).slice(2);
     aggregateVerifierParams.verifier_id = aggregateVerifierId;
-    const torusKey = await this.getTorusKey(verifierIdentifier, aggregateVerifierId, aggregateVerifierParams, aggregateIdToken);
+    const torusKey = await this.getTorusKey(verifierIdentifier, aggregateVerifierId, aggregateVerifierParams, aggregateIdToken, extraVerifierParams);
     return {
       ...torusKey,
       userInfo: userInfoArray.map((x, index) => ({ ...x, ...loginParamsArray[index] })),
@@ -287,8 +290,8 @@ class DirectWebSDK {
     if (hash && queryParameters) {
       const { error, hashParameters } = handleRedirectParameters(hash, queryParameters);
       if (error) throw new Error(error);
-      const { access_token: accessToken, id_token: idToken } = hashParameters;
-      loginParams = { accessToken, idToken };
+      const { access_token: accessToken, id_token: idToken, ...rest } = hashParameters;
+      loginParams = { accessToken, idToken, ...rest };
     } else {
       storeLoginDetails({ method: TORUS_METHOD.TRIGGER_AGGREGATE_HYBRID_LOGIN, args }, this.config.redirectParamsStorageMethod, loginHandler.nonce);
       loginParams = await loginHandler.handleLoginWindow();
@@ -300,7 +303,8 @@ class DirectWebSDK {
       verifier,
       userInfo.verifierId,
       { verifier_id: userInfo.verifierId },
-      loginParams.idToken || loginParams.accessToken
+      loginParams.idToken || loginParams.accessToken,
+      userInfo.extraVerifierParams
     );
 
     const { verifierIdentifier, subVerifierDetailsArray } = aggregateLoginParams;
@@ -318,7 +322,13 @@ class DirectWebSDK {
     aggregateIdTokenSeeds.sort();
     const aggregateIdToken = keccak256(aggregateIdTokenSeeds.join(String.fromCharCode(29))).slice(2);
     aggregateVerifierParams.verifier_id = aggregateVerifierId;
-    const torusKey2Promise = this.getTorusKey(verifierIdentifier, aggregateVerifierId, aggregateVerifierParams, aggregateIdToken);
+    const torusKey2Promise = this.getTorusKey(
+      verifierIdentifier,
+      aggregateVerifierId,
+      aggregateVerifierParams,
+      aggregateIdToken,
+      userInfo.extraVerifierParams
+    );
     const [torusKey1, torusKey2] = await Promise.all([torusKey1Promise, torusKey2Promise]);
     return {
       singleLogin: {
