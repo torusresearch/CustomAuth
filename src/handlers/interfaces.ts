@@ -40,6 +40,11 @@ export interface TorusVerifierResponse {
   extraVerifierParams?: WebAuthnExtraParams;
 }
 
+export interface TorusSubVerifierInfo {
+  verifier: string;
+  extraVerifierParams?: WebAuthnExtraParams;
+}
+
 export type TorusGenericObject = {
   [key: string]: string;
 };
