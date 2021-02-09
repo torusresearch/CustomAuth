@@ -18,6 +18,7 @@ import {
   TorusHybridAggregateLoginResponse,
   TorusKey,
   TorusLoginResponse,
+  TorusSubVerifierInfo,
   TorusVerifierResponse,
 } from "./handlers/interfaces";
 import { registerServiceWorker } from "./registerServiceWorker";
@@ -355,6 +356,29 @@ class DirectWebSDK {
     if (data.ethAddress.toLowerCase() !== response.toString().toLowerCase()) throw new Error("Invalid");
     log.info(data);
     return { publicAddress: data.ethAddress.toString(), privateKey: data.privKey.toString() };
+  }
+
+  async getAggregateTorusKey(
+    verifier: string,
+    verifierId: string, // unique identifier for user e.g. sub on jwt
+    subVerifierInfoArray: TorusSubVerifierInfo[],
+    idTokenArray: string[]
+  ): Promise<TorusKey> {
+    const aggregateVerifierParams = { verify_params: [], sub_verifier_ids: [], verifier_id: "" };
+    const aggregateIdTokenSeeds = [];
+    let extraVerifierParams = {};
+    for (let index = 0; index < subVerifierInfoArray.length; index += 1) {
+      const idToken = idTokenArray[index];
+      const userInfo = subVerifierInfoArray[index];
+      aggregateVerifierParams.verify_params.push({ verifier_id: verifierId, idtoken: idToken });
+      aggregateVerifierParams.sub_verifier_ids.push(userInfo.verifier);
+      aggregateIdTokenSeeds.push(idToken);
+      extraVerifierParams = userInfo.extraVerifierParams;
+    }
+    aggregateIdTokenSeeds.sort();
+    const aggregateIdToken = keccak256(aggregateIdTokenSeeds.join(String.fromCharCode(29))).slice(2);
+    aggregateVerifierParams.verifier_id = verifierId;
+    return this.getTorusKey(verifier, verifierId, aggregateVerifierParams, aggregateIdToken, extraVerifierParams);
   }
 
   async getRedirectResult({ replaceUrl = true }: RedirectResultParams = {}): Promise<RedirectResult> {
