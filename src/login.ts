@@ -361,18 +361,16 @@ class DirectWebSDK {
   async getAggregateTorusKey(
     verifier: string,
     verifierId: string, // unique identifier for user e.g. sub on jwt
-    subVerifierInfoArray: TorusSubVerifierInfo[],
-    idTokenArray: string[]
+    subVerifierInfoArray: TorusSubVerifierInfo[]
   ): Promise<TorusKey> {
     const aggregateVerifierParams = { verify_params: [], sub_verifier_ids: [], verifier_id: "" };
     const aggregateIdTokenSeeds = [];
     let extraVerifierParams = {};
     for (let index = 0; index < subVerifierInfoArray.length; index += 1) {
-      const idToken = idTokenArray[index];
       const userInfo = subVerifierInfoArray[index];
-      aggregateVerifierParams.verify_params.push({ verifier_id: verifierId, idtoken: idToken });
+      aggregateVerifierParams.verify_params.push({ verifier_id: verifierId, idtoken: userInfo.idToken });
       aggregateVerifierParams.sub_verifier_ids.push(userInfo.verifier);
-      aggregateIdTokenSeeds.push(idToken);
+      aggregateIdTokenSeeds.push(userInfo.idToken);
       extraVerifierParams = userInfo.extraVerifierParams;
     }
     aggregateIdTokenSeeds.sort();

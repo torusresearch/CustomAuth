@@ -1,6 +1,6 @@
 import NodeDetailManager from "@toruslabs/fetch-node-details";
 import Torus from "@toruslabs/torus.js";
-import { AggregateLoginParams, DirectWebSDKArgs, extraParams, HybridAggregateLoginParams, InitParams, RedirectResult, RedirectResultParams, SubVerifierDetails, TorusAggregateLoginResponse, TorusHybridAggregateLoginResponse, TorusKey, TorusLoginResponse } from "./handlers/interfaces";
+import { AggregateLoginParams, DirectWebSDKArgs, extraParams, HybridAggregateLoginParams, InitParams, RedirectResult, RedirectResultParams, SubVerifierDetails, TorusAggregateLoginResponse, TorusHybridAggregateLoginResponse, TorusKey, TorusLoginResponse, TorusSubVerifierInfo } from "./handlers/interfaces";
 import { REDIRECT_PARAMS_STORAGE_METHOD_TYPE, UX_MODE_TYPE } from "./utils/enums";
 declare class DirectWebSDK {
     isInitialized: boolean;
@@ -22,6 +22,8 @@ declare class DirectWebSDK {
     getTorusKey(verifier: string, verifierId: string, verifierParams: {
         verifier_id: string;
     }, idToken: string, additionalParams?: extraParams): Promise<TorusKey>;
+    getAggregateTorusKey(verifier: string, verifierId: string, // unique identifier for user e.g. sub on jwt
+    subVerifierInfoArray: TorusSubVerifierInfo[], idTokenArray: string[]): Promise<TorusKey>;
     getRedirectResult({ replaceUrl }?: RedirectResultParams): Promise<RedirectResult>;
 }
 export default DirectWebSDK;
