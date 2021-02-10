@@ -17,6 +17,7 @@ const EMAIL_PASSWORD = "email_password";
 const PASSWORDLESS = "passwordless";
 const HOSTED_EMAIL_PASSWORDLESS = "hosted_email_passwordless";
 const HOSTED_SMS_PASSWORDLESS = "hosted_sms_passwordless";
+const WEBAUTHN = "webauthn";
 
 const AUTH_DOMAIN = "https://torus-test.auth0.com";
 
@@ -61,6 +62,12 @@ const verifierMap = {
     clientId: "nSYBFalV2b1MSg5b2raWqHl63tfH3KQa",
     verifier: "torus-auth0-sms-passwordless",
   },
+  [WEBAUTHN]: {
+    name: "WebAuthn",
+    typeOfLogin: "webauthn",
+    clientId: "webauthn",
+    verifier: "webauthn-lrc",
+  }
 };
 
 class App extends React.Component {
@@ -150,6 +157,19 @@ class App extends React.Component {
             <button>Login with Torus</button>
           </div>
         </form>
+        <div id="app">
+            <p>Please note that the verifiers listed in the example have http://localhost:3000/serviceworker/redirect configured as the redirect uri.</p>
+            <p>If you use any other domains, they won't work.</p>
+            <p>The verifiers listed here only work with the client id's specified in example. Please don't edit them</p>
+            <p>The verifiers listed here are for example reference only. Please don't use them for anything other than testing purposes.</p>
+            <div>
+              Reach out to us at <a href="mailto:hello@tor.us">hello@tor.us</a> or <a href="https://t.me/torusdev">telegram group</a> to get your verifier
+              deployed for your client id.
+            </div>
+            <div id="console">
+              <p></p>
+            </div>
+        </div>
         <div className="console">
           <p>{consoleText}</p>
         </div>
