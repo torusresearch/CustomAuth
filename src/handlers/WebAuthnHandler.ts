@@ -7,7 +7,7 @@ import log from "../utils/loglevel";
 import AbstractLoginHandler from "./AbstractLoginHandler";
 import { Auth0ClientOptions, LoginWindowResponse, TorusVerifierResponse } from "./interfaces";
 
-const WEBAUTHN_LOOKUP_SERVER = "http://localhost:3040";
+const WEBAUTHN_LOOKUP_SERVER = "https://api.webauthn.openlogin.com";
 
 export default class WebAuthnHandler extends AbstractLoginHandler {
   constructor(
@@ -24,7 +24,7 @@ export default class WebAuthnHandler extends AbstractLoginHandler {
   }
 
   setFinalUrl(): void {
-    const finalUrl = new URL("http://localhost:8090");
+    const finalUrl = new URL("https://webauthn.openlogin.com");
     const clonedParams = JSON.parse(JSON.stringify(this.jwtParams || {}));
     const finalJwtParams = deepmerge(
       {
@@ -41,7 +41,7 @@ export default class WebAuthnHandler extends AbstractLoginHandler {
   }
 
   async getUserInfo(parameters: LoginWindowResponse): Promise<TorusVerifierResponse> {
-    const { idToken, ref } = parameters;
+    const { idToken, ref, extraParamsPassed, extraParams } = parameters;
     let verifierId: string;
     let signature: string;
     let clientDataJSON: string;
@@ -50,15 +50,15 @@ export default class WebAuthnHandler extends AbstractLoginHandler {
     let challenge: string;
     let rpOrigin: string;
 
-    // if (extraParamsPassed === "true" && false) {
-    //   log.debug("extraParamsPassed is true, using extraParams passed through hashParams");
-    //   ({ verifier_id: verifierId, signature, clientDataJSON, authenticatorData, publicKey, challenge, rpOrigin } = JSON.parse(atob(extraParams)));
-    // } else {
-    log.debug("extraParamsPassed is false, using extraParams passed through bridge server");
-    ({ verifier_id: verifierId, signature, clientDataJSON, authenticatorData, publicKey, challenge, rpOrigin } = await get(
-      `${WEBAUTHN_LOOKUP_SERVER}/signature/fetch/${idToken}`
-    ));
-    // }
+    if (extraParamsPassed === "true") {
+      log.debug("extraParamsPassed is true, using extraParams passed through hashParams");
+      ({ verifier_id: verifierId, signature, clientDataJSON, authenticatorData, publicKey, challenge, rpOrigin } = JSON.parse(atob(extraParams)));
+    } else {
+      log.debug("extraParamsPassed is false, using extraParams passed through bridge server");
+      ({ verifier_id: verifierId, signature, clientDataJSON, authenticatorData, publicKey, challenge, rpOrigin } = await get(
+        `${WEBAUTHN_LOOKUP_SERVER}/signature/fetch/${idToken}`
+      ));
+    }
 
     if (signature !== idToken) {
       throw new Error("idtoken should be equal to signature");
