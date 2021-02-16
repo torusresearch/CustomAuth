@@ -1,3 +1,4 @@
+/* eslint-disable prefer-const */
 import deepmerge from "deepmerge";
 
 import { LOGIN_TYPE, UX_MODE_TYPE } from "../utils/enums";
@@ -5,6 +6,8 @@ import { get } from "../utils/httpHelpers";
 import log from "../utils/loglevel";
 import AbstractLoginHandler from "./AbstractLoginHandler";
 import { Auth0ClientOptions, LoginWindowResponse, TorusVerifierResponse } from "./interfaces";
+
+const WEBAUTHN_LOOKUP_SERVER = "https://api.webauthn.openlogin.com";
 
 export default class WebAuthnHandler extends AbstractLoginHandler {
   constructor(
@@ -38,7 +41,7 @@ export default class WebAuthnHandler extends AbstractLoginHandler {
   }
 
   async getUserInfo(parameters: LoginWindowResponse): Promise<TorusVerifierResponse> {
-    const { idToken, ref, extraParams, extraParamsPassed } = parameters;
+    const { idToken, ref, extraParamsPassed, extraParams } = parameters;
     let verifierId: string;
     let signature: string;
     let clientDataJSON: string;
@@ -53,7 +56,7 @@ export default class WebAuthnHandler extends AbstractLoginHandler {
     } else {
       log.debug("extraParamsPassed is false, using extraParams passed through bridge server");
       ({ verifier_id: verifierId, signature, clientDataJSON, authenticatorData, publicKey, challenge, rpOrigin } = await get(
-        `https://webauthn.lookup.dev.tor.us/fetch/${idToken}`
+        `${WEBAUTHN_LOOKUP_SERVER}/signature/fetch/${idToken}`
       ));
     }
 
