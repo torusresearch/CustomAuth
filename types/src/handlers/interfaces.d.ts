@@ -1,4 +1,3 @@
-import BN from "bn.js";
 import { AGGREGATE_VERIFIER_TYPE, LOGIN_TYPE, REDIRECT_PARAMS_STORAGE_METHOD_TYPE, TORUS_METHOD_TYPE, TORUS_NETWORK_TYPE, UX_MODE_TYPE } from "../utils/enums";
 export declare type PopupResponse = {
     hashParams: {
@@ -62,7 +61,7 @@ export interface ILoginHandler {
 export interface TorusKey {
     publicAddress: string;
     privateKey: string;
-    metadataNonce: BN;
+    metadataNonce: string;
 }
 export interface TorusAggregateVerifierResponse {
     userInfo: (TorusVerifierResponse & LoginWindowResponse)[];
