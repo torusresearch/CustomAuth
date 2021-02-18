@@ -37,7 +37,6 @@ export default class JwtHandler extends AbstractLoginHandler {
     delete clonedParams.domain;
     const finalJwtParams = deepmerge(
       {
-        ...this.customState,
         state: this.state,
         response_type: this.RESPONSE_TYPE,
         client_id: this.clientId,

@@ -29,7 +29,6 @@ export default class WebAuthnHandler extends AbstractLoginHandler {
     const clonedParams = JSON.parse(JSON.stringify(this.jwtParams || {}));
     const finalJwtParams = deepmerge(
       {
-        ...this.customState,
         state: this.state,
         client_id: this.clientId,
         redirect_uri: this.redirect_uri,

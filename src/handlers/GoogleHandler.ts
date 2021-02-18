@@ -31,7 +31,6 @@ export default class GoogleHandler extends AbstractLoginHandler {
     const clonedParams = JSON.parse(JSON.stringify(this.jwtParams || {}));
     const finalJwtParams = deepmerge(
       {
-        ...this.customState,
         state: this.state,
         response_type: this.RESPONSE_TYPE,
         client_id: this.clientId,
