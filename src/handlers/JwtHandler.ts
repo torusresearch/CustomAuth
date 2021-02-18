@@ -6,7 +6,7 @@ import { getVerifierId, loginToConnectionMap, padUrlString } from "../utils/help
 import { get } from "../utils/httpHelpers";
 import log from "../utils/loglevel";
 import AbstractLoginHandler from "./AbstractLoginHandler";
-import { Auth0ClientOptions, Auth0UserInfo, LoginWindowResponse, TorusVerifierResponse } from "./interfaces";
+import { Auth0ClientOptions, Auth0UserInfo, LoginWindowResponse, TorusGenericObject, TorusVerifierResponse } from "./interfaces";
 
 export default class JwtHandler extends AbstractLoginHandler {
   private readonly SCOPE: string = "openid profile email";
@@ -22,9 +22,10 @@ export default class JwtHandler extends AbstractLoginHandler {
     readonly typeOfLogin: LOGIN_TYPE,
     readonly uxMode: UX_MODE_TYPE,
     readonly redirectToOpener?: boolean,
-    readonly jwtParams?: Auth0ClientOptions
+    readonly jwtParams?: Auth0ClientOptions,
+    readonly customState?: TorusGenericObject
   ) {
-    super(clientId, verifier, redirect_uri, typeOfLogin, uxMode, redirectToOpener, jwtParams);
+    super(clientId, verifier, redirect_uri, typeOfLogin, uxMode, redirectToOpener, jwtParams, customState);
     this.setFinalUrl();
   }
 
@@ -36,6 +37,7 @@ export default class JwtHandler extends AbstractLoginHandler {
     delete clonedParams.domain;
     const finalJwtParams = deepmerge(
       {
+        ...this.customState,
         state: this.state,
         response_type: this.RESPONSE_TYPE,
         client_id: this.clientId,

@@ -1,5 +1,5 @@
 import { LOGIN_TYPE, UX_MODE_TYPE } from "../utils/enums";
-import { Auth0ClientOptions, ILoginHandler, LoginWindowResponse, TorusVerifierResponse } from "./interfaces";
+import { Auth0ClientOptions, ILoginHandler, LoginWindowResponse, TorusGenericObject, TorusVerifierResponse } from "./interfaces";
 declare abstract class AbstractLoginHandler implements ILoginHandler {
     readonly clientId: string;
     readonly verifier: string;
@@ -8,9 +8,10 @@ declare abstract class AbstractLoginHandler implements ILoginHandler {
     readonly uxMode: UX_MODE_TYPE;
     readonly redirectToOpener?: boolean;
     readonly jwtParams?: Auth0ClientOptions;
+    readonly customState?: TorusGenericObject;
     nonce: string;
     finalURL: URL;
-    constructor(clientId: string, verifier: string, redirect_uri: string, typeOfLogin: LOGIN_TYPE, uxMode: UX_MODE_TYPE, redirectToOpener?: boolean, jwtParams?: Auth0ClientOptions);
+    constructor(clientId: string, verifier: string, redirect_uri: string, typeOfLogin: LOGIN_TYPE, uxMode: UX_MODE_TYPE, redirectToOpener?: boolean, jwtParams?: Auth0ClientOptions, customState?: TorusGenericObject);
     get state(): string;
     abstract getUserInfo(params: LoginWindowResponse): Promise<TorusVerifierResponse>;
     abstract setFinalUrl(): void;

@@ -7,7 +7,7 @@ import { broadcastChannelOptions, getVerifierId, padUrlString } from "../utils/h
 import { get, post } from "../utils/httpHelpers";
 import log from "../utils/loglevel";
 import AbstractLoginHandler from "./AbstractLoginHandler";
-import { Auth0ClientOptions, Auth0UserInfo, LoginWindowResponse, PopupResponse, TorusVerifierResponse } from "./interfaces";
+import { Auth0ClientOptions, Auth0UserInfo, LoginWindowResponse, PopupResponse, TorusGenericObject, TorusVerifierResponse } from "./interfaces";
 
 export default class JwtHandler extends AbstractLoginHandler {
   private readonly SCOPE: string = "openid profile email";
@@ -23,9 +23,10 @@ export default class JwtHandler extends AbstractLoginHandler {
     readonly typeOfLogin: LOGIN_TYPE,
     readonly uxMode: UX_MODE_TYPE,
     readonly redirectToOpener?: boolean,
-    readonly jwtParams?: Auth0ClientOptions
+    readonly jwtParams?: Auth0ClientOptions,
+    readonly customState?: TorusGenericObject
   ) {
-    super(clientId, verifier, redirect_uri, typeOfLogin, uxMode, redirectToOpener, jwtParams);
+    super(clientId, verifier, redirect_uri, typeOfLogin, uxMode, redirectToOpener, jwtParams, customState);
     this.setFinalUrl();
   }
 
@@ -81,7 +82,7 @@ export default class JwtHandler extends AbstractLoginHandler {
           const { error, data } = ev;
           const {
             instanceParams: { verifier: returnedVerifier },
-            hashParams: { access_token: accessToken, id_token: idToken },
+            hashParams: { access_token: accessToken, id_token: idToken, state },
           } = data || {};
           if (error) {
             log.error(ev.error);
@@ -90,7 +91,11 @@ export default class JwtHandler extends AbstractLoginHandler {
           }
           if (ev.data && returnedVerifier === this.verifier) {
             log.info(ev.data);
-            resolve({ accessToken, idToken: idToken || "" });
+            let parsedState: TorusGenericObject = {};
+            if (state) {
+              parsedState = JSON.parse(atob(decodeURIComponent(decodeURIComponent(state))));
+            }
+            resolve({ accessToken, idToken: idToken || "", state: parsedState });
           }
         } catch (error) {
           log.error(error);

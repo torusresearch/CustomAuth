@@ -3,6 +3,7 @@ export declare type PopupResponse = {
     hashParams: {
         access_token: string;
         id_token?: string;
+        state: string;
     };
     instanceParams: {
         verifier: string;
@@ -50,6 +51,7 @@ export interface LoginWindowResponse {
     ref?: string;
     extraParams?: string;
     extraParamsPassed?: string;
+    state: TorusGenericObject;
 }
 export interface ILoginHandler {
     clientId: string;
@@ -193,6 +195,7 @@ export interface SubVerifierDetails {
     jwtParams?: Auth0ClientOptions;
     hash?: string;
     queryParameters?: TorusGenericObject;
+    customState?: TorusGenericObject;
 }
 export interface CreateHandlerParams {
     typeOfLogin: LOGIN_TYPE;
@@ -202,6 +205,7 @@ export interface CreateHandlerParams {
     uxMode: UX_MODE_TYPE;
     redirectToOpener?: boolean;
     jwtParams?: Auth0ClientOptions;
+    customState: TorusGenericObject;
 }
 export interface AggregateLoginParams {
     aggregateVerifierType: AGGREGATE_VERIFIER_TYPE;

@@ -147,7 +147,7 @@ class DirectWebSDK {
   }
 
   async triggerLogin(args: SubVerifierDetails): Promise<TorusLoginResponse> {
-    const { verifier, typeOfLogin, clientId, jwtParams, hash, queryParameters } = args;
+    const { verifier, typeOfLogin, clientId, jwtParams, hash, queryParameters, customState } = args;
     log.info("Verifier: ", verifier);
     if (!this.isInitialized) {
       throw new Error("Not initialized yet");
@@ -160,13 +160,14 @@ class DirectWebSDK {
       redirectToOpener: this.config.redirectToOpener,
       jwtParams,
       uxMode: this.config.uxMode,
+      customState,
     });
     let loginParams: LoginWindowResponse;
     if (hash && queryParameters) {
-      const { error, hashParameters } = handleRedirectParameters(hash, queryParameters);
+      const { error, hashParameters, instanceParameters } = handleRedirectParameters(hash, queryParameters);
       if (error) throw new Error(error);
       const { access_token: accessToken, id_token: idToken, ...rest } = hashParameters;
-      loginParams = { accessToken, idToken, ...rest };
+      loginParams = { accessToken, idToken, state: instanceParameters, ...rest };
     } else {
       storeLoginDetails({ method: TORUS_METHOD.TRIGGER_LOGIN, args }, this.config.redirectParamsStorageMethod, loginHandler.nonce);
       loginParams = await loginHandler.handleLoginWindow();
@@ -205,7 +206,7 @@ class DirectWebSDK {
     const userInfoPromises: Promise<TorusVerifierResponse>[] = [];
     const loginParamsArray: LoginWindowResponse[] = [];
     for (const subVerifierDetail of subVerifierDetailsArray) {
-      const { clientId, typeOfLogin, verifier, jwtParams, hash, queryParameters } = subVerifierDetail;
+      const { clientId, typeOfLogin, verifier, jwtParams, hash, queryParameters, customState } = subVerifierDetail;
       const loginHandler: ILoginHandler = createHandler({
         typeOfLogin,
         clientId,
@@ -214,14 +215,15 @@ class DirectWebSDK {
         redirectToOpener: this.config.redirectToOpener,
         jwtParams,
         uxMode: this.config.uxMode,
+        customState,
       });
       // We let the user login to each verifier in a loop. Don't wait for key derivation here.!
       let loginParams: LoginWindowResponse;
       if (hash && queryParameters) {
-        const { error, hashParameters } = handleRedirectParameters(hash, queryParameters);
+        const { error, hashParameters, instanceParameters } = handleRedirectParameters(hash, queryParameters);
         if (error) throw new Error(error);
         const { access_token: accessToken, id_token: idToken, ...rest } = hashParameters;
-        loginParams = { accessToken, idToken, ...rest };
+        loginParams = { accessToken, idToken, state: instanceParameters, ...rest };
         // eslint-disable-next-line no-await-in-loop
       } else {
         storeLoginDetails({ method: TORUS_METHOD.TRIGGER_AGGREGATE_LOGIN, args }, this.config.redirectParamsStorageMethod, loginHandler.nonce);
@@ -279,7 +281,7 @@ class DirectWebSDK {
     ) {
       throw new Error("Single id verifier can only have one sub verifier");
     }
-    const { typeOfLogin, clientId, verifier, jwtParams, hash, queryParameters } = singleLogin;
+    const { typeOfLogin, clientId, verifier, jwtParams, hash, queryParameters, customState } = singleLogin;
     const loginHandler: ILoginHandler = createHandler({
       typeOfLogin,
       clientId,
@@ -288,13 +290,14 @@ class DirectWebSDK {
       redirectToOpener: this.config.redirectToOpener,
       jwtParams,
       uxMode: this.config.uxMode,
+      customState,
     });
     let loginParams: LoginWindowResponse;
     if (hash && queryParameters) {
-      const { error, hashParameters } = handleRedirectParameters(hash, queryParameters);
+      const { error, hashParameters, instanceParameters } = handleRedirectParameters(hash, queryParameters);
       if (error) throw new Error(error);
       const { access_token: accessToken, id_token: idToken, ...rest } = hashParameters;
-      loginParams = { accessToken, idToken, ...rest };
+      loginParams = { accessToken, idToken, state: instanceParameters, ...rest };
     } else {
       storeLoginDetails({ method: TORUS_METHOD.TRIGGER_AGGREGATE_HYBRID_LOGIN, args }, this.config.redirectParamsStorageMethod, loginHandler.nonce);
       loginParams = await loginHandler.handleLoginWindow();
