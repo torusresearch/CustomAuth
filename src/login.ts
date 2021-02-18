@@ -167,7 +167,8 @@ class DirectWebSDK {
       const { error, hashParameters, instanceParameters } = handleRedirectParameters(hash, queryParameters);
       if (error) throw new Error(error);
       const { access_token: accessToken, id_token: idToken, ...rest } = hashParameters;
-      loginParams = { accessToken, idToken, state: instanceParameters, ...rest };
+      // State has to be last here otherwise it will be overwritten
+      loginParams = { accessToken, idToken, ...rest, state: instanceParameters };
     } else {
       storeLoginDetails({ method: TORUS_METHOD.TRIGGER_LOGIN, args }, this.config.redirectParamsStorageMethod, loginHandler.nonce);
       loginParams = await loginHandler.handleLoginWindow();
@@ -223,7 +224,8 @@ class DirectWebSDK {
         const { error, hashParameters, instanceParameters } = handleRedirectParameters(hash, queryParameters);
         if (error) throw new Error(error);
         const { access_token: accessToken, id_token: idToken, ...rest } = hashParameters;
-        loginParams = { accessToken, idToken, state: instanceParameters, ...rest };
+        // State has to be last here otherwise it will be overwritten
+        loginParams = { accessToken, idToken, ...rest, state: instanceParameters };
         // eslint-disable-next-line no-await-in-loop
       } else {
         storeLoginDetails({ method: TORUS_METHOD.TRIGGER_AGGREGATE_LOGIN, args }, this.config.redirectParamsStorageMethod, loginHandler.nonce);
@@ -297,7 +299,8 @@ class DirectWebSDK {
       const { error, hashParameters, instanceParameters } = handleRedirectParameters(hash, queryParameters);
       if (error) throw new Error(error);
       const { access_token: accessToken, id_token: idToken, ...rest } = hashParameters;
-      loginParams = { accessToken, idToken, state: instanceParameters, ...rest };
+      // State has to be last here otherwise it will be overwritten
+      loginParams = { accessToken, idToken, ...rest, state: instanceParameters };
     } else {
       storeLoginDetails({ method: TORUS_METHOD.TRIGGER_AGGREGATE_HYBRID_LOGIN, args }, this.config.redirectParamsStorageMethod, loginHandler.nonce);
       loginParams = await loginHandler.handleLoginWindow();

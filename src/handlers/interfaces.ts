@@ -7,9 +7,13 @@ import {
   UX_MODE_TYPE,
 } from "../utils/enums";
 
+export type TorusGenericObject = {
+  [key: string]: string;
+};
+
 export type PopupResponse = {
-  hashParams: { access_token: string; id_token?: string; state: string };
-  instanceParams: { verifier: string };
+  hashParams: { access_token: string; id_token?: string };
+  instanceParams: TorusGenericObject;
 };
 
 export interface Auth0UserInfo {
@@ -49,9 +53,6 @@ export interface TorusSubVerifierInfo {
   extraVerifierParams?: WebAuthnExtraParams;
 }
 
-export type TorusGenericObject = {
-  [key: string]: string;
-};
 export interface LoginWindowResponse {
   accessToken: string;
   idToken?: string;

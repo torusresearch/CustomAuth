@@ -81,21 +81,17 @@ export default class JwtHandler extends AbstractLoginHandler {
         try {
           const { error, data } = ev;
           const {
-            instanceParams: { verifier: returnedVerifier },
-            hashParams: { access_token: accessToken, id_token: idToken, state },
+            instanceParams,
+            hashParams: { access_token: accessToken, id_token: idToken, ...rest },
           } = data || {};
           if (error) {
             log.error(ev.error);
             reject(new Error(error));
             return;
           }
-          if (ev.data && returnedVerifier === this.verifier) {
+          if (ev.data && instanceParams.verifier === this.verifier) {
             log.info(ev.data);
-            let parsedState: TorusGenericObject = {};
-            if (state) {
-              parsedState = JSON.parse(atob(decodeURIComponent(decodeURIComponent(state))));
-            }
-            resolve({ accessToken, idToken: idToken || "", state: parsedState });
+            resolve({ accessToken, idToken: idToken || "", ...rest, state: instanceParams });
           }
         } catch (error) {
           log.error(error);

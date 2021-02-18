@@ -53,26 +53,23 @@ abstract class AbstractLoginHandler implements ILoginHandler {
           try {
             const { error, data } = ev;
             const {
-              instanceParams: { verifier: returnedVerifier },
-              hashParams: { access_token: accessToken, id_token: idToken, state, ...rest },
+              instanceParams,
+              hashParams: { access_token: accessToken, id_token: idToken, ...rest },
             } = data || {};
             if (error) {
               log.error(ev);
               reject(new Error(`Error: ${error}. Info: ${JSON.stringify(ev.data || {})}`));
               return;
             }
-            if (ev.data && returnedVerifier === this.verifier) {
+            if (ev.data && instanceParams.verifier === this.verifier) {
               log.info(ev.data);
               if (!this.redirectToOpener && bc) await bc.postMessage({ success: true });
-              let parsedState: TorusGenericObject = {};
-              if (state) {
-                parsedState = JSON.parse(atob(decodeURIComponent(decodeURIComponent(state))));
-              }
               resolve({
                 accessToken,
                 idToken: idToken || "",
-                state: parsedState,
                 ...rest,
+                // State has to be last here otherwise it will be overwritten
+                state: instanceParams,
               });
             }
           } catch (error) {
