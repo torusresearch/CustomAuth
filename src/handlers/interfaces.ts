@@ -7,7 +7,14 @@ import {
   UX_MODE_TYPE,
 } from "../utils/enums";
 
-export type PopupResponse = { hashParams: { access_token: string; id_token?: string }; instanceParams: { verifier: string } };
+export type TorusGenericObject = {
+  [key: string]: string;
+};
+
+export type PopupResponse = {
+  hashParams: { access_token: string; id_token?: string };
+  instanceParams: TorusGenericObject;
+};
 
 export interface Auth0UserInfo {
   picture: string;
@@ -46,15 +53,13 @@ export interface TorusSubVerifierInfo {
   extraVerifierParams?: WebAuthnExtraParams;
 }
 
-export type TorusGenericObject = {
-  [key: string]: string;
-};
 export interface LoginWindowResponse {
   accessToken: string;
   idToken?: string;
   ref?: string;
   extraParams?: string;
   extraParamsPassed?: string;
+  state: TorusGenericObject;
 }
 
 export interface ILoginHandler {
@@ -209,6 +214,7 @@ export interface SubVerifierDetails {
   jwtParams?: Auth0ClientOptions;
   hash?: string;
   queryParameters?: TorusGenericObject;
+  customState?: TorusGenericObject;
 }
 export interface CreateHandlerParams {
   typeOfLogin: LOGIN_TYPE;
@@ -218,6 +224,7 @@ export interface CreateHandlerParams {
   uxMode: UX_MODE_TYPE;
   redirectToOpener?: boolean;
   jwtParams?: Auth0ClientOptions;
+  customState: TorusGenericObject;
 }
 
 export interface AggregateLoginParams {

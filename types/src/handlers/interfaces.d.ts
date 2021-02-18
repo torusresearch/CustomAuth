@@ -1,12 +1,13 @@
 import { AGGREGATE_VERIFIER_TYPE, LOGIN_TYPE, REDIRECT_PARAMS_STORAGE_METHOD_TYPE, TORUS_METHOD_TYPE, TORUS_NETWORK_TYPE, UX_MODE_TYPE } from "../utils/enums";
+export declare type TorusGenericObject = {
+    [key: string]: string;
+};
 export declare type PopupResponse = {
     hashParams: {
         access_token: string;
         id_token?: string;
     };
-    instanceParams: {
-        verifier: string;
-    };
+    instanceParams: TorusGenericObject;
 };
 export interface Auth0UserInfo {
     picture: string;
@@ -41,15 +42,13 @@ export interface TorusSubVerifierInfo {
     idToken: string;
     extraVerifierParams?: WebAuthnExtraParams;
 }
-export declare type TorusGenericObject = {
-    [key: string]: string;
-};
 export interface LoginWindowResponse {
     accessToken: string;
     idToken?: string;
     ref?: string;
     extraParams?: string;
     extraParamsPassed?: string;
+    state: TorusGenericObject;
 }
 export interface ILoginHandler {
     clientId: string;
@@ -193,6 +192,7 @@ export interface SubVerifierDetails {
     jwtParams?: Auth0ClientOptions;
     hash?: string;
     queryParameters?: TorusGenericObject;
+    customState?: TorusGenericObject;
 }
 export interface CreateHandlerParams {
     typeOfLogin: LOGIN_TYPE;
@@ -202,6 +202,7 @@ export interface CreateHandlerParams {
     uxMode: UX_MODE_TYPE;
     redirectToOpener?: boolean;
     jwtParams?: Auth0ClientOptions;
+    customState: TorusGenericObject;
 }
 export interface AggregateLoginParams {
     aggregateVerifierType: AGGREGATE_VERIFIER_TYPE;

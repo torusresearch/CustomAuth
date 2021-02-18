@@ -6,7 +6,7 @@ import { LOGIN_TYPE, UX_MODE, UX_MODE_TYPE } from "../utils/enums";
 import { broadcastChannelOptions } from "../utils/helpers";
 import log from "../utils/loglevel";
 import PopupHandler from "../utils/PopupHandler";
-import { Auth0ClientOptions, ILoginHandler, LoginWindowResponse, PopupResponse, TorusVerifierResponse } from "./interfaces";
+import { Auth0ClientOptions, ILoginHandler, LoginWindowResponse, PopupResponse, TorusGenericObject, TorusVerifierResponse } from "./interfaces";
 
 abstract class AbstractLoginHandler implements ILoginHandler {
   public nonce: string = randomId();
@@ -22,13 +22,15 @@ abstract class AbstractLoginHandler implements ILoginHandler {
     readonly typeOfLogin: LOGIN_TYPE,
     readonly uxMode: UX_MODE_TYPE,
     readonly redirectToOpener?: boolean,
-    readonly jwtParams?: Auth0ClientOptions
+    readonly jwtParams?: Auth0ClientOptions,
+    readonly customState?: TorusGenericObject
   ) {}
 
   get state(): string {
     return encodeURIComponent(
       window.btoa(
         JSON.stringify({
+          ...this.customState,
           instanceId: this.nonce,
           verifier: this.verifier,
           typeOfLogin: this.typeOfLogin,
@@ -51,7 +53,7 @@ abstract class AbstractLoginHandler implements ILoginHandler {
           try {
             const { error, data } = ev;
             const {
-              instanceParams: { verifier: returnedVerifier },
+              instanceParams,
               hashParams: { access_token: accessToken, id_token: idToken, ...rest },
             } = data || {};
             if (error) {
@@ -59,10 +61,16 @@ abstract class AbstractLoginHandler implements ILoginHandler {
               reject(new Error(`Error: ${error}. Info: ${JSON.stringify(ev.data || {})}`));
               return;
             }
-            if (ev.data && returnedVerifier === this.verifier) {
+            if (ev.data && instanceParams.verifier === this.verifier) {
               log.info(ev.data);
               if (!this.redirectToOpener && bc) await bc.postMessage({ success: true });
-              resolve({ accessToken, idToken: idToken || "", ...rest });
+              resolve({
+                accessToken,
+                idToken: idToken || "",
+                ...rest,
+                // State has to be last here otherwise it will be overwritten
+                state: instanceParams,
+              });
             }
           } catch (error) {
             log.error(error);
