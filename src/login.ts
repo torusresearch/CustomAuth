@@ -355,7 +355,7 @@ class DirectWebSDK {
     const data = await this.torus.retrieveShares(torusNodeEndpoints, torusIndexes, verifier as LOGIN_TYPE, verifierParams, idToken, additionalParams);
     if (data.ethAddress.toLowerCase() !== response.toString().toLowerCase()) throw new Error("Invalid");
     log.info(data);
-    return { publicAddress: data.ethAddress.toString(), privateKey: data.privKey.toString() };
+    return { publicAddress: data.ethAddress.toString(), privateKey: data.privKey.toString(), metadataNonce: data.metadataNonce };
   }
 
   async getAggregateTorusKey(

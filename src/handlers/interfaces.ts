@@ -1,3 +1,5 @@
+import BN from "bn.js";
+
 import {
   AGGREGATE_VERIFIER_TYPE,
   LOGIN_TYPE,
@@ -68,6 +70,7 @@ export interface ILoginHandler {
 export interface TorusKey {
   publicAddress: string;
   privateKey: string;
+  metadataNonce: BN;
 }
 
 export interface TorusAggregateVerifierResponse {
