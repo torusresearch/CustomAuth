@@ -61,6 +61,7 @@ export interface ILoginHandler {
 export interface TorusKey {
     publicAddress: string;
     privateKey: string;
+    metadataNonce: string;
 }
 export interface TorusAggregateVerifierResponse {
     userInfo: (TorusVerifierResponse & LoginWindowResponse)[];
