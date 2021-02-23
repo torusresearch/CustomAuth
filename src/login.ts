@@ -26,7 +26,7 @@ import {
   AGGREGATE_VERIFIER,
   CONTRACT_MAP,
   ETHEREUM_NETWORK,
-  LOGIN_TYPE,
+  LOGIN,
   REDIRECT_PARAMS_STORAGE_METHOD,
   REDIRECT_PARAMS_STORAGE_METHOD_TYPE,
   TORUS_METHOD,
@@ -146,12 +146,13 @@ class DirectWebSDK {
     });
   }
 
-  async triggerLogin(args: SubVerifierDetails): Promise<TorusLoginResponse> {
-    const { verifier, typeOfLogin, clientId, jwtParams, hash, queryParameters, customState } = args;
+  async triggerLogin(args: SubVerifierDetails & { registerOnly?: boolean }): Promise<TorusLoginResponse> {
+    const { verifier, typeOfLogin, clientId, jwtParams, hash, queryParameters, customState, registerOnly } = args;
     log.info("Verifier: ", verifier);
     if (!this.isInitialized) {
       throw new Error("Not initialized yet");
     }
+    if (registerOnly && typeOfLogin !== LOGIN.WEBAUTHN) throw new Error("registerOnly flag can only be passed for webauthn");
     const loginHandler: ILoginHandler = createHandler({
       typeOfLogin,
       clientId,
@@ -161,6 +162,7 @@ class DirectWebSDK {
       jwtParams,
       uxMode: this.config.uxMode,
       customState,
+      registerOnly,
     });
     let loginParams: LoginWindowResponse;
     if (hash && queryParameters) {
@@ -176,6 +178,30 @@ class DirectWebSDK {
     }
 
     const userInfo = await loginHandler.getUserInfo(loginParams);
+    if (registerOnly) {
+      const { torusNodeEndpoints, torusNodePub } = await this.nodeDetailManager.getNodeDetails();
+      const torusPubKey = await this.torus.getPublicAddress(torusNodeEndpoints, torusNodePub, { verifier, verifierId: userInfo.verifierId }, true);
+      const res = {
+        userInfo: {
+          ...userInfo,
+          ...loginParams,
+        },
+      };
+      if (typeof torusPubKey === "string") {
+        throw new Error("should have returned extended pub key");
+      }
+      const torusKey: TorusKey = {
+        pubKey: {
+          pub_key_X: torusPubKey.X,
+          pub_key_Y: torusPubKey.Y,
+        },
+        publicAddress: torusPubKey.address,
+        privateKey: null,
+        metadataNonce: null,
+      };
+      return { ...res, ...torusKey };
+    }
+
     const torusKey = await this.getTorusKey(
       verifier,
       userInfo.verifierId,
@@ -356,12 +382,23 @@ class DirectWebSDK {
     additionalParams?: extraParams
   ): Promise<TorusKey> {
     const { torusNodeEndpoints, torusNodePub, torusIndexes } = await this.nodeDetailManager.getNodeDetails();
-    const response = await this.torus.getPublicAddress(torusNodeEndpoints, torusNodePub, { verifier: verifier as LOGIN_TYPE, verifierId }, false);
+    const response = await this.torus.getPublicAddress(torusNodeEndpoints, torusNodePub, { verifier, verifierId }, true);
     log.info("New private key assigned to user at address ", response);
-    const data = await this.torus.retrieveShares(torusNodeEndpoints, torusIndexes, verifier as LOGIN_TYPE, verifierParams, idToken, additionalParams);
+    const data = await this.torus.retrieveShares(torusNodeEndpoints, torusIndexes, verifier, verifierParams, idToken, additionalParams);
     if (data.ethAddress.toLowerCase() !== response.toString().toLowerCase()) throw new Error("Invalid");
-    log.info(data);
-    return { publicAddress: data.ethAddress.toString(), privateKey: data.privKey.toString(), metadataNonce: data.metadataNonce.toString("hex") };
+    // if (typeof response !== "string") {
+    const torusKey: TorusKey = {
+      publicAddress: data.ethAddress.toString(),
+      privateKey: data.privKey.toString(),
+      metadataNonce: data.metadataNonce.toString("hex"),
+    };
+    if (typeof response !== "string") {
+      torusKey.pubKey = {
+        pub_key_X: response.X,
+        pub_key_Y: response.Y,
+      };
+    }
+    return torusKey;
   }
 
   async getAggregateTorusKey(

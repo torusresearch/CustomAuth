@@ -18,7 +18,8 @@ export default class WebAuthnHandler extends AbstractLoginHandler {
     readonly uxMode: UX_MODE_TYPE,
     readonly redirectToOpener?: boolean,
     readonly jwtParams?: Auth0ClientOptions,
-    readonly customState?: TorusGenericObject
+    readonly customState?: TorusGenericObject,
+    readonly registerOnly?: boolean
   ) {
     super(clientId, verifier, redirect_uri, typeOfLogin, uxMode, redirectToOpener, jwtParams, customState);
     this.setFinalUrl();
@@ -29,6 +30,7 @@ export default class WebAuthnHandler extends AbstractLoginHandler {
     const clonedParams = JSON.parse(JSON.stringify(this.jwtParams || {}));
     const finalJwtParams = deepmerge(
       {
+        register_only: !!this.registerOnly,
         state: this.state,
         client_id: this.clientId,
         redirect_uri: this.redirect_uri,
@@ -73,6 +75,7 @@ export default class WebAuthnHandler extends AbstractLoginHandler {
       verifierId,
       typeOfLogin: this.typeOfLogin,
       ref,
+      registerOnly: this.registerOnly,
       extraVerifierParams: {
         signature,
         clientDataJSON,

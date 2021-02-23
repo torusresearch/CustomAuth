@@ -18,6 +18,7 @@ const createHandler = ({
   redirectToOpener,
   uxMode,
   customState,
+  registerOnly,
 }: CreateHandlerParams): ILoginHandler => {
   if (!verifier || !typeOfLogin || !clientId) {
     throw new Error("Invalid params");
@@ -48,7 +49,7 @@ const createHandler = ({
       if (!domain) throw new Error("Invalid params");
       return new JwtHandler(clientId, verifier, redirect_uri, typeOfLogin, uxMode, redirectToOpener, jwtParams, customState);
     case LOGIN.WEBAUTHN:
-      return new WebAuthnHandler(clientId, verifier, redirect_uri, typeOfLogin, uxMode, redirectToOpener, jwtParams, customState);
+      return new WebAuthnHandler(clientId, verifier, redirect_uri, typeOfLogin, uxMode, redirectToOpener, jwtParams, customState, registerOnly);
     default:
       throw new Error("Invalid login type");
   }

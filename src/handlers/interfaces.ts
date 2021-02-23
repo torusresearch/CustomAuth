@@ -35,6 +35,7 @@ export type WebAuthnExtraParams = {
   publicKey?: string;
   challenge?: string;
   rpOrigin?: string;
+  credId?: string;
 };
 export interface TorusVerifierResponse {
   email: string;
@@ -44,6 +45,7 @@ export interface TorusVerifierResponse {
   verifierId: string;
   typeOfLogin: LOGIN_TYPE;
   ref?: string;
+  registerOnly?: boolean;
   extraVerifierParams?: WebAuthnExtraParams;
 }
 
@@ -70,7 +72,14 @@ export interface ILoginHandler {
   handleLoginWindow(): Promise<LoginWindowResponse>;
 }
 
-export interface TorusKey {
+export interface TorusKeyPub {
+  pubKey?: {
+    pub_key_X: string;
+    pub_key_Y: string;
+  };
+}
+
+export interface TorusKey extends TorusKeyPub {
   publicAddress: string;
   privateKey: string;
   metadataNonce: string;
@@ -225,6 +234,7 @@ export interface CreateHandlerParams {
   redirectToOpener?: boolean;
   jwtParams?: Auth0ClientOptions;
   customState: TorusGenericObject;
+  registerOnly?: boolean;
 }
 
 export interface AggregateLoginParams {

@@ -10,7 +10,8 @@ export default class WebAuthnHandler extends AbstractLoginHandler {
     readonly redirectToOpener?: boolean;
     readonly jwtParams?: Auth0ClientOptions;
     readonly customState?: TorusGenericObject;
-    constructor(clientId: string, verifier: string, redirect_uri: string, typeOfLogin: LOGIN_TYPE, uxMode: UX_MODE_TYPE, redirectToOpener?: boolean, jwtParams?: Auth0ClientOptions, customState?: TorusGenericObject);
+    readonly registerOnly?: boolean;
+    constructor(clientId: string, verifier: string, redirect_uri: string, typeOfLogin: LOGIN_TYPE, uxMode: UX_MODE_TYPE, redirectToOpener?: boolean, jwtParams?: Auth0ClientOptions, customState?: TorusGenericObject, registerOnly?: boolean);
     setFinalUrl(): void;
     getUserInfo(parameters: LoginWindowResponse): Promise<TorusVerifierResponse>;
 }
