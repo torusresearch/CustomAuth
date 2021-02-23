@@ -453,7 +453,7 @@ class DirectWebSDK {
     let result: unknown;
 
     if (method === TORUS_METHOD.TRIGGER_LOGIN) {
-      const methodArgs = args as SubVerifierDetails;
+      const methodArgs = args as SubVerifierDetails & { registerOnly?: boolean };
       methodArgs.hash = hash;
       methodArgs.queryParameters = queryParams;
       result = await this.triggerLogin(methodArgs);
