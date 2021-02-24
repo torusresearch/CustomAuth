@@ -389,18 +389,15 @@ class DirectWebSDK {
     if (data.ethAddress.toLowerCase() !== response.address.toLowerCase()) {
       throw new Error("data ethAddress does not match response address");
     }
-    const torusKey: TorusKey = {
+    return {
       publicAddress: data.ethAddress.toString(),
       privateKey: data.privKey.toString(),
       metadataNonce: data.metadataNonce.toString("hex"),
-    };
-    if (typeof response !== "string") {
-      torusKey.pubKey = {
+      pubKey: {
         pub_key_X: response.X,
         pub_key_Y: response.Y,
-      };
-    }
-    return torusKey;
+      },
+    };
   }
 
   async getAggregateTorusKey(
