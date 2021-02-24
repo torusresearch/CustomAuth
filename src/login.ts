@@ -385,11 +385,8 @@ class DirectWebSDK {
     const response = await this.torus.getPublicAddress(torusNodeEndpoints, torusNodePub, { verifier, verifierId }, true);
     log.info("New private key assigned to user at address ", response);
     const data = await this.torus.retrieveShares(torusNodeEndpoints, torusIndexes, verifier, verifierParams, idToken, additionalParams);
-    if (typeof response === "string") {
-      if (data.ethAddress.toLowerCase() !== response.toString().toLowerCase()) {
-        throw new Error("data ethaddress does not match response string");
-      }
-    } else if (data.ethAddress.toLowerCase() !== response.address.toLowerCase()) {
+    if (typeof response === "string") throw new Error("must use extended pub key");
+    if (data.ethAddress.toLowerCase() !== response.address.toLowerCase()) {
       throw new Error("data ethaddress does not match response address");
     }
 
