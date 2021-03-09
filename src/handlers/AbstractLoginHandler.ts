@@ -52,15 +52,15 @@ abstract class AbstractLoginHandler implements ILoginHandler {
         const handleData = async (ev: { error: string; data: PopupResponse }) => {
           try {
             const { error, data } = ev;
-            const {
-              instanceParams,
-              hashParams: { access_token: accessToken, id_token: idToken, ...rest },
-            } = data || {};
             if (error) {
               log.error(ev);
               reject(new Error(`Error: ${error}. Info: ${JSON.stringify(ev.data || {})}`));
               return;
             }
+            const {
+              instanceParams,
+              hashParams: { access_token: accessToken, id_token: idToken, ...rest },
+            } = data || {};
             if (ev.data && instanceParams.verifier === this.verifier) {
               log.info(ev.data);
               if (!this.redirectToOpener && bc) await bc.postMessage({ success: true });

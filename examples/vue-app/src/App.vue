@@ -6,7 +6,7 @@
         <option :key="login" v-for="login in Object.keys(verifierMap)" :value="login">{{ verifierMap[login].name }}</option>
       </select>
     </div>
-    <div :style="{ marginTop: '20px' }" v-if="selectedVerifier === 'passwordless'">
+    <div :style="{ marginTop: '20px' }" v-if="selectedVerifier === 'passwordless' || selectedVerifier === 'torus_passwordless'">
       <input type="email" v-model="loginHint" placeholder="Enter your email" />
     </div>
     <div :style="{ marginTop: '20px' }">
@@ -42,12 +42,13 @@ const WEIBO = "weibo";
 const LINE = "line";
 const EMAIL_PASSWORD = "email_password";
 const PASSWORDLESS = "passwordless";
+const TORUS_PASSWORDLESS = "torus_passwordless";
 const HOSTED_EMAIL_PASSWORDLESS = "hosted_email_passwordless";
 const HOSTED_SMS_PASSWORDLESS = "hosted_sms_passwordless";
 const WEBAUTHN = "webauthn";
 
 const AUTH_DOMAIN = "https://torus-test.auth0.com";
-
+const CUSTOM_AUTH_DOMAIN = "http://localhost:3041";
 export default {
   name: "App",
   data() {
@@ -77,6 +78,12 @@ export default {
           typeOfLogin: "passwordless",
           clientId: "P7PJuBCXIHP41lcyty0NEb7Lgf7Zme8Q",
           verifier: "torus-auth0-passwordless",
+        },     
+        [TORUS_PASSWORDLESS]: {
+          name: "Torus Passwordless",
+          typeOfLogin: "torus_passwordless",
+          clientId: "P7PJuBCXIHP41lcyty0NEb7Lgf7Zme8Q", // dummy client id, not it use for now.
+          verifier: "torus-auth0-passwordless", // todo: update verifier
         },
         [APPLE]: { name: "Apple", typeOfLogin: "apple", clientId: "m1Q0gvDfOyZsJCZ3cucSQEe9XMvl9d9L", verifier: "torus-auth0-apple-lrc" },
         [GITHUB]: { name: "Github", typeOfLogin: "github", clientId: "PC2a4tfNRvXbT48t89J5am0oFM21Nxff", verifier: "torus-auth0-github-lrc" },
@@ -111,6 +118,7 @@ export default {
         // [GOOGLE]: { login_hint: 'hello@tor.us', prompt: 'none' }, // This allows seamless login with google
         [EMAIL_PASSWORD]: { domain: AUTH_DOMAIN },
         [PASSWORDLESS]: { domain: AUTH_DOMAIN, login_hint: this.loginHint },
+        [TORUS_PASSWORDLESS]: { domain: CUSTOM_AUTH_DOMAIN, login_hint: this.loginHint },
         [HOSTED_EMAIL_PASSWORDLESS]: { domain: AUTH_DOMAIN, verifierIdField: "name", connection: "", isVerifierIdCaseSensitive: false },
         [HOSTED_SMS_PASSWORDLESS]: { domain: AUTH_DOMAIN, verifierIdField: "name", connection: "" },
         [APPLE]: { domain: AUTH_DOMAIN },

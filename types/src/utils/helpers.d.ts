@@ -1,5 +1,5 @@
 import { Auth0UserInfo, LoginDetails, TorusGenericObject } from "../handlers/interfaces";
-import { LOGIN_TYPE, REDIRECT_PARAMS_STORAGE_METHOD_TYPE } from "./enums";
+import { LOGIN, LOGIN_TYPE, REDIRECT_PARAMS_STORAGE_METHOD_TYPE } from "./enums";
 interface CustomMessageEvent extends MessageEvent {
     error: string;
 }

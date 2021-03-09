@@ -6,6 +6,7 @@ import { CreateHandlerParams, ILoginHandler } from "./interfaces";
 import JwtHandler from "./JwtHandler";
 import PasswordlessHandler from "./PasswordlessHandler";
 import RedditHandler from "./RedditHandler";
+import TorusPasswordlessHandler from "./TorusPasswordlessHandler";
 import TwitchHandler from "./TwitchHandler";
 import WebAuthnHandler from "./WebAuthnHandler";
 
@@ -38,6 +39,9 @@ const createHandler = ({
     case LOGIN.PASSWORDLESS:
       if (!domain || !login_hint) throw new Error("Invalid params");
       return new PasswordlessHandler(clientId, verifier, redirect_uri, typeOfLogin, uxMode, redirectToOpener, jwtParams, customState);
+    case LOGIN.TORUS_PASSWORDLESS:
+      if (!domain || !login_hint) throw new Error("Invalid params");
+      return new TorusPasswordlessHandler(clientId, verifier, redirect_uri, typeOfLogin, uxMode, redirectToOpener, jwtParams, customState);
     case LOGIN.APPLE:
     case LOGIN.GITHUB:
     case LOGIN.LINKEDIN:

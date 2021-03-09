@@ -20,6 +20,7 @@ export declare const LOGIN: {
     readonly LINE: "line";
     readonly EMAIL_PASSWORD: "email_password";
     readonly PASSWORDLESS: "passwordless";
+    readonly TORUS_PASSWORDLESS: "torus_passwordless";
     readonly JWT: "jwt";
     readonly WEBAUTHN: "webauthn";
 };

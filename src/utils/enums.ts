@@ -22,6 +22,7 @@ export const LOGIN = {
   LINE: "line",
   EMAIL_PASSWORD: "email_password",
   PASSWORDLESS: "passwordless",
+  TORUS_PASSWORDLESS: "torus_passwordless",
   JWT: "jwt",
   WEBAUTHN: "webauthn",
 } as const;
