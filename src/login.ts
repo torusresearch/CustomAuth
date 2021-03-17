@@ -439,7 +439,13 @@ class DirectWebSDK {
       throw new Error("Unable to fetch result from redirect");
     }
 
-    const { instanceParameters } = handleRedirectParameters(hash, queryParams);
+    const { error, instanceParameters, hashParameters } = handleRedirectParameters(hash, queryParams);
+
+    if (error) {
+      throw new Error(
+        `Error: ${error}. Instance params: ${JSON.stringify(instanceParameters || {})}. Hash params: ${JSON.stringify(hashParameters || {})}`
+      );
+    }
 
     const { instanceId } = instanceParameters;
 
