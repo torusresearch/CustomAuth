@@ -264,7 +264,8 @@ class DirectWebSDK {
       userInfoPromises.push(loginHandler.getUserInfo(loginParams));
       loginParamsArray.push(loginParams);
     }
-    const userInfoArray = await Promise.all(userInfoPromises);
+    const _userInfoArray = await Promise.all(userInfoPromises);
+    const userInfoArray = _userInfoArray.map((userInfo) => ({ ...userInfo, aggregateVerifier: verifierIdentifier }));
     const aggregateVerifierParams = { verify_params: [], sub_verifier_ids: [], verifier_id: "" };
     const aggregateIdTokenSeeds = [];
     let aggregateVerifierId = "";
