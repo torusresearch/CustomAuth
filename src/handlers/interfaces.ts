@@ -41,6 +41,7 @@ export interface TorusVerifierResponse {
   email: string;
   name: string;
   profileImage: string;
+  aggregateVerifier?: string;
   verifier: string;
   verifierId: string;
   typeOfLogin: LOGIN_TYPE;
