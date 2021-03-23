@@ -442,12 +442,6 @@ class DirectWebSDK {
 
     const { error, instanceParameters, hashParameters } = handleRedirectParameters(hash, queryParams);
 
-    if (error) {
-      throw new Error(
-        `Error: ${error}. Instance params: ${JSON.stringify(instanceParameters || {})}. Hash params: ${JSON.stringify(hashParameters || {})}`
-      );
-    }
-
     const { instanceId } = instanceParameters;
 
     log.info(instanceId, "instanceId");
@@ -455,6 +449,14 @@ class DirectWebSDK {
     const { args, method, ...rest } = retrieveLoginDetails(this.config.redirectParamsStorageMethod, instanceId);
     log.info(args, method);
     clearLoginDetailsStorage(this.config.redirectParamsStorageMethod, instanceId);
+
+    if (error) {
+      const errorInstance = `Error: ${error}. Instance params: ${JSON.stringify(instanceParameters || {})}. Hash params: ${JSON.stringify(
+        hashParameters || {}
+      )}`;
+
+      return { error: errorInstance, state: instanceParameters || {}, method, result: {} };
+    }
 
     let result: unknown;
 
@@ -479,7 +481,7 @@ class DirectWebSDK {
 
     if (!result) throw new Error("Unsupported method type");
 
-    return { method, result, ...rest };
+    return { method, result, state: instanceParameters || {}, ...rest };
   }
 }
 
