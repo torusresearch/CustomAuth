@@ -23,7 +23,7 @@ export default {
       redirectPathName: "auth",
       enableLogging: true,
       uxMode: "redirect",
-      network: "testnet"
+      network: "testnet",
     });
     this.torusdirectsdk = torusdirectsdk;
     await torusdirectsdk.init({ skipSw: true });

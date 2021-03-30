@@ -44,7 +44,7 @@ abstract class AbstractLoginHandler implements ILoginHandler {
 
   abstract setFinalUrl(): void;
 
-  handleLoginWindow(): Promise<LoginWindowResponse> {
+  handleLoginWindow(params: { locationReplaceOnRedirect?: boolean }): Promise<LoginWindowResponse> {
     const verifierWindow = new PopupHandler({ url: this.finalURL });
     if (this.uxMode === UX_MODE.POPUP) {
       return new Promise<LoginWindowResponse>((resolve, reject) => {
@@ -104,7 +104,7 @@ abstract class AbstractLoginHandler implements ILoginHandler {
       });
     }
     if (this.uxMode === UX_MODE.REDIRECT) {
-      verifierWindow.redirect();
+      verifierWindow.redirect(params.locationReplaceOnRedirect);
     }
     return null;
   }

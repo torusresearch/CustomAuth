@@ -4,7 +4,6 @@ import jwtDecode from "jwt-decode";
 import { LOGIN_TYPE, UX_MODE_TYPE } from "../utils/enums";
 import { getVerifierId, loginToConnectionMap, padUrlString } from "../utils/helpers";
 import { get } from "../utils/httpHelpers";
-import log from "../utils/loglevel";
 import AbstractLoginHandler from "./AbstractLoginHandler";
 import { Auth0ClientOptions, Auth0UserInfo, LoginWindowResponse, TorusGenericObject, TorusVerifierResponse } from "./interfaces";
 
@@ -57,7 +56,7 @@ export default class JwtHandler extends AbstractLoginHandler {
   async getUserInfo(params: LoginWindowResponse): Promise<TorusVerifierResponse> {
     const { idToken, accessToken } = params;
     const { domain, verifierIdField, isVerifierIdCaseSensitive } = this.jwtParams;
-    try {
+    if (accessToken) {
       const domainUrl = new URL(domain);
       const userInfo = await get<Auth0UserInfo>(`${padUrlString(domainUrl)}userinfo`, {
         headers: {
@@ -73,8 +72,8 @@ export default class JwtHandler extends AbstractLoginHandler {
         verifier: this.verifier,
         typeOfLogin: this.typeOfLogin,
       };
-    } catch (error) {
-      log.error(error);
+    }
+    if (idToken) {
       const decodedToken = jwtDecode<Auth0UserInfo>(idToken);
       const { name, email, picture } = decodedToken;
       return {
@@ -86,5 +85,6 @@ export default class JwtHandler extends AbstractLoginHandler {
         typeOfLogin: this.typeOfLogin,
       };
     }
+    throw new Error("Access/id token not available");
   }
 }

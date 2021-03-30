@@ -46,6 +46,7 @@ class DirectWebSDK {
     redirect_uri: string;
     uxMode: UX_MODE_TYPE;
     redirectParamsStorageMethod: REDIRECT_PARAMS_STORAGE_METHOD_TYPE;
+    locationReplaceOnRedirect: boolean;
   };
 
   torus: Torus;
@@ -62,6 +63,7 @@ class DirectWebSDK {
     apiKey = "torus-default",
     uxMode = UX_MODE.POPUP,
     redirectParamsStorageMethod = REDIRECT_PARAMS_STORAGE_METHOD.SESSION_STORAGE,
+    locationReplaceOnRedirect = false,
   }: DirectWebSDKArgs) {
     this.isInitialized = false;
     const baseUri = new URL(baseUrl);
@@ -73,6 +75,7 @@ class DirectWebSDK {
       redirectToOpener,
       uxMode,
       redirectParamsStorageMethod,
+      locationReplaceOnRedirect,
     };
     const torus = new Torus({
       enableLogging,
@@ -173,7 +176,7 @@ class DirectWebSDK {
       loginParams = { accessToken, idToken, ...rest, state: instanceParameters };
     } else {
       storeLoginDetails({ method: TORUS_METHOD.TRIGGER_LOGIN, args }, this.config.redirectParamsStorageMethod, loginHandler.nonce);
-      loginParams = await loginHandler.handleLoginWindow();
+      loginParams = await loginHandler.handleLoginWindow({ locationReplaceOnRedirect: this.config.locationReplaceOnRedirect });
       if (this.config.uxMode === UX_MODE.REDIRECT) return null;
     }
 
@@ -256,7 +259,7 @@ class DirectWebSDK {
       } else {
         storeLoginDetails({ method: TORUS_METHOD.TRIGGER_AGGREGATE_LOGIN, args }, this.config.redirectParamsStorageMethod, loginHandler.nonce);
         // eslint-disable-next-line no-await-in-loop
-        loginParams = await loginHandler.handleLoginWindow();
+        loginParams = await loginHandler.handleLoginWindow({ locationReplaceOnRedirect: this.config.locationReplaceOnRedirect });
         if (this.config.uxMode === UX_MODE.REDIRECT) return null;
       }
       // Fail the method even if one promise fails
@@ -330,7 +333,7 @@ class DirectWebSDK {
       loginParams = { accessToken, idToken, ...rest, state: instanceParameters };
     } else {
       storeLoginDetails({ method: TORUS_METHOD.TRIGGER_AGGREGATE_HYBRID_LOGIN, args }, this.config.redirectParamsStorageMethod, loginHandler.nonce);
-      loginParams = await loginHandler.handleLoginWindow();
+      loginParams = await loginHandler.handleLoginWindow({ locationReplaceOnRedirect: this.config.locationReplaceOnRedirect });
       if (this.config.uxMode === UX_MODE.REDIRECT) return null;
     }
 

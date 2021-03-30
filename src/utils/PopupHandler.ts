@@ -50,8 +50,12 @@ class PopupHandler extends EventEmitter {
     if (this.window) this.window.close();
   }
 
-  redirect(): void {
-    window.location.href = this.url.href;
+  redirect(locationReplaceOnRedirect: boolean): void {
+    if (locationReplaceOnRedirect) {
+      window.location.replace(this.url.href);
+    } else {
+      window.location.href = this.url.href;
+    }
   }
 }
 

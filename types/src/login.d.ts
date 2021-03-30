@@ -10,10 +10,11 @@ declare class DirectWebSDK {
         redirect_uri: string;
         uxMode: UX_MODE_TYPE;
         redirectParamsStorageMethod: REDIRECT_PARAMS_STORAGE_METHOD_TYPE;
+        locationReplaceOnRedirect: boolean;
     };
     torus: Torus;
     nodeDetailManager: NodeDetailManager;
-    constructor({ baseUrl, network, proxyContractAddress, enableLogging, redirectToOpener, redirectPathName, apiKey, uxMode, redirectParamsStorageMethod, }: DirectWebSDKArgs);
+    constructor({ baseUrl, network, proxyContractAddress, enableLogging, redirectToOpener, redirectPathName, apiKey, uxMode, redirectParamsStorageMethod, locationReplaceOnRedirect, }: DirectWebSDKArgs);
     init({ skipSw, skipInit }?: InitParams): Promise<void>;
     private handleRedirectCheck;
     triggerLogin(args: SubVerifierDetails & {
