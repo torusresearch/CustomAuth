@@ -15,6 +15,8 @@ declare abstract class AbstractLoginHandler implements ILoginHandler {
     get state(): string;
     abstract getUserInfo(params: LoginWindowResponse): Promise<TorusVerifierResponse>;
     abstract setFinalUrl(): void;
-    handleLoginWindow(): Promise<LoginWindowResponse>;
+    handleLoginWindow(params: {
+        locationReplaceOnRedirect?: boolean;
+    }): Promise<LoginWindowResponse>;
 }
 export default AbstractLoginHandler;

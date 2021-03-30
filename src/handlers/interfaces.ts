@@ -70,7 +70,7 @@ export interface ILoginHandler {
   nonce: string;
   finalURL: URL;
   getUserInfo(params: LoginWindowResponse): Promise<TorusVerifierResponse>;
-  handleLoginWindow(): Promise<LoginWindowResponse>;
+  handleLoginWindow(params: { locationReplaceOnRedirect?: boolean }): Promise<LoginWindowResponse>;
 }
 
 export interface TorusKeyPub {
@@ -108,6 +108,7 @@ export interface DirectWebSDKArgs {
   apiKey?: string;
   uxMode?: UX_MODE_TYPE;
   redirectParamsStorageMethod?: REDIRECT_PARAMS_STORAGE_METHOD_TYPE;
+  locationReplaceOnRedirect?: boolean;
 }
 
 export interface InitParams {
