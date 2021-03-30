@@ -257,4 +257,6 @@ export type LoginDetails = { method: TORUS_METHOD_TYPE; args: unknown };
 export interface RedirectResult {
   method: TORUS_METHOD_TYPE;
   result: unknown;
+  error?: string;
+  state: Record<string, unknown>;
 }

@@ -31,10 +31,17 @@ export default {
   methods: {
     async login() {
       if (!this.torusdirectsdk) return;
+      // return this.torusdirectsdk.triggerLogin({
+      //   typeOfLogin: "google",
+      //   verifier: "google-lrc",
+      //   clientId: "221898609709-obfn3p63741l5333093430j3qeiinaa8.apps.googleusercontent.com",
+      //   customState: { client: "great-company" }
+      // });
+
       return this.torusdirectsdk.triggerLogin({
-        typeOfLogin: "google",
-        verifier: "google-lrc",
-        clientId: "221898609709-obfn3p63741l5333093430j3qeiinaa8.apps.googleusercontent.com",
+        typeOfLogin: "facebook",
+        verifier: "facebook-lrc",
+        clientId: "617201755556395",
         customState: { client: "great-company" }
       });
     }
