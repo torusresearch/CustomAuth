@@ -482,7 +482,13 @@ class DirectWebSDK {
       result = await this.triggerHybridAggregateLogin(methodArgs);
     }
 
-    if (!result) throw new Error("Unsupported method type");
+    if (!result)
+      return {
+        error: "Unsupported method type",
+        state: instanceParameters || {},
+        method,
+        result: {},
+      };
 
     return { method, result, state: instanceParameters || {}, ...rest };
   }
