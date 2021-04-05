@@ -135,7 +135,7 @@ export function storeLoginDetails(params: LoginDetails, storageMethod: REDIRECT_
 export function retrieveLoginDetails(storageMethod: REDIRECT_PARAMS_STORAGE_METHOD_TYPE, scope: string): LoginDetails {
   if (storageStatus[storageMethod]) {
     const loginDetails = window[storageMethod].getItem(`torus_login_${scope}`);
-    return JSON.parse(loginDetails) as LoginDetails;
+    return JSON.parse(loginDetails || "{}") as LoginDetails;
   }
   throw new Error("Unable to retrieve stored login details");
 }
