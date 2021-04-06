@@ -44,8 +44,8 @@ abstract class AbstractLoginHandler implements ILoginHandler {
 
   abstract setFinalUrl(): void;
 
-  handleLoginWindow(params: { locationReplaceOnRedirect?: boolean }): Promise<LoginWindowResponse> {
-    const verifierWindow = new PopupHandler({ url: this.finalURL });
+  handleLoginWindow(params: { locationReplaceOnRedirect?: boolean; popupFeatures?: string }): Promise<LoginWindowResponse> {
+    const verifierWindow = new PopupHandler({ url: this.finalURL, features: params.popupFeatures });
     if (this.uxMode === UX_MODE.POPUP) {
       return new Promise<LoginWindowResponse>((resolve, reject) => {
         let bc: BroadcastChannel;
