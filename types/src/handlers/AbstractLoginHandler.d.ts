@@ -17,6 +17,7 @@ declare abstract class AbstractLoginHandler implements ILoginHandler {
     abstract setFinalUrl(): void;
     handleLoginWindow(params: {
         locationReplaceOnRedirect?: boolean;
+        popupFeatures?: string;
     }): Promise<LoginWindowResponse>;
 }
 export default AbstractLoginHandler;

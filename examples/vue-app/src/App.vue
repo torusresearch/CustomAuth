@@ -228,6 +228,7 @@ export default {
         baseUrl: `${location.origin}/serviceworker`,
         enableLogging: true,
         network: "testnet", // details for test net
+        popupFeatures: `titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=500,width=500,top=100,left=100`
       });
 
       await torusdirectsdk.init({ skipSw: false });

@@ -1,5 +1,7 @@
 import { EventEmitter } from "events";
 
+import { getPopupFeatures } from "./helpers";
+
 class PopupHandler extends EventEmitter {
   url: URL;
 
@@ -17,30 +19,7 @@ class PopupHandler extends EventEmitter {
     super();
     this.url = url;
     this.target = target || "_blank";
-    // Fixes dual-screen position                             Most browsers      Firefox
-    const dualScreenLeft = window.screenLeft !== undefined ? window.screenLeft : window.screenX;
-    const dualScreenTop = window.screenTop !== undefined ? window.screenTop : window.screenY;
-
-    const w = 1200;
-    const h = 700;
-
-    const width = window.innerWidth
-      ? window.innerWidth
-      : document.documentElement.clientWidth
-      ? document.documentElement.clientWidth
-      : window.screen.width;
-
-    const height = window.innerHeight
-      ? window.innerHeight
-      : document.documentElement.clientHeight
-      ? document.documentElement.clientHeight
-      : window.screen.height;
-
-    const systemZoom = width / window.screen.availWidth;
-    const left = (width - w) / 2 / systemZoom + dualScreenLeft;
-    const top = (height - h) / 2 / systemZoom + dualScreenTop;
-    this.features =
-      features || `titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=${h / systemZoom},width=${w / systemZoom},top=${top},left=${left}`;
+    this.features = features || getPopupFeatures();
     this.window = undefined;
     this.windowTimer = undefined;
     this.iClosedWindow = false;
