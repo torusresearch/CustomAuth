@@ -102,6 +102,7 @@ export interface DirectWebSDKArgs {
 export interface InitParams {
     skipSw?: boolean;
     skipInit?: boolean;
+    skipPrefetch?: boolean;
 }
 export interface BaseLoginOptions {
     /**

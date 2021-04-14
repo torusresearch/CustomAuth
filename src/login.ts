@@ -37,6 +37,7 @@ import {
 import { clearLoginDetailsStorage, handleRedirectParameters, padUrlString, retrieveLoginDetails, storeLoginDetails } from "./utils/helpers";
 import log from "./utils/loglevel";
 
+const isFirefox = navigator.userAgent.toLowerCase().indexOf("firefox") > -1;
 class DirectWebSDK {
   isInitialized: boolean;
 
@@ -94,7 +95,7 @@ class DirectWebSDK {
     else log.disableAll();
   }
 
-  async init({ skipSw = false, skipInit = false }: InitParams = {}): Promise<void> {
+  async init({ skipSw = false, skipInit = false, skipPrefetch = false }: InitParams = {}): Promise<void> {
     if (skipInit) {
       this.isInitialized = true;
       return;
@@ -107,23 +108,30 @@ class DirectWebSDK {
           this.isInitialized = true;
           return;
         } catch (error) {
-          log.error(error);
-          await this.handleRedirectCheck();
+          log.warn(error);
         }
       } else {
         throw new Error("Service worker is not being served. Please serve it");
       }
-    } else {
-      await this.handleRedirectCheck();
     }
+    if (!skipPrefetch) {
+      // Skip the redirect check for firefox
+      if (isFirefox) {
+        this.isInitialized = true;
+        return;
+      }
+      await this.handlePrefetchRedirectUri();
+      return;
+    }
+    this.isInitialized = true;
   }
 
-  private async handleRedirectCheck(): Promise<void> {
+  private async handlePrefetchRedirectUri(): Promise<void> {
     if (!document) return Promise.resolve();
     return new Promise((resolve, reject) => {
       const redirectHtml = document.createElement("link");
       redirectHtml.href = this.config.redirect_uri;
-      redirectHtml.crossOrigin = "anonymous";
+      if (window.location.origin !== new URL(this.config.redirect_uri).origin) redirectHtml.crossOrigin = "anonymous";
       redirectHtml.type = "text/html";
       redirectHtml.rel = "prefetch";
       const resolveFn = () => {
