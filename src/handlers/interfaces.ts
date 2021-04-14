@@ -115,6 +115,7 @@ export interface DirectWebSDKArgs {
 export interface InitParams {
   skipSw?: boolean;
   skipInit?: boolean;
+  skipPrefetch?: boolean;
 }
 
 // REGION: AUTH0 PARAMS
