@@ -56,9 +56,16 @@ export default class WebAuthnHandler extends AbstractLoginHandler {
 
     if (extraParamsPassed === "true") {
       log.debug("extraParamsPassed is true, using extraParams passed through hashParams");
-      ({ verifier_id: verifierId, signature, clientDataJSON, authenticatorData, publicKey, challenge, rpOrigin, credId } = JSON.parse(
-        atob(extraParams)
-      ));
+      try {
+        ({ verifier_id: verifierId, signature, clientDataJSON, authenticatorData, publicKey, challenge, rpOrigin, credId } = JSON.parse(
+          atob(extraParams)
+        ));
+      } catch (error) {
+        log.warn("unable to parse extraParams", error);
+        ({ verifier_id: verifierId, signature, clientDataJSON, authenticatorData, publicKey, challenge, rpOrigin, credId } = await get(
+          `${WEBAUTHN_LOOKUP_SERVER}/signature/fetch/${idToken}`
+        ));
+      }
     } else {
       log.debug("extraParamsPassed is false, using extraParams passed through bridge server");
       ({ verifier_id: verifierId, signature, clientDataJSON, authenticatorData, publicKey, challenge, rpOrigin, credId } = await get(
