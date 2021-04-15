@@ -8,7 +8,7 @@ export const registerServiceWorker = (baseUrl: string) =>
   new Promise((resolve, reject) => {
     const swUrl = `${baseUrl}sw.js`;
 
-    if ("serviceWorker" in navigator) {
+    if ("serviceWorker" in window.navigator) {
       // if swIntegrity is not calculated
       register(swUrl, {
         ready() {
