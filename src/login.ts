@@ -37,7 +37,7 @@ import {
 import { clearLoginDetailsStorage, handleRedirectParameters, padUrlString, retrieveLoginDetails, storeLoginDetails } from "./utils/helpers";
 import log from "./utils/loglevel";
 
-const isFirefox = navigator.userAgent.toLowerCase().indexOf("firefox") > -1;
+const isFirefox = window.navigator.userAgent.toLowerCase().indexOf("firefox") > -1;
 class DirectWebSDK {
   isInitialized: boolean;
 
