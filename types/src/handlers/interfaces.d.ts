@@ -98,6 +98,7 @@ export interface DirectWebSDKArgs {
     redirectParamsStorageMethod?: REDIRECT_PARAMS_STORAGE_METHOD_TYPE;
     locationReplaceOnRedirect?: boolean;
     popupFeatures?: string;
+    skipFetchingNodeDetails?: boolean;
 }
 export interface InitParams {
     skipSw?: boolean;
