@@ -15,7 +15,7 @@ declare class DirectWebSDK {
     };
     torus: Torus;
     nodeDetailManager: NodeDetailManager;
-    constructor({ baseUrl, network, proxyContractAddress, enableLogging, redirectToOpener, redirectPathName, apiKey, uxMode, redirectParamsStorageMethod, locationReplaceOnRedirect, popupFeatures, }: DirectWebSDKArgs);
+    constructor({ baseUrl, network, proxyContractAddress, enableLogging, redirectToOpener, redirectPathName, apiKey, uxMode, redirectParamsStorageMethod, locationReplaceOnRedirect, popupFeatures, skipFetchingNodeDetails, }: DirectWebSDKArgs);
     init({ skipSw, skipInit, skipPrefetch }?: InitParams): Promise<void>;
     private handlePrefetchRedirectUri;
     triggerLogin(args: SubVerifierDetails & {

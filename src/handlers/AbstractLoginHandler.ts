@@ -30,7 +30,7 @@ abstract class AbstractLoginHandler implements ILoginHandler {
     return encodeURIComponent(
       window.btoa(
         JSON.stringify({
-          ...this.customState,
+          ...(this.customState || {}),
           instanceId: this.nonce,
           verifier: this.verifier,
           typeOfLogin: this.typeOfLogin,
@@ -46,7 +46,9 @@ abstract class AbstractLoginHandler implements ILoginHandler {
 
   handleLoginWindow(params: { locationReplaceOnRedirect?: boolean; popupFeatures?: string }): Promise<LoginWindowResponse> {
     const verifierWindow = new PopupHandler({ url: this.finalURL, features: params.popupFeatures });
-    if (this.uxMode === UX_MODE.POPUP) {
+    if (this.uxMode === UX_MODE.REDIRECT) {
+      verifierWindow.redirect(params.locationReplaceOnRedirect);
+    } else {
       return new Promise<LoginWindowResponse>((resolve, reject) => {
         let bc: BroadcastChannel;
         const handleData = async (ev: { error: string; data: PopupResponse }) => {
@@ -102,9 +104,6 @@ abstract class AbstractLoginHandler implements ILoginHandler {
           reject(new Error("user closed popup"));
         });
       });
-    }
-    if (this.uxMode === UX_MODE.REDIRECT) {
-      verifierWindow.redirect(params.locationReplaceOnRedirect);
     }
     return null;
   }
