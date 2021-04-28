@@ -214,10 +214,10 @@ export interface CreateHandlerParams {
     clientId: string;
     verifier: string;
     redirect_uri: string;
-    uxMode: UX_MODE_TYPE;
+    uxMode?: UX_MODE_TYPE;
     redirectToOpener?: boolean;
     jwtParams?: Auth0ClientOptions;
-    customState: TorusGenericObject;
+    customState?: TorusGenericObject;
     registerOnly?: boolean;
 }
 export interface AggregateLoginParams {

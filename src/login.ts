@@ -67,6 +67,7 @@ class DirectWebSDK {
     redirectParamsStorageMethod = REDIRECT_PARAMS_STORAGE_METHOD.SESSION_STORAGE,
     locationReplaceOnRedirect = false,
     popupFeatures,
+    skipFetchingNodeDetails = false,
   }: DirectWebSDKArgs) {
     this.isInitialized = false;
     const baseUri = new URL(baseUrl);
@@ -90,7 +91,7 @@ class DirectWebSDK {
     this.torus = torus;
     const ethNetwork = network === TORUS_NETWORK.TESTNET ? ETHEREUM_NETWORK.ROPSTEN : network;
     this.nodeDetailManager = new NodeDetailManager({ network: ethNetwork, proxyAddress: proxyContractAddress || CONTRACT_MAP[network] });
-    this.nodeDetailManager.getNodeDetails();
+    if (!skipFetchingNodeDetails) this.nodeDetailManager.getNodeDetails();
     if (enableLogging) log.enableAll();
     else log.disableAll();
   }
