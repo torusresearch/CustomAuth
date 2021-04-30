@@ -507,7 +507,7 @@ class DirectWebSDK {
     } catch (err) {
       log.error(err);
       return {
-        error: "Could not get result from torus nodes",
+        error: `Could not get result from torus nodes ${err?.message || ""}`,
         state: instanceParameters || {},
         method,
         result: {},
