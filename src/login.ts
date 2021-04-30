@@ -479,7 +479,7 @@ class DirectWebSDK {
         hashParameters || {}
       )}`;
 
-      return { error: errorInstance, state: instanceParameters || {}, method, result: {} };
+      return { error: errorInstance, state: instanceParameters || {}, method, result: {}, hashParameters };
     }
 
     let result: unknown;
@@ -509,9 +509,10 @@ class DirectWebSDK {
         state: instanceParameters || {},
         method,
         result: {},
+        hashParameters,
       };
 
-    return { method, result, state: instanceParameters || {}, ...rest };
+    return { method, result, state: instanceParameters || {}, hashParameters, ...rest };
   }
 }
 
