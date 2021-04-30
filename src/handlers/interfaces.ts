@@ -263,4 +263,5 @@ export interface RedirectResult {
   result: unknown;
   error?: string;
   state: Record<string, unknown>;
+  hashParameters?: Record<string, string>;
 }
