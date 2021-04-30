@@ -485,23 +485,36 @@ class DirectWebSDK {
 
     let result: unknown;
 
-    if (method === TORUS_METHOD.TRIGGER_LOGIN) {
-      const methodArgs = args as SubVerifierDetails & { registerOnly?: boolean };
-      methodArgs.hash = hash;
-      methodArgs.queryParameters = queryParams;
-      result = await this.triggerLogin(methodArgs);
-    } else if (method === TORUS_METHOD.TRIGGER_AGGREGATE_LOGIN) {
-      const methodArgs = args as AggregateLoginParams;
-      methodArgs.subVerifierDetailsArray.forEach((x) => {
-        x.hash = hash;
-        x.queryParameters = queryParams;
-      });
-      result = await this.triggerAggregateLogin(methodArgs);
-    } else if (method === TORUS_METHOD.TRIGGER_AGGREGATE_HYBRID_LOGIN) {
-      const methodArgs = args as HybridAggregateLoginParams;
-      methodArgs.singleLogin.hash = hash;
-      methodArgs.singleLogin.queryParameters = queryParams;
-      result = await this.triggerHybridAggregateLogin(methodArgs);
+    try {
+      if (method === TORUS_METHOD.TRIGGER_LOGIN) {
+        const methodArgs = args as SubVerifierDetails & { registerOnly?: boolean };
+        methodArgs.hash = hash;
+        methodArgs.queryParameters = queryParams;
+        result = await this.triggerLogin(methodArgs);
+      } else if (method === TORUS_METHOD.TRIGGER_AGGREGATE_LOGIN) {
+        const methodArgs = args as AggregateLoginParams;
+        methodArgs.subVerifierDetailsArray.forEach((x) => {
+          x.hash = hash;
+          x.queryParameters = queryParams;
+        });
+        result = await this.triggerAggregateLogin(methodArgs);
+      } else if (method === TORUS_METHOD.TRIGGER_AGGREGATE_HYBRID_LOGIN) {
+        const methodArgs = args as HybridAggregateLoginParams;
+        methodArgs.singleLogin.hash = hash;
+        methodArgs.singleLogin.queryParameters = queryParams;
+        result = await this.triggerHybridAggregateLogin(methodArgs);
+      }
+    } catch (err) {
+      log.error(err);
+      return {
+        error: "Could not get result from torus nodes",
+        state: instanceParameters || {},
+        method,
+        result: {},
+        hashParameters,
+        args,
+        ...rest,
+      };
     }
 
     if (!result)
@@ -512,6 +525,7 @@ class DirectWebSDK {
         result: {},
         hashParameters,
         args,
+        ...rest,
       };
 
     return { method, result, state: instanceParameters || {}, hashParameters, args, ...rest };
