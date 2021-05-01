@@ -146,6 +146,17 @@ export function clearLoginDetailsStorage(storageMethod: REDIRECT_PARAMS_STORAGE_
   }
 }
 
+export function clearOrphanedLoginDetails(storageMethod: REDIRECT_PARAMS_STORAGE_METHOD_TYPE): void {
+  if (storageStatus[storageMethod]) {
+    const allStorageKeys = Object.keys(window[storageMethod]);
+    allStorageKeys.forEach((key) => {
+      if (key.startsWith("torus_login_")) {
+        window[storageMethod].removeItem(key);
+      }
+    });
+  }
+}
+
 export function getPopupFeatures(): string {
   // Fixes dual-screen position                             Most browsers      Firefox
   const dualScreenLeft = window.screenLeft !== undefined ? window.screenLeft : window.screenX;

@@ -28,6 +28,6 @@ declare class DirectWebSDK {
     }, idToken: string, additionalParams?: extraParams): Promise<TorusKey>;
     getAggregateTorusKey(verifier: string, verifierId: string, // unique identifier for user e.g. sub on jwt
     subVerifierInfoArray: TorusSubVerifierInfo[]): Promise<TorusKey>;
-    getRedirectResult({ replaceUrl }?: RedirectResultParams): Promise<RedirectResult>;
+    getRedirectResult({ replaceUrl, clearLoginDetails }?: RedirectResultParams): Promise<RedirectResult>;
 }
 export default DirectWebSDK;
