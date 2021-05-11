@@ -5,7 +5,7 @@ import { LOGIN_TYPE, UX_MODE_TYPE } from "../utils/enums";
 import { get } from "../utils/httpHelpers";
 import log from "../utils/loglevel";
 import AbstractLoginHandler from "./AbstractLoginHandler";
-import { Auth0ClientOptions, LoginWindowResponse, TorusGenericObject, TorusVerifierResponse } from "./interfaces";
+import { Auth0ClientOptions, LoginWindowResponse, TorusGenericObject, TorusVerifierResponse, WhiteLabelParams } from "./interfaces";
 
 const WEBAUTHN_LOOKUP_SERVER = "https://api.webauthn.openlogin.com";
 
@@ -19,7 +19,8 @@ export default class WebAuthnHandler extends AbstractLoginHandler {
     readonly redirectToOpener?: boolean,
     readonly jwtParams?: Auth0ClientOptions,
     readonly customState?: TorusGenericObject,
-    readonly registerOnly?: boolean
+    readonly registerOnly?: boolean,
+    readonly whiteLabel?: WhiteLabelParams
   ) {
     super(clientId, verifier, redirect_uri, typeOfLogin, uxMode, redirectToOpener, jwtParams, customState);
     this.setFinalUrl();

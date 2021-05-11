@@ -6,7 +6,15 @@ import { LOGIN_TYPE, UX_MODE, UX_MODE_TYPE } from "../utils/enums";
 import { broadcastChannelOptions } from "../utils/helpers";
 import log from "../utils/loglevel";
 import PopupHandler from "../utils/PopupHandler";
-import { Auth0ClientOptions, ILoginHandler, LoginWindowResponse, PopupResponse, TorusGenericObject, TorusVerifierResponse } from "./interfaces";
+import {
+  Auth0ClientOptions,
+  ILoginHandler,
+  LoginWindowResponse,
+  PopupResponse,
+  TorusGenericObject,
+  TorusVerifierResponse,
+  WhiteLabelParams,
+} from "./interfaces";
 
 abstract class AbstractLoginHandler implements ILoginHandler {
   public nonce: string = randomId();
@@ -23,7 +31,8 @@ abstract class AbstractLoginHandler implements ILoginHandler {
     readonly uxMode: UX_MODE_TYPE,
     readonly redirectToOpener?: boolean,
     readonly jwtParams?: Auth0ClientOptions,
-    readonly customState?: TorusGenericObject
+    readonly customState?: TorusGenericObject,
+    readonly whiteLabel?: WhiteLabelParams
   ) {}
 
   get state(): string {
@@ -35,6 +44,7 @@ abstract class AbstractLoginHandler implements ILoginHandler {
           verifier: this.verifier,
           typeOfLogin: this.typeOfLogin,
           redirectToOpener: this.redirectToOpener || false,
+          whiteLabel: this.whiteLabel || {},
         })
       )
     );

@@ -163,7 +163,7 @@ class DirectWebSDK {
   }
 
   async triggerLogin(args: SubVerifierDetails & { registerOnly?: boolean }): Promise<TorusLoginResponse> {
-    const { verifier, typeOfLogin, clientId, jwtParams, hash, queryParameters, customState, registerOnly } = args;
+    const { verifier, typeOfLogin, clientId, jwtParams, hash, queryParameters, customState, registerOnly, whiteLabel } = args;
     log.info("Verifier: ", verifier);
     if (!this.isInitialized) {
       throw new Error("Not initialized yet");
@@ -179,6 +179,7 @@ class DirectWebSDK {
       uxMode: this.config.uxMode,
       customState,
       registerOnly,
+      whiteLabel,
     });
     let loginParams: LoginWindowResponse;
     if (hash && queryParameters) {

@@ -221,6 +221,11 @@ export interface Auth0ClientOptions extends BaseLoginOptions {
   isVerifierIdCaseSensitive?: boolean;
 }
 
+export type WhiteLabelParams = {
+  dark?: string;
+  theme?: Record<string, string>;
+};
+
 export interface SubVerifierDetails {
   typeOfLogin: LOGIN_TYPE;
   verifier: string;
@@ -229,6 +234,7 @@ export interface SubVerifierDetails {
   hash?: string;
   queryParameters?: TorusGenericObject;
   customState?: TorusGenericObject;
+  whiteLabel?: WhiteLabelParams;
 }
 export interface CreateHandlerParams {
   typeOfLogin: LOGIN_TYPE;
@@ -240,6 +246,7 @@ export interface CreateHandlerParams {
   jwtParams?: Auth0ClientOptions;
   customState?: TorusGenericObject;
   registerOnly?: boolean;
+  whiteLabel?: WhiteLabelParams;
 }
 
 export interface AggregateLoginParams {
