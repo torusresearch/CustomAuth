@@ -22,7 +22,7 @@ export default class WebAuthnHandler extends AbstractLoginHandler {
     readonly registerOnly?: boolean,
     readonly whiteLabel?: WhiteLabelParams
   ) {
-    super(clientId, verifier, redirect_uri, typeOfLogin, uxMode, redirectToOpener, jwtParams, customState);
+    super(clientId, verifier, redirect_uri, typeOfLogin, uxMode, redirectToOpener, jwtParams, customState, whiteLabel);
     this.setFinalUrl();
   }
 
@@ -58,41 +58,20 @@ export default class WebAuthnHandler extends AbstractLoginHandler {
     if (extraParamsPassed === "true") {
       log.debug("extraParamsPassed is true, using extraParams passed through hashParams");
       try {
-        ({
-          verifier_id: verifierId,
-          signature,
-          clientDataJSON,
-          authenticatorData,
-          publicKey,
-          challenge,
-          rpOrigin,
-          credId,
-        } = JSON.parse(atob(extraParams)));
+        ({ verifier_id: verifierId, signature, clientDataJSON, authenticatorData, publicKey, challenge, rpOrigin, credId } = JSON.parse(
+          atob(extraParams)
+        ));
       } catch (error) {
         log.warn("unable to parse extraParams", error);
-        ({
-          verifier_id: verifierId,
-          signature,
-          clientDataJSON,
-          authenticatorData,
-          publicKey,
-          challenge,
-          rpOrigin,
-          credId,
-        } = await get(`${WEBAUTHN_LOOKUP_SERVER}/signature/fetch/${idToken}`));
+        ({ verifier_id: verifierId, signature, clientDataJSON, authenticatorData, publicKey, challenge, rpOrigin, credId } = await get(
+          `${WEBAUTHN_LOOKUP_SERVER}/signature/fetch/${idToken}`
+        ));
       }
     } else {
       log.debug("extraParamsPassed is false, using extraParams passed through bridge server");
-      ({
-        verifier_id: verifierId,
-        signature,
-        clientDataJSON,
-        authenticatorData,
-        publicKey,
-        challenge,
-        rpOrigin,
-        credId,
-      } = await get(`${WEBAUTHN_LOOKUP_SERVER}/signature/fetch/${idToken}`));
+      ({ verifier_id: verifierId, signature, clientDataJSON, authenticatorData, publicKey, challenge, rpOrigin, credId } = await get(
+        `${WEBAUTHN_LOOKUP_SERVER}/signature/fetch/${idToken}`
+      ));
     }
 
     if (signature !== idToken) {
