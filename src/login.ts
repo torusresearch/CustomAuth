@@ -34,7 +34,14 @@ import {
   UX_MODE,
   UX_MODE_TYPE,
 } from "./utils/enums";
-import { clearLoginDetailsStorage, handleRedirectParameters, padUrlString, retrieveLoginDetails, storeLoginDetails } from "./utils/helpers";
+import {
+  clearLoginDetailsStorage,
+  clearOrphanedLoginDetails,
+  handleRedirectParameters,
+  padUrlString,
+  retrieveLoginDetails,
+  storeLoginDetails,
+} from "./utils/helpers";
 import log from "./utils/loglevel";
 
 const isFirefox = window?.navigator?.userAgent.toLowerCase().indexOf("firefox") > -1 || false;
@@ -188,6 +195,7 @@ class DirectWebSDK {
       // State has to be last here otherwise it will be overwritten
       loginParams = { accessToken, idToken, ...rest, state: instanceParameters };
     } else {
+      clearOrphanedLoginDetails(this.config.redirectParamsStorageMethod);
       storeLoginDetails({ method: TORUS_METHOD.TRIGGER_LOGIN, args }, this.config.redirectParamsStorageMethod, loginHandler.nonce);
       loginParams = await loginHandler.handleLoginWindow({
         locationReplaceOnRedirect: this.config.locationReplaceOnRedirect,
@@ -273,6 +281,7 @@ class DirectWebSDK {
         loginParams = { accessToken, idToken, ...rest, state: instanceParameters };
         // eslint-disable-next-line no-await-in-loop
       } else {
+        clearOrphanedLoginDetails(this.config.redirectParamsStorageMethod);
         storeLoginDetails({ method: TORUS_METHOD.TRIGGER_AGGREGATE_LOGIN, args }, this.config.redirectParamsStorageMethod, loginHandler.nonce);
         // eslint-disable-next-line no-await-in-loop
         loginParams = await loginHandler.handleLoginWindow({
@@ -351,6 +360,7 @@ class DirectWebSDK {
       // State has to be last here otherwise it will be overwritten
       loginParams = { accessToken, idToken, ...rest, state: instanceParameters };
     } else {
+      clearOrphanedLoginDetails(this.config.redirectParamsStorageMethod);
       storeLoginDetails({ method: TORUS_METHOD.TRIGGER_AGGREGATE_HYBRID_LOGIN, args }, this.config.redirectParamsStorageMethod, loginHandler.nonce);
       loginParams = await loginHandler.handleLoginWindow({
         locationReplaceOnRedirect: this.config.locationReplaceOnRedirect,
@@ -447,7 +457,7 @@ class DirectWebSDK {
     return this.getTorusKey(verifier, verifierId, aggregateVerifierParams, aggregateIdToken, extraVerifierParams);
   }
 
-  async getRedirectResult({ replaceUrl = true }: RedirectResultParams = {}): Promise<RedirectResult> {
+  async getRedirectResult({ replaceUrl = true, clearLoginDetails = true }: RedirectResultParams = {}): Promise<RedirectResult> {
     await this.init({ skipInit: true });
     const url = new URL(window.location.href);
     const hash = url.hash.substr(1);
@@ -473,7 +483,10 @@ class DirectWebSDK {
 
     const { args, method, ...rest } = retrieveLoginDetails(this.config.redirectParamsStorageMethod, instanceId);
     log.info(args, method);
-    clearLoginDetailsStorage(this.config.redirectParamsStorageMethod, instanceId);
+
+    if (clearLoginDetails) {
+      clearLoginDetailsStorage(this.config.redirectParamsStorageMethod, instanceId);
+    }
 
     if (error) {
       const errorInstance = `Error: ${error}. Instance params: ${JSON.stringify(instanceParameters || {})}. Hash params: ${JSON.stringify(
