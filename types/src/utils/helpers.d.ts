@@ -37,4 +37,5 @@ export declare function retrieveLoginDetails(storageMethod: REDIRECT_PARAMS_STOR
 export declare function clearLoginDetailsStorage(storageMethod: REDIRECT_PARAMS_STORAGE_METHOD_TYPE, scope: string): void;
 export declare function clearOrphanedLoginDetails(storageMethod: REDIRECT_PARAMS_STORAGE_METHOD_TYPE): void;
 export declare function getPopupFeatures(): string;
+export declare const isFirefox: () => boolean;
 export {};

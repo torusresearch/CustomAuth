@@ -184,3 +184,5 @@ export function getPopupFeatures(): string {
   const features = `titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=${h / systemZoom},width=${w / systemZoom},top=${top},left=${left}`;
   return features;
 }
+
+export const isFirefox = (): boolean => window?.navigator?.userAgent.toLowerCase().indexOf("firefox") > -1 || false;
