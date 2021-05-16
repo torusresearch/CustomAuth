@@ -232,6 +232,7 @@ export interface HybridAggregateLoginParams {
 }
 export interface RedirectResultParams {
     replaceUrl?: boolean;
+    clearLoginDetails?: boolean;
 }
 export declare type LoginDetails = {
     method: TORUS_METHOD_TYPE;
