@@ -34,10 +34,15 @@ import {
   UX_MODE,
   UX_MODE_TYPE,
 } from "./utils/enums";
-import { clearLoginDetailsStorage, handleRedirectParameters, padUrlString, retrieveLoginDetails, storeLoginDetails } from "./utils/helpers";
+import {
+  clearLoginDetailsStorage,
+  handleRedirectParameters,
+  isFirefox,
+  padUrlString,
+  retrieveLoginDetails,
+  storeLoginDetails,
+} from "./utils/helpers";
 import log from "./utils/loglevel";
-
-const isFirefox = window?.navigator?.userAgent.toLowerCase().indexOf("firefox") > -1 || false;
 
 class DirectWebSDK {
   isInitialized: boolean;
@@ -118,7 +123,7 @@ class DirectWebSDK {
     }
     if (!skipPrefetch) {
       // Skip the redirect check for firefox
-      if (isFirefox) {
+      if (isFirefox()) {
         this.isInitialized = true;
         return;
       }

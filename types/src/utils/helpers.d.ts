@@ -36,4 +36,5 @@ export declare function storeLoginDetails(params: LoginDetails, storageMethod: R
 export declare function retrieveLoginDetails(storageMethod: REDIRECT_PARAMS_STORAGE_METHOD_TYPE, scope: string): LoginDetails;
 export declare function clearLoginDetailsStorage(storageMethod: REDIRECT_PARAMS_STORAGE_METHOD_TYPE, scope: string): void;
 export declare function getPopupFeatures(): string;
+export declare const isFirefox: () => boolean;
 export {};
