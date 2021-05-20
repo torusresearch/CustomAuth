@@ -140,6 +140,7 @@ const loginDetails = await torusdirectsdk.getRedirectResult();
 Please refer to examples
 - [vue](examples/vue-app/src/App.vue) for popup flow
 - [react](examples/react-app/src/App.js) for popup flow
+- [nextjs](examples/nextjs-app/src/_app.js) for redirect flow
 - [angular](examples/angular-app/src/app/app.component.ts) for popup flow
 - [vue](examples/vue-app-redirect-flow/src/App.vue) for redirect flow
 - [gatsby](https://github.com/jamespfarrell/gatsby-torus-direct) for configuration
