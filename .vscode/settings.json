@@ -1,6 +1,8 @@
 {
   "eslint.options": {
     "extends": [
+      "airbnb-typescript/base",
+      "problems",
       "plugin:@typescript-eslint/recommended",
       "standard",
       "eslint:recommended",
@@ -9,34 +11,24 @@
       "plugin:import/warnings",
       "plugin:import/typescript",
       "plugin:promise/recommended",
-      "airbnb-base",
+      "plugin:mocha/recommended",
       "prettier"
     ],
-    "plugins": ["prettier", "@babel", "promise", "import", "simple-import-sort", "@typescript-eslint"],
+    "plugins": ["prettier", "promise", "import", "simple-import-sort", "mocha", "@typescript-eslint"],
     "parser": "@typescript-eslint/parser",
     "parserOptions": {
       "sourceType": "module",
-      "ecmaVersion": 9
+      "ecmaVersion": 11,
+      "project": "./tsconfig.json"
     },
-    "settings": {
-      "import/resolver": {
-        "node": {
-          "extensions": [".js", ".jsx", ".ts", ".tsx", ".json", ".vue"]
-        }
-      }
-    },
-    "overrides": [
-      {
-        "files": ["*.js"],
-        "rules": {
-          "@typescript-eslint/explicit-function-return-type": "off",
-          "@typescript-eslint/no-var-requires": "off",
-          "@typescript-eslint/no-empty-function": "off",
-          "@typescript-eslint/camelcase": "off"
-        }
-      }
-    ],
     "rules": {
+      "@typescript-eslint/naming-convention": [
+        "error",
+        {
+          "selector": "typeLike",
+          "format": ["camelCase", "UPPER_CASE", "PascalCase"]
+        }
+      ],
       "camelcase": 0,
       "no-useless-constructor": 0,
       "@typescript-eslint/no-useless-constructor": 2,
@@ -81,6 +73,19 @@
         }
       ]
     },
+    "settings": {
+      "import/resolver": {
+        "node": {
+          "extensions": [".js", ".jsx", ".ts", ".tsx", ".json", ".vue"]
+        }
+      }
+    },
+    "overrides": [
+      {
+        "files": ["examples"],
+        "parser": "vue-eslint-parser"
+      }
+    ],
     "env": {
       "es6": true,
       "browser": true,
