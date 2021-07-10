@@ -121,12 +121,22 @@ const verifierMap = {
   },
 };
 
-class MyApp extends React.Component {
+interface IState {
+  selectedVerifier: string ,
+  torusdirectsdk: TorusSdk | null,
+  loginHint: string,
+  consoleText: string,
+}
+
+interface IProps {
+
+}
+class MyApp extends React.Component<IProps, IState> {
   constructor(props) {
     super(props);
     this.state = {
       selectedVerifier: GOOGLE,
-      torusdirectsdk: null,
+      torusdirectsdk: null as TorusSdk | null,
       loginHint: "",
       consoleText: "",
     };
@@ -200,7 +210,7 @@ class MyApp extends React.Component {
 
   render() {
     const { selectedVerifier, loginHint, consoleText } = this.state;
-    let emailField = "";
+    let emailField;
 
     if (selectedVerifier === PASSWORDLESS) {
       emailField = (
