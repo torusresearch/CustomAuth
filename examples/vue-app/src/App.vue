@@ -26,9 +26,9 @@
   </div>
 </template>
 
-<script>
-import TorusSdk from "@toruslabs/torus-direct-web-sdk";
-
+<script lang="ts">
+import TorusSdk, { UX_MODE } from "@toruslabs/torus-direct-web-sdk";
+import Vue from "vue";
 const GOOGLE = "google";
 const FACEBOOK = "facebook";
 const REDDIT = "reddit";
@@ -48,11 +48,11 @@ const WEBAUTHN = "webauthn";
 
 const AUTH_DOMAIN = "https://torus-test.auth0.com";
 
-export default {
+export default Vue.extend({
   name: "App",
   data() {
     return {
-      torusdirectsdk: undefined,
+      torusdirectsdk: null as TorusSdk | null,
       selectedVerifier: "google",
       loginHint: "",
       verifierMap: {
@@ -102,11 +102,11 @@ export default {
           clientId: "webauthn",
           verifier: "webauthn-lrc",
         }
-      },
+      } as Record<string, any>,
     };
   },
   computed: {
-    loginToConnectionMap() {
+    loginToConnectionMap(): Record<string, any> {
       return {
         // [GOOGLE]: { login_hint: 'hello@tor.us', prompt: 'none' }, // This allows seamless login with google
         [EMAIL_PASSWORD]: { domain: AUTH_DOMAIN },
@@ -123,7 +123,7 @@ export default {
     },
   },
   methods: {
-    async login(hash, queryParameters) {
+    async login(hash: string, queryParameters: Record<string, any>) {
       try {
         if (!this.torusdirectsdk) return;
         const jwtParams = this.loginToConnectionMap[this.selectedVerifier] || {};
@@ -191,59 +191,42 @@ export default {
         console.error(error, "caught");
       }
     },
-    console(text) {
-      document.querySelector("#console>p").innerHTML = typeof text === "object" ? JSON.stringify(text) : text;
-    },
-    handleRedirectParameters(hash, queryParameters) {
-      const hashParameters = hash.split("&").reduce((result, item) => {
-        const [part0, part1] = item.split("=");
-        result[part0] = part1;
-        return result;
-      }, {});
-      console.log(hashParameters, queryParameters);
-      let instanceParameters = {};
-      let error = "";
-      if (!queryParameters.preopenInstanceId) {
-        if (Object.keys(hashParameters).length > 0 && hashParameters.state) {
-          instanceParameters = JSON.parse(atob(decodeURIComponent(decodeURIComponent(hashParameters.state)))) || {};
-          error = hashParameters.error_description || hashParameters.error || error;
-        } else if (Object.keys(queryParameters).length > 0 && queryParameters.state) {
-          instanceParameters = JSON.parse(atob(decodeURIComponent(decodeURIComponent(queryParameters.state)))) || {};
-          if (queryParameters.error) error = queryParameters.error;
-        }
+    console(...args: any[]): void {
+      const el = document.querySelector('#console>p');
+      if (el) {
+        el.innerHTML = JSON.stringify(args || {}, null, 2);
       }
-      return { error, instanceParameters, hashParameters };
     },
   },
   async mounted() {
     try {
       var url = new URL(location.href);
-      const hash = url.hash.substr(1);
-      const queryParams = {};
+      const queryParams: Record<string, any> = {};
       for (let key of url.searchParams.keys()) {
         queryParams[key] = url.searchParams.get(key);
       }
-      const { error, instanceParameters } = this.handleRedirectParameters(hash, queryParams);
       const torusdirectsdk = new TorusSdk({
+        // two ux modes are supported, default is popup, for redirect mode refer to vue-redirect-example
+        // in this repo under examples folder
+        uxMode: UX_MODE.POPUP, 
         baseUrl: `${location.origin}/serviceworker`,
         enableLogging: true,
         network: "testnet", // details for test net
         popupFeatures: `titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=500,width=500,top=100,left=100`
       });
-
+      // note: Due to browser restrictions on popups, you should reduce the time taken 
+      // between user interaction and the login popups being opened. This is highly browser dependent, 
+      // but the best practice for this is to separate the initialization of the SDK and 
+      // the user login method calls.
+      // so don't use torusdirectsdk.init and torusdirectsdk.triggerLogin (or other login methods) 
+      // in a single function call.
       await torusdirectsdk.init({ skipSw: true });
       this.torusdirectsdk = torusdirectsdk;
-      if (hash) {
-        if (error) throw new Error(error);
-        const { verifier: returnedVerifier } = instanceParameters;
-        this.selectedVerifier = Object.keys(this.verifierMap).find((x) => this.verifierMap[x].verifier === returnedVerifier);
-        this.login(hash, queryParams);
-      }
     } catch (error) {
       console.error(error, "mounted caught");
     }
   },
-};
+});
 </script>
 
 <style>
