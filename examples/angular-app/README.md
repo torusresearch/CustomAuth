@@ -18,34 +18,6 @@ Add these scripts on package.json. Some login providers require `https` connecti
 }
 ```
 
-## Dependency
-Incase there is `crypto` dependecy issue...
-
-- Create `patch.js` on angular app root folder 
-
-```
-const fs = require('fs');
-const f = 'node_modules/@angular-devkit/build-angular/src/angular-cli-files/models/webpack-configs/browser.js';
-
-fs.readFile(f, 'utf8', function (err, data) {
-    if (err) {
-        return console.log(err);
-    }
-    var result = data.replace(/node: false/g, 'node: {crypto: true}');
-
-    fs.writeFile(f, result, 'utf8', function (err) {
-        if (err) return console.log(err);
-    });
-});
-```
-- Include `patch.js` on `postinstall` script inside `package.json`
-
-```
-  "scripts": {
-    "postinstall": "node patch.js"
-  },
-```
-
 # AngularApp Guide
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 10.0.3.
