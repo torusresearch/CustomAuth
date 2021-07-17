@@ -8,8 +8,7 @@
     "build": "ng build",
     "test": "ng test",
     "lint": "ng lint",
-    "e2e": "ng e2e",
-    "postinstall": "node patch.js"
+    "e2e": "ng e2e"
   },
   "private": true,
   "dependencies": {
@@ -21,7 +20,9 @@
     "@angular/platform-browser": "~10.0.4",
     "@angular/platform-browser-dynamic": "~10.0.4",
     "@angular/router": "~10.0.4",
-    "@toruslabs/torus-direct-web-sdk": "file:../../toruslabs-torus-direct-web-sdk-4.2.0.tgz",
+    "@toruslabs/torus-direct-web-sdk": "4.14.1",
+    "buffer": "^6.0.3",
+    "process": "^0.11.10",
     "rxjs": "~6.5.5",
     "tslib": "^2.0.0",
     "zone.js": "~0.10.3"
@@ -33,6 +34,9 @@
     "@types/jasmine": "~3.5.0",
     "@types/jasminewd2": "~2.0.3",
     "codelyzer": "^6.0.0",
+    "crypto-browserify": "^3.12.0",
+    "http-browserify": "^1.7.0",
+    "https-browserify": "^1.0.0",
     "jasmine-core": "~3.5.0",
     "jasmine-spec-reporter": "~5.0.0",
     "karma": "~5.0.0",
@@ -40,7 +44,9 @@
     "karma-coverage-istanbul-reporter": "~3.0.2",
     "karma-jasmine": "~3.3.0",
     "karma-jasmine-html-reporter": "^1.5.0",
+    "os-browserify": "^0.3.0",
     "protractor": "~7.0.0",
+    "stream-browserify": "^3.0.0",
     "ts-node": "~8.3.0",
     "tslint": "~6.1.0",
     "typescript": "~3.9.5"

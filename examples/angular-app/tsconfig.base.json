@@ -15,6 +15,14 @@
     "lib": [
       "es2018",
       "dom"
-    ]
+    ],
+    "paths": {
+      "crypto": ["./node_modules/crypto-browserify"],
+      "http": ["./node_modules/http-browserify"],
+      "https": ["./node_modules/https-browserify"],
+      "os": ["./node_modules/os-browserify"],
+      "stream": ["./node_modules/stream-browserify"],
+      "process": ["./node_modules/process/browser"]
+    }
   }
 }
