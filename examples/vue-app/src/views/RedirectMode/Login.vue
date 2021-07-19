@@ -47,7 +47,7 @@ const HOSTED_SMS_PASSWORDLESS = "hosted_sms_passwordless";
 const WEBAUTHN = "webauthn";
 const AUTH_DOMAIN = "https://torus-test.auth0.com";
 export default Vue.extend({
-  name: "Home",
+  name: "RedirectLogin",
   data() {
     return {
       torusdirectsdk: null as TorusSdk | null,

@@ -7,9 +7,12 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
 import TorusSdk from "@toruslabs/torus-direct-web-sdk";
-export default {
+import Vue from "vue";
+
+export default Vue.extend({
+  name: "Auth",
   data() {
     return {
       loginDetails: "",
@@ -27,5 +30,5 @@ export default {
     console.log(loginDetails);
     this.loginDetails = JSON.stringify(loginDetails, null, 2);
   },
-};
+});
 </script>

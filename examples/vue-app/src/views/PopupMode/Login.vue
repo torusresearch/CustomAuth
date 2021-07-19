@@ -52,7 +52,7 @@ const WEBAUTHN = "webauthn";
 const AUTH_DOMAIN = "https://torus-test.auth0.com";
 
 export default Vue.extend({
-  name: "App",
+  name: "PopupLogin",
   data() {
     return {
       torusdirectsdk: null as TorusSdk | null,
