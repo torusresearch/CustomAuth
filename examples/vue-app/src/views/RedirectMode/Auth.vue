@@ -9,11 +9,10 @@
 
 <script>
 import TorusSdk from "@toruslabs/torus-direct-web-sdk";
-
 export default {
   data() {
     return {
-      loginDetails: ""
+      loginDetails: "",
     };
   },
   async mounted() {
@@ -22,11 +21,11 @@ export default {
       redirectPathName: "auth",
       enableLogging: true,
       uxMode: "redirect",
-      network: "testnet"
+      network: "testnet",
     });
     const loginDetails = await torusdirectsdk.getRedirectResult();
     console.log(loginDetails);
     this.loginDetails = JSON.stringify(loginDetails, null, 2);
-  }
+  },
 };
 </script>
