@@ -1,12 +1,12 @@
-import './App.css';
+import "./App.css";
 
-import { Route, Switch } from 'react-router-dom';
+import { Route, Switch } from "react-router-dom";
 
-import PopupModePage from './popupMode/login';
-import RedirectModePage from './redirectMode/login';
-import RedirectResultHandler from './redirectMode/auth';
+import PopupModePage from "./popupMode/login";
+import RedirectModePage from "./redirectMode/login";
+import RedirectResultHandler from "./redirectMode/auth";
 
-import HomePage from './App';
+import HomePage from "./App";
 
 function App() {
   return (

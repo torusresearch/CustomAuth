@@ -1,10 +1,4 @@
 {
-    "editor.defaultFormatter": "dbaeumer.vscode-eslint",
-    "editor.formatOnSave": true,
-    "eslint.alwaysShowStatus": true,
-    "editor.codeActionsOnSave": {
-        "source.fixAll.eslint": true
-    },
     "eslint.options": {
         "env": {
             "browser": true,
@@ -12,7 +6,9 @@
         },
         "extends": [
             "plugin:react/recommended",
-            "airbnb"
+            "airbnb-typescript/base",
+            "plugin:prettier/recommended",
+            "prettier"
         ],
         "parser": "@typescript-eslint/parser",
         "parserOptions": {
@@ -20,9 +16,13 @@
                 "jsx": true
             },
             "ecmaVersion": 12,
-            "sourceType": "module"
+            "sourceType": "module",
+            "project": [
+                "./tsconfig.json"
+            ]
         },
         "plugins": [
+            "prettier",
             "react",
             "@typescript-eslint"
         ],
@@ -73,8 +73,6 @@
             "no-console": 0,
             "import/prefer-default-export": 0,
             "react/prop-types": 0,
-            "no-underscore-dangle": 0,
-            "react/no-unescaped-entities": 0,
             "no-use-before-define": 0,
             "promise/always-return": 0,
             "react/forbid-prop-types": 0,
@@ -92,6 +90,8 @@
                 }
             ],
             "no-unused-vars": 0,
+            "no-underscore-dangle": 0,
+            "react/no-unescaped-entities": 0,
             "@typescript-eslint/no-unused-vars": [
                 "error"
             ],
