@@ -104,9 +104,33 @@ export interface DirectWebSDKArgs {
    * where user will be redirected after login.
    *
    * @remarks
-   * Redirect Uri for OAuth is baseUrl+redirectPathName
-   * Torus Direct SDK installs a service worker to capture
-   * the auth redirect, serve service worker from baseUrl
+   * Redirect Uri for OAuth is `baseUrl`+`redirectPathName`.
+   * Torus Direct SDK installs a service worker relative to baseUrl to capture
+   * the auth redirect.
+   *
+   * For ex: While using serviceworker if baseUrl is "http://localhost:3000/serviceworker" and
+   * redirectPathName is 'redirect' (which is default)
+   * then user will be redirected to http://localhost:3000/serviceworker/redirect page after login
+   * where service worker will capture the results and send it back to original window where login
+   * was initiated.
+   *
+   * Using serviceworker is optional, you can skip it by passing `skipSw` param
+   * in init function
+   *
+   * Use of serviceworker is recommended if you are using popup uxMode or you
+   * can serve redirect.html file given inside this package if you cannot use
+   * service workers.
+   *
+   * In redirect uxMode , you don't have to use serviceworker or redirect.html file.
+   * You can get login result by calling `getRedirectResult` on redirected page mount.
+   *
+   * For ex: if baseUrl is "http://localhost:3000" and `redirectPathName` is 'auth'
+   * then user will be redirected to http://localhost:3000/auth page after login
+   * where you can get login result by calling `getRedirectResult` on redirected page mount.
+   *
+   * Please refer to examples https://github.com/torusresearch/torus-direct-web-sdk/tree/master/examples
+   * for more understanding.
+   *
    */
   baseUrl: string;
 
@@ -191,7 +215,7 @@ export interface DirectWebSDKArgs {
   locationReplaceOnRedirect?: boolean;
 
   /**
-   * Features of popup window. Please check {@link "https://developer.mozilla.org/en-US/docs/Web/API/Window/open#window_features" | here }
+   * Features of popup window. Please check https://developer.mozilla.org/en-US/docs/Web/API/Window/open#window_features
    * for further documentation.
    */
   popupFeatures?: string;
@@ -316,7 +340,7 @@ export interface Auth0ClientOptions extends BaseLoginOptions {
 
   /**
    * Whether the verifier id field is case sensitive
-   * @default true
+   * @defaultValue true
    */
   isVerifierIdCaseSensitive?: boolean;
 }
