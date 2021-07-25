@@ -99,23 +99,123 @@ export type TorusAggregateLoginResponse = TorusAggregateVerifierResponse & Torus
 export type TorusHybridAggregateLoginResponse = { singleLogin: TorusLoginResponse; aggregateLogins: TorusKey[] };
 
 export interface DirectWebSDKArgs {
+  /**
+   * baseUrl , along with redirectPathName is used to construct the uri of the page
+   * where user will be redirected after login.
+   *
+   * @remarks
+   * Redirect Uri for OAuth is baseUrl+redirectPathName
+   * Torus Direct SDK installs a service worker to capture
+   * the auth redirect, serve service worker from baseUrl
+   */
   baseUrl: string;
+
+  /**
+   * Torus Network to target options: mainnet | testnet
+   * @defaultValue mainnet
+   */
   network?: TORUS_NETWORK_TYPE;
+
+  /**
+   * The contract address of the verifiers on torus network mainnet:
+   * 0x638646503746d5456209e33a2ff5e3226d698bea and for testnet:
+   * 0x4023d2a0D330bF11426B12C6144Cfb96B7fa6183.
+   * If not specified, default one for the specified network will be used.
+   */
   proxyContractAddress?: string;
+
+  /**
+   * This option is used to specify whether to enable logging
+   *
+   * @defaultValue false
+   */
   enableLogging?: boolean;
+
+  /**
+   * For chrome extensions, the general methods for capturing auth redirects don't work.
+   * So, we redirect to the window which opens the auth window.
+   *
+   * @defaultValue false
+   */
   redirectToOpener?: boolean;
+
+  /**
+   * This option is used to specify the url path where user will be
+   * redirected after login. Redirect Uri for OAuth is baseUrl/redirectPathName.
+   *
+   *
+   * @defaultValue redirect
+   *
+   * @remarks
+   * At verifier's interface (where you obtain client id), please use baseUrl/redirectPathName
+   * as the redirect_uri
+   *
+   * In `popup` uxMode, login result is captured by serviceworker when user is redirected back.
+   *
+   * For browsers where service workers are not supported or if you wish to not use
+   * service workers,create and serve redirect page (i.e redirect.html file which is
+   * available in serviceworker folder of this package)
+   */
   redirectPathName?: string;
+
+  /**
+   * API Key for torus to enable higher access limits
+   *
+   */
   apiKey?: string;
+  /**
+   * two uxModes are supported:-
+   * - `'popup'`: In this uxMode, a popup will be shown to user for login.
+   * - `'redirect'`: In this uxMode, user will be redirected to a new window tab for login.
+   *
+   * @defaultValue `'popup'`
+   * @remarks
+   *
+   * Use of `'REDIRECT'` mode is recommended in browsers where popups might get blocked.
+   */
   uxMode?: UX_MODE_TYPE;
+
+  /**
+   * localStorage and sessionStorage are supported.
+   * @defaultValue localStorage
+   * @remarks  In redirect flow, some params will be stored in localStorage for reuse
+   * at the end of the flow.
+   */
   redirectParamsStorageMethod?: REDIRECT_PARAMS_STORAGE_METHOD_TYPE;
+
+  /**
+   * Whether to replace the url hash/query params from OAuth at the end of the redirect flow
+   *
+   * @defaultValue false
+   */
   locationReplaceOnRedirect?: boolean;
+
+  /**
+   * Features of popup window. Please check {@link "https://developer.mozilla.org/en-US/docs/Web/API/Window/open#window_features" | here }
+   * for further documentation.
+   */
   popupFeatures?: string;
   skipFetchingNodeDetails?: boolean;
 }
 
 export interface InitParams {
+  /**
+   * skips the installation / check for service worker
+   * @defaultValue false
+   */
   skipSw?: boolean;
+
+  /**
+   * skips the init function
+   * @defaultValue false
+   */
   skipInit?: boolean;
+
+  /**
+   * skips the prefetching of redirect url
+   * @defaultValue false
+   *
+   */
   skipPrefetch?: boolean;
 }
 
