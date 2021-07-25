@@ -102,7 +102,13 @@
                     "code": 150,
                     "ignoreComments": true
                 }
-            ]
+            ],
+            "prettier/prettier": [
+                "error",
+                {
+                  "endOfLine": "auto",
+                }
+              ]
         },
         "root": true
     }
