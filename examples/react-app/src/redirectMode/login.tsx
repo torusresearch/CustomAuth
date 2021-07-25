@@ -94,7 +94,6 @@ class RedirectMode extends React.Component<IProps, IState> {
 
   render() {
     const { selectedVerifier } = this.state;
-    let emailField;
 
     return (
       <div className="App">
@@ -109,7 +108,6 @@ class RedirectMode extends React.Component<IProps, IState> {
               ))}
             </select>
           </div>
-          {emailField}
           <div style={{ marginTop: "20px" }}>
             <button>Login with Torus</button>
           </div>

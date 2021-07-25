@@ -2,7 +2,10 @@ import React from "react";
 import TorusSdk, { RedirectResult } from "@toruslabs/torus-direct-web-sdk";
 import dynamic from "next/dynamic";
 
-const ReactJsonView = dynamic(() => import("react-json-view"));
+let ReactJsonView;
+if (typeof window === "object") {
+  ReactJsonView = dynamic(() => import("react-json-view"));
+}
 
 interface IState {
   loginDetails?: RedirectResult | null;
