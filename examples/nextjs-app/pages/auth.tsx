@@ -1,3 +1,6 @@
+/**
+ * User will be redirected to this page in redirect uxMode
+ */
 import React from "react";
 import TorusSdk, { RedirectResult } from "@toruslabs/torus-direct-web-sdk";
 import dynamic from "next/dynamic";

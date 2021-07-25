@@ -19,7 +19,6 @@ import {
 interface IState {
   selectedVerifier: string;
   torusdirectsdk: TorusSdk | null;
-  loginHint: string;
   consoleText?: string;
 }
 
@@ -31,7 +30,6 @@ class RedirectMode extends React.Component<IProps, IState> {
     this.state = {
       selectedVerifier: GOOGLE,
       torusdirectsdk: null,
-      loginHint: "",
     };
   }
 

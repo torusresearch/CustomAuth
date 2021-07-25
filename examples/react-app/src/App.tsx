@@ -41,15 +41,17 @@ class HomePage extends React.PureComponent<IProps, IState> {
   componentDidMount = async () => {
     try {
       /**
-       * Important Note: If you are using popup uxMode , a new popup window will be shown to
-       * user for login.
-       * After user completes the login process, service worker will parse the login result
-       * and send the result to original window (which is returned from triggerLogin function).
-       * But User might close original window before completing login process, in that case
+       * Important Note:
+       * After user completes the oauth login process, user will be redirected to redirectPathName
+       * which you will specify while initializing sdk. If you are using serviceworker or redirect.html
+       * file provided in this package to handle the redirect result which parses the login result
+       * and sends the result back to original window (i.e. where login was initiated).
+       * But User might close original window before completing login process (in popup uxMode)
+       * or only one window exists during login (in redirect mode), in that case
        * service worker will not able to send login result back to original window and it will
        * simply redirect to root path of app ('i.e': '/') with the login results in hash params
        * and search params.
-       * So a best practice is to add a fallback handler for popup mode in the root page of your app.
+       * So a best practice is to add a fallback handler in the root page of your app.
        * Here we are simply parsing hash params and search params to get the login results.
        * If you are using redirect uxMode (recommended) , you don't have to include this fallback handler
        * in your code.

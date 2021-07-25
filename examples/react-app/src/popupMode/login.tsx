@@ -20,7 +20,6 @@ import {
 interface IState {
   selectedVerifier: string;
   torusdirectsdk: TorusSdk | null;
-  loginHint: string;
   loginResponse?: TorusLoginResponse | null;
 }
 
@@ -32,7 +31,6 @@ class PopupMode extends React.Component<IProps, IState> {
     this.state = {
       selectedVerifier: GOOGLE,
       torusdirectsdk: null,
-      loginHint: "",
       loginResponse: null,
     };
   }
