@@ -5,9 +5,6 @@
         <option *ngFor="let verifier of verifierMapKeys" [value]="verifier">{{ verifierMap[verifier].name }}</option>
       </select>
     </div>
-    <div *ngIf="selectedVerifier === 'passwordless'">
-      <input type="email" [(ngModel)]="loginHint" placeholder="Enter your email" />
-    </div>
     <div>
       <button (click)="login()">Login with Torus</button>
     </div>

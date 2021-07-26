@@ -185,7 +185,7 @@ export default Vue.extend({
 }
 #console {
   border: 1px solid black;
-  height: 80px;
+  height: auto;
   padding: 2px;
   bottom: 10px;
   position: absolute;
