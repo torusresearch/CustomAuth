@@ -105,7 +105,7 @@ export interface DirectWebSDKArgs {
    *
    * @remarks
    * Redirect Uri for OAuth is `baseUrl`+`redirectPathName` which means
-   * that you must specify `baseUrl`+`redirectPathName` as redirect_uri at vefier's
+   * that you must specify `baseUrl`+`redirectPathName` as redirect_uri at verifier's
    * interface.
    *
    * Torus Direct SDK installs a service worker relative to baseUrl to capture
@@ -122,10 +122,10 @@ export interface DirectWebSDKArgs {
    *
    * Use of serviceworker is recommended if you are using popup uxMode or
    * for browsers where service workers are not supported or if you wish to not use
-   * service workers,create and serve redirect page (i.e redirect.html file which is
+   * service workers, create and serve redirect page (i.e redirect.html file which is
    * available in serviceworker folder of this package)
    *
-   * In redirect uxMode , you don't have to use serviceworker or redirect.html file.
+   * In redirect uxMode, you don't have to use serviceworker or redirect.html file.
    * You can get login result by calling `getRedirectResult` on redirected page mount.
    *
    * For ex: if baseUrl is "http://localhost:3000" and `redirectPathName` is 'auth'
@@ -210,7 +210,7 @@ export interface DirectWebSDKArgs {
    */
   apiKey?: string;
   /**
-   * two uxModes are supported:-
+   * Two uxModes are supported:-
    * - `'popup'`: In this uxMode, a popup will be shown to user for login.
    * - `'redirect'`: In this uxMode, user will be redirected to a new window tab for login.
    *

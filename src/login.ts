@@ -278,7 +278,6 @@ class DirectWebSDK {
         const { access_token: accessToken, id_token: idToken, ...rest } = hashParameters;
         // State has to be last here otherwise it will be overwritten
         loginParams = { accessToken, idToken, ...rest, state: instanceParameters };
-        // eslint-disable-next-line no-await-in-loop
       } else {
         clearOrphanedLoginDetails(this.config.redirectParamsStorageMethod);
         storeLoginDetails({ method: TORUS_METHOD.TRIGGER_AGGREGATE_LOGIN, args }, this.config.redirectParamsStorageMethod, loginHandler.nonce);
