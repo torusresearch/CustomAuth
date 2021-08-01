@@ -18,4 +18,4 @@ export const AWS_COGNITO_LOGOUT_PARAMS = {
 export const AWS_COGNITO_LOGOUT_ROUTE = `${AWS_COGNITO_USER_POOL_DOMAIN}/logout`;
 
 // Create your custom verifier at `https://developer.tor.us`
-export const TORUS_DIRECT_SDK_VERIFIER_NAME = "torus-cognito-demo";
+export const TORUS_DIRECT_SDK_VERIFIER_NAME = process.env.REACT_APP_TORUS_VERIFIER_NAME || "torus-cognito-demo";
