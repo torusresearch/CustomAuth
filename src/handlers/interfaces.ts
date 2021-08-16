@@ -365,6 +365,10 @@ export interface Auth0ClientOptions extends BaseLoginOptions {
    * @defaultValue true
    */
   isVerifierIdCaseSensitive?: boolean;
+
+  id_token?: string;
+
+  access_token?: string;
 }
 
 export interface SubVerifierDetails {
@@ -376,6 +380,7 @@ export interface SubVerifierDetails {
   queryParameters?: TorusGenericObject;
   customState?: TorusGenericObject;
 }
+
 export interface CreateHandlerParams {
   typeOfLogin: LOGIN_TYPE;
   clientId: string;

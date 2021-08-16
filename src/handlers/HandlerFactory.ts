@@ -4,6 +4,7 @@ import FacebookHandler from "./FacebookHandler";
 import GoogleHandler from "./GoogleHandler";
 import { CreateHandlerParams, ILoginHandler } from "./interfaces";
 import JwtHandler from "./JwtHandler";
+import MockLoginHandler from "./MockLoginHandler";
 import PasswordlessHandler from "./PasswordlessHandler";
 import RedditHandler from "./RedditHandler";
 import TwitchHandler from "./TwitchHandler";
@@ -23,7 +24,7 @@ const createHandler = ({
   if (!verifier || !typeOfLogin || !clientId) {
     throw new Error("Invalid params");
   }
-  const { domain, login_hint } = jwtParams || {};
+  const { domain, login_hint, id_token } = jwtParams || {};
   switch (typeOfLogin) {
     case LOGIN.GOOGLE:
       return new GoogleHandler(clientId, verifier, redirect_uri, typeOfLogin, uxMode, redirectToOpener, jwtParams, customState);
@@ -47,6 +48,9 @@ const createHandler = ({
     case LOGIN.EMAIL_PASSWORD:
     case LOGIN.JWT:
       if (!domain) throw new Error("Invalid params");
+      if (id_token) {
+        return new MockLoginHandler(clientId, verifier, redirect_uri, typeOfLogin, uxMode, redirectToOpener, jwtParams, customState);
+      }
       return new JwtHandler(clientId, verifier, redirect_uri, typeOfLogin, uxMode, redirectToOpener, jwtParams, customState);
     case LOGIN.WEBAUTHN:
       return new WebAuthnHandler(clientId, verifier, redirect_uri, typeOfLogin, uxMode, redirectToOpener, jwtParams, customState, registerOnly);

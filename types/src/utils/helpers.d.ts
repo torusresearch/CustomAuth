@@ -38,4 +38,9 @@ export declare function clearLoginDetailsStorage(storageMethod: REDIRECT_PARAMS_
 export declare function clearOrphanedLoginDetails(storageMethod: REDIRECT_PARAMS_STORAGE_METHOD_TYPE): void;
 export declare function getPopupFeatures(): string;
 export declare const isFirefox: () => boolean;
+export declare function constructURL(params: {
+    baseURL: string;
+    query?: Record<string, unknown>;
+    hash?: Record<string, unknown>;
+}): string;
 export {};
