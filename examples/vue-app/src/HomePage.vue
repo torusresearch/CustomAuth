@@ -17,6 +17,8 @@ import Vue from "vue";
 import {
   APPLE,
   AUTH_DOMAIN,
+  COGNITO,
+  COGNITO_AUTH_DOMAIN,
   EMAIL_PASSWORD,
   GITHUB,
   HOSTED_EMAIL_PASSWORDLESS,
@@ -50,6 +52,7 @@ export default Vue.extend({
         [TWITTER]: { domain: AUTH_DOMAIN },
         [WEIBO]: { domain: AUTH_DOMAIN },
         [LINE]: { domain: AUTH_DOMAIN },
+        [COGNITO]: { domain: COGNITO_AUTH_DOMAIN, identity_provider: "Google", response_type: "token", user_info_endpoint: "userInfo" },
       };
     },
   },

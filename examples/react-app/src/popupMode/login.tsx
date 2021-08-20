@@ -88,7 +88,7 @@ class PopupMode extends React.Component<IProps, IState> {
       [TWITTER]: { domain: AUTH_DOMAIN },
       [WEIBO]: { domain: AUTH_DOMAIN },
       [LINE]: { domain: AUTH_DOMAIN },
-      [COGNITO]: { domain: COGNITO_AUTH_DOMAIN, identity_provider: "Google" },
+      [COGNITO]: { domain: COGNITO_AUTH_DOMAIN, identity_provider: "Google", response_type: "token", user_info_endpoint: "userInfo" },
     };
   };
 
