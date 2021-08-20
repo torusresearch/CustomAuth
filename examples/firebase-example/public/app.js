@@ -16,7 +16,7 @@
  * FirebaseUI initialization to be used in a Single Page application context.
  */
 
-const TORUS_DIRECT_SDK_VERIFIER_NAME = "demo-firebase-passwordless";
+const TORUS_DIRECT_SDK_VERIFIER_NAME = "demo-firebase-example";
 
 var torusdirectsdk;
 
@@ -41,35 +41,35 @@ function getUiConfig() {
         // Required to enable ID token credentials for this provider.
         clientId: CLIENT_ID,
       },
-      {
-        provider: firebase.auth.FacebookAuthProvider.PROVIDER_ID,
-        scopes: ["public_profile", "email", "user_likes", "user_friends"],
-      },
-      firebase.auth.TwitterAuthProvider.PROVIDER_ID,
-      firebase.auth.GithubAuthProvider.PROVIDER_ID,
-      {
-        provider: firebase.auth.EmailAuthProvider.PROVIDER_ID,
-        // Whether the display name should be displayed in Sign Up page.
-        requireDisplayName: true,
-        signInMethod: getEmailSignInMethod(),
-        disableSignUp: {
-          status: getDisableSignUpStatus(),
-        },
-      },
-      {
-        provider: firebase.auth.PhoneAuthProvider.PROVIDER_ID,
-        recaptchaParameters: {
-          size: getRecaptchaMode(),
-        },
-      },
-      {
-        provider: "microsoft.com",
-        loginHintKey: "login_hint",
-      },
-      {
-        provider: "apple.com",
-      },
-      firebaseui.auth.AnonymousAuthProvider.PROVIDER_ID,
+      // {
+      //   provider: firebase.auth.FacebookAuthProvider.PROVIDER_ID,
+      //   scopes: ["public_profile", "email", "user_likes", "user_friends"],
+      // },
+      // firebase.auth.TwitterAuthProvider.PROVIDER_ID,
+      // firebase.auth.GithubAuthProvider.PROVIDER_ID,
+      // {
+      //   provider: firebase.auth.EmailAuthProvider.PROVIDER_ID,
+      //   // Whether the display name should be displayed in Sign Up page.
+      //   requireDisplayName: true,
+      //   signInMethod: getEmailSignInMethod(),
+      //   disableSignUp: {
+      //     status: getDisableSignUpStatus(),
+      //   },
+      // },
+      // {
+      //   provider: firebase.auth.PhoneAuthProvider.PROVIDER_ID,
+      //   recaptchaParameters: {
+      //     size: getRecaptchaMode(),
+      //   },
+      // },
+      // {
+      //   provider: "microsoft.com",
+      //   loginHintKey: "login_hint",
+      // },
+      // {
+      //   provider: "apple.com",
+      // },
+      // firebaseui.auth.AnonymousAuthProvider.PROVIDER_ID,
     ],
     credentialHelper:
       CLIENT_ID && CLIENT_ID != "YOUR_OAUTH_CLIENT_ID" ? firebaseui.auth.CredentialHelper.GOOGLE_YOLO : firebaseui.auth.CredentialHelper.NONE,
@@ -206,15 +206,15 @@ var initApp = async function () {
     firebase.auth().signOut();
   });
 
-  document.getElementById("recaptcha-normal").addEventListener("change", handleConfigChange);
-  document.getElementById("recaptcha-invisible").addEventListener("change", handleConfigChange);
-  // Check the selected reCAPTCHA mode.
-  document.querySelector('input[name="recaptcha"][value="' + getRecaptchaMode() + '"]').checked = true;
+  // document.getElementById("recaptcha-normal").addEventListener("change", handleConfigChange);
+  // document.getElementById("recaptcha-invisible").addEventListener("change", handleConfigChange);
+  // // Check the selected reCAPTCHA mode.
+  // document.querySelector('input[name="recaptcha"][value="' + getRecaptchaMode() + '"]').checked = true;
 
-  document.getElementById("email-signInMethod-password").addEventListener("change", handleConfigChange);
-  document.getElementById("email-signInMethod-emailLink").addEventListener("change", handleConfigChange);
-  // Check the selected email signInMethod mode.
-  document.querySelector('input[name="emailSignInMethod"][value="' + getEmailSignInMethod() + '"]').checked = true;
+  // document.getElementById("email-signInMethod-password").addEventListener("change", handleConfigChange);
+  // document.getElementById("email-signInMethod-emailLink").addEventListener("change", handleConfigChange);
+  // // Check the selected email signInMethod mode.
+  // document.querySelector('input[name="emailSignInMethod"][value="' + getEmailSignInMethod() + '"]').checked = true;
   torusdirectsdk = new window.DirectWebSdk.default({
     baseUrl: `${window.location.origin}`,
     redirectPathName: "/",

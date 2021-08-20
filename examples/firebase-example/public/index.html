@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" />
     <title>Torus Direct Web Sdk X FirebaseUI Demo</title>
-    <link rel="manifest" href="manifest.json">
+    <link rel="manifest" href="manifest.json" />
     <script src="https://www.gstatic.com/firebasejs/7.4.0/firebase.js"></script>
     <script src="config.js"></script>
     <script src="common.js"></script>
@@ -11,7 +11,7 @@
     <script src="https://unpkg.com/@toruslabs/torus-direct-web-sdk@4.14.1/dist/directWebSdk.umd.min.js"></script>
     <script src="https://www.gstatic.com/firebasejs/ui/4.8.1/firebase-ui-auth.js"></script>
     <link type="text/css" rel="stylesheet" href="https://www.gstatic.com/firebasejs/ui/4.8.1/firebase-ui-auth.css" />
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
   </head>
   <body>
     <div id="container">
@@ -22,7 +22,7 @@
           <div id="user-signed-in" class="hidden">
             <div id="user-info">
               <div id="photo-container">
-                <img id="photo">
+                <img id="photo" />
               </div>
               <div id="name"></div>
               <div id="privateKey"></div>
@@ -37,29 +37,6 @@
           </div>
           <div id="user-signed-out" class="hidden">
             <h4>You are signed out.</h4>
-            <fieldset>
-              <legend>Configuration</legend>
-              reCAPTCHA mode for Phone Auth:
-              <label for="recaptcha-normal">
-                <input type="radio" id="recaptcha-normal" name="recaptcha" value="normal">
-                Normal
-              </label>
-              <label for="recaptcha-invisible">
-                <input type="radio" id="recaptcha-invisible" name="recaptcha" value="invisible">
-                Invisible
-              </label><br>
-              Email signInMethod:
-              <label for="email-signInMethod-password">
-                <input type="radio" id="email-signInMethod-password" name="emailSignInMethod"
-                       value="password">
-                Password
-              </label>
-              <label for="email-signInMethod-emailLink">
-                <input type="radio" id="email-signInMethod-emailLink" name="emailSignInMethod"
-                       value="emailLink">
-                Email Link
-              </label><br>
-            </fieldset>
             <p>
               <button id="sign-in-with-redirect">Sign In with Redirect</button>
               <button id="sign-in-with-popup">Sign In with Popup</button>
