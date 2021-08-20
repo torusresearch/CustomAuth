@@ -99,23 +99,169 @@ export type TorusAggregateLoginResponse = TorusAggregateVerifierResponse & Torus
 export type TorusHybridAggregateLoginResponse = { singleLogin: TorusLoginResponse; aggregateLogins: TorusKey[] };
 
 export interface DirectWebSDKArgs {
+  /**
+   * baseUrl , along with redirectPathName is used to construct the uri of page
+   * where user will be redirected after login.
+   *
+   * @remarks
+   * Redirect Uri for OAuth is `baseUrl`+`redirectPathName` which means
+   * that you must specify `baseUrl`+`redirectPathName` as redirect_uri at verifier's
+   * interface.
+   *
+   * Torus Direct SDK installs a service worker relative to baseUrl to capture
+   * the auth redirect at `redirectPathName` path.
+   *
+   * For ex: While using serviceworker if baseUrl is "http://localhost:3000/serviceworker" and
+   * redirectPathName is 'redirect' (which is default)
+   * then user will be redirected to http://localhost:3000/serviceworker/redirect page after login
+   * where service worker will capture the results and send it back to original window where login
+   * was initiated.
+   *
+   * Using serviceworker is optional, you can skip it by passing `skipSw` param
+   * in init function
+   *
+   * Use of serviceworker is recommended if you are using popup uxMode or
+   * for browsers where service workers are not supported or if you wish to not use
+   * service workers, create and serve redirect page (i.e redirect.html file which is
+   * available in serviceworker folder of this package)
+   *
+   * In redirect uxMode, you don't have to use serviceworker or redirect.html file.
+   * You can get login result by calling `getRedirectResult` on redirected page mount.
+   *
+   * For ex: if baseUrl is "http://localhost:3000" and `redirectPathName` is 'auth'
+   * then user will be redirected to http://localhost:3000/auth page after login
+   * where you can get login result by calling `getRedirectResult` on redirected page mount.
+   *
+   * Please refer to examples https://github.com/torusresearch/torus-direct-web-sdk/tree/master/examples
+   * for more understanding.
+   *
+   */
   baseUrl: string;
+
+  /**
+   * Torus Network to target options: mainnet | testnet
+   * @defaultValue mainnet
+   */
   network?: TORUS_NETWORK_TYPE;
+
+  /**
+   * The contract address of the verifiers on torus network mainnet:
+   * 0x638646503746d5456209e33a2ff5e3226d698bea and for testnet:
+   * 0x4023d2a0D330bF11426B12C6144Cfb96B7fa6183.
+   * If not specified, default one for the specified network will be used.
+   */
   proxyContractAddress?: string;
+
+  /**
+   * This option is used to specify whether to enable logging
+   *
+   * @defaultValue false
+   */
   enableLogging?: boolean;
+
+  /**
+   * For chrome extensions, the general methods for capturing auth redirects don't work.
+   * So, we redirect to the window which opens the auth window.
+   *
+   * @defaultValue false
+   */
   redirectToOpener?: boolean;
+
+  /**
+   * This option is used to specify the url path where user will be
+   * redirected after login. Redirect Uri for OAuth is baseUrl/redirectPathName.
+   *
+   *
+   * @defaultValue redirect
+   *
+   * @remarks
+   * At verifier's interface (where you obtain client id), please use baseUrl/redirectPathName
+   * as the redirect_uri
+   *
+   * Torus Direct SDK installs a service worker relative to baseUrl to capture
+   * the auth redirect at `redirectPathName` path.
+   *
+   * For ex: While using serviceworker if `baseUrl` is "http://localhost:3000/serviceworker" and
+   * `redirectPathName` is 'redirect' (which is default)
+   * then user will be redirected to http://localhost:3000/serviceworker/redirect page after login
+   * where service worker will capture the results and send it back to original window where login
+   * was initiated.
+   *
+   * For browsers where service workers are not supported or if you wish to not use
+   * service workers,create and serve redirect page (i.e redirect.html file which is
+   * available in serviceworker folder of this package)
+   *
+   * If you are using redirect uxMode, you can get the results directly on your `redirectPathName`
+   * path using `getRedirectResult` function.
+   *
+   * For ex: if baseUrl is "http://localhost:3000" and `redirectPathName` is 'auth'
+   * then user will be redirected to http://localhost:3000/auth page after login
+   * where you can get login result by calling `getRedirectResult` on redirected page mount.
+   *
+   * Please refer to examples https://github.com/torusresearch/torus-direct-web-sdk/tree/master/examples
+   * for more understanding.
+   *
+   */
   redirectPathName?: string;
+
+  /**
+   * API Key for torus to enable higher access limits
+   *
+   */
   apiKey?: string;
+  /**
+   * Two uxModes are supported:-
+   * - `'popup'`: In this uxMode, a popup will be shown to user for login.
+   * - `'redirect'`: In this uxMode, user will be redirected to a new window tab for login.
+   *
+   * @defaultValue `'popup'`
+   * @remarks
+   *
+   * Use of `'REDIRECT'` mode is recommended in browsers where popups might get blocked.
+   */
   uxMode?: UX_MODE_TYPE;
+
+  /**
+   * localStorage and sessionStorage are supported.
+   * @defaultValue localStorage
+   * @remarks  In redirect flow, some params will be stored in localStorage for reuse
+   * at the end of the flow.
+   */
   redirectParamsStorageMethod?: REDIRECT_PARAMS_STORAGE_METHOD_TYPE;
+
+  /**
+   * Whether to replace the url hash/query params from OAuth at the end of the redirect flow
+   *
+   * @defaultValue false
+   */
   locationReplaceOnRedirect?: boolean;
+
+  /**
+   * Features of popup window. Please check https://developer.mozilla.org/en-US/docs/Web/API/Window/open#window_features
+   * for further documentation.
+   */
   popupFeatures?: string;
   skipFetchingNodeDetails?: boolean;
 }
 
 export interface InitParams {
+  /**
+   * skips the installation / check for service worker
+   * @defaultValue false
+   */
   skipSw?: boolean;
+
+  /**
+   * skips the init function
+   * @defaultValue false
+   */
   skipInit?: boolean;
+
+  /**
+   * skips the prefetching of redirect url
+   * @defaultValue false
+   *
+   */
   skipPrefetch?: boolean;
 }
 
@@ -216,7 +362,7 @@ export interface Auth0ClientOptions extends BaseLoginOptions {
 
   /**
    * Whether the verifier id field is case sensitive
-   * @default true
+   * @defaultValue true
    */
   isVerifierIdCaseSensitive?: boolean;
 }
