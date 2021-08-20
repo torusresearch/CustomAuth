@@ -1,0 +1,11 @@
+.login-container {
+  font-family: Avenir, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  color: #2c3e50;
+  text-align: center;
+  padding-top: 60px;
+}
+.verifier {
+  margin: 20px;
+}
