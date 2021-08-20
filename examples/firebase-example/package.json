@@ -1,0 +1,14 @@
+{
+  "name": "firebase-torus-direct-auth-example",
+  "version": "1.0.0",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "serve -p 3000 public/"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "serve": "^12.0.0"
+  }
+}
