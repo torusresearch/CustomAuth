@@ -21,8 +21,6 @@ if (typeof window === "object") {
   ReactJsonView = dynamic(() => import("react-json-view"));
 }
 
-
-
 interface IState {
   selectedVerifier: string;
   torusdirectsdk: TorusSdk | null;
@@ -81,7 +79,6 @@ class MyApp extends React.Component<IProps, IState> {
   };
 
   _loginToConnectionMap = () => {
-    const { loginHint } = this.state;
     return {
       [EMAIL_PASSWORD]: { domain: AUTH_DOMAIN },
       [HOSTED_EMAIL_PASSWORDLESS]: {
