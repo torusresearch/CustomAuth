@@ -1,5 +1,6 @@
 import deepmerge from "deepmerge";
 import jwtDecode from "jwt-decode";
+import log from "loglevel";
 
 import { LOGIN_TYPE, UX_MODE_TYPE } from "../utils/enums";
 import { getVerifierId, loginToConnectionMap, padUrlString } from "../utils/helpers";
@@ -31,7 +32,7 @@ export default class JwtHandler extends AbstractLoginHandler {
   setFinalUrl(): void {
     const { domain } = this.jwtParams;
     const finalUrl = new URL(domain);
-    finalUrl.pathname = "/authorize";
+    finalUrl.pathname += finalUrl.pathname.endsWith("/") ? "authorize" : "/authorize";
     const clonedParams = JSON.parse(JSON.stringify(this.jwtParams));
     delete clonedParams.domain;
     const finalJwtParams = deepmerge(
@@ -55,23 +56,28 @@ export default class JwtHandler extends AbstractLoginHandler {
 
   async getUserInfo(params: LoginWindowResponse): Promise<TorusVerifierResponse> {
     const { idToken, accessToken } = params;
-    const { domain, verifierIdField, isVerifierIdCaseSensitive } = this.jwtParams;
+    const { domain, verifierIdField, isVerifierIdCaseSensitive, user_info_route = "userinfo" } = this.jwtParams;
     if (accessToken) {
-      const domainUrl = new URL(domain);
-      const userInfo = await get<Auth0UserInfo>(`${padUrlString(domainUrl)}userinfo`, {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      });
-      const { picture, name, email } = userInfo;
-      return {
-        email,
-        name,
-        profileImage: picture,
-        verifierId: getVerifierId(userInfo, this.typeOfLogin, verifierIdField, isVerifierIdCaseSensitive),
-        verifier: this.verifier,
-        typeOfLogin: this.typeOfLogin,
-      };
+      try {
+        const domainUrl = new URL(domain);
+        const userInfo = await get<Auth0UserInfo>(`${padUrlString(domainUrl)}${user_info_route}`, {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        });
+        const { picture, name, email } = userInfo;
+        return {
+          email,
+          name,
+          profileImage: picture,
+          verifierId: getVerifierId(userInfo, this.typeOfLogin, verifierIdField, isVerifierIdCaseSensitive),
+          verifier: this.verifier,
+          typeOfLogin: this.typeOfLogin,
+        };
+      } catch (error) {
+        // ignore
+        log.warn(error, "Unable to get userinfo from endpoint");
+      }
     }
     if (idToken) {
       const decodedToken = jwtDecode<Auth0UserInfo>(idToken);

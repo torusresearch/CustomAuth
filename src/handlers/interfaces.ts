@@ -365,6 +365,12 @@ export interface Auth0ClientOptions extends BaseLoginOptions {
    * @defaultValue true
    */
   isVerifierIdCaseSensitive?: boolean;
+
+  /**
+   * The route for user info endpoint. This will be padded to domain
+   * @defaultValue userinfo
+   * */
+  user_info_route?: string;
 }
 
 export interface SubVerifierDetails {

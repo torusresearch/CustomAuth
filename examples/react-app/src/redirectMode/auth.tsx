@@ -38,7 +38,7 @@ class RedirectAuth extends React.Component<IProps, IState> {
       <div className="App">
         <div className="about">
           <h1>This is the redirected page</h1>
-          {loginDetails && <ReactJsonView src={loginDetails} />}
+          {loginDetails && <ReactJsonView src={loginDetails} style={{ textAlign: "left" }} />}
         </div>
       </div>
     );
