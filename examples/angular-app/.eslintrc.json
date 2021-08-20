@@ -44,13 +44,7 @@
         "no-unused-vars": 0,
         "@typescript-eslint/no-unused-vars": 0,
         "no-restricted-syntax": 0,
-        "max-len": [2, { "code": 150, "ignoreComments": true }],
-        "prettier/prettier": [
-          "error",
-          {
-            "endOfLine": "auto"
-          }
-        ]
+        "max-len": [2, { "code": 150, "ignoreComments": true }]
       }
     },
     {

@@ -1,5 +1,5 @@
 import { Component, OnInit } from "@angular/core";
-import TorusSdk, { UX_MODE } from "@toruslabs/torus-direct-web-sdk";
+import TorusSdk, { Auth0ClientOptions } from "@toruslabs/torus-direct-web-sdk";
 
 import {
   verifierMap,
@@ -14,8 +14,7 @@ import {
   LINE,
   LINKEDIN,
   WEIBO,
-} from "../../constants";
-
+} from "../../constants/index";
 
 @Component({
   selector: "app-redirect-mode-login",
@@ -23,7 +22,7 @@ import {
   styleUrls: ["./redirect-mode-login.component.css"],
 })
 export class RedirectModeLoginComponent implements OnInit {
-  torusdirectsdk = null;
+  torusdirectsdk: TorusSdk | null = null;
   selectedVerifier = GOOGLE;
 
   verifierMap = verifierMap;
@@ -49,9 +48,9 @@ export class RedirectModeLoginComponent implements OnInit {
 
   async login() {
     try {
-      const jwtParams = this._loginToConnectionMap()[this.selectedVerifier] || {};
+      const jwtParams = this._loginToConnectionMap()[this.selectedVerifier] || { domain: undefined };
       const { typeOfLogin, clientId, verifier } = this.verifierMap[this.selectedVerifier];
-      await this.torusdirectsdk.triggerLogin({
+      await this.torusdirectsdk?.triggerLogin({
         typeOfLogin,
         verifier,
         clientId,
@@ -62,11 +61,11 @@ export class RedirectModeLoginComponent implements OnInit {
     }
   }
 
-  onSelectedVerifierChanged = (event) => {
+  onSelectedVerifierChanged = (event: any) => {
     this.selectedVerifier = event.target.value;
   };
 
-  _loginToConnectionMap = () => {
+  _loginToConnectionMap = (): Record<string, Auth0ClientOptions> => {
     return {
       [EMAIL_PASSWORD]: { domain: AUTH_DOMAIN },
       [HOSTED_EMAIL_PASSWORDLESS]: { domain: AUTH_DOMAIN, verifierIdField: "name", connection: "", isVerifierIdCaseSensitive: false },

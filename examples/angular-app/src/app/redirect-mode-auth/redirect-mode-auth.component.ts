@@ -1,5 +1,5 @@
 import { Component, OnInit } from "@angular/core";
-import TorusSdk, { RedirectResult } from "@toruslabs/torus-direct-web-sdk";
+import TorusSdk from "@toruslabs/torus-direct-web-sdk";
 
 @Component({
   selector: "app-redirect-mode-auth",

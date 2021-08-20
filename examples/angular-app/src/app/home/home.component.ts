@@ -13,7 +13,7 @@ import {
   LINE,
   LINKEDIN,
   WEIBO,
-} from "../../constants";
+} from "../../constants/index";
 
 @Component({
   selector: "app-home",
