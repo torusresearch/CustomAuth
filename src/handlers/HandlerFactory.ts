@@ -24,7 +24,7 @@ const createHandler = ({
   if (!verifier || !typeOfLogin || !clientId) {
     throw new Error("Invalid params");
   }
-  const { domain, login_hint, id_token } = jwtParams || {};
+  const { domain, login_hint, id_token, access_token } = jwtParams || {};
   switch (typeOfLogin) {
     case LOGIN.GOOGLE:
       return new GoogleHandler(clientId, verifier, redirect_uri, typeOfLogin, uxMode, redirectToOpener, jwtParams, customState);
@@ -48,7 +48,7 @@ const createHandler = ({
     case LOGIN.EMAIL_PASSWORD:
     case LOGIN.JWT:
       if (!domain) throw new Error("Invalid params");
-      if (id_token) {
+      if (id_token || access_token) {
         return new MockLoginHandler(clientId, verifier, redirect_uri, typeOfLogin, uxMode, redirectToOpener, jwtParams, customState);
       }
       return new JwtHandler(clientId, verifier, redirect_uri, typeOfLogin, uxMode, redirectToOpener, jwtParams, customState);
