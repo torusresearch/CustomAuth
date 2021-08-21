@@ -186,3 +186,19 @@ export function getPopupFeatures(): string {
 }
 
 export const isFirefox = (): boolean => window?.navigator?.userAgent.toLowerCase().indexOf("firefox") > -1 || false;
+
+export function constructURL(params: { baseURL: string; query?: Record<string, unknown>; hash?: Record<string, unknown> }): string {
+  const { baseURL, query, hash } = params;
+
+  const url = new URL(baseURL);
+  if (query) {
+    Object.keys(query).forEach((key) => {
+      url.searchParams.append(key, query[key] as string);
+    });
+  }
+  if (hash) {
+    const h = new URL(constructURL({ baseURL, query: hash })).searchParams.toString();
+    url.hash = h;
+  }
+  return url.toString();
+}

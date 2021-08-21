@@ -366,6 +366,9 @@ export interface Auth0ClientOptions extends BaseLoginOptions {
    */
   isVerifierIdCaseSensitive?: boolean;
 
+  id_token?: string;
+
+  access_token?: string;
   /**
    * The route for user info endpoint. This will be padded to domain
    * @defaultValue userinfo
@@ -382,6 +385,7 @@ export interface SubVerifierDetails {
   queryParameters?: TorusGenericObject;
   customState?: TorusGenericObject;
 }
+
 export interface CreateHandlerParams {
   typeOfLogin: LOGIN_TYPE;
   clientId: string;

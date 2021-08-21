@@ -335,6 +335,8 @@ export interface Auth0ClientOptions extends BaseLoginOptions {
      * @defaultValue true
      */
     isVerifierIdCaseSensitive?: boolean;
+    id_token?: string;
+    access_token?: string;
     /**
      * The route for user info endpoint. This will be padded to domain
      * @defaultValue userinfo
