@@ -9,7 +9,7 @@ import PopupHandler from "../utils/PopupHandler";
 import AbstractLoginHandler from "./AbstractLoginHandler";
 import { Auth0ClientOptions, Auth0UserInfo, LoginWindowResponse, TorusGenericObject, TorusVerifierResponse } from "./interfaces";
 
-export default class CustomJwtHandler extends AbstractLoginHandler {
+export default class MockLoginHandler extends AbstractLoginHandler {
   constructor(
     readonly clientId: string,
     readonly verifier: string,

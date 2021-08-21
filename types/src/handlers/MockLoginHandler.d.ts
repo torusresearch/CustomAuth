@@ -1,7 +1,7 @@
 import { LOGIN_TYPE, UX_MODE_TYPE } from "../utils/enums";
 import AbstractLoginHandler from "./AbstractLoginHandler";
 import { Auth0ClientOptions, LoginWindowResponse, TorusGenericObject, TorusVerifierResponse } from "./interfaces";
-export default class CustomJwtHandler extends AbstractLoginHandler {
+export default class MockLoginHandler extends AbstractLoginHandler {
     readonly clientId: string;
     readonly verifier: string;
     readonly redirect_uri: string;
