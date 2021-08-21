@@ -16,6 +16,8 @@ import {
   LINE,
   LINKEDIN,
   WEIBO,
+  COGNITO,
+  COGNITO_AUTH_DOMAIN,
 } from "../lib/constants";
 
 let ReactJsonView;
@@ -147,6 +149,7 @@ class HomePage extends React.PureComponent<IProps, IState> {
       [TWITTER]: { domain: AUTH_DOMAIN },
       [WEIBO]: { domain: AUTH_DOMAIN },
       [LINE]: { domain: AUTH_DOMAIN },
+      [COGNITO]: { domain: COGNITO_AUTH_DOMAIN, identity_provider: "Google", response_type: "token", user_info_endpoint: "userInfo" },
     };
   };
 

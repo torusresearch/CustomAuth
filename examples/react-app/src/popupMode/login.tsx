@@ -15,6 +15,8 @@ import {
   LINE,
   LINKEDIN,
   WEIBO,
+  COGNITO_AUTH_DOMAIN,
+  COGNITO,
 } from "../constants";
 
 interface IState {
@@ -86,6 +88,7 @@ class PopupMode extends React.Component<IProps, IState> {
       [TWITTER]: { domain: AUTH_DOMAIN },
       [WEIBO]: { domain: AUTH_DOMAIN },
       [LINE]: { domain: AUTH_DOMAIN },
+      [COGNITO]: { domain: COGNITO_AUTH_DOMAIN, identity_provider: "Google", response_type: "token", user_info_endpoint: "userInfo" },
     };
   };
 
@@ -124,7 +127,7 @@ class PopupMode extends React.Component<IProps, IState> {
         {loginResponse && (
           <div>
             <h2>Login Response</h2>
-            <ReactJsonView src={loginResponse} style={{ marginTop: 20 }} />
+            <ReactJsonView src={loginResponse} style={{ marginTop: 20, textAlign: "left" }} />
           </div>
         )}
       </div>

@@ -14,7 +14,9 @@ export const PASSWORDLESS = "passwordless";
 export const HOSTED_EMAIL_PASSWORDLESS = "hosted_email_passwordless";
 export const HOSTED_SMS_PASSWORDLESS = "hosted_sms_passwordless";
 export const WEBAUTHN = "webauthn";
+export const COGNITO = "cognito";
 export const AUTH_DOMAIN = "https://torus-test.auth0.com";
+export const COGNITO_AUTH_DOMAIN = "https://torus-test.auth.ap-southeast-1.amazoncognito.com/oauth2/";
 export const verifierMap = {
   [GOOGLE]: {
     name: "Google",
@@ -51,4 +53,10 @@ export const verifierMap = {
     verifier: "torus-auth0-sms-passwordless",
   },
   [WEBAUTHN]: { name: "WebAuthn", typeOfLogin: "webauthn", clientId: "webauthn", verifier: "webauthn-lrc" },
+  [COGNITO]: {
+    name: "Cognito",
+    typeOfLogin: "jwt",
+    clientId: "78i338ev9lkgjst3mfeuih9tsh",
+    verifier: "demo-cognito-example",
+  },
 } as Record<string, any>;
