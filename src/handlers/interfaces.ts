@@ -369,6 +369,11 @@ export interface Auth0ClientOptions extends BaseLoginOptions {
   id_token?: string;
 
   access_token?: string;
+  /**
+   * The route for user info endpoint. This will be padded to domain
+   * @defaultValue userinfo
+   * */
+  user_info_route?: string;
 }
 
 export interface SubVerifierDetails {
