@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 const path = require("path");
 const ESLintPlugin = require("eslint-webpack-plugin");
+const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
 
 const pkg = require("./package.json");
 
@@ -88,6 +89,10 @@ const cjsConfig = {
   plugins: [
     new ESLintPlugin({
       extensions: ".ts",
+    }),
+    new BundleAnalyzerPlugin({
+      analyzerMode: "disabled", // disabled static
+      openAnalyzer: false,
     }),
   ],
   node: {
