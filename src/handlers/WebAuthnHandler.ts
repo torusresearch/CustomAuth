@@ -1,4 +1,3 @@
-/* eslint-disable prefer-const */
 import deepmerge from "deepmerge";
 
 import { LOGIN_TYPE, UX_MODE_TYPE } from "../utils/enums";
