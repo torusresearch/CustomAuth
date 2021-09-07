@@ -51,7 +51,7 @@ This is a plugin that works [only on the client side](https://nuxtjs.org/guide/p
 
 ## Usage
 
-For more in-depth documentation, please refer to docs [here](https://docs.tor.us/direct-auth/quick-start)
+For more in-depth documentation, please refer to docs [here](https://docs.tor.us/customauth/get-started)
 
 Add [`@toruslabs/torus-direct-web-sdk`](https://www.npmjs.com/package/@toruslabs/torus-direct-web-sdk) to your project:
 
@@ -233,7 +233,7 @@ web3.eth.accounts.privateKeyToAccount(PRIVATE_KEY);
 ## Requirements
 
 - This package requires a peer dependency of `@babel/runtime`
-- Node 10+
+- Node 12+
 
 ### Note
 If you are using the redirectToOpener option, you *must* update your redirect.html to [allow whitelisted URIs](serviceworker/redirect.html#L222)
