@@ -434,6 +434,33 @@ class DirectWebSDK {
     };
   }
 
+  async getTorusKeyV2(
+    verifier: string,
+    verifierId: string,
+    verifierParams: { verifier_id: string },
+    idToken: string,
+    additionalParams?: extraParams
+  ): Promise<TorusKey> {
+    const { torusNodeEndpoints, torusNodePub, torusIndexes } = await this.nodeDetailManager.getNodeDetails();
+    const response = await this.torus.getPublicAddressV2(torusNodeEndpoints, torusNodePub, { verifier, verifierId }, true);
+    const data = await this.torus.retrieveShares(torusNodeEndpoints, torusIndexes, verifier, verifierParams, idToken, additionalParams);
+    if (typeof response === "string") throw new Error("must use extended pub key");
+    if (data.ethAddress.toLowerCase() !== response.address.toLowerCase()) {
+      throw new Error("data ethAddress does not match response address");
+    }
+    return {
+      publicAddress: data.ethAddress.toString(),
+      privateKey: data.privKey.toString(),
+      metadataNonce: data.metadataNonce.toString("hex"),
+      typeOfUser: response.typeOfUser,
+      isNewUser: response.newUser,
+      pubKey: {
+        pub_key_X: response.X,
+        pub_key_Y: response.Y,
+      },
+    };
+  }
+
   async getAggregateTorusKey(
     verifier: string,
     verifierId: string, // unique identifier for user e.g. sub on jwt
