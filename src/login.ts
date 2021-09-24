@@ -443,7 +443,7 @@ class DirectWebSDK {
   ): Promise<TorusKey> {
     const { torusNodeEndpoints, torusNodePub, torusIndexes } = await this.nodeDetailManager.getNodeDetails();
     const response = await this.torus.getPublicAddressV2(torusNodeEndpoints, torusNodePub, { verifier, verifierId }, true);
-    const data = await this.torus.retrieveShares(torusNodeEndpoints, torusIndexes, verifier, verifierParams, idToken, additionalParams);
+    const data = await this.torus.retrieveSharesV2(torusNodeEndpoints, torusIndexes, verifier, verifierParams, idToken, additionalParams);
     if (typeof response === "string") throw new Error("must use extended pub key");
     if (data.ethAddress.toLowerCase() !== response.address.toLowerCase()) {
       throw new Error("data ethAddress does not match response address");
