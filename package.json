@@ -2,9 +2,7 @@
   "name": "@toruslabs/torus-direct-web-sdk",
   "version": "4.15.1",
   "description": "Direct login with torus to get user private key",
-  "main": "dist/directWebSdk.cjs.js",
-  "unpkg": "dist/directWebSdk.umd.min.js",
-  "jsdelivr": "dist/directWebSdk.umd.min.js",
+  "main": "dist/directWebSdk-node.js",
   "types": "types/index.d.ts",
   "scripts": {
     "build:dev": "rimraf dist/ && cross-env NODE_ENV=development parallel-webpack --no-stats",
@@ -65,6 +63,7 @@
     "eslint-webpack-plugin": "^2.5.4",
     "husky": "^7.0.2",
     "lint-staged": "^11.1.2",
+    "node-fetch": "^3.0.0",
     "parallel-webpack": "^2.6.0",
     "prettier": "^2.3.2",
     "rimraf": "^3.0.2",

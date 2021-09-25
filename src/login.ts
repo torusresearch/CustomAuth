@@ -38,7 +38,6 @@ import {
   clearLoginDetailsStorage,
   clearOrphanedLoginDetails,
   handleRedirectParameters,
-  isFirefox,
   padUrlString,
   retrieveLoginDetails,
   storeLoginDetails,
@@ -123,11 +122,6 @@ class DirectWebSDK {
       }
     }
     if (!skipPrefetch) {
-      // Skip the redirect check for firefox
-      if (isFirefox()) {
-        this.isInitialized = true;
-        return;
-      }
       await this.handlePrefetchRedirectUri();
       return;
     }

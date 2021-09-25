@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 const path = require("path");
+const webpack = require("webpack");
 const ESLintPlugin = require("eslint-webpack-plugin");
 const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
 
@@ -41,7 +42,7 @@ const optimization = {
 };
 
 const babelLoaderWithPolyfills = {
-  test: /\.(ts|js)x?$/,
+  test: /\.(ts|m?js)x?$/,
   exclude: /(node_modules|bower_components)/,
   use: {
     loader: "babel-loader",
@@ -72,6 +73,36 @@ const umdConfig = {
   module: {
     rules: [babelLoader],
   },
+};
+
+const nodeConfig = {
+  ...baseConfig,
+  ...optimization,
+  output: {
+    ...baseConfig.output,
+    filename: `${pkgName}-node.js`,
+    libraryTarget: "commonjs2",
+  },
+  module: {
+    rules: [babelLoader],
+  },
+  // resolve: {
+  //   ...baseConfig.resolve,
+  //   alias: {
+  //     ...baseConfig.resolve.alias,
+  //     btoa: path.resolve(__dirname, "src/btoaReplacement"),
+  //     atob: path.resolve(__dirname, "src/atobReplacement"),
+  //   },
+  // },
+  externals: [...Object.keys(pkg.dependencies).filter((x) => !["@toruslabs/http-helpers"].includes(x)), /^(@babel\/runtime)/i],
+  target: "node",
+  plugins: [
+    new webpack.ProvidePlugin({
+      fetch: ["node-fetch", "default"],
+      atob: ["atob"],
+      btoa: ["btoa"],
+    }),
+  ],
 };
 
 const cjsConfig = {
@@ -115,7 +146,8 @@ const cjsBundledConfig = {
   externals: [...Object.keys(pkg.dependencies).filter((x) => !packagesToInclude.includes(x)), /^(@babel\/runtime)/i],
 };
 
-module.exports = [umdPolyfilledConfig, umdConfig, cjsConfig, cjsBundledConfig];
+// module.exports = [umdPolyfilledConfig, umdConfig, cjsConfig, cjsBundledConfig, nodeConfig];
+module.exports = [nodeConfig];
 // module.exports = [cjsConfig];
 // V5
 // experiments: {
