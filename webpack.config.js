@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 const path = require("path");
-const webpack = require("webpack");
 const ESLintPlugin = require("eslint-webpack-plugin");
 const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
 
@@ -42,7 +41,7 @@ const optimization = {
 };
 
 const babelLoaderWithPolyfills = {
-  test: /\.(ts|m?js)x?$/,
+  test: /\.(ts|js)x?$/,
   exclude: /(node_modules|bower_components)/,
   use: {
     loader: "babel-loader",
@@ -96,12 +95,6 @@ const nodeConfig = {
   },
   externals: [...Object.keys(pkg.dependencies).filter((x) => !["@toruslabs/http-helpers"].includes(x)), /^(@babel\/runtime)/i],
   target: "node",
-  // plugins: [
-  //   new webpack.ProvidePlugin({
-  //     atob: ["atob"],
-  //     btoa: ["btoa"],
-  //   }),
-  // ],
 };
 
 const cjsConfig = {

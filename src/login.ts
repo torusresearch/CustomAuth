@@ -1,5 +1,5 @@
 import NodeDetailManager from "@toruslabs/fetch-node-details";
-import Torus from "@toruslabs/torus.js";
+import Torus from "@treasure-chess/torus.js";
 import { keccak256 } from "web3-utils";
 
 import createHandler from "./handlers/HandlerFactory";
@@ -38,6 +38,7 @@ import {
   clearLoginDetailsStorage,
   clearOrphanedLoginDetails,
   handleRedirectParameters,
+  // isFirefox,
   padUrlString,
   retrieveLoginDetails,
   storeLoginDetails,
@@ -122,9 +123,15 @@ class DirectWebSDK {
       }
     }
     if (!skipPrefetch) {
+      // TODO: uncomment this and solve the window undefined issue
+      // if (isFirefox()) {
+      //   this.isInitialized = true;
+      //   return;
+      // }
       await this.handlePrefetchRedirectUri();
       return;
     }
+    // Skip the redirect check for firefox
     this.isInitialized = true;
   }
 
