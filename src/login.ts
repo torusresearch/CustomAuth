@@ -129,7 +129,11 @@ class DirectWebSDK {
   }
 
   private async handlePrefetchRedirectUri(): Promise<void> {
-    if (!document) return Promise.resolve();
+    // NOTE: I couldn't find a better solution here. document always throws an error
+    /* eslint-disable-next-line no-constant-condition */
+    if (true) return Promise.resolve();
+    // if (!document) return Promise.resolve();
+
     return new Promise((resolve, reject) => {
       const redirectHtml = document.createElement("link");
       redirectHtml.href = this.config.redirect_uri;

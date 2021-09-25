@@ -86,23 +86,22 @@ const nodeConfig = {
   module: {
     rules: [babelLoader],
   },
-  // resolve: {
-  //   ...baseConfig.resolve,
-  //   alias: {
-  //     ...baseConfig.resolve.alias,
-  //     btoa: path.resolve(__dirname, "src/btoaReplacement"),
-  //     atob: path.resolve(__dirname, "src/atobReplacement"),
-  //   },
-  // },
+  resolve: {
+    ...baseConfig.resolve,
+    alias: {
+      ...baseConfig.resolve.alias,
+      btoa: path.resolve(__dirname, "src/utils/btoa"),
+      atob: path.resolve(__dirname, "src/utils/atob"),
+    },
+  },
   externals: [...Object.keys(pkg.dependencies).filter((x) => !["@toruslabs/http-helpers"].includes(x)), /^(@babel\/runtime)/i],
   target: "node",
-  plugins: [
-    new webpack.ProvidePlugin({
-      fetch: ["node-fetch", "default"],
-      atob: ["atob"],
-      btoa: ["btoa"],
-    }),
-  ],
+  // plugins: [
+  //   new webpack.ProvidePlugin({
+  //     atob: ["atob"],
+  //     btoa: ["btoa"],
+  //   }),
+  // ],
 };
 
 const cjsConfig = {
@@ -146,8 +145,7 @@ const cjsBundledConfig = {
   externals: [...Object.keys(pkg.dependencies).filter((x) => !packagesToInclude.includes(x)), /^(@babel\/runtime)/i],
 };
 
-// module.exports = [umdPolyfilledConfig, umdConfig, cjsConfig, cjsBundledConfig, nodeConfig];
-module.exports = [nodeConfig];
+module.exports = [umdPolyfilledConfig, umdConfig, cjsConfig, cjsBundledConfig, nodeConfig];
 // module.exports = [cjsConfig];
 // V5
 // experiments: {
