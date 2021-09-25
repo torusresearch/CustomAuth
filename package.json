@@ -3,6 +3,8 @@
   "version": "4.15.1",
   "description": "Direct login with torus to get user private key",
   "main": "dist/directWebSdk-node.js",
+  "unpkg": "dist/directWebSdk.umd.min.js",
+  "jsdelivr": "dist/directWebSdk.umd.min.js",
   "types": "types/index.d.ts",
   "scripts": {
     "build:dev": "rimraf dist/ && cross-env NODE_ENV=development parallel-webpack --no-stats",
