@@ -91,7 +91,7 @@ class DirectWebSDK {
     };
     const torus = new Torus({
       enableLogging,
-      metadataHost: "https://metadata.tor.us",
+      metadataHost: "http://localhost:5051",
       allowHost: "https://signer.tor.us/api/allow",
     });
     Torus.setAPIKey(apiKey);
@@ -319,7 +319,6 @@ class DirectWebSDK {
     };
   }
 
-  //
   async triggerHybridAggregateLogin(args: HybridAggregateLoginParams): Promise<TorusHybridAggregateLoginResponse> {
     const { singleLogin, aggregateLoginParams } = args;
     // This method shall break if any of the promises fail. This behaviour is intended
@@ -416,32 +415,6 @@ class DirectWebSDK {
     additionalParams?: extraParams
   ): Promise<TorusKey> {
     const { torusNodeEndpoints, torusNodePub, torusIndexes } = await this.nodeDetailManager.getNodeDetails();
-    const response = await this.torus.getPublicAddress(torusNodeEndpoints, torusNodePub, { verifier, verifierId }, true);
-    log.info("New private key assigned to user at address ", response);
-    const data = await this.torus.retrieveShares(torusNodeEndpoints, torusIndexes, verifier, verifierParams, idToken, additionalParams);
-    if (typeof response === "string") throw new Error("must use extended pub key");
-    if (data.ethAddress.toLowerCase() !== response.address.toLowerCase()) {
-      throw new Error("data ethAddress does not match response address");
-    }
-    return {
-      publicAddress: data.ethAddress.toString(),
-      privateKey: data.privKey.toString(),
-      metadataNonce: data.metadataNonce.toString("hex"),
-      pubKey: {
-        pub_key_X: response.X,
-        pub_key_Y: response.Y,
-      },
-    };
-  }
-
-  async getTorusKeyV2(
-    verifier: string,
-    verifierId: string,
-    verifierParams: { verifier_id: string },
-    idToken: string,
-    additionalParams?: extraParams
-  ): Promise<TorusKey> {
-    const { torusNodeEndpoints, torusNodePub, torusIndexes } = await this.nodeDetailManager.getNodeDetails();
     const response = await this.torus.getPublicAddressV2(torusNodeEndpoints, torusNodePub, { verifier, verifierId }, true);
     const data = await this.torus.retrieveSharesV2(torusNodeEndpoints, torusIndexes, verifier, verifierParams, idToken, additionalParams);
     if (typeof response === "string") throw new Error("must use extended pub key");
@@ -480,6 +453,10 @@ class DirectWebSDK {
     const aggregateIdToken = keccak256(aggregateIdTokenSeeds.join(String.fromCharCode(29))).slice(2);
     aggregateVerifierParams.verifier_id = verifierId;
     return this.getTorusKey(verifier, verifierId, aggregateVerifierParams, aggregateIdToken, extraVerifierParams);
+  }
+
+  getPostboxKeyFrom1OutOf1(privKey: string, nonce: string): string {
+    return this.torus.getPostboxKeyFrom1OutOf1(privKey, nonce);
   }
 
   async getRedirectResult({ replaceUrl = true, clearLoginDetails = true }: RedirectResultParams = {}): Promise<RedirectResult> {
