@@ -16,6 +16,7 @@ import {
   SubVerifierDetails,
   TorusAggregateLoginResponse,
   TorusHybridAggregateLoginResponse,
+  TorusJsPublicKey,
   TorusKey,
   TorusLoginResponse,
   TorusSubVerifierInfo,
@@ -414,19 +415,28 @@ class DirectWebSDK {
     idToken: string,
     additionalParams?: extraParams
   ): Promise<TorusKey> {
+    const { v2 = false, ...retrieveSharesAdditionParams } = additionalParams ?? {};
+
     const { torusNodeEndpoints, torusNodePub, torusIndexes } = await this.nodeDetailManager.getNodeDetails();
-    const response = await this.torus.getPublicAddressV2(torusNodeEndpoints, torusNodePub, { verifier, verifierId }, true);
-    const data = await this.torus.retrieveSharesV2(torusNodeEndpoints, torusIndexes, verifier, verifierParams, idToken, additionalParams);
+    const response = await (v2
+      ? this.torus.getPublicAddressV2(torusNodeEndpoints, torusNodePub, { verifier, verifierId }, true)
+      : this.torus.getPublicAddress(torusNodeEndpoints, torusNodePub, { verifier, verifierId }, true));
+    const data = await (v2
+      ? this.torus.retrieveSharesV2(torusNodeEndpoints, torusIndexes, verifier, verifierParams, idToken, retrieveSharesAdditionParams)
+      : this.torus.retrieveShares(torusNodeEndpoints, torusIndexes, verifier, verifierParams, idToken, retrieveSharesAdditionParams));
+
     if (typeof response === "string") throw new Error("must use extended pub key");
     if (data.ethAddress.toLowerCase() !== response.address.toLowerCase()) {
       throw new Error("data ethAddress does not match response address");
     }
+
+    const torusKey = response as unknown as TorusJsPublicKey;
     return {
       publicAddress: data.ethAddress.toString(),
       privateKey: data.privKey.toString(),
       metadataNonce: data.metadataNonce.toString("hex"),
-      typeOfUser: response.typeOfUser,
-      isNewUser: response.newUser,
+      typeOfUser: torusKey.typeOfUser ?? "v1",
+      isNewUser: torusKey.newUser,
       pubKey: {
         pub_key_X: response.X,
         pub_key_Y: response.Y,

@@ -88,6 +88,12 @@ export interface TorusKey extends TorusKeyPub {
   isNewUser?: boolean;
 }
 
+export interface TorusJsPublicKey {
+  address: string;
+  typeOfUser?: TorusKey["typeOfUser"];
+  newUser?: boolean;
+}
+
 export interface TorusAggregateVerifierResponse {
   userInfo: (TorusVerifierResponse & LoginWindowResponse)[];
 }
