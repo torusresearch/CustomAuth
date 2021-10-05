@@ -28,7 +28,7 @@
     "@chaitanyapotti/register-service-worker": "^1.7.3",
     "@toruslabs/fetch-node-details": "^2.7.1",
     "@toruslabs/http-helpers": "^1.4.0",
-    "@toruslabs/torus.js": "file:../torus.js/toruslabs-torus.js-2.5.0.tgz",
+    "@toruslabs/torus.js": "file:/Users/phuctm97/Projects/torusresearch/torus.js/toruslabs-torus.js-2.5.0.tgz",
     "broadcast-channel": "^3.7.0",
     "deepmerge": "^4.2.2",
     "jwt-decode": "^3.1.2",

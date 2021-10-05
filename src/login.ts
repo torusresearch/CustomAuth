@@ -415,14 +415,14 @@ class DirectWebSDK {
     idToken: string,
     additionalParams?: extraParams
   ): Promise<TorusKey> {
-    const { v2 = false, ...retrieveSharesAdditionParams } = additionalParams ?? {};
+    const { oneKey = false, ...retrieveSharesAdditionParams } = additionalParams ?? {};
 
     const { torusNodeEndpoints, torusNodePub, torusIndexes } = await this.nodeDetailManager.getNodeDetails();
-    const response = await (v2
-      ? this.torus.getPublicAddressV2(torusNodeEndpoints, torusNodePub, { verifier, verifierId }, true)
+    const response = await (oneKey
+      ? this.torus.oneKey.getPublicAddress(torusNodeEndpoints, torusNodePub, { verifier, verifierId }, true)
       : this.torus.getPublicAddress(torusNodeEndpoints, torusNodePub, { verifier, verifierId }, true));
-    const data = await (v2
-      ? this.torus.retrieveSharesV2(torusNodeEndpoints, torusIndexes, verifier, verifierParams, idToken, retrieveSharesAdditionParams)
+    const data = await (oneKey
+      ? this.torus.oneKey.retrieveShares(torusNodeEndpoints, torusIndexes, verifier, verifierParams, idToken, retrieveSharesAdditionParams)
       : this.torus.retrieveShares(torusNodeEndpoints, torusIndexes, verifier, verifierParams, idToken, retrieveSharesAdditionParams));
 
     if (typeof response === "string") throw new Error("must use extended pub key");
