@@ -146,6 +146,8 @@ export interface DirectWebSDKArgs {
    */
   baseUrl: string;
 
+  metadataUrl?: string;
+
   /**
    * Torus Network to target options: mainnet | testnet
    * @defaultValue mainnet

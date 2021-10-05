@@ -76,6 +76,7 @@ class DirectWebSDK {
     locationReplaceOnRedirect = false,
     popupFeatures,
     skipFetchingNodeDetails = false,
+    metadataUrl = "https://metadata.tor.us",
   }: DirectWebSDKArgs) {
     this.isInitialized = false;
     const baseUri = new URL(baseUrl);
@@ -92,7 +93,7 @@ class DirectWebSDK {
     };
     const torus = new Torus({
       enableLogging,
-      metadataHost: "http://localhost:5051",
+      metadataHost: metadataUrl,
       allowHost: "https://signer.tor.us/api/allow",
     });
     Torus.setAPIKey(apiKey);
@@ -282,7 +283,6 @@ class DirectWebSDK {
       } else {
         clearOrphanedLoginDetails(this.config.redirectParamsStorageMethod);
         storeLoginDetails({ method: TORUS_METHOD.TRIGGER_AGGREGATE_LOGIN, args }, this.config.redirectParamsStorageMethod, loginHandler.nonce);
-        // eslint-disable-next-line no-await-in-loop
         loginParams = await loginHandler.handleLoginWindow({
           locationReplaceOnRedirect: this.config.locationReplaceOnRedirect,
           popupFeatures: this.config.popupFeatures,

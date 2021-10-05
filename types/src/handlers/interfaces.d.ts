@@ -76,6 +76,11 @@ export interface TorusKey extends TorusKeyPub {
     typeOfUser?: "v1" | "v2";
     isNewUser?: boolean;
 }
+export interface TorusJsPublicKey {
+    address: string;
+    typeOfUser?: TorusKey["typeOfUser"];
+    newUser?: boolean;
+}
 export interface TorusAggregateVerifierResponse {
     userInfo: (TorusVerifierResponse & LoginWindowResponse)[];
 }
@@ -127,6 +132,7 @@ export interface DirectWebSDKArgs {
      *
      */
     baseUrl: string;
+    metadataUrl?: string;
     /**
      * Torus Network to target options: mainnet | testnet
      * @defaultValue mainnet
