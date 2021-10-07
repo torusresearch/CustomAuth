@@ -96,7 +96,6 @@ class DirectWebSDK {
       popupFeatures,
     };
     const torus = new Torus({
-      enableLogging,
       metadataHost: metadataUrl,
       allowHost: "https://signer.tor.us/api/allow",
     });
@@ -423,14 +422,15 @@ class DirectWebSDK {
     additionalParams?: extraParams
   ): Promise<TorusKey> {
     const { torusNodeEndpoints, torusNodePub, torusIndexes } = await this.nodeDetailManager.getNodeDetails();
+
     const response = await (this.enableOneKey
       ? this.torus.oneKey.getPublicAddress(torusNodeEndpoints, torusNodePub, { verifier, verifierId }, true)
       : this.torus.getPublicAddress(torusNodeEndpoints, torusNodePub, { verifier, verifierId }, true));
+    if (typeof response === "string") throw new Error("must use extended pub key");
+
     const data = await (this.enableOneKey
       ? this.torus.oneKey.retrieveShares(torusNodeEndpoints, torusIndexes, verifier, verifierParams, idToken, additionalParams)
       : this.torus.retrieveShares(torusNodeEndpoints, torusIndexes, verifier, verifierParams, idToken, additionalParams));
-
-    if (typeof response === "string") throw new Error("must use extended pub key");
     if (data.ethAddress.toLowerCase() !== response.address.toLowerCase()) {
       throw new Error("data ethAddress does not match response address");
     }
