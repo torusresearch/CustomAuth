@@ -146,6 +146,10 @@ export interface DirectWebSDKArgs {
    */
   baseUrl: string;
 
+  /**
+   * Specify a custom metadata host
+   * @defaultValue https://metadata.tor.us
+   */
   metadataUrl?: string;
 
   /**
@@ -168,6 +172,13 @@ export interface DirectWebSDKArgs {
    * @defaultValue false
    */
   enableLogging?: boolean;
+
+  /**
+   * Use one key features
+   *
+   * @defaultValue false
+   */
+  enableOneKey?: boolean;
 
   /**
    * For chrome extensions, the general methods for capturing auth redirects don't work.

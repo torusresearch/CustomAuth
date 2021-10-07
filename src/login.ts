@@ -49,6 +49,8 @@ import log from "./utils/loglevel";
 class DirectWebSDK {
   isInitialized: boolean;
 
+  enableOneKey: boolean;
+
   config: {
     baseUrl: string;
     redirectToOpener: boolean;
@@ -68,6 +70,7 @@ class DirectWebSDK {
     network = TORUS_NETWORK.MAINNET,
     proxyContractAddress,
     enableLogging = false,
+    enableOneKey = false,
     redirectToOpener = false,
     redirectPathName = "redirect",
     apiKey = "torus-default",
@@ -79,6 +82,7 @@ class DirectWebSDK {
     metadataUrl = "https://metadata.tor.us",
   }: DirectWebSDKArgs) {
     this.isInitialized = false;
+    this.enableOneKey = enableOneKey;
     const baseUri = new URL(baseUrl);
     this.config = {
       baseUrl: padUrlString(baseUri),
@@ -415,7 +419,7 @@ class DirectWebSDK {
     idToken: string,
     additionalParams?: extraParams
   ): Promise<TorusKey> {
-    const { oneKey = false, ...retrieveSharesAdditionParams } = additionalParams ?? {};
+    const { oneKey = this.enableOneKey, ...retrieveSharesAdditionParams } = additionalParams ?? {};
 
     const { torusNodeEndpoints, torusNodePub, torusIndexes } = await this.nodeDetailManager.getNodeDetails();
     const response = await (oneKey

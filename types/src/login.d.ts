@@ -4,6 +4,7 @@ import { AggregateLoginParams, DirectWebSDKArgs, extraParams, HybridAggregateLog
 import { REDIRECT_PARAMS_STORAGE_METHOD_TYPE, UX_MODE_TYPE } from "./utils/enums";
 declare class DirectWebSDK {
     isInitialized: boolean;
+    enableOneKey: boolean;
     config: {
         baseUrl: string;
         redirectToOpener: boolean;
@@ -15,7 +16,7 @@ declare class DirectWebSDK {
     };
     torus: Torus;
     nodeDetailManager: NodeDetailManager;
-    constructor({ baseUrl, network, proxyContractAddress, enableLogging, redirectToOpener, redirectPathName, apiKey, uxMode, redirectParamsStorageMethod, locationReplaceOnRedirect, popupFeatures, skipFetchingNodeDetails, metadataUrl, }: DirectWebSDKArgs);
+    constructor({ baseUrl, network, proxyContractAddress, enableLogging, enableOneKey, redirectToOpener, redirectPathName, apiKey, uxMode, redirectParamsStorageMethod, locationReplaceOnRedirect, popupFeatures, skipFetchingNodeDetails, metadataUrl, }: DirectWebSDKArgs);
     init({ skipSw, skipInit, skipPrefetch }?: InitParams): Promise<void>;
     private handlePrefetchRedirectUri;
     triggerLogin(args: SubVerifierDetails & {
