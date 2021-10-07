@@ -212,7 +212,10 @@ class DirectWebSDK {
     const userInfo = await loginHandler.getUserInfo(loginParams);
     if (registerOnly) {
       const { torusNodeEndpoints, torusNodePub } = await this.nodeDetailManager.getNodeDetails();
-      const torusPubKey = await this.torus.getPublicAddress(torusNodeEndpoints, torusNodePub, { verifier, verifierId: userInfo.verifierId }, true);
+      const torusPubKey = await (this.enableOneKey
+        ? this.torus.oneKey.getPublicAddress(torusNodeEndpoints, torusNodePub, { verifier, verifierId: userInfo.verifierId }, true)
+        : this.torus.getPublicAddress(torusNodeEndpoints, torusNodePub, { verifier, verifierId: userInfo.verifierId }, true));
+
       const res = {
         userInfo: {
           ...userInfo,
@@ -419,15 +422,13 @@ class DirectWebSDK {
     idToken: string,
     additionalParams?: extraParams
   ): Promise<TorusKey> {
-    const { oneKey = this.enableOneKey, ...retrieveSharesAdditionParams } = additionalParams ?? {};
-
     const { torusNodeEndpoints, torusNodePub, torusIndexes } = await this.nodeDetailManager.getNodeDetails();
-    const response = await (oneKey
+    const response = await (this.enableOneKey
       ? this.torus.oneKey.getPublicAddress(torusNodeEndpoints, torusNodePub, { verifier, verifierId }, true)
       : this.torus.getPublicAddress(torusNodeEndpoints, torusNodePub, { verifier, verifierId }, true));
-    const data = await (oneKey
-      ? this.torus.oneKey.retrieveShares(torusNodeEndpoints, torusIndexes, verifier, verifierParams, idToken, retrieveSharesAdditionParams)
-      : this.torus.retrieveShares(torusNodeEndpoints, torusIndexes, verifier, verifierParams, idToken, retrieveSharesAdditionParams));
+    const data = await (this.enableOneKey
+      ? this.torus.oneKey.retrieveShares(torusNodeEndpoints, torusIndexes, verifier, verifierParams, idToken, additionalParams)
+      : this.torus.retrieveShares(torusNodeEndpoints, torusIndexes, verifier, verifierParams, idToken, additionalParams));
 
     if (typeof response === "string") throw new Error("must use extended pub key");
     if (data.ethAddress.toLowerCase() !== response.address.toLowerCase()) {
