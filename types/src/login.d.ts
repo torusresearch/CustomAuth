@@ -1,10 +1,9 @@
 import NodeDetailManager from "@toruslabs/fetch-node-details";
 import Torus from "@toruslabs/torus.js";
-import { AggregateLoginParams, DirectWebSDKArgs, extraParams, HybridAggregateLoginParams, InitParams, RedirectResult, RedirectResultParams, SubVerifierDetails, TorusAggregateLoginResponse, TorusHybridAggregateLoginResponse, TorusKey, TorusLoginResponse, TorusSubVerifierInfo } from "./handlers/interfaces";
+import { AggregateLoginParams, DirectWebSDKArgs, ExtraParams, HybridAggregateLoginParams, InitParams, RedirectResult, RedirectResultParams, SubVerifierDetails, TorusAggregateLoginResponse, TorusHybridAggregateLoginResponse, TorusKey, TorusLoginResponse, TorusSubVerifierInfo } from "./handlers/interfaces";
 import { REDIRECT_PARAMS_STORAGE_METHOD_TYPE, UX_MODE_TYPE } from "./utils/enums";
 declare class DirectWebSDK {
     isInitialized: boolean;
-    enableOneKey: boolean;
     config: {
         baseUrl: string;
         redirectToOpener: boolean;
@@ -26,7 +25,7 @@ declare class DirectWebSDK {
     triggerHybridAggregateLogin(args: HybridAggregateLoginParams): Promise<TorusHybridAggregateLoginResponse>;
     getTorusKey(verifier: string, verifierId: string, verifierParams: {
         verifier_id: string;
-    }, idToken: string, additionalParams?: extraParams): Promise<TorusKey>;
+    }, idToken: string, additionalParams?: ExtraParams): Promise<TorusKey>;
     getAggregateTorusKey(verifier: string, verifierId: string, // unique identifier for user e.g. sub on jwt
     subVerifierInfoArray: TorusSubVerifierInfo[]): Promise<TorusKey>;
     getPostboxKeyFrom1OutOf1(privKey: string, nonce: string): string;

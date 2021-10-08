@@ -16,7 +16,7 @@ export interface Auth0UserInfo {
     sub: string;
     nickname: string;
 }
-export interface extraParams {
+export interface ExtraParams {
     [key: string]: unknown;
 }
 export declare type WebAuthnExtraParams = {
@@ -73,13 +73,11 @@ export interface TorusKey extends TorusKeyPub {
     publicAddress: string;
     privateKey: string;
     metadataNonce: string;
-    typeOfUser?: "v1" | "v2";
-    isNewUser?: boolean;
+    typeOfUser: "v1" | "v2";
 }
 export interface TorusJsPublicKey {
     address: string;
-    typeOfUser?: TorusKey["typeOfUser"];
-    newUser?: boolean;
+    typeOfUser: TorusKey["typeOfUser"];
 }
 export interface TorusAggregateVerifierResponse {
     userInfo: (TorusVerifierResponse & LoginWindowResponse)[];

@@ -6,7 +6,7 @@ import createHandler from "./handlers/HandlerFactory";
 import {
   AggregateLoginParams,
   DirectWebSDKArgs,
-  extraParams,
+  ExtraParams,
   HybridAggregateLoginParams,
   ILoginHandler,
   InitParams,
@@ -49,8 +49,6 @@ import log from "./utils/loglevel";
 class DirectWebSDK {
   isInitialized: boolean;
 
-  enableOneKey: boolean;
-
   config: {
     baseUrl: string;
     redirectToOpener: boolean;
@@ -82,7 +80,6 @@ class DirectWebSDK {
     metadataUrl = "https://metadata.tor.us",
   }: DirectWebSDKArgs) {
     this.isInitialized = false;
-    this.enableOneKey = enableOneKey;
     const baseUri = new URL(baseUrl);
     this.config = {
       baseUrl: padUrlString(baseUri),
@@ -96,6 +93,7 @@ class DirectWebSDK {
       popupFeatures,
     };
     const torus = new Torus({
+      enableOneKey,
       metadataHost: metadataUrl,
       allowHost: "https://signer.tor.us/api/allow",
     });
@@ -211,9 +209,7 @@ class DirectWebSDK {
     const userInfo = await loginHandler.getUserInfo(loginParams);
     if (registerOnly) {
       const { torusNodeEndpoints, torusNodePub } = await this.nodeDetailManager.getNodeDetails();
-      const torusPubKey = await (this.enableOneKey
-        ? this.torus.oneKey.getPublicAddress(torusNodeEndpoints, torusNodePub, { verifier, verifierId: userInfo.verifierId }, true)
-        : this.torus.getPublicAddress(torusNodeEndpoints, torusNodePub, { verifier, verifierId: userInfo.verifierId }, true));
+      const torusPubKey = await this.torus.getPublicAddress(torusNodeEndpoints, torusNodePub, { verifier, verifierId: userInfo.verifierId }, true);
 
       const res = {
         userInfo: {
@@ -225,6 +221,7 @@ class DirectWebSDK {
         throw new Error("should have returned extended pub key");
       }
       const torusKey: TorusKey = {
+        typeOfUser: torusPubKey.typeOfUser,
         pubKey: {
           pub_key_X: torusPubKey.X,
           pub_key_Y: torusPubKey.Y,
@@ -419,32 +416,30 @@ class DirectWebSDK {
     verifierId: string,
     verifierParams: { verifier_id: string },
     idToken: string,
-    additionalParams?: extraParams
+    additionalParams?: ExtraParams
   ): Promise<TorusKey> {
     const { torusNodeEndpoints, torusNodePub, torusIndexes } = await this.nodeDetailManager.getNodeDetails();
+    log.debug("torus-direct/getTorusKey", { torusNodeEndpoints, torusNodePub, torusIndexes });
 
-    const response = await (this.enableOneKey
-      ? this.torus.oneKey.getPublicAddress(torusNodeEndpoints, torusNodePub, { verifier, verifierId }, true)
-      : this.torus.getPublicAddress(torusNodeEndpoints, torusNodePub, { verifier, verifierId }, true));
-    if (typeof response === "string") throw new Error("must use extended pub key");
+    const publicAddress = await this.torus.getPublicAddress(torusNodeEndpoints, torusNodePub, { verifier, verifierId }, true);
+    if (typeof publicAddress === "string") throw new Error("must use extended pub key");
+    log.debug("torus-direct/getTorusKey", { publicAddress });
 
-    const data = await (this.enableOneKey
-      ? this.torus.oneKey.retrieveShares(torusNodeEndpoints, torusIndexes, verifier, verifierParams, idToken, additionalParams)
-      : this.torus.retrieveShares(torusNodeEndpoints, torusIndexes, verifier, verifierParams, idToken, additionalParams));
-    if (data.ethAddress.toLowerCase() !== response.address.toLowerCase()) {
+    const shares = await this.torus.retrieveShares(torusNodeEndpoints, torusIndexes, verifier, verifierParams, idToken, additionalParams);
+    if (shares.ethAddress.toLowerCase() !== publicAddress.address.toLowerCase()) {
       throw new Error("data ethAddress does not match response address");
     }
+    log.debug("torus-direct/getTorusKey", { shares });
 
-    const torusKey = response as unknown as TorusJsPublicKey;
+    const torusKey = publicAddress as unknown as TorusJsPublicKey;
     return {
-      publicAddress: data.ethAddress.toString(),
-      privateKey: data.privKey.toString(),
-      metadataNonce: data.metadataNonce.toString("hex"),
-      typeOfUser: torusKey.typeOfUser ?? "v1",
-      isNewUser: torusKey.newUser,
+      publicAddress: shares.ethAddress.toString(),
+      privateKey: shares.privKey.toString(),
+      metadataNonce: shares.metadataNonce.toString("hex"),
+      typeOfUser: torusKey.typeOfUser,
       pubKey: {
-        pub_key_X: response.X,
-        pub_key_Y: response.Y,
+        pub_key_X: publicAddress.X,
+        pub_key_Y: publicAddress.Y,
       },
     };
   }
