@@ -425,10 +425,7 @@ class DirectWebSDK {
     if (typeof address === "string") throw new Error("must use extended pub key");
     log.debug("torus-direct/getTorusKey", { getPublicAddress: address });
 
-    const shares = await this.torus.retrieveShares(torusNodeEndpoints, torusIndexes, verifier, verifierParams, idToken, {
-      typeOfUser: address.typeOfUser,
-      ...additionalParams,
-    });
+    const shares = await this.torus.retrieveShares(torusNodeEndpoints, torusIndexes, verifier, verifierParams, idToken, additionalParams);
     if (shares.ethAddress.toLowerCase() !== address.address.toLowerCase()) {
       throw new Error("data ethAddress does not match response address");
     }
