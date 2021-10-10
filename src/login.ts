@@ -421,25 +421,28 @@ class DirectWebSDK {
     const { torusNodeEndpoints, torusNodePub, torusIndexes } = await this.nodeDetailManager.getNodeDetails();
     log.debug("torus-direct/getTorusKey", { torusNodeEndpoints, torusNodePub, torusIndexes });
 
-    const publicAddress = await this.torus.getPublicAddress(torusNodeEndpoints, torusNodePub, { verifier, verifierId }, true);
-    if (typeof publicAddress === "string") throw new Error("must use extended pub key");
-    log.debug("torus-direct/getTorusKey", { publicAddress });
+    const address = await this.torus.getPublicAddress(torusNodeEndpoints, torusNodePub, { verifier, verifierId }, true);
+    if (typeof address === "string") throw new Error("must use extended pub key");
+    log.debug("torus-direct/getTorusKey", { getPublicAddress: address });
 
-    const shares = await this.torus.retrieveShares(torusNodeEndpoints, torusIndexes, verifier, verifierParams, idToken, additionalParams);
-    if (shares.ethAddress.toLowerCase() !== publicAddress.address.toLowerCase()) {
+    const shares = await this.torus.retrieveShares(torusNodeEndpoints, torusIndexes, verifier, verifierParams, idToken, {
+      typeOfUser: address.typeOfUser,
+      ...additionalParams,
+    });
+    if (shares.ethAddress.toLowerCase() !== address.address.toLowerCase()) {
       throw new Error("data ethAddress does not match response address");
     }
-    log.debug("torus-direct/getTorusKey", { shares });
+    log.debug("torus-direct/getTorusKey", { retrieveShares: shares });
 
-    const torusKey = publicAddress as unknown as TorusJsPublicKey;
+    const torusKey = address as unknown as TorusJsPublicKey;
     return {
       publicAddress: shares.ethAddress.toString(),
       privateKey: shares.privKey.toString(),
       metadataNonce: shares.metadataNonce.toString("hex"),
       typeOfUser: torusKey.typeOfUser,
       pubKey: {
-        pub_key_X: publicAddress.X,
-        pub_key_Y: publicAddress.Y,
+        pub_key_X: address.X,
+        pub_key_Y: address.Y,
       },
     };
   }
