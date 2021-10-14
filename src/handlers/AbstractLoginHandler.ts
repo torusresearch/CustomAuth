@@ -1,4 +1,3 @@
-/* eslint-disable no-empty-function */
 import randomId from "@chaitanyapotti/random-id";
 import { BroadcastChannel } from "broadcast-channel";
 

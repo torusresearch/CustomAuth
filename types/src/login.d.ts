@@ -1,6 +1,6 @@
 import NodeDetailManager from "@toruslabs/fetch-node-details";
 import Torus from "@toruslabs/torus.js";
-import { AggregateLoginParams, DirectWebSDKArgs, extraParams, HybridAggregateLoginParams, InitParams, RedirectResult, RedirectResultParams, SubVerifierDetails, TorusAggregateLoginResponse, TorusHybridAggregateLoginResponse, TorusKey, TorusLoginResponse, TorusSubVerifierInfo } from "./handlers/interfaces";
+import { AggregateLoginParams, DirectWebSDKArgs, ExtraParams, HybridAggregateLoginParams, InitParams, RedirectResult, RedirectResultParams, SubVerifierDetails, TorusAggregateLoginResponse, TorusHybridAggregateLoginResponse, TorusKey, TorusLoginResponse, TorusSubVerifierInfo } from "./handlers/interfaces";
 import { REDIRECT_PARAMS_STORAGE_METHOD_TYPE, UX_MODE_TYPE } from "./utils/enums";
 declare class DirectWebSDK {
     isInitialized: boolean;
@@ -15,7 +15,7 @@ declare class DirectWebSDK {
     };
     torus: Torus;
     nodeDetailManager: NodeDetailManager;
-    constructor({ baseUrl, network, proxyContractAddress, enableLogging, redirectToOpener, redirectPathName, apiKey, uxMode, redirectParamsStorageMethod, locationReplaceOnRedirect, popupFeatures, skipFetchingNodeDetails, }: DirectWebSDKArgs);
+    constructor({ baseUrl, network, proxyContractAddress, enableLogging, enableOneKey, redirectToOpener, redirectPathName, apiKey, uxMode, redirectParamsStorageMethod, locationReplaceOnRedirect, popupFeatures, skipFetchingNodeDetails, metadataUrl, }: DirectWebSDKArgs);
     init({ skipSw, skipInit, skipPrefetch }?: InitParams): Promise<void>;
     private handlePrefetchRedirectUri;
     triggerLogin(args: SubVerifierDetails & {
@@ -25,9 +25,10 @@ declare class DirectWebSDK {
     triggerHybridAggregateLogin(args: HybridAggregateLoginParams): Promise<TorusHybridAggregateLoginResponse>;
     getTorusKey(verifier: string, verifierId: string, verifierParams: {
         verifier_id: string;
-    }, idToken: string, additionalParams?: extraParams): Promise<TorusKey>;
+    }, idToken: string, additionalParams?: ExtraParams): Promise<TorusKey>;
     getAggregateTorusKey(verifier: string, verifierId: string, // unique identifier for user e.g. sub on jwt
     subVerifierInfoArray: TorusSubVerifierInfo[]): Promise<TorusKey>;
+    getPostboxKeyFrom1OutOf1(privKey: string, nonce: string): string;
     getRedirectResult({ replaceUrl, clearLoginDetails }?: RedirectResultParams): Promise<RedirectResult>;
 }
 export default DirectWebSDK;

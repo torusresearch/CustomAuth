@@ -16,7 +16,7 @@ export interface Auth0UserInfo {
     sub: string;
     nickname: string;
 }
-export interface extraParams {
+export interface ExtraParams {
     [key: string]: unknown;
 }
 export declare type WebAuthnExtraParams = {
@@ -73,6 +73,7 @@ export interface TorusKey extends TorusKeyPub {
     publicAddress: string;
     privateKey: string;
     metadataNonce: string;
+    typeOfUser: "v1" | "v2";
 }
 export interface TorusAggregateVerifierResponse {
     userInfo: (TorusVerifierResponse & LoginWindowResponse)[];
@@ -126,6 +127,11 @@ export interface DirectWebSDKArgs {
      */
     baseUrl: string;
     /**
+     * Specify a custom metadata host
+     * @defaultValue https://metadata.tor.us
+     */
+    metadataUrl?: string;
+    /**
      * Torus Network to target options: mainnet | testnet
      * @defaultValue mainnet
      */
@@ -143,6 +149,12 @@ export interface DirectWebSDKArgs {
      * @defaultValue false
      */
     enableLogging?: boolean;
+    /**
+     * Use one key features
+     *
+     * @defaultValue false
+     */
+    enableOneKey?: boolean;
     /**
      * For chrome extensions, the general methods for capturing auth redirects don't work.
      * So, we redirect to the window which opens the auth window.
