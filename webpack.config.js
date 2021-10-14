@@ -14,8 +14,8 @@ const { NODE_ENV = "production" } = process.env;
 
 const baseConfig = {
   mode: NODE_ENV,
-  devtool: NODE_ENV === "production" ? false : "source-map",
-  entry: "./index.ts",
+  devtool: "source-map",
+  entry: "./src/index.ts",
   target: "web",
   output: {
     path: path.resolve(__dirname, "dist"),
@@ -40,25 +40,11 @@ const optimization = {
   },
 };
 
-const babelLoaderWithPolyfills = {
+const babelLoader = {
   test: /\.(ts|js)x?$/,
   exclude: /(node_modules|bower_components)/,
   use: {
     loader: "babel-loader",
-  },
-};
-
-const babelLoader = { ...babelLoaderWithPolyfills, use: { loader: "babel-loader", options: { plugins: ["@babel/transform-runtime"] } } };
-
-const umdPolyfilledConfig = {
-  ...baseConfig,
-  output: {
-    ...baseConfig.output,
-    filename: `${pkgName}.polyfill.umd.min.js`,
-    libraryTarget: "umd",
-  },
-  module: {
-    rules: [babelLoaderWithPolyfills],
   },
 };
 
@@ -115,7 +101,7 @@ const cjsBundledConfig = {
   externals: [...Object.keys(pkg.dependencies).filter((x) => !packagesToInclude.includes(x)), /^(@babel\/runtime)/i],
 };
 
-module.exports = [umdPolyfilledConfig, umdConfig, cjsConfig, cjsBundledConfig];
+module.exports = [umdConfig, cjsConfig, cjsBundledConfig];
 // module.exports = [cjsConfig];
 // V5
 // experiments: {

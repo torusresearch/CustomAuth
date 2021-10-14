@@ -21,6 +21,7 @@
       "ecmaVersion": 11,
       "project": "./tsconfig.json"
     },
+    "ignorePatterns": "*.config.js",
     "rules": {
       "@typescript-eslint/naming-convention": [
         "error",

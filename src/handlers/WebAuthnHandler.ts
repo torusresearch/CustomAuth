@@ -1,7 +1,7 @@
+import { get } from "@toruslabs/http-helpers";
 import deepmerge from "deepmerge";
 
 import { LOGIN_TYPE, UX_MODE_TYPE } from "../utils/enums";
-import { get } from "../utils/httpHelpers";
 import log from "../utils/loglevel";
 import AbstractLoginHandler from "./AbstractLoginHandler";
 import { Auth0ClientOptions, LoginWindowResponse, TorusGenericObject, TorusVerifierResponse } from "./interfaces";

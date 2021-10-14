@@ -1,10 +1,10 @@
+import { get } from "@toruslabs/http-helpers";
 import deepmerge from "deepmerge";
 import jwtDecode from "jwt-decode";
 import log from "loglevel";
 
 import { LOGIN_TYPE, UX_MODE, UX_MODE_TYPE } from "../utils/enums";
 import { constructURL, getVerifierId, padUrlString } from "../utils/helpers";
-import { get } from "../utils/httpHelpers";
 import PopupHandler from "../utils/PopupHandler";
 import AbstractLoginHandler from "./AbstractLoginHandler";
 import { Auth0ClientOptions, Auth0UserInfo, LoginWindowResponse, TorusGenericObject, TorusVerifierResponse } from "./interfaces";

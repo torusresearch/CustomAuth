@@ -1,10 +1,10 @@
+import { get, post } from "@toruslabs/http-helpers";
 import { BroadcastChannel } from "broadcast-channel";
 import deepmerge from "deepmerge";
 import jwtDecode from "jwt-decode";
 
 import { LOGIN_TYPE, UX_MODE_TYPE } from "../utils/enums";
 import { broadcastChannelOptions, getVerifierId, padUrlString } from "../utils/helpers";
-import { get, post } from "../utils/httpHelpers";
 import log from "../utils/loglevel";
 import AbstractLoginHandler from "./AbstractLoginHandler";
 import { Auth0ClientOptions, Auth0UserInfo, LoginWindowResponse, PopupResponse, TorusGenericObject, TorusVerifierResponse } from "./interfaces";
