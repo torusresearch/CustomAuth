@@ -16,7 +16,6 @@ import {
   SubVerifierDetails,
   TorusAggregateLoginResponse,
   TorusHybridAggregateLoginResponse,
-  TorusJsPublicKey,
   TorusKey,
   TorusLoginResponse,
   TorusSubVerifierInfo,
@@ -431,12 +430,11 @@ class DirectWebSDK {
     }
     log.debug("torus-direct/getTorusKey", { retrieveShares: shares });
 
-    const torusKey = address as unknown as TorusJsPublicKey;
     return {
       publicAddress: shares.ethAddress.toString(),
       privateKey: shares.privKey.toString(),
       metadataNonce: shares.metadataNonce.toString("hex"),
-      typeOfUser: torusKey.typeOfUser,
+      typeOfUser: address.typeOfUser,
       pubKey: {
         pub_key_X: address.X,
         pub_key_Y: address.Y,
