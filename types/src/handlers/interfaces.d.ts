@@ -75,10 +75,6 @@ export interface TorusKey extends TorusKeyPub {
     metadataNonce: string;
     typeOfUser: "v1" | "v2";
 }
-export interface TorusJsPublicKey {
-    address: string;
-    typeOfUser: TorusKey["typeOfUser"];
-}
 export interface TorusAggregateVerifierResponse {
     userInfo: (TorusVerifierResponse & LoginWindowResponse)[];
 }
