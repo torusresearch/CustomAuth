@@ -100,7 +100,7 @@ class DirectWebSDK {
     this.torus = torus;
     const ethNetwork = network === TORUS_NETWORK.TESTNET ? ETHEREUM_NETWORK.ROPSTEN : network;
     this.nodeDetailManager = new NodeDetailManager({ network: ethNetwork, proxyAddress: proxyContractAddress || CONTRACT_MAP[network] });
-    if (!skipFetchingNodeDetails) this.nodeDetailManager.getNodeDetails();
+    if (!skipFetchingNodeDetails) this.nodeDetailManager.getNodeDetails(false, true);
     if (enableLogging) log.enableAll();
     else log.disableAll();
   }
@@ -207,7 +207,7 @@ class DirectWebSDK {
 
     const userInfo = await loginHandler.getUserInfo(loginParams);
     if (registerOnly) {
-      const { torusNodeEndpoints, torusNodePub } = await this.nodeDetailManager.getNodeDetails();
+      const { torusNodeEndpoints, torusNodePub } = await this.nodeDetailManager.getNodeDetails(false, true);
       const torusPubKey = await this.torus.getPublicAddress(torusNodeEndpoints, torusNodePub, { verifier, verifierId: userInfo.verifierId }, true);
 
       const res = {
@@ -417,7 +417,7 @@ class DirectWebSDK {
     idToken: string,
     additionalParams?: ExtraParams
   ): Promise<TorusKey> {
-    const { torusNodeEndpoints, torusNodePub, torusIndexes } = await this.nodeDetailManager.getNodeDetails();
+    const { torusNodeEndpoints, torusNodePub, torusIndexes } = await this.nodeDetailManager.getNodeDetails(false, true);
     log.debug("torus-direct/getTorusKey", { torusNodeEndpoints, torusNodePub, torusIndexes });
 
     const address = await this.torus.getPublicAddress(torusNodeEndpoints, torusNodePub, { verifier, verifierId }, true);
