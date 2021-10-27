@@ -159,7 +159,11 @@ class PopupMode extends React.Component<IProps, IState> {
     const hash = this.getPedersenHashRecursively(message);
     const signedMessage = sign(keyPair, hash);
     this.setState({ signingMessage: message, signedMessage: signedMessage as unknown as ec.Signature });
-    this.printToConsole(`Message signed successfully: TORUS STARKWARE- ${message}`);
+    this.printToConsole({
+      pedersenHash: hash,
+      info: `Message signed successfully: TORUS STARKWARE- ${message}`,
+      signedMesssage: signedMessage,
+    });
   };
 
   validateStarkMessage = (e: any) => {
