@@ -1,4 +1,4 @@
-# Torus-direct-web-sdk
+# CustomAuth Web SDKs (Previously DirectAuth)
 
 [![npm version](https://badge.fury.io/js/%40toruslabs%2Ftorus-direct-web-sdk.svg)](https://badge.fury.io/js/%40toruslabs%2Ftorus-direct-web-sdk)
 ![npm](https://img.shields.io/npm/dw/@toruslabs/torus-direct-web-sdk)
