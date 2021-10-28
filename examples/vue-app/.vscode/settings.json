@@ -1,4 +1,7 @@
 {
+  "editor.codeActionsOnSave": {
+    "source.fixAll": true
+  },
   "eslint.options": {
     "root": true,
     "env": {
