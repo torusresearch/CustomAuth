@@ -69,6 +69,7 @@ import {
   HOSTED_SMS_PASSWORDLESS,
   LINE,
   LINKEDIN,
+  REDDIT,
   TWITTER,
   verifierMap,
   WEIBO,
@@ -99,6 +100,7 @@ export default Vue.extend({
         [TWITTER]: { domain: AUTH_DOMAIN },
         [WEIBO]: { domain: AUTH_DOMAIN },
         [LINE]: { domain: AUTH_DOMAIN },
+        [REDDIT]: { domain: AUTH_DOMAIN, connection: "Reddit", verifierIdField: "name", isVerifierIdCaseSensitive: false },
         [COGNITO]: { domain: COGNITO_AUTH_DOMAIN, identity_provider: "Google", response_type: "token", user_info_endpoint: "userInfo" },
       };
     },

@@ -25,7 +25,7 @@ export const verifierMap = {
     verifier: "google-lrc",
   },
   [FACEBOOK]: { name: "Facebook", typeOfLogin: "facebook", clientId: "617201755556395", verifier: "facebook-lrc" },
-  [REDDIT]: { name: "Reddit", typeOfLogin: "reddit", clientId: "YNsv1YtA_o66fA", verifier: "torus-reddit-test" },
+  [REDDIT]: { name: "Reddit", typeOfLogin: "jwt", clientId: "RKlRuuRoDKOItbJSoOZabDLzizvd1uKn", verifier: "torus-auth0-reddit-lrc" },
   [TWITCH]: { name: "Twitch", typeOfLogin: "twitch", clientId: "f5and8beke76mzutmics0zu4gw10dj", verifier: "twitch-lrc" },
   [DISCORD]: { name: "Discord", typeOfLogin: "discord", clientId: "682533837464666198", verifier: "discord-lrc" },
   [EMAIL_PASSWORD]: {
