@@ -34,8 +34,8 @@ export const verifierMap = {
   },
   [REDDIT]: {
     name: "Reddit",
-    typeOfLogin: "reddit",
-    clientId: "YNsv1YtA_o66fA",
+    typeOfLogin: "jwt",
+    clientId: "RKlRuuRoDKOItbJSoOZabDLzizvd1uKn",
     verifier: "torus-reddit-test",
   },
   [TWITCH]: {

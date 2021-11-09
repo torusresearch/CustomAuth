@@ -21,6 +21,7 @@ import {
   WEIBO,
   COGNITO_AUTH_DOMAIN,
   COGNITO,
+  REDDIT,
 } from "../constants";
 
 interface IState {
@@ -98,6 +99,7 @@ class PopupMode extends React.Component<IProps, IState> {
       [WEIBO]: { domain: AUTH_DOMAIN },
       [LINE]: { domain: AUTH_DOMAIN },
       [COGNITO]: { domain: COGNITO_AUTH_DOMAIN, identity_provider: "Google", response_type: "token", user_info_endpoint: "userInfo" },
+      [REDDIT]: { domain: AUTH_DOMAIN, connection: "Reddit", verifierIdField: "name", isVerifierIdCaseSensitive: false },
     };
   };
 
