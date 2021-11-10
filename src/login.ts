@@ -5,7 +5,7 @@ import { keccak256 } from "web3-utils";
 import createHandler from "./handlers/HandlerFactory";
 import {
   AggregateLoginParams,
-  DirectWebSDKArgs,
+  CustomAuthArgs,
   ExtraParams,
   HybridAggregateLoginParams,
   ILoginHandler,
@@ -45,7 +45,7 @@ import {
 } from "./utils/helpers";
 import log from "./utils/loglevel";
 
-class DirectWebSDK {
+class CustomAuth {
   isInitialized: boolean;
 
   config: {
@@ -77,7 +77,7 @@ class DirectWebSDK {
     popupFeatures,
     skipFetchingNodeDetails = false,
     metadataUrl = "https://metadata.tor.us",
-  }: DirectWebSDKArgs) {
+  }: CustomAuthArgs) {
     this.isInitialized = false;
     const baseUri = new URL(baseUrl);
     this.config = {
@@ -134,40 +134,6 @@ class DirectWebSDK {
       return;
     }
     this.isInitialized = true;
-  }
-
-  private async handlePrefetchRedirectUri(): Promise<void> {
-    if (!document) return Promise.resolve();
-    return new Promise((resolve, reject) => {
-      const redirectHtml = document.createElement("link");
-      redirectHtml.href = this.config.redirect_uri;
-      if (window.location.origin !== new URL(this.config.redirect_uri).origin) redirectHtml.crossOrigin = "anonymous";
-      redirectHtml.type = "text/html";
-      redirectHtml.rel = "prefetch";
-      const resolveFn = () => {
-        this.isInitialized = true;
-        resolve();
-      };
-      try {
-        if (redirectHtml.relList && redirectHtml.relList.supports) {
-          if (redirectHtml.relList.supports("prefetch")) {
-            redirectHtml.onload = resolveFn;
-            redirectHtml.onerror = () => {
-              reject(new Error(`Please serve redirect.html present in serviceworker folder of this package on ${this.config.redirect_uri}`));
-            };
-            document.head.appendChild(redirectHtml);
-          } else {
-            // Link prefetch is not supported. pass through
-            resolveFn();
-          }
-        } else {
-          // Link prefetch is not detectable. pass through
-          resolveFn();
-        }
-      } catch (err) {
-        resolveFn();
-      }
-    });
   }
 
   async triggerLogin(args: SubVerifierDetails & { registerOnly?: boolean }): Promise<TorusLoginResponse> {
@@ -553,6 +519,40 @@ class DirectWebSDK {
 
     return { method, result, state: instanceParameters || {}, hashParameters, args, ...rest };
   }
+
+  private async handlePrefetchRedirectUri(): Promise<void> {
+    if (!document) return Promise.resolve();
+    return new Promise((resolve, reject) => {
+      const redirectHtml = document.createElement("link");
+      redirectHtml.href = this.config.redirect_uri;
+      if (window.location.origin !== new URL(this.config.redirect_uri).origin) redirectHtml.crossOrigin = "anonymous";
+      redirectHtml.type = "text/html";
+      redirectHtml.rel = "prefetch";
+      const resolveFn = () => {
+        this.isInitialized = true;
+        resolve();
+      };
+      try {
+        if (redirectHtml.relList && redirectHtml.relList.supports) {
+          if (redirectHtml.relList.supports("prefetch")) {
+            redirectHtml.onload = resolveFn;
+            redirectHtml.onerror = () => {
+              reject(new Error(`Please serve redirect.html present in serviceworker folder of this package on ${this.config.redirect_uri}`));
+            };
+            document.head.appendChild(redirectHtml);
+          } else {
+            // Link prefetch is not supported. pass through
+            resolveFn();
+          }
+        } else {
+          // Link prefetch is not detectable. pass through
+          resolveFn();
+        }
+      } catch (err) {
+        resolveFn();
+      }
+    });
+  }
 }
 
-export default DirectWebSDK;
+export default CustomAuth;

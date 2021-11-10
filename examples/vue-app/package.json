@@ -8,8 +8,8 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
+    "@toruslabs/customauth": "file:../../toruslabs-customauth-5.0.3.tgz",
     "@toruslabs/openlogin-starkkey": "^1.0.1",
-    "@toruslabs/torus-direct-web-sdk": "^5.0.3",
     "@types/elliptic": "^6.4.13",
     "core-js": "^3.16.2",
     "enc-utils": "^3.0.0",

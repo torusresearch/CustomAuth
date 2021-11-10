@@ -1,5 +1,5 @@
 import { Component, OnInit } from "@angular/core";
-import TorusSdk, { Auth0ClientOptions } from "@toruslabs/torus-direct-web-sdk";
+import TorusSdk, { Auth0ClientOptions } from "@toruslabs/customauth";
 
 import {
   verifierMap,

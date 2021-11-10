@@ -99,7 +99,7 @@ export type TorusLoginResponse = TorusSingleVerifierResponse & TorusKey;
 export type TorusAggregateLoginResponse = TorusAggregateVerifierResponse & TorusKey;
 export type TorusHybridAggregateLoginResponse = { singleLogin: TorusLoginResponse; aggregateLogins: TorusKey[] };
 
-export interface DirectWebSDKArgs {
+export interface CustomAuthArgs {
   /**
    * baseUrl , along with redirectPathName is used to construct the uri of page
    * where user will be redirected after login.
@@ -133,7 +133,7 @@ export interface DirectWebSDKArgs {
    * then user will be redirected to http://localhost:3000/auth page after login
    * where you can get login result by calling `getRedirectResult` on redirected page mount.
    *
-   * Please refer to examples https://github.com/torusresearch/torus-direct-web-sdk/tree/master/examples
+   * Please refer to examples https://github.com/torusresearch/customauth/tree/master/examples
    * for more understanding.
    *
    */
@@ -212,7 +212,7 @@ export interface DirectWebSDKArgs {
    * then user will be redirected to http://localhost:3000/auth page after login
    * where you can get login result by calling `getRedirectResult` on redirected page mount.
    *
-   * Please refer to examples https://github.com/torusresearch/torus-direct-web-sdk/tree/master/examples
+   * Please refer to examples https://github.com/torusresearch/customauth/tree/master/examples
    * for more understanding.
    *
    */
@@ -282,6 +282,11 @@ export interface InitParams {
 // REGION: AUTH0 PARAMS
 export interface BaseLoginOptions {
   /**
+   * If you need to send custom parameters to the Authorization Server,
+   * make sure to use the original parameter name.
+   */
+  [key: string]: unknown;
+  /**
    * - `'page'`: displays the UI with a full page view
    * - `'popup'`: displays the UI with a popup window
    * - `'touch'`: displays the UI in a way that leverages a touch interface
@@ -335,12 +340,6 @@ export interface BaseLoginOptions {
    * the Login Widget.
    */
   connection?: string;
-
-  /**
-   * If you need to send custom parameters to the Authorization Server,
-   * make sure to use the original parameter name.
-   */
-  [key: string]: unknown;
 }
 
 export interface Auth0ClientOptions extends BaseLoginOptions {

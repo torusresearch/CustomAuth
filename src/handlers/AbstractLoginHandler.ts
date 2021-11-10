@@ -39,10 +39,6 @@ abstract class AbstractLoginHandler implements ILoginHandler {
     );
   }
 
-  abstract getUserInfo(params: LoginWindowResponse): Promise<TorusVerifierResponse>;
-
-  abstract setFinalUrl(): void;
-
   handleLoginWindow(params: { locationReplaceOnRedirect?: boolean; popupFeatures?: string }): Promise<LoginWindowResponse> {
     const verifierWindow = new PopupHandler({ url: this.finalURL, features: params.popupFeatures });
     if (this.uxMode === UX_MODE.REDIRECT) {
@@ -106,6 +102,10 @@ abstract class AbstractLoginHandler implements ILoginHandler {
     }
     return null;
   }
+
+  abstract getUserInfo(params: LoginWindowResponse): Promise<TorusVerifierResponse>;
+
+  abstract setFinalUrl(): void;
 }
 
 export default AbstractLoginHandler;

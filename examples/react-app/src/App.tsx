@@ -1,7 +1,7 @@
 /* eslint-disable class-methods-use-this */
 import React from "react";
 import { Link } from "react-router-dom";
-import TorusSdk, { TorusLoginResponse } from "@toruslabs/torus-direct-web-sdk";
+import TorusSdk, { TorusLoginResponse } from "@toruslabs/customauth";
 import ReactJsonView from "react-json-view";
 
 import {

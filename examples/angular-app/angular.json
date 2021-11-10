@@ -21,7 +21,7 @@
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
             "allowedCommonJsDependencies": [
-              "@toruslabs/torus-direct-web-sdk",
+              "@toruslabs/customauth",
               "jwt-decode",
               "@toruslabs/fetch-node-details",
               "web3-utils",

@@ -103,7 +103,7 @@ dist
 # TernJS port file
 .tern-port
 
-toruslabs-torus-direct-web-sdk-*
+toruslabs-customauth-*
 bundle.min.js
 types2/
 .DS_Store

@@ -1,7 +1,7 @@
 /* eslint-disable class-methods-use-this */
 import React from "react";
 import Link from "next/link";
-import TorusSdk, { TorusLoginResponse } from "@toruslabs/torus-direct-web-sdk";
+import TorusSdk, { TorusLoginResponse } from "@toruslabs/customauth";
 import dynamic from "next/dynamic";
 
 import {
