@@ -1,7 +1,7 @@
 # CustomAuth Web SDKs (Previously DirectAuth)
 
-[![npm version](https://badge.fury.io/js/%40toruslabs%2Ftorus-direct-web-sdk.svg)](https://badge.fury.io/js/%40toruslabs%2Ftorus-direct-web-sdk)
-![npm](https://img.shields.io/npm/dw/@toruslabs/torus-direct-web-sdk)
+[![npm version](https://badge.fury.io/js/%40toruslabs%2Fcustomauth.svg)](https://badge.fury.io/js/%40toruslabs%2Fcustomauth)
+![npm](https://img.shields.io/npm/dw/@toruslabs/customauth)
 
 ## Introduction
 
@@ -18,10 +18,10 @@ This repo allows web applications to directly retrieve keys stored on the Torus 
 
 This module is distributed in 4 formats
 
-- `esm` build `dist/directWebSdk.esm.js` in es6 format
-- `commonjs` build `dist/directWebSdk.cjs.js` in es5 format
-- `commonjs` build `dist/directWebSdk-bundled.cjs.js` in es5 format with problematic packages bundled (benfits non-webpack users)
-- `umd` build `dist/directWebSdk.umd.min.js` in es5 format without polyfilling corejs minified
+- `esm` build `dist/customauth.esm.js` in es6 format
+- `commonjs` build `dist/customauth.cjs.js` in es5 format
+- `commonjs` build `dist/customauth-bundled.cjs.js` in es5 format with problematic packages bundled (benfits non-webpack users)
+- `umd` build `dist/customauth.umd.min.js` in es5 format without polyfilling corejs minified
 
 By default, the appropriate format is used for your specified usecase
 You can use a different format (if you know what you're doing) by referencing the correct file
@@ -36,13 +36,13 @@ CDN's serve the non-core-js polyfilled version by default. You can use a differe
 jsdeliver
 
 ```js
-<script src="https://cdn.jsdelivr.net/npm/@toruslabs/torus-direct-web-sdk@4"></script>
+<script src="https://cdn.jsdelivr.net/npm/@toruslabs/customauth@5"></script>
 ```
 
 unpkg
 
 ```js
-<script src="https://unpkg.com/@toruslabs/torus-direct-web-sdk@4"></script>
+<script src="https://unpkg.com/@toruslabs/customauth@4"></script>
 ```
 
 ### Tips for NUXT
@@ -53,29 +53,29 @@ This is a plugin that works [only on the client side](https://nuxtjs.org/guide/p
 
 For more in-depth documentation, please refer to docs [here](https://docs.tor.us/customauth/get-started)
 
-Add [`@toruslabs/torus-direct-web-sdk`](https://www.npmjs.com/package/@toruslabs/torus-direct-web-sdk) to your project:
+Add [`@toruslabs/customauth`](https://www.npmjs.com/package/@toruslabs/customauth) to your project:
 
 To allow your web app to retrieve keys:
 
 Install the package
-   `npm i @toruslabs/torus-direct-web-sdk`
-   or
-   `yarn add @toruslabs/torus-direct-web-sdk`
+`npm i @toruslabs/customauth`
+or
+`yarn add @toruslabs/customauth`
 
-Direct Web Sdk supports two modes of login (`uxMode: "popup"` and `uxMode: "redirect"`) (default: `popup`)
+CustomAuth Sdk supports two modes of login (`uxMode: "popup"` and `uxMode: "redirect"`) (default: `popup`)
 
 #### Popup Flow:
 
-1. Serve [service worker](serviceworker/sw.js) from `baseUrl` where baseUrl is the one passed while instantiating `DirectWebSdk` for specific login (example http://localhost:3000/serviceworker/). If you're already using a sw, pls ensure to port over the fetch override from [our service worker](serviceworker/sw.js)
+1. Serve [service worker](serviceworker/sw.js) from `baseUrl` where baseUrl is the one passed while instantiating `CustomAuth` for specific login (example http://localhost:3000/serviceworker/). If you're already using a sw, pls ensure to port over the fetch override from [our service worker](serviceworker/sw.js)
 
-2. For browsers where service workers are not supported or if you wish to not use service workers, create and serve [redirect page](serviceworker/redirect.html) from `baseUrl/redirect` where baseUrl is the one passed while instantiating `DirectWebSdk` for specific login ( example http://localhost:3000/serviceworker/)
+2. For browsers where service workers are not supported or if you wish to not use service workers, create and serve [redirect page](serviceworker/redirect.html) from `baseUrl/redirect` where baseUrl is the one passed while instantiating `CustomAuth` for specific login ( example http://localhost:3000/serviceworker/)
 
-3. At verifier's interface (where you obtain client id), please use `baseUrl/redirect` (eg: http://localhost:3000/serviceworker/redirect) as the redirect_uri where baseUrl is the one passed while instantiating `DirectWebSdk`
+3. At verifier's interface (where you obtain client id), please use `baseUrl/redirect` (eg: http://localhost:3000/serviceworker/redirect) as the redirect_uri where baseUrl is the one passed while instantiating `CustomAuth`
 
 4. Instantiate the package
-   
+
 ```js
-const torus = new DirectWebSdk({
+const torus = new CustomAuth({
   baseUrl: "http://localhost:3000/serviceworker/",
   network: "testnet", // details for test net
 });
@@ -96,18 +96,18 @@ Note: If you're using `redirectToOpener`, modify the origin of postMessage from 
 
 #### Redirect flow
 
-1. At verifier's interface (where you obtain client id), please use `baseUrl/auth` (eg: http://localhost:3000/auth) as the redirect_uri where baseUrl is the one passed while instantiating `DirectWebSdk`
+1. At verifier's interface (where you obtain client id), please use `baseUrl/auth` (eg: http://localhost:3000/auth) as the redirect_uri where baseUrl is the one passed while instantiating `CustomAuth`
 
 2. Instantiate the package
-   
+
 ```js
-const torus = new DirectWebSdk({
+const torus = new CustomAuth({
   baseUrl: "http://localhost:3000/serviceworker/",
   redirectPathName: "auth",
   network: "testnet", // details for test net
-  uxMode: "redirect"
+  uxMode: "redirect",
 });
-await torusdirectsdk.init({ skipSw: true });
+await torus.init({ skipSw: true });
 ```
 
 3. Trigger the login with your client id. (This redirects the user to OAuth provider page)
@@ -120,24 +120,25 @@ await torus.triggerLogin({
 });
 ```
 
-4. The OAuth login completes and the OAuth provider will redirect you to  `baseUrl/auth` with hashParams
+4. The OAuth login completes and the OAuth provider will redirect you to `baseUrl/auth` with hashParams
    In this page, use the following code to get the login details
 
 ```js
-const torusdirectsdk = new DirectWebSdk({
+const torus = new CustomAuth({
   baseUrl: location.origin,
   redirectPathName: "auth",
   uxMode: "redirect",
-  network: "testnet"
+  network: "testnet",
 });
-const loginDetails = await torusdirectsdk.getRedirectResult();
+const loginDetails = await torus.getRedirectResult();
 ```
 
 5. Once you get the login details, you can choose to take the user anywhere else in your app
-   
+
 ## Examples
 
 Please refer to examples
+
 - [vue](examples/vue-app/src/App.vue) for popup flow
 - [react](examples/react-app/src/App.js) for popup flow
 - [nextjs](examples/nextjs-app/src/_app.js) for redirect flow
@@ -145,7 +146,8 @@ Please refer to examples
 - [vue](examples/vue-app-redirect-flow/src/App.vue) for redirect flow
 - [gatsby](https://github.com/jamespfarrell/gatsby-torus-direct) for configuration
 
-Hosted Example for testing 
+Hosted Example for testing
+
 - [Popup Flow](https://vue-direct.tor.us/)
 - [Redirect Flow](https://vue-redirect.tor.us/)
 
@@ -224,7 +226,7 @@ await axios.post("https://discordapp.com/api/oauth2/token/revoke", formData, {
 **Question:** How to initialise web3 with private key (returned after login) ?
 
 **Answer:**
-One can use privateKeyToAccount method to initialise web3 with a privatekey. If you are supplying a hexadecimal number, it must have 0x prefix in order to be in line with other Ethereum libraries. 
+One can use privateKeyToAccount method to initialise web3 with a privatekey. If you are supplying a hexadecimal number, it must have 0x prefix in order to be in line with other Ethereum libraries.
 
 ```js
 web3.eth.accounts.privateKeyToAccount(PRIVATE_KEY);
@@ -236,4 +238,5 @@ web3.eth.accounts.privateKeyToAccount(PRIVATE_KEY);
 - Node 12+
 
 ### Note
-If you are using the redirectToOpener option, you *must* update your redirect.html to [allow whitelisted URIs](serviceworker/redirect.html#L222)
+
+If you are using the redirectToOpener option, you _must_ update your redirect.html to [allow whitelisted URIs](serviceworker/redirect.html#L222)

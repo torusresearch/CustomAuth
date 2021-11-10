@@ -1,11 +1,11 @@
 {
-  "name": "@toruslabs/torus-direct-web-sdk",
+  "name": "@toruslabs/customauth",
   "version": "5.0.3",
-  "description": "Direct login with torus to get user private key",
-  "main": "dist/directWebSdk.cjs.js",
-  "module": "dist/directWebSdk.esm.js",
-  "unpkg": "dist/directWebSdk.umd.min.js",
-  "jsdelivr": "dist/directWebSdk.umd.min.js",
+  "description": "CustomAuth login with torus to get user private key",
+  "main": "dist/customauth.cjs.js",
+  "module": "dist/customauth.esm.js",
+  "unpkg": "dist/customauth.umd.min.js",
+  "jsdelivr": "dist/customauth.umd.min.js",
   "types": "dist/types/index.d.ts",
   "scripts": {
     "build:dev": "rimraf dist/ && cross-env NODE_ENV=development torus-scripts build",
@@ -70,14 +70,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/torusresearch/torus-direct-web-sdk.git"
+    "url": "git+https://github.com/torusresearch/CustomAuth.git"
   },
   "bugs": {
-    "url": "https://github.com/torusresearch/torus-direct-web-sdk/issues"
+    "url": "https://github.com/torusresearch/CustomAuth/issues"
   },
-  "homepage": "https://github.com/torusresearch/torus-direct-web-sdk#readme",
+  "homepage": "https://github.com/torusresearch/CustomAuth#readme",
   "keywords": [
-    "torus-direct-web-sdk",
+    "CustomAuth",
+    "customauth",
     "torus-direct-auth",
     "torus nodes",
     "torus-embed",

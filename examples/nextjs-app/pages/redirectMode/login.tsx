@@ -1,5 +1,5 @@
 import React from "react";
-import TorusSdk, { UX_MODE } from "@toruslabs/torus-direct-web-sdk";
+import TorusSdk, { UX_MODE } from "@toruslabs/customauth";
 
 import {
   verifierMap,

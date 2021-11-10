@@ -1,6 +1,6 @@
 import React from "react";
 import "../App.css";
-import TorusSdk, { RedirectResult } from "@toruslabs/torus-direct-web-sdk";
+import TorusSdk, { RedirectResult } from "@toruslabs/customauth";
 import { getStarkHDAccount, starkEc, sign, verify, pedersen, STARKNET_NETWORKS } from "@toruslabs/openlogin-starkkey";
 import { binaryToHex, binaryToUtf8, bufferToBinary, bufferToHex, hexToBinary } from "enc-utils";
 import type { ec } from "elliptic";

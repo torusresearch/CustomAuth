@@ -5,7 +5,7 @@ import { keccak256 } from "web3-utils";
 import createHandler from "./handlers/HandlerFactory";
 import {
   AggregateLoginParams,
-  DirectWebSDKArgs,
+  CustomAuthArgs,
   ExtraParams,
   HybridAggregateLoginParams,
   ILoginHandler,
@@ -45,7 +45,7 @@ import {
 } from "./utils/helpers";
 import log from "./utils/loglevel";
 
-class DirectWebSDK {
+class CustomAuth {
   isInitialized: boolean;
 
   config: {
@@ -77,7 +77,7 @@ class DirectWebSDK {
     popupFeatures,
     skipFetchingNodeDetails = false,
     metadataUrl = "https://metadata.tor.us",
-  }: DirectWebSDKArgs) {
+  }: CustomAuthArgs) {
     this.isInitialized = false;
     const baseUri = new URL(baseUrl);
     this.config = {
@@ -555,4 +555,4 @@ class DirectWebSDK {
   }
 }
 
-export default DirectWebSDK;
+export default CustomAuth;

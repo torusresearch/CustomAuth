@@ -4,10 +4,10 @@
   <button onclick="loadTorus()">Login</button>
 </head>
 <body>
-  <script src="../dist/directWebSdk.umd.min.js"></script>
+  <script src="../dist/CustomAuth.umd.min.js"></script>
   <script>
     async function loadTorus() {
-      const torus = new DirectWebSdk({
+      const torus = new CustomAuth({
         baseUrl: "http://localhost:3000/serviceworker/",
         network: "testnet", // details for test net
       });

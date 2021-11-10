@@ -1,5 +1,5 @@
 import React from "react";
-import TorusSdk, { TorusLoginResponse } from "@toruslabs/torus-direct-web-sdk";
+import TorusSdk, { TorusLoginResponse } from "@toruslabs/customauth";
 import dynamic from "next/dynamic";
 import {
   verifierMap,

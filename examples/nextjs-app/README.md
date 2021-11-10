@@ -1,6 +1,6 @@
-# Direct Web SDK - NextJS App Notes
+# CustomAuth SDK - NextJS App Notes
 
-For installation instructions [click here](https://github.com/torusresearch/torus-direct-web-sdk)
+For installation instructions [click here](https://github.com/torusresearch/customauth)
 
 How to run example
 

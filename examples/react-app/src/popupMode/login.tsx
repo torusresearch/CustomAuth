@@ -1,6 +1,6 @@
 import React from "react";
 import "../App.css";
-import TorusSdk, { TorusLoginResponse } from "@toruslabs/torus-direct-web-sdk";
+import TorusSdk, { TorusLoginResponse } from "@toruslabs/customauth";
 import ReactJsonView from "react-json-view";
 import {
   verifierMap,

@@ -1,6 +1,6 @@
 import React from "react";
 import "../App.css";
-import TorusSdk, { RedirectResult } from "@toruslabs/torus-direct-web-sdk";
+import TorusSdk, { RedirectResult } from "@toruslabs/customauth";
 import ReactJsonView from "react-json-view";
 
 interface IState {

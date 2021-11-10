@@ -99,7 +99,7 @@ export type TorusLoginResponse = TorusSingleVerifierResponse & TorusKey;
 export type TorusAggregateLoginResponse = TorusAggregateVerifierResponse & TorusKey;
 export type TorusHybridAggregateLoginResponse = { singleLogin: TorusLoginResponse; aggregateLogins: TorusKey[] };
 
-export interface DirectWebSDKArgs {
+export interface CustomAuthArgs {
   /**
    * baseUrl , along with redirectPathName is used to construct the uri of page
    * where user will be redirected after login.
@@ -133,7 +133,7 @@ export interface DirectWebSDKArgs {
    * then user will be redirected to http://localhost:3000/auth page after login
    * where you can get login result by calling `getRedirectResult` on redirected page mount.
    *
-   * Please refer to examples https://github.com/torusresearch/torus-direct-web-sdk/tree/master/examples
+   * Please refer to examples https://github.com/torusresearch/customauth/tree/master/examples
    * for more understanding.
    *
    */
@@ -212,7 +212,7 @@ export interface DirectWebSDKArgs {
    * then user will be redirected to http://localhost:3000/auth page after login
    * where you can get login result by calling `getRedirectResult` on redirected page mount.
    *
-   * Please refer to examples https://github.com/torusresearch/torus-direct-web-sdk/tree/master/examples
+   * Please refer to examples https://github.com/torusresearch/customauth/tree/master/examples
    * for more understanding.
    *
    */

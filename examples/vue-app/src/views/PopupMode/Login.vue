@@ -53,7 +53,7 @@
 
 <script lang="ts">
 import { getStarkHDAccount, pedersen, sign, starkEc, STARKNET_NETWORKS, verify } from "@toruslabs/openlogin-starkkey";
-import TorusSdk, { TorusLoginResponse, UX_MODE } from "@toruslabs/torus-direct-web-sdk";
+import TorusSdk, { TorusLoginResponse, UX_MODE } from "@toruslabs/customauth";
 import { ec } from "elliptic";
 import { binaryToHex, binaryToUtf8, bufferToBinary, bufferToHex, hexToBinary } from "enc-utils";
 import Vue from "vue";

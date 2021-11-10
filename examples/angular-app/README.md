@@ -1,12 +1,14 @@
-# Direct Web SDK - Angular App Notes
+# CustomAuth SDK - Angular App Notes
 
-For general instructions [click here](https://github.com/torusresearch/torus-direct-web-sdk)
+For general instructions [click here](https://github.com/torusresearch/customauth)
 
 How to run example
 
 1. Build the outer project using `npm pack`
 2. Install the built tgz file in this folder using `npm i ../../toruslabs-.......`
+
 ## Running the App locally
+
 Requires [http-server](https://github.com/http-party/http-server) installed globally.
 
 Add these scripts on package.json. Some login providers require `https` connection

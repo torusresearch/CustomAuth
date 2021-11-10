@@ -11,7 +11,7 @@
 </template>
 
 <script lang="ts">
-import TorusSdk from "@toruslabs/torus-direct-web-sdk";
+import TorusSdk from "@toruslabs/customauth";
 import Vue from "vue";
 
 import {

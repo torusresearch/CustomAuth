@@ -1,6 +1,6 @@
 import React from "react";
 import "../App.css";
-import TorusSdk, { UX_MODE } from "@toruslabs/torus-direct-web-sdk";
+import TorusSdk, { UX_MODE } from "@toruslabs/customauth";
 import {
   verifierMap,
   GOOGLE,

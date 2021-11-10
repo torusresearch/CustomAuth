@@ -215,7 +215,7 @@ var initApp = async function () {
   // document.getElementById("email-signInMethod-emailLink").addEventListener("change", handleConfigChange);
   // // Check the selected email signInMethod mode.
   // document.querySelector('input[name="emailSignInMethod"][value="' + getEmailSignInMethod() + '"]').checked = true;
-  torusdirectsdk = new window.DirectWebSdk.default({
+  torusdirectsdk = new window.CustomAuth.default({
     baseUrl: `${window.location.origin}`,
     redirectPathName: "/",
     enableLogging: true,

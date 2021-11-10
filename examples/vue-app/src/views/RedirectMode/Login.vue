@@ -24,7 +24,7 @@
 </template>
 
 <script lang="ts">
-import TorusSdk, { UX_MODE } from "@toruslabs/torus-direct-web-sdk";
+import TorusSdk, { UX_MODE } from "@toruslabs/customauth";
 import Vue from "vue";
 
 import {
