@@ -136,40 +136,6 @@ class DirectWebSDK {
     this.isInitialized = true;
   }
 
-  private async handlePrefetchRedirectUri(): Promise<void> {
-    if (!document) return Promise.resolve();
-    return new Promise((resolve, reject) => {
-      const redirectHtml = document.createElement("link");
-      redirectHtml.href = this.config.redirect_uri;
-      if (window.location.origin !== new URL(this.config.redirect_uri).origin) redirectHtml.crossOrigin = "anonymous";
-      redirectHtml.type = "text/html";
-      redirectHtml.rel = "prefetch";
-      const resolveFn = () => {
-        this.isInitialized = true;
-        resolve();
-      };
-      try {
-        if (redirectHtml.relList && redirectHtml.relList.supports) {
-          if (redirectHtml.relList.supports("prefetch")) {
-            redirectHtml.onload = resolveFn;
-            redirectHtml.onerror = () => {
-              reject(new Error(`Please serve redirect.html present in serviceworker folder of this package on ${this.config.redirect_uri}`));
-            };
-            document.head.appendChild(redirectHtml);
-          } else {
-            // Link prefetch is not supported. pass through
-            resolveFn();
-          }
-        } else {
-          // Link prefetch is not detectable. pass through
-          resolveFn();
-        }
-      } catch (err) {
-        resolveFn();
-      }
-    });
-  }
-
   async triggerLogin(args: SubVerifierDetails & { registerOnly?: boolean }): Promise<TorusLoginResponse> {
     const { verifier, typeOfLogin, clientId, jwtParams, hash, queryParameters, customState, registerOnly } = args;
     log.info("Verifier: ", verifier);
@@ -552,6 +518,40 @@ class DirectWebSDK {
       };
 
     return { method, result, state: instanceParameters || {}, hashParameters, args, ...rest };
+  }
+
+  private async handlePrefetchRedirectUri(): Promise<void> {
+    if (!document) return Promise.resolve();
+    return new Promise((resolve, reject) => {
+      const redirectHtml = document.createElement("link");
+      redirectHtml.href = this.config.redirect_uri;
+      if (window.location.origin !== new URL(this.config.redirect_uri).origin) redirectHtml.crossOrigin = "anonymous";
+      redirectHtml.type = "text/html";
+      redirectHtml.rel = "prefetch";
+      const resolveFn = () => {
+        this.isInitialized = true;
+        resolve();
+      };
+      try {
+        if (redirectHtml.relList && redirectHtml.relList.supports) {
+          if (redirectHtml.relList.supports("prefetch")) {
+            redirectHtml.onload = resolveFn;
+            redirectHtml.onerror = () => {
+              reject(new Error(`Please serve redirect.html present in serviceworker folder of this package on ${this.config.redirect_uri}`));
+            };
+            document.head.appendChild(redirectHtml);
+          } else {
+            // Link prefetch is not supported. pass through
+            resolveFn();
+          }
+        } else {
+          // Link prefetch is not detectable. pass through
+          resolveFn();
+        }
+      } catch (err) {
+        resolveFn();
+      }
+    });
   }
 }
 

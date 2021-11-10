@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
-
 import { register } from "@chaitanyapotti/register-service-worker";
 
 import log from "./utils/loglevel";

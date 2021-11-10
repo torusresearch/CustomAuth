@@ -16,12 +16,12 @@ This repo allows web applications to directly retrieve keys stored on the Torus 
 
 ### Bundling
 
-This module is distributed in 3 formats
+This module is distributed in 4 formats
 
+- `esm` build `dist/directWebSdk.esm.js` in es6 format
 - `commonjs` build `dist/directWebSdk.cjs.js` in es5 format
 - `commonjs` build `dist/directWebSdk-bundled.cjs.js` in es5 format with problematic packages bundled (benfits non-webpack users)
 - `umd` build `dist/directWebSdk.umd.min.js` in es5 format without polyfilling corejs minified
-- `umd` build `dist/directWebSdk.polyfill.umd.min.js` in es5 format with polyfilling corejs minified
 
 By default, the appropriate format is used for your specified usecase
 You can use a different format (if you know what you're doing) by referencing the correct file

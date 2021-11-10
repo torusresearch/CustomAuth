@@ -282,6 +282,11 @@ export interface InitParams {
 // REGION: AUTH0 PARAMS
 export interface BaseLoginOptions {
   /**
+   * If you need to send custom parameters to the Authorization Server,
+   * make sure to use the original parameter name.
+   */
+  [key: string]: unknown;
+  /**
    * - `'page'`: displays the UI with a full page view
    * - `'popup'`: displays the UI with a popup window
    * - `'touch'`: displays the UI in a way that leverages a touch interface
@@ -335,12 +340,6 @@ export interface BaseLoginOptions {
    * the Login Widget.
    */
   connection?: string;
-
-  /**
-   * If you need to send custom parameters to the Authorization Server,
-   * make sure to use the original parameter name.
-   */
-  [key: string]: unknown;
 }
 
 export interface Auth0ClientOptions extends BaseLoginOptions {
