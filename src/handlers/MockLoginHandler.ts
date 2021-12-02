@@ -1,6 +1,6 @@
 import { get } from "@toruslabs/http-helpers";
-import deepmerge from "deepmerge";
 import jwtDecode from "jwt-decode";
+import deepmerge from "lodash.merge";
 import log from "loglevel";
 
 import { LOGIN_TYPE, UX_MODE, UX_MODE_TYPE } from "../utils/enums";

@@ -24,13 +24,12 @@
     "@babel/runtime": "7.x"
   },
   "dependencies": {
-    "@chaitanyapotti/random-id": "^1.0.3",
     "@chaitanyapotti/register-service-worker": "^1.7.3",
-    "@toruslabs/fetch-node-details": "^4.0.1",
-    "@toruslabs/http-helpers": "^2.1.0",
-    "@toruslabs/torus.js": "^4.2.2",
+    "@toruslabs/fetch-node-details": "^4.0.2",
+    "@toruslabs/http-helpers": "^2.1.1",
+    "@toruslabs/torus.js": "^4.2.3",
     "broadcast-channel": "^4.5.0",
-    "deepmerge": "^4.2.2",
+    "lodash.merge": "^4.6.2",
     "events": "^3.3.0",
     "jwt-decode": "^3.1.2",
     "loglevel": "^1.8.0",
@@ -39,6 +38,7 @@
   "devDependencies": {
     "@toruslabs/eslint-config-typescript": "0.1.0",
     "@toruslabs/torus-scripts": "0.1.1",
+    "@types/lodash.merge": "^4.6.6",
     "@typescript-eslint/eslint-plugin": "^5.5.0",
     "@typescript-eslint/parser": "^5.5.0",
     "cross-env": "^7.0.3",

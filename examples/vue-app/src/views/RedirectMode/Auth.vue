@@ -132,6 +132,7 @@ export default Vue.extend({
       enableLogging: true,
       uxMode: "redirect",
       network: "testnet",
+      skipFetchingNodeDetails: true,
     });
     const loginDetails = await torusdirectsdk.getRedirectResult();
     console.log(loginDetails);

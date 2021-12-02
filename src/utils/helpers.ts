@@ -38,6 +38,12 @@ export const loginToConnectionMap = {
 
 export const padUrlString = (url: URL): string => (url.href.endsWith("/") ? url.href : `${url.href}/`);
 
+/**
+ * Returns a random number. Don't use for cryptographic purposes.
+ * @returns a random number
+ */
+export const randomId = (): string => Math.random().toString(36).slice(2);
+
 export const broadcastChannelOptions = {
   // type: 'localstorage', // (optional) enforce a type, oneOf['native', 'idb', 'localstorage', 'node']
   webWorkerSupport: false, // (optional) set this to false if you know that your channel will never be used in a WebWorker (increases performance)
