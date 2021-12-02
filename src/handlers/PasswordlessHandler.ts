@@ -1,7 +1,7 @@
 import { get, post } from "@toruslabs/http-helpers";
 import { BroadcastChannel } from "broadcast-channel";
-import deepmerge from "deepmerge";
 import jwtDecode from "jwt-decode";
+import deepmerge from "lodash.merge";
 
 import { LOGIN_TYPE, UX_MODE_TYPE } from "../utils/enums";
 import { broadcastChannelOptions, getVerifierId, padUrlString } from "../utils/helpers";

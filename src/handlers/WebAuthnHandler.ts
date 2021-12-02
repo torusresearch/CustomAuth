@@ -1,5 +1,5 @@
 import { get } from "@toruslabs/http-helpers";
-import deepmerge from "deepmerge";
+import deepmerge from "lodash.merge";
 
 import { LOGIN_TYPE, UX_MODE_TYPE } from "../utils/enums";
 import log from "../utils/loglevel";

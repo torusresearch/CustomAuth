@@ -1,8 +1,7 @@
-import randomId from "@chaitanyapotti/random-id";
 import { BroadcastChannel } from "broadcast-channel";
 
 import { LOGIN_TYPE, UX_MODE, UX_MODE_TYPE } from "../utils/enums";
-import { broadcastChannelOptions } from "../utils/helpers";
+import { broadcastChannelOptions, randomId } from "../utils/helpers";
 import log from "../utils/loglevel";
 import PopupHandler from "../utils/PopupHandler";
 import { Auth0ClientOptions, ILoginHandler, LoginWindowResponse, PopupResponse, TorusGenericObject, TorusVerifierResponse } from "./interfaces";
