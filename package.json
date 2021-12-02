@@ -26,9 +26,9 @@
   "dependencies": {
     "@chaitanyapotti/random-id": "^1.0.3",
     "@chaitanyapotti/register-service-worker": "^1.7.3",
-    "@toruslabs/fetch-node-details": "^4.0.1",
-    "@toruslabs/http-helpers": "^2.1.0",
-    "@toruslabs/torus.js": "^4.2.2",
+    "@toruslabs/fetch-node-details": "^4.0.2",
+    "@toruslabs/http-helpers": "^2.1.1",
+    "@toruslabs/torus.js": "^4.2.3",
     "broadcast-channel": "^4.5.0",
     "deepmerge": "^4.2.2",
     "events": "^3.3.0",
