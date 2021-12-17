@@ -2,6 +2,10 @@
   <div class="about">
     <h1>This is the redirected page</h1>
 
+    <button @click="signMessage" :disabled="!provider">Sign Test Eth Message</button>
+    <button @click="signV1Message" :disabled="!provider">Sign Typed data v1 test message</button>
+    <button @click="latestBlock" :disabled="!provider">Fetch Latest Block</button>
+
     <div v-if="loginDetails && loginDetails.result">
       <h2>Enter HD account index to derive stark key pair from custom auth's private key</h2>
       <div :style="{ display: 'flex', flexDirection: 'row', justifyContent: 'space-around' }">
@@ -33,10 +37,13 @@
 
 <script lang="ts">
 import TorusSdk, { RedirectResult } from "@toruslabs/customauth";
-import { getStarkHDAccount, pedersen, sign, starkEc, STARKNET_NETWORKS, verify } from "@toruslabs/openlogin-starkkey";
+import { getStarkHDAccount, pedersen, sign, STARKNET_NETWORKS, verify } from "@toruslabs/openlogin-starkkey";
+import { SafeEventEmitterProvider } from "@web3auth/ethereum-provider";
 import { ec } from "elliptic";
 import { binaryToHex, binaryToUtf8, bufferToBinary, bufferToHex, hexToBinary } from "enc-utils";
 import Vue from "vue";
+
+import { fetchLatestBlock, setupProvider, signEthMessage, signTypedData_v1 } from "../../services/chainHandlers";
 
 export default Vue.extend({
   name: "Auth",
@@ -45,6 +52,7 @@ export default Vue.extend({
       loginDetails: null as RedirectResult | null,
       signedMessage: null as ec.Signature | null,
       signingMessage: null as string | null,
+      provider: null as SafeEventEmitterProvider | null,
     };
   },
   methods: {
@@ -55,7 +63,19 @@ export default Vue.extend({
       }
     },
 
-    getStarkAccount(index: number): { pubKey: string; privKey: string } {
+    async signMessage() {
+      const signedMessage = await signEthMessage(this.provider as SafeEventEmitterProvider);
+      this.console("signedMessage", signedMessage);
+    },
+    async signV1Message() {
+      const signedMessage = await signTypedData_v1(this.provider as SafeEventEmitterProvider);
+      this.console("signedMessage", signedMessage);
+    },
+    async latestBlock() {
+      const block = await fetchLatestBlock(this.provider as SafeEventEmitterProvider);
+      this.console("latest block", block);
+    },
+    getStarkAccount(index: number): ec.KeyPair {
       const account = getStarkHDAccount(
         ((this.loginDetails as any)?.result?.privateKey as string).padStart(64, "0"),
         index,
@@ -64,7 +84,7 @@ export default Vue.extend({
       return account;
     },
 
-    starkHdAccount(e: any): { pubKey?: string; privKey?: string } {
+    starkHdAccount(e: any): ec.KeyPair {
       const accIndex = e.target[0].value;
       const account = this.getStarkAccount(accIndex);
       this.console({
@@ -104,8 +124,7 @@ export default Vue.extend({
       e.preventDefault();
       const accIndex = e.target[0].value;
       const message = e.target[1].value;
-      const account = this.getStarkAccount(accIndex);
-      const keyPair = starkEc.keyFromPrivate(account.privKey);
+      const keyPair = this.getStarkAccount(accIndex);
       const hash = this.getPedersenHashRecursively(message);
       this.signedMessage = sign(keyPair, hash);
       this.signingMessage = message;
@@ -118,8 +137,7 @@ export default Vue.extend({
     validateStarkMessage(e: any) {
       e.preventDefault();
       const signingAccountIndex = e.target[0].value;
-      const account = this.getStarkAccount(signingAccountIndex);
-      const keyPair = starkEc.keyFromPublic(account.pubKey, "hex");
+      const keyPair = this.getStarkAccount(signingAccountIndex);
       const hash = this.getPedersenHashRecursively(this.signingMessage as string);
       const isVerified = verify(keyPair, hash, this.signedMessage as unknown as ec.Signature);
       this.console(`Message is verified: ${isVerified}`);
@@ -135,8 +153,20 @@ export default Vue.extend({
       skipFetchingNodeDetails: true,
     });
     const loginDetails = await torusdirectsdk.getRedirectResult();
+    this.provider = await setupProvider({
+      chainConfig: {
+        rpcTarget: "https://polygon-rpc.com",
+        chainNamespace: "eip155",
+        chainId: "0x89",
+        networkName: "matic",
+        ticker: "matic",
+        tickerName: "matic",
+      },
+      privKey: ((loginDetails as any)?.result?.privateKey as string).padStart(64, "0"),
+    });
     console.log(loginDetails);
     this.loginDetails = loginDetails;
+
     this.console(loginDetails);
   },
 });
