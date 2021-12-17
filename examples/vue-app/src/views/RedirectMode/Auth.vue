@@ -156,7 +156,6 @@ export default Vue.extend({
     this.provider = await setupProvider({
       chainConfig: {
         rpcTarget: "https://polygon-rpc.com",
-        chainNamespace: "eip155",
         chainId: "0x89",
         networkName: "matic",
         ticker: "matic",

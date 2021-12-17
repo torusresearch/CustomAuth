@@ -1,7 +1,10 @@
 import { CustomChainConfig, EthereumPrivateKeyProvider, PROVIDER_EVENTS, SafeEventEmitterProvider } from "@web3auth/ethereum-provider";
 import Web3 from "web3";
 
-export const setupProvider = async (params: { privKey: string; chainConfig: CustomChainConfig }): Promise<SafeEventEmitterProvider> => {
+export const setupProvider = async (params: {
+  privKey: string;
+  chainConfig: Omit<CustomChainConfig, "chainNamespace">;
+}): Promise<SafeEventEmitterProvider> => {
   const providerFactory = new EthereumPrivateKeyProvider({ config: { chainConfig: params.chainConfig } });
   await providerFactory.init();
   return new Promise((resolve, reject) => {
