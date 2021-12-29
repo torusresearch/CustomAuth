@@ -17,9 +17,6 @@
     "vue-router": "^3.5.2",
     "web3": "^1.6.1"
   },
-  "resolutions": {
-    "@web3auth/base": "file:./web3auth-base-v0.0.0.tgz"
-  },
   "devDependencies": {
     "@vue/cli-plugin-babel": "^4.5.13",
     "@vue/cli-plugin-eslint": "^4.5.13",
