@@ -58,7 +58,8 @@
 <script lang="ts">
 import TorusSdk, { TorusLoginResponse, UX_MODE } from "@toruslabs/customauth";
 import { getStarkHDAccount, pedersen, sign, STARKNET_NETWORKS, verify } from "@toruslabs/openlogin-starkkey";
-import { SafeEventEmitterProvider } from "@web3auth/ethereum-provider";
+import { SafeEventEmitterProvider } from "@web3auth/base";
+import { EthereumPrivateKeyProvider } from "@web3auth/ethereum-provider";
 import { ec } from "elliptic";
 import { binaryToHex, binaryToUtf8, bufferToBinary, bufferToHex, hexToBinary } from "enc-utils";
 import Vue from "vue";
@@ -79,7 +80,7 @@ import {
   verifierMap,
   WEIBO,
 } from "../../constants";
-import { fetchLatestBlock, setupProvider, signEthMessage, signTypedData_v1 } from "../../services/chainHandlers";
+import { fetchLatestBlock, signEthMessage, signTypedData_v1 } from "../../services/chainHandlers";
 export default Vue.extend({
   name: "PopupLogin",
   data() {
@@ -127,7 +128,7 @@ export default Vue.extend({
           queryParameters,
         });
 
-        this.provider = await setupProvider({
+        this.provider = await EthereumPrivateKeyProvider.getProviderInstance({
           chainConfig: {
             rpcTarget: "https://polygon-rpc.com",
             chainId: "0x89",
