@@ -13,6 +13,7 @@ import {
   LoginWindowResponse,
   RedirectResult,
   RedirectResultParams,
+  SingleLoginParams,
   SubVerifierDetails,
   TorusAggregateLoginResponse,
   TorusHybridAggregateLoginResponse,
@@ -136,7 +137,7 @@ class CustomAuth {
     this.isInitialized = true;
   }
 
-  async triggerLogin(args: SubVerifierDetails & { registerOnly?: boolean }): Promise<TorusLoginResponse> {
+  async triggerLogin(args: SingleLoginParams): Promise<TorusLoginResponse> {
     const { verifier, typeOfLogin, clientId, jwtParams, hash, queryParameters, customState, registerOnly } = args;
     log.info("Verifier: ", verifier);
     if (!this.isInitialized) {
@@ -436,7 +437,7 @@ class CustomAuth {
   async getRedirectResult({ replaceUrl = true, clearLoginDetails = true }: RedirectResultParams = {}): Promise<RedirectResult> {
     await this.init({ skipInit: true });
     const url = new URL(window.location.href);
-    const hash = url.hash.substr(1);
+    const hash = url.hash.substring(1);
     const queryParams = {};
     url.searchParams.forEach((value, key) => {
       queryParams[key] = value;
