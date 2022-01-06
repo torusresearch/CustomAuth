@@ -17,7 +17,7 @@
   },
   "files": [
     "dist",
-    "types",
+    "src",
     "serviceworker"
   ],
   "peerDependencies": {
