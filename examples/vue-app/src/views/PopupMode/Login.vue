@@ -22,6 +22,10 @@
     </div>
     <div v-if="loginResponse && loginResponse.privateKey">
       <span>Custom Auth Private key: {{ loginResponse.privateKey }}</span>
+      <button @click="signMessage" :disabled="!provider">Sign Test Eth Message</button>
+      <button @click="signV1Message" :disabled="!provider">Sign Typed data v1 test message</button>
+      <button @click="latestBlock" :disabled="!provider">Fetch Latest Block</button>
+
       <h2>Enter HD account index to derive stark key pair from custom auth's private key</h2>
       <div :style="{ display: 'flex', flexDirection: 'row', justifyContent: 'space-around' }">
         <form @submit.prevent="starkHdAccount" :style="{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }">
@@ -53,7 +57,9 @@
 
 <script lang="ts">
 import TorusSdk, { TorusLoginResponse, UX_MODE } from "@toruslabs/customauth";
-import { getStarkHDAccount, pedersen, sign, starkEc, STARKNET_NETWORKS, verify } from "@toruslabs/openlogin-starkkey";
+import { getStarkHDAccount, pedersen, sign, STARKNET_NETWORKS, verify } from "@toruslabs/openlogin-starkkey";
+import { SafeEventEmitterProvider } from "@web3auth/base";
+import { EthereumPrivateKeyProvider } from "@web3auth/ethereum-provider";
 import { ec } from "elliptic";
 import { binaryToHex, binaryToUtf8, bufferToBinary, bufferToHex, hexToBinary } from "enc-utils";
 import Vue from "vue";
@@ -74,7 +80,7 @@ import {
   verifierMap,
   WEIBO,
 } from "../../constants";
-
+import { fetchLatestBlock, signEthMessage, signTypedData_v1 } from "../../services/chainHandlers";
 export default Vue.extend({
   name: "PopupLogin",
   data() {
@@ -85,6 +91,7 @@ export default Vue.extend({
       signedMessage: null as ec.Signature | null,
       signingMessage: null as string | null,
       loginResponse: null as TorusLoginResponse | null,
+      provider: null as SafeEventEmitterProvider | null,
     };
   },
   computed: {
@@ -112,13 +119,24 @@ export default Vue.extend({
         const jwtParams = this.loginToConnectionMap[this.selectedVerifier] || {};
         const { typeOfLogin, clientId, verifier } = verifierMap[this.selectedVerifier];
         console.log(hash, queryParameters, typeOfLogin, clientId, verifier, jwtParams);
-        const loginDetails = await this.torusdirectsdk.triggerLogin({
+        const loginDetails: TorusLoginResponse = await this.torusdirectsdk.triggerLogin({
           typeOfLogin,
           verifier,
           clientId,
           jwtParams,
           hash,
           queryParameters,
+        });
+
+        this.provider = await EthereumPrivateKeyProvider.getProviderInstance({
+          chainConfig: {
+            rpcTarget: "https://polygon-rpc.com",
+            chainId: "0x89",
+            networkName: "matic",
+            ticker: "matic",
+            tickerName: "matic",
+          },
+          privKey: loginDetails.privateKey,
         });
 
         this.loginResponse = loginDetails;
@@ -176,6 +194,18 @@ export default Vue.extend({
         console.error(error, "caught");
       }
     },
+    async signMessage() {
+      const signedMessage = await signEthMessage(this.provider as SafeEventEmitterProvider);
+      this.console("signedMessage", signedMessage);
+    },
+    async signV1Message() {
+      const signedMessage = await signTypedData_v1(this.provider as SafeEventEmitterProvider);
+      this.console("signedMessage", signedMessage);
+    },
+    async latestBlock() {
+      const block = await fetchLatestBlock(this.provider as SafeEventEmitterProvider);
+      this.console("latest block", block);
+    },
     console(...args: unknown[]): void {
       const el = document.querySelector("#console>p");
       if (el) {
@@ -183,12 +213,12 @@ export default Vue.extend({
       }
     },
 
-    getStarkAccount(index: number): { pubKey: string; privKey: string } {
+    getStarkAccount(index: number): ec.KeyPair {
       const account = getStarkHDAccount((this.loginResponse?.privateKey as string).padStart(64, "0"), index, STARKNET_NETWORKS.testnet);
       return account;
     },
 
-    starkHdAccount(e: any): { pubKey?: string; privKey?: string } {
+    starkHdAccount(e: any): ec.KeyPair {
       const accIndex = e.target[0].value;
       const account = this.getStarkAccount(accIndex);
       this.console({
@@ -228,8 +258,7 @@ export default Vue.extend({
       e.preventDefault();
       const accIndex = e.target[0].value;
       const message = e.target[1].value;
-      const account = this.getStarkAccount(accIndex);
-      const keyPair = starkEc.keyFromPrivate(account.privKey);
+      const keyPair: ec.KeyPair = this.getStarkAccount(accIndex);
       const hash = this.getPedersenHashRecursively(message);
       this.signedMessage = sign(keyPair, hash);
       this.signingMessage = message;
@@ -242,8 +271,7 @@ export default Vue.extend({
     validateStarkMessage(e: any) {
       e.preventDefault();
       const signingAccountIndex = e.target[0].value;
-      const account = this.getStarkAccount(signingAccountIndex);
-      const keyPair = starkEc.keyFromPublic(account.pubKey, "hex");
+      const keyPair = this.getStarkAccount(signingAccountIndex);
       const hash = this.getPedersenHashRecursively(this.signingMessage as string);
       const isVerified = verify(keyPair, hash, this.signedMessage as unknown as ec.Signature);
       this.console(`Message is verified: ${isVerified}`);
