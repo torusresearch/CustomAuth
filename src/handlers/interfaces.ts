@@ -411,6 +411,13 @@ export interface CreateHandlerParams {
   registerOnly?: boolean;
 }
 
+export interface RedirectResultParams {
+  replaceUrl?: boolean;
+  clearLoginDetails?: boolean;
+}
+
+export type SingleLoginParams = SubVerifierDetails & { registerOnly?: boolean };
+
 export interface AggregateLoginParams {
   aggregateVerifierType: AGGREGATE_VERIFIER_TYPE;
   verifierIdentifier: string;
@@ -422,17 +429,13 @@ export interface HybridAggregateLoginParams {
   aggregateLoginParams: AggregateLoginParams;
 }
 
-export interface RedirectResultParams {
-  replaceUrl?: boolean;
-  clearLoginDetails?: boolean;
-}
+export type LoginDetails = { method: TORUS_METHOD_TYPE; args: SingleLoginParams | AggregateLoginParams | HybridAggregateLoginParams };
 
-export type LoginDetails = { method: TORUS_METHOD_TYPE; args: unknown };
 export interface RedirectResult {
   method: TORUS_METHOD_TYPE;
-  result: unknown;
+  result?: TorusLoginResponse | TorusAggregateLoginResponse | TorusHybridAggregateLoginResponse | unknown;
   error?: string;
   state: Record<string, unknown>;
   hashParameters?: Record<string, string>;
-  args?: unknown;
+  args: SingleLoginParams | AggregateLoginParams | HybridAggregateLoginParams;
 }
