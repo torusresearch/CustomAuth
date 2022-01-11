@@ -157,9 +157,10 @@ export default Vue.extend({
       chainConfig: {
         rpcTarget: "https://polygon-rpc.com",
         chainId: "0x89",
-        networkName: "matic",
         ticker: "matic",
         tickerName: "matic",
+        displayName: "Polygon Mainnet",
+        blockExplorer: "https://polygonscan.com",
       },
       privKey: ((loginDetails as any)?.result?.privateKey as string).padStart(64, "0"),
     });
