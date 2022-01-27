@@ -1,11 +1,9 @@
+import { ETHEREUM_NETWORK } from "@toruslabs/fetch-node-details";
+
 export const TORUS_NETWORK = {
   TESTNET: "testnet",
   MAINNET: "mainnet",
-} as const;
-
-export const ETHEREUM_NETWORK = {
-  ROPSTEN: "ropsten",
-  MAINNET: "mainnet",
+  CYAN: "cyan",
 } as const;
 
 export const LOGIN = {
@@ -56,6 +54,19 @@ export type TORUS_METHOD_TYPE = typeof TORUS_METHOD[keyof typeof TORUS_METHOD];
 export type REDIRECT_PARAMS_STORAGE_METHOD_TYPE = typeof REDIRECT_PARAMS_STORAGE_METHOD[keyof typeof REDIRECT_PARAMS_STORAGE_METHOD];
 
 export const CONTRACT_MAP = {
-  [TORUS_NETWORK.MAINNET]: "0x638646503746d5456209e33a2ff5e3226d698bea",
-  [TORUS_NETWORK.TESTNET]: "0x4023d2a0D330bF11426B12C6144Cfb96B7fa6183",
+  [TORUS_NETWORK.MAINNET]: "0xf20336e16B5182637f09821c27BDe29b0AFcfe80",
+  [TORUS_NETWORK.TESTNET]: "0x6258c9d6c12ed3edda59a1a6527e469517744aa7",
+  [TORUS_NETWORK.CYAN]: "0x9f072ba19b3370e512aa1b4bfcdaf97283168005",
+};
+
+export const NETWORK_MAP = {
+  [TORUS_NETWORK.MAINNET]: ETHEREUM_NETWORK.MAINNET,
+  [TORUS_NETWORK.TESTNET]: ETHEREUM_NETWORK.ROPSTEN,
+  [TORUS_NETWORK.CYAN]: ETHEREUM_NETWORK.POLYGON,
+};
+
+export const SIGNER_MAP = {
+  [TORUS_NETWORK.MAINNET]: "https://signer.tor.us",
+  [TORUS_NETWORK.TESTNET]: "https://signer.tor.us",
+  [TORUS_NETWORK.CYAN]: "https://signer-polygon.tor.us",
 };

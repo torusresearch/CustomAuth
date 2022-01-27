@@ -26,10 +26,11 @@ import { registerServiceWorker } from "./registerServiceWorker";
 import {
   AGGREGATE_VERIFIER,
   CONTRACT_MAP,
-  ETHEREUM_NETWORK,
   LOGIN,
+  NETWORK_MAP,
   REDIRECT_PARAMS_STORAGE_METHOD,
   REDIRECT_PARAMS_STORAGE_METHOD_TYPE,
+  SIGNER_MAP,
   TORUS_METHOD,
   TORUS_NETWORK,
   UX_MODE,
@@ -76,7 +77,6 @@ class CustomAuth {
     redirectParamsStorageMethod = REDIRECT_PARAMS_STORAGE_METHOD.SESSION_STORAGE,
     locationReplaceOnRedirect = false,
     popupFeatures,
-    skipFetchingNodeDetails = false,
     metadataUrl = "https://metadata.tor.us",
   }: CustomAuthArgs) {
     this.isInitialized = false;
@@ -95,13 +95,13 @@ class CustomAuth {
     const torus = new Torus({
       enableOneKey,
       metadataHost: metadataUrl,
-      allowHost: "https://signer.tor.us/api/allow",
+      allowHost: `${SIGNER_MAP[network]}/api/allow`,
+      signerHost: `${SIGNER_MAP[network]}/api/sign`,
     });
     Torus.setAPIKey(apiKey);
     this.torus = torus;
-    const ethNetwork = network === TORUS_NETWORK.TESTNET ? ETHEREUM_NETWORK.ROPSTEN : network;
+    const ethNetwork = NETWORK_MAP[network];
     this.nodeDetailManager = new NodeDetailManager({ network: ethNetwork, proxyAddress: proxyContractAddress || CONTRACT_MAP[network] });
-    if (!skipFetchingNodeDetails) this.nodeDetailManager.getNodeDetails(false, true);
     if (enableLogging) log.enableAll();
     else log.disableAll();
   }
@@ -174,7 +174,7 @@ class CustomAuth {
 
     const userInfo = await loginHandler.getUserInfo(loginParams);
     if (registerOnly) {
-      const { torusNodeEndpoints, torusNodePub } = await this.nodeDetailManager.getNodeDetails(false, true);
+      const { torusNodeEndpoints, torusNodePub } = await this.nodeDetailManager.getNodeDetails({ verifier, verifierId: userInfo.verifierId });
       const torusPubKey = await this.torus.getPublicAddress(torusNodeEndpoints, torusNodePub, { verifier, verifierId: userInfo.verifierId }, true);
 
       const res = {
@@ -384,7 +384,7 @@ class CustomAuth {
     idToken: string,
     additionalParams?: ExtraParams
   ): Promise<TorusKey> {
-    const { torusNodeEndpoints, torusNodePub, torusIndexes } = await this.nodeDetailManager.getNodeDetails(false, true);
+    const { torusNodeEndpoints, torusNodePub, torusIndexes } = await this.nodeDetailManager.getNodeDetails({ verifier, verifierId });
     log.debug("torus-direct/getTorusKey", { torusNodeEndpoints, torusNodePub, torusIndexes });
 
     const address = await this.torus.getPublicAddress(torusNodeEndpoints, torusNodePub, { verifier, verifierId }, true);
