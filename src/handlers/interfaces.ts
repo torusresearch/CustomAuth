@@ -255,7 +255,6 @@ export interface CustomAuthArgs {
    * for further documentation.
    */
   popupFeatures?: string;
-  skipFetchingNodeDetails?: boolean;
 }
 
 export interface InitParams {
