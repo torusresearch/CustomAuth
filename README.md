@@ -142,7 +142,8 @@ Please refer to examples
 - [vue](examples/vue-app/src/views/PopupMode/Login.vue) for popup flow
 - [vue](examples/vue-app/src/views/RedirectMode/Login.vue) for redirect flow
 - [react](examples/react-app/src/App.tsx) for popup flow
-- [nextjs](examples/nextjs-app/pages/_app.tsx) for redirect flow
+- [nextjs](examples/nextjs-app/pages/popupMode/login.tsx) for popup flow
+- [nextjs](examples/nextjs-app/pages/redirectMode/login.tsx) for redirect flow
 - [angular](examples/angular-app/src/app/popup-mode-login/popup-mode-login.component.ts) for popup flow
 - [angular](examples/angular-app/src/app/redirect-mode-login/redirect-mode-login.component.ts) for redirect flow
 - [gatsby](https://github.com/jamespfarrell/gatsby-torus-direct) for configuration
