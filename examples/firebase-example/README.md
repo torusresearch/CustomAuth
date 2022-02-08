@@ -22,7 +22,7 @@ in the `config.js` file.
 
 - Create a custom verifier from [torus developer dashboard](https://developer.tor.us) with following configuration:
 
-  - Make sure to add a following JWT validation fields in custom verifier window:-
+  - Make sure to add a following JWT validation fields in custom verifier window ([her](https://firebase.google.com/docs/auth/admin/verify-id-tokens#retrieve_id_tokens_on_clients) is a related, helpful Firebase doc):-
 
     - `aud`: firebase project id.
     - `iss`: `https://securetoken.google.com/<firebase-project-id>`
