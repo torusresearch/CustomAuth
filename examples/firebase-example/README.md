@@ -25,7 +25,7 @@ in the `config.js` file.
   - Make sure to add a following JWT validation fields in custom verifier window:-
 
     - `aud`: firebase project id.
-    - `iss`: 'https://securetoken.google.com/<firebase-project-id>
+    - `iss`: `https://securetoken.google.com/<firebase-project-id>`
 
   - Use `sub` as `JWT Verifier ID` field in custom verifier window.
 
