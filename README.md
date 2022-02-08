@@ -146,6 +146,7 @@ Please refer to examples
 - [angular](examples/angular-app/src/app/popup-mode-login/popup-mode-login.component.ts) for popup flow
 - [angular](examples/angular-app/src/app/redirect-mode-login/redirect-mode-login.component.ts) for redirect flow
 - [gatsby](https://github.com/jamespfarrell/gatsby-torus-direct) for configuration
+- [firebase](examples/firebase-example/public/app.js) for for Firebase setup
 
 Hosted Example for testing
 
