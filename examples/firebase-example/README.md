@@ -18,14 +18,16 @@ Then copy and paste the Web snippet code found in the console (either by clickin
 your web app" button in your Project overview, or clicking the "Web setup" button in the Auth page)
 in the `config.js` file.
 
+Google OAuth provider note: you will need to ensure that the OAuth 2.0 Client ID you are using includes the Authorized redirect URI for your firebase handler `https://<firebase-project-id>.firebaseapp.com/__/auth/handler`. Navigate to `https://console.cloud.google.com/apis/credentials?authuser=1&project=<firbase-project-id>`, click on the relevant client id in the "OAuth 2.0 Client IDs" list, add `https://<firebase-project-id>.firebaseapp.com/__/auth/handler` to the "Authorized redirect URIs", and click Save.
+
 ## customauth Prerequisite
 
 - Create a custom verifier from [torus developer dashboard](https://developer.tor.us) with following configuration:
 
-  - Make sure to add a following JWT validation fields in custom verifier window:-
+  - Make sure to add a following JWT validation fields in custom verifier window ([here](https://firebase.google.com/docs/auth/admin/verify-id-tokens#retrieve_id_tokens_on_clients) is a related, helpful Firebase doc):-
 
     - `aud`: firebase project id.
-    - `iss`: 'https://securetoken.google.com/<firebase-project-id>
+    - `iss`: `https://securetoken.google.com/<firebase-project-id>`
 
   - Use `sub` as `JWT Verifier ID` field in custom verifier window.
 
