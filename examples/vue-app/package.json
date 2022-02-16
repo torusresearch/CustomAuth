@@ -9,7 +9,7 @@
     "install:local": "npm i ../../toruslabs-customauth-*.tgz"
   },
   "dependencies": {
-    "@toruslabs/customauth": "file:../../toruslabs-customauth-6.1.1.tgz",
+    "@toruslabs/customauth": "file:../..",
     "@toruslabs/openlogin-starkkey": "^1.3.4",
     "@web3auth/ethereum-provider": "^0.1.1",
     "core-js": "^3.20.3",
