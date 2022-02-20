@@ -25,7 +25,7 @@ export default class DiscordHandler extends AbstractLoginHandler {
   }
 
   setFinalUrl(): void {
-    const finalUrl = new URL("https://discordapp.com/api/oauth2/authorize");
+    const finalUrl = new URL("https://discord.com/api/oauth2/authorize");
     const clonedParams = JSON.parse(JSON.stringify(this.jwtParams || {}));
     const finalJwtParams = deepmerge(
       {
@@ -46,7 +46,7 @@ export default class DiscordHandler extends AbstractLoginHandler {
   async getUserInfo(params: LoginWindowResponse): Promise<TorusVerifierResponse> {
     const { accessToken } = params;
     const userInfo = await get<{ id: string; username: string; discriminator: string; avatar?: string; email?: string }>(
-      "https://discordapp.com/api/users/@me",
+      "https://discord.com/api/users/@me",
       {
         headers: {
           Authorization: `Bearer ${accessToken}`,
@@ -56,8 +56,8 @@ export default class DiscordHandler extends AbstractLoginHandler {
     const { id, avatar, email = "", username: name = "", discriminator = "" } = userInfo;
     const profileImage =
       avatar === null
-        ? `https://cdn.discordapp.com/embed/avatars/${Number(discriminator) % 5}.png`
-        : `https://cdn.discordapp.com/avatars/${id}/${avatar}.png?size=2048`;
+        ? `https://cdn.discord.com/embed/avatars/${Number(discriminator) % 5}.png`
+        : `https://cdn.discord.com/avatars/${id}/${avatar}.png?size=2048`;
     return {
       profileImage,
       name: `${name}#${discriminator}`,

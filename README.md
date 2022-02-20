@@ -216,7 +216,7 @@ const { DISCORD_CLIENT_SECRET, DISCORD_CLIENT_ID } = process.env;
 const { token } = req.body;
 const formData = new FormData();
 formData.append("token", token);
-await axios.post("https://discordapp.com/api/oauth2/token/revoke", formData, {
+await axios.post("https://discord.com/api/oauth2/token/revoke", formData, {
   headers: {
     ...formData.getHeaders(),
     Authorization: `Basic ${Buffer.from(`${DISCORD_CLIENT_ID}:${DISCORD_CLIENT_SECRET}`, "binary").toString("base64")}`,
