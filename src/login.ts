@@ -449,7 +449,7 @@ class CustomAuth {
     }
 
     if (!hash && Object.keys(queryParams).length === 0) {
-      throw new Error("Unable to fetch result from redirect");
+      throw new Error("Unable to fetch result from OAuth login");
     }
 
     const { error, instanceParameters, hashParameters } = handleRedirectParameters(hash, queryParams);
@@ -466,11 +466,7 @@ class CustomAuth {
     }
 
     if (error) {
-      const errorInstance = `Error: ${error}. Instance params: ${JSON.stringify(instanceParameters || {})}. Hash params: ${JSON.stringify(
-        hashParameters || {}
-      )}`;
-
-      return { error: errorInstance, state: instanceParameters || {}, method, result: {}, hashParameters, args };
+      return { error, state: instanceParameters || {}, method, result: {}, hashParameters, args };
     }
 
     let result: unknown;
@@ -497,7 +493,7 @@ class CustomAuth {
     } catch (err) {
       log.error(err);
       return {
-        error: `Could not get result from torus nodes ${err?.message || ""}`,
+        error: `Could not get result from torus nodes \n ${err?.message || ""}`,
         state: instanceParameters || {},
         method,
         result: {},
