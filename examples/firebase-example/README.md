@@ -2,8 +2,7 @@
 
 ## Firebase Prerequisite
 
-- You need to have created a Firebase Project in the
-  [Firebase Console](https://firebase.google.com/console/) as well as configured a web app.
+- Create a firebase project and configure a web app from [Firebase Console](https://firebase.google.com/console/).
 
 - Enable the Auth providers you would like to offer your users in the firebase console, under
   Auth > Sign-in methods.
@@ -14,13 +13,13 @@
 cp public/sample-config.js public/config.js
 ```
 
-Then copy and paste the Web snippet code found in the console (either by clicking "Add Firebase to
+Then copy and paste the Web snippet code found in the firebase console (either by clicking "Add Firebase to
 your web app" button in your Project overview, or clicking the "Web setup" button in the Auth page)
 in the `config.js` file.
 
-Google OAuth provider note: you will need to ensure that the OAuth 2.0 Client ID you are using includes the Authorized redirect URI for your firebase handler `https://<firebase-project-id>.firebaseapp.com/__/auth/handler`. Navigate to `https://console.cloud.google.com/apis/credentials?authuser=1&project=<firbase-project-id>`, click on the relevant client id in the "OAuth 2.0 Client IDs" list, add `https://<firebase-project-id>.firebaseapp.com/__/auth/handler` to the "Authorized redirect URIs", and click Save.
+ - `Google OAuth provider note`: You will need to ensure that the OAuth 2.0 Client ID you are using includes the Authorized redirect URI for your firebase handler `https://<firebase-project-id>.firebaseapp.com/__/auth/handler`. Navigate to `https://console.cloud.google.com/apis/credentials?authuser=1&project=<firbase-project-id>`, click on the relevant client id in the "OAuth 2.0 Client IDs" list, add `https://<firebase-project-id>.firebaseapp.com/__/auth/handler` to the "Authorized redirect URIs", and click Save.
 
-## customauth Prerequisite
+## CustomAuth Prerequisites
 
 - Create a custom verifier from [torus developer dashboard](https://developer.tor.us) with following configuration:
 
