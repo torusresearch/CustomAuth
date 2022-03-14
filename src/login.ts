@@ -1,5 +1,5 @@
 import NodeDetailManager from "@toruslabs/fetch-node-details";
-import Torus from "@toruslabs/torus.js";
+import Torus, { TorusNetwork } from "@toruslabs/torus.js";
 import { keccak256 } from "web3-utils";
 
 import createHandler from "./handlers/HandlerFactory";
@@ -97,6 +97,7 @@ class CustomAuth {
       metadataHost: metadataUrl,
       allowHost: `${SIGNER_MAP[network]}/api/allow`,
       signerHost: `${SIGNER_MAP[network]}/api/sign`,
+      network: network as TorusNetwork,
     });
     Torus.setAPIKey(apiKey);
     this.torus = torus;
