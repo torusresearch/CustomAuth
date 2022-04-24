@@ -1,7 +1,8 @@
-import { Auth0UserInfo, LoginDetails, TorusGenericObject } from "../handlers/interfaces";
-import { LOGIN, LOGIN_TYPE, REDIRECT_PARAMS_STORAGE_METHOD, REDIRECT_PARAMS_STORAGE_METHOD_TYPE } from "./enums";
-import log from "./loglevel";
+import Bowser, { ENGINE_MAP } from "bowser";
 
+import { Auth0UserInfo, TorusGenericObject } from "../handlers/interfaces";
+import { LOGIN, LOGIN_TYPE, REDIRECT_PARAMS_STORAGE_METHOD_TYPE } from "./enums";
+import log from "./loglevel";
 interface CustomMessageEvent extends MessageEvent {
   error: string;
 }
@@ -127,42 +128,6 @@ export function storageAvailable(type: REDIRECT_PARAMS_STORAGE_METHOD_TYPE): boo
   }
 }
 
-const storageStatus = {
-  [REDIRECT_PARAMS_STORAGE_METHOD.LOCAL_STORAGE]: storageAvailable(REDIRECT_PARAMS_STORAGE_METHOD.LOCAL_STORAGE),
-  [REDIRECT_PARAMS_STORAGE_METHOD.SESSION_STORAGE]: storageAvailable(REDIRECT_PARAMS_STORAGE_METHOD.SESSION_STORAGE),
-};
-
-export function storeLoginDetails(params: LoginDetails, storageMethod: REDIRECT_PARAMS_STORAGE_METHOD_TYPE, scope: string): void {
-  if (storageStatus[storageMethod]) {
-    window[storageMethod].setItem(`torus_login_${scope}`, JSON.stringify(params));
-  }
-}
-
-export function retrieveLoginDetails(storageMethod: REDIRECT_PARAMS_STORAGE_METHOD_TYPE, scope: string): LoginDetails {
-  if (storageStatus[storageMethod]) {
-    const loginDetails = window[storageMethod].getItem(`torus_login_${scope}`);
-    return JSON.parse(loginDetails || "{}") as LoginDetails;
-  }
-  throw new Error("Unable to retrieve stored login details");
-}
-
-export function clearLoginDetailsStorage(storageMethod: REDIRECT_PARAMS_STORAGE_METHOD_TYPE, scope: string): void {
-  if (storageStatus[storageMethod]) {
-    window[storageMethod].removeItem(`torus_login_${scope}`);
-  }
-}
-
-export function clearOrphanedLoginDetails(storageMethod: REDIRECT_PARAMS_STORAGE_METHOD_TYPE): void {
-  if (storageStatus[storageMethod]) {
-    const allStorageKeys = Object.keys(window[storageMethod]);
-    allStorageKeys.forEach((key) => {
-      if (key.startsWith("torus_login_")) {
-        window[storageMethod].removeItem(key);
-      }
-    });
-  }
-}
-
 export function getPopupFeatures(): string {
   // Fixes dual-screen position                             Most browsers      Firefox
   const dualScreenLeft = window.screenLeft !== undefined ? window.screenLeft : window.screenX;
@@ -207,4 +172,22 @@ export function constructURL(params: { baseURL: string; query?: Record<string, u
     url.hash = h;
   }
   return url.toString();
+}
+
+export function are3PCSupported(): boolean {
+  const browserInfo = Bowser.parse(navigator.userAgent);
+  log.info(JSON.stringify(browserInfo), "current browser info");
+
+  let thirdPartyCookieSupport = true;
+  // brave
+  if ((navigator as unknown as { brave: boolean })?.brave) {
+    thirdPartyCookieSupport = false;
+  }
+  // All webkit & gecko engine instances use itp (intelligent tracking prevention -
+  // https://webkit.org/tracking-prevention/#intelligent-tracking-prevention-itp)
+  if (browserInfo.engine.name === ENGINE_MAP.WebKit || browserInfo.engine.name === ENGINE_MAP.Gecko) {
+    thirdPartyCookieSupport = false;
+  }
+
+  return thirdPartyCookieSupport;
 }

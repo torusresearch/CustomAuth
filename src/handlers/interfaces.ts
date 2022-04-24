@@ -1,11 +1,4 @@
-import {
-  AGGREGATE_VERIFIER_TYPE,
-  LOGIN_TYPE,
-  REDIRECT_PARAMS_STORAGE_METHOD_TYPE,
-  TORUS_METHOD_TYPE,
-  TORUS_NETWORK_TYPE,
-  UX_MODE_TYPE,
-} from "../utils/enums";
+import { AGGREGATE_VERIFIER_TYPE, LOGIN_TYPE, TORUS_METHOD_TYPE, TORUS_NETWORK_TYPE, UX_MODE_TYPE } from "../utils/enums";
 
 export type TorusGenericObject = {
   [key: string]: string;
@@ -236,14 +229,6 @@ export interface CustomAuthArgs {
   uxMode?: UX_MODE_TYPE;
 
   /**
-   * localStorage and sessionStorage are supported.
-   * @defaultValue localStorage
-   * @remarks  In redirect flow, some params will be stored in localStorage for reuse
-   * at the end of the flow.
-   */
-  redirectParamsStorageMethod?: REDIRECT_PARAMS_STORAGE_METHOD_TYPE;
-
-  /**
    * Whether to replace the url hash/query params from OAuth at the end of the redirect flow
    *
    * @defaultValue false
@@ -255,6 +240,11 @@ export interface CustomAuthArgs {
    * for further documentation.
    */
   popupFeatures?: string;
+  /**
+   * Specify a custom storage server url
+   * @defaultValue https://broadcast-server.tor.us
+   */
+  storageServerUrl?: string;
 }
 
 export interface InitParams {

@@ -23,29 +23,10 @@ import {
   TorusVerifierResponse,
 } from "./handlers/interfaces";
 import { registerServiceWorker } from "./registerServiceWorker";
-import {
-  AGGREGATE_VERIFIER,
-  CONTRACT_MAP,
-  LOGIN,
-  NETWORK_MAP,
-  REDIRECT_PARAMS_STORAGE_METHOD,
-  REDIRECT_PARAMS_STORAGE_METHOD_TYPE,
-  SIGNER_MAP,
-  TORUS_METHOD,
-  TORUS_NETWORK,
-  UX_MODE,
-  UX_MODE_TYPE,
-} from "./utils/enums";
-import {
-  clearLoginDetailsStorage,
-  clearOrphanedLoginDetails,
-  handleRedirectParameters,
-  isFirefox,
-  padUrlString,
-  retrieveLoginDetails,
-  storeLoginDetails,
-} from "./utils/helpers";
+import { AGGREGATE_VERIFIER, CONTRACT_MAP, LOGIN, NETWORK_MAP, SIGNER_MAP, TORUS_METHOD, TORUS_NETWORK, UX_MODE, UX_MODE_TYPE } from "./utils/enums";
+import { handleRedirectParameters, isFirefox, padUrlString } from "./utils/helpers";
 import log from "./utils/loglevel";
+import StorageHelper from "./utils/StorageHelper";
 
 class CustomAuth {
   isInitialized: boolean;
@@ -55,7 +36,6 @@ class CustomAuth {
     redirectToOpener: boolean;
     redirect_uri: string;
     uxMode: UX_MODE_TYPE;
-    redirectParamsStorageMethod: REDIRECT_PARAMS_STORAGE_METHOD_TYPE;
     locationReplaceOnRedirect: boolean;
     popupFeatures: string;
   };
@@ -63,6 +43,8 @@ class CustomAuth {
   torus: Torus;
 
   nodeDetailManager: NodeDetailManager;
+
+  private storageHelper: StorageHelper;
 
   constructor({
     baseUrl,
@@ -74,10 +56,10 @@ class CustomAuth {
     redirectPathName = "redirect",
     apiKey = "torus-default",
     uxMode = UX_MODE.POPUP,
-    redirectParamsStorageMethod = REDIRECT_PARAMS_STORAGE_METHOD.SESSION_STORAGE,
     locationReplaceOnRedirect = false,
     popupFeatures,
     metadataUrl = "https://metadata.tor.us",
+    storageServerUrl = "https://broadcast-server.tor.us",
   }: CustomAuthArgs) {
     this.isInitialized = false;
     const baseUri = new URL(baseUrl);
@@ -88,7 +70,6 @@ class CustomAuth {
       },
       redirectToOpener,
       uxMode,
-      redirectParamsStorageMethod,
       locationReplaceOnRedirect,
       popupFeatures,
     };
@@ -105,9 +86,11 @@ class CustomAuth {
     this.nodeDetailManager = new NodeDetailManager({ network: ethNetwork, proxyAddress: proxyContractAddress || CONTRACT_MAP[network] });
     if (enableLogging) log.enableAll();
     else log.disableAll();
+    this.storageHelper = new StorageHelper(storageServerUrl);
   }
 
   async init({ skipSw = false, skipInit = false, skipPrefetch = false }: InitParams = {}): Promise<void> {
+    this.storageHelper.init();
     if (skipInit) {
       this.isInitialized = true;
       return;
@@ -164,8 +147,8 @@ class CustomAuth {
       // State has to be last here otherwise it will be overwritten
       loginParams = { accessToken, idToken, ...rest, state: instanceParameters };
     } else {
-      clearOrphanedLoginDetails(this.config.redirectParamsStorageMethod);
-      storeLoginDetails({ method: TORUS_METHOD.TRIGGER_LOGIN, args }, this.config.redirectParamsStorageMethod, loginHandler.nonce);
+      this.storageHelper.clearOrphanedLoginDetails();
+      await this.storageHelper.storeLoginDetails({ method: TORUS_METHOD.TRIGGER_LOGIN, args }, loginHandler.nonce);
       loginParams = await loginHandler.handleLoginWindow({
         locationReplaceOnRedirect: this.config.locationReplaceOnRedirect,
         popupFeatures: this.config.popupFeatures,
@@ -251,8 +234,8 @@ class CustomAuth {
         // State has to be last here otherwise it will be overwritten
         loginParams = { accessToken, idToken, ...rest, state: instanceParameters };
       } else {
-        clearOrphanedLoginDetails(this.config.redirectParamsStorageMethod);
-        storeLoginDetails({ method: TORUS_METHOD.TRIGGER_AGGREGATE_LOGIN, args }, this.config.redirectParamsStorageMethod, loginHandler.nonce);
+        this.storageHelper.clearOrphanedLoginDetails();
+        await this.storageHelper.storeLoginDetails({ method: TORUS_METHOD.TRIGGER_AGGREGATE_LOGIN, args }, loginHandler.nonce);
         loginParams = await loginHandler.handleLoginWindow({
           locationReplaceOnRedirect: this.config.locationReplaceOnRedirect,
           popupFeatures: this.config.popupFeatures,
@@ -328,8 +311,8 @@ class CustomAuth {
       // State has to be last here otherwise it will be overwritten
       loginParams = { accessToken, idToken, ...rest, state: instanceParameters };
     } else {
-      clearOrphanedLoginDetails(this.config.redirectParamsStorageMethod);
-      storeLoginDetails({ method: TORUS_METHOD.TRIGGER_AGGREGATE_HYBRID_LOGIN, args }, this.config.redirectParamsStorageMethod, loginHandler.nonce);
+      this.storageHelper.clearOrphanedLoginDetails();
+      await this.storageHelper.storeLoginDetails({ method: TORUS_METHOD.TRIGGER_AGGREGATE_HYBRID_LOGIN, args }, loginHandler.nonce);
       loginParams = await loginHandler.handleLoginWindow({
         locationReplaceOnRedirect: this.config.locationReplaceOnRedirect,
         popupFeatures: this.config.popupFeatures,
@@ -459,11 +442,11 @@ class CustomAuth {
 
     log.info(instanceId, "instanceId");
 
-    const { args, method, ...rest } = retrieveLoginDetails(this.config.redirectParamsStorageMethod, instanceId);
+    const { args, method, ...rest } = await this.storageHelper.retrieveLoginDetails(instanceId);
     log.info(args, method);
 
     if (clearLoginDetails) {
-      clearLoginDetailsStorage(this.config.redirectParamsStorageMethod, instanceId);
+      this.storageHelper.clearLoginDetailsStorage(instanceId);
     }
 
     if (error) {
