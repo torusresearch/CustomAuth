@@ -38,6 +38,7 @@ export const UX_MODE = {
 export const REDIRECT_PARAMS_STORAGE_METHOD = {
   LOCAL_STORAGE: "localStorage",
   SESSION_STORAGE: "sessionStorage",
+  SERVER: "server",
 };
 
 export const TORUS_METHOD = {
