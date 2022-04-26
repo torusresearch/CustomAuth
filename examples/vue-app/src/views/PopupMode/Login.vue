@@ -128,7 +128,7 @@ export default Vue.extend({
           queryParameters,
         });
 
-        this.provider = await EthereumPrivateKeyProvider.getProviderInstance({
+        const providerInstance = await EthereumPrivateKeyProvider.getProviderInstance({
           chainConfig: {
             rpcTarget: "https://polygon-rpc.com",
             chainId: "0x89",
@@ -139,6 +139,8 @@ export default Vue.extend({
           },
           privKey: loginDetails.privateKey,
         });
+
+        this.provider = providerInstance.provider;
 
         this.loginResponse = loginDetails;
 
@@ -252,7 +254,7 @@ export default Vue.extend({
         return this.getPedersenHashRecursively(str, binaryToHex(bufferToBinary(Buffer.from(TEST_MESSAGE_SUFFIX, "utf8")).padEnd(252, "0")));
       }
       const currentChunkHex = binaryToHex(binaryStr.padEnd(252, "0"));
-      return pedersen([prefix, currentChunkHex]);
+      return pedersen([prefix || "", currentChunkHex]);
     },
 
     signMessageWithStarkKey(e: any) {
