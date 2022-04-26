@@ -44,7 +44,7 @@ class CustomAuth {
 
   nodeDetailManager: NodeDetailManager;
 
-  private storageHelper: StorageHelper;
+  storageHelper: StorageHelper;
 
   constructor({
     baseUrl,
