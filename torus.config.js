@@ -1,4 +1,4 @@
-const packagesToInclude = ["broadcast-channel", "@toruslabs/torus.js", "@toruslabs/fetch-node-details"];
+const packagesToInclude = ["@toruslabs/broadcast-channel", "@toruslabs/torus.js", "@toruslabs/fetch-node-details"];
 
 module.exports = {
   cjsBundled: true,

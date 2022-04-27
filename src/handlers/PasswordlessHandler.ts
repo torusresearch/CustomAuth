@@ -1,5 +1,5 @@
+import { BroadcastChannel } from "@toruslabs/broadcast-channel";
 import { get, post } from "@toruslabs/http-helpers";
-import { BroadcastChannel } from "broadcast-channel";
 import jwtDecode from "jwt-decode";
 import deepmerge from "lodash.merge";
 

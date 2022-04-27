@@ -1,4 +1,4 @@
-import { BroadcastChannel } from "broadcast-channel";
+import { BroadcastChannel } from "@toruslabs/broadcast-channel";
 
 import { LOGIN_TYPE, UX_MODE, UX_MODE_TYPE } from "../utils/enums";
 import { broadcastChannelOptions, randomId } from "../utils/helpers";
