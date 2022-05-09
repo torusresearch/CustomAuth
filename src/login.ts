@@ -122,7 +122,7 @@ class CustomAuth {
   }
 
   async triggerLogin(args: SingleLoginParams): Promise<TorusLoginResponse> {
-    const { verifier, typeOfLogin, clientId, jwtParams, hash, queryParameters, customState, registerOnly } = args;
+    const { verifier, typeOfLogin, clientId, jwtParams, hash, queryParameters, customState, registerOnly, redirectOverride } = args;
     log.info("Verifier: ", verifier);
     if (!this.isInitialized) {
       throw new Error("Not initialized yet");
@@ -132,7 +132,7 @@ class CustomAuth {
       typeOfLogin,
       clientId,
       verifier,
-      redirect_uri: this.config.redirect_uri,
+      redirect_uri: redirectOverride ? redirectOverride({ state:  customState, clientId, jwtParams }) : this.config.redirect_uri,
       redirectToOpener: this.config.redirectToOpener,
       jwtParams,
       uxMode: this.config.uxMode,

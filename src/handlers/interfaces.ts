@@ -386,6 +386,7 @@ export interface SubVerifierDetails {
   hash?: string;
   queryParameters?: TorusGenericObject;
   customState?: TorusGenericObject;
+  redirectOverride?: (args: any) => string;
 }
 
 export interface CreateHandlerParams {
