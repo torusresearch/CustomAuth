@@ -49,7 +49,6 @@ class CustomAuth {
   constructor({
     baseUrl,
     network = TORUS_NETWORK.MAINNET,
-    proxyContractAddress,
     enableLogging = false,
     enableOneKey = false,
     redirectToOpener = false,
@@ -60,6 +59,7 @@ class CustomAuth {
     popupFeatures,
     metadataUrl = "https://metadata.tor.us",
     storageServerUrl = "https://broadcast-server.tor.us",
+    networkUrl,
   }: CustomAuthArgs) {
     this.isInitialized = false;
     const baseUri = new URL(baseUrl);
@@ -83,7 +83,7 @@ class CustomAuth {
     Torus.setAPIKey(apiKey);
     this.torus = torus;
     const ethNetwork = NETWORK_MAP[network];
-    this.nodeDetailManager = new NodeDetailManager({ network: ethNetwork, proxyAddress: proxyContractAddress || CONTRACT_MAP[network] });
+    this.nodeDetailManager = new NodeDetailManager({ network: networkUrl || ethNetwork, proxyAddress: CONTRACT_MAP[network] });
     if (enableLogging) log.enableAll();
     else log.disableAll();
     this.storageHelper = new StorageHelper(storageServerUrl);
