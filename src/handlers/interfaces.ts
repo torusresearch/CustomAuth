@@ -139,18 +139,15 @@ export interface CustomAuthArgs {
   metadataUrl?: string;
 
   /**
-   * Torus Network to target options: mainnet | testnet
+   * Torus Network to target options: mainnet | testnet | cyan
    * @defaultValue mainnet
    */
   network?: TORUS_NETWORK_TYPE;
 
   /**
-   * The contract address of the verifiers on torus network mainnet:
-   * 0x638646503746d5456209e33a2ff5e3226d698bea and for testnet:
-   * 0x4023d2a0D330bF11426B12C6144Cfb96B7fa6183.
-   * If not specified, default one for the specified network will be used.
+   * Network Url to read blockchain data from (eg: infura url)
    */
-  proxyContractAddress?: string;
+  networkUrl?: string;
 
   /**
    * This option is used to specify whether to enable logging
