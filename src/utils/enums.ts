@@ -1,4 +1,4 @@
-import { ETHEREUM_NETWORK } from "@toruslabs/fetch-node-details";
+import NodeDetailManager, { ETHEREUM_NETWORK } from "@toruslabs/fetch-node-details";
 
 export const TORUS_NETWORK = {
   TESTNET: "testnet",
@@ -55,9 +55,9 @@ export type TORUS_METHOD_TYPE = typeof TORUS_METHOD[keyof typeof TORUS_METHOD];
 export type REDIRECT_PARAMS_STORAGE_METHOD_TYPE = typeof REDIRECT_PARAMS_STORAGE_METHOD[keyof typeof REDIRECT_PARAMS_STORAGE_METHOD];
 
 export const CONTRACT_MAP = {
-  [TORUS_NETWORK.MAINNET]: "0xf20336e16B5182637f09821c27BDe29b0AFcfe80",
-  [TORUS_NETWORK.TESTNET]: "0x6258c9d6c12ed3edda59a1a6527e469517744aa7",
-  [TORUS_NETWORK.CYAN]: "0x9f072ba19b3370e512aa1b4bfcdaf97283168005",
+  [TORUS_NETWORK.MAINNET]: NodeDetailManager.PROXY_ADDRESS_MAINNET,
+  [TORUS_NETWORK.TESTNET]: NodeDetailManager.PROXY_ADDRESS_ROPSTEN,
+  [TORUS_NETWORK.CYAN]: NodeDetailManager.PROXY_ADDRESS_POLYGON,
 };
 
 export const NETWORK_MAP = {
