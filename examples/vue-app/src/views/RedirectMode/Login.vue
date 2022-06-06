@@ -6,6 +6,7 @@
         <option :key="login" v-for="login in Object.keys(verifierMap)" :value="login">{{ verifierMap[login].name }}</option>
       </select>
     </div>
+    <input v-model="login_hint" v-if="selectedVerifier === 'torus_email_passwordless'" placeholder="Enter an email" required />
     <div :style="{ marginTop: '20px' }">
       <button @click="login">Login with Torus</button>
     </div>
@@ -39,6 +40,7 @@ import {
   LINE,
   LINKEDIN,
   REDDIT,
+  TORUS_EMAIL_PASSWORDLESS,
   TWITTER,
   verifierMap,
   WEIBO,
@@ -50,6 +52,7 @@ export default Vue.extend({
       torusdirectsdk: null as TorusSdk | null,
       selectedVerifier: "google",
       verifierMap,
+      login_hint: "",
     };
   },
   computed: {
@@ -67,6 +70,12 @@ export default Vue.extend({
         [LINE]: { domain: AUTH_DOMAIN },
         [COGNITO]: { domain: COGNITO_AUTH_DOMAIN, identity_provider: "Google", response_type: "token", user_info_endpoint: "userInfo" },
         [REDDIT]: { domain: AUTH_DOMAIN, connection: "Reddit", verifierIdField: "name", isVerifierIdCaseSensitive: false },
+        [TORUS_EMAIL_PASSWORDLESS]: {
+          domain: "https://lrc.auth.openlogin.com",
+          verifierIdField: "name",
+          isVerifierIdCaseSensitive: false,
+          login_hint: this.login_hint,
+        },
       };
     },
   },

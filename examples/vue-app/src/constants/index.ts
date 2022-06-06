@@ -17,6 +17,8 @@ export const WEBAUTHN = "webauthn";
 export const COGNITO = "cognito";
 export const AUTH_DOMAIN = "https://torus-test.auth0.com";
 export const COGNITO_AUTH_DOMAIN = "https://torus-test.auth.ap-southeast-1.amazoncognito.com/oauth2/";
+export const TORUS_EMAIL_PASSWORDLESS = "torus_email_passwordless";
+
 export const verifierMap = {
   [GOOGLE]: {
     name: "Google",
@@ -58,5 +60,11 @@ export const verifierMap = {
     typeOfLogin: "jwt",
     clientId: "78i338ev9lkgjst3mfeuih9tsh",
     verifier: "demo-cognito-example",
+  },
+  [TORUS_EMAIL_PASSWORDLESS]: {
+    name: "Torus Email Passwordless",
+    typeOfLogin: "jwt",
+    clientId: "P7PJuBCXIHP41lcyty0NEb7Lgf7Zme8Q",
+    verifier: "torus-auth0-email-passwordless-lrc",
   },
 } as Record<string, any>;
