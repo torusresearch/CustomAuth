@@ -4,7 +4,7 @@ import jwtDecode from "jwt-decode";
 import deepmerge from "lodash.merge";
 
 import { LOGIN_TYPE, UX_MODE_TYPE } from "../utils/enums";
-import { broadcastChannelOptions, getVerifierId, padUrlString } from "../utils/helpers";
+import { broadcastChannelOptions, getVerifierId, padUrlString, validateAndConstructUrl } from "../utils/helpers";
 import log from "../utils/loglevel";
 import AbstractLoginHandler from "./AbstractLoginHandler";
 import { Auth0ClientOptions, Auth0UserInfo, LoginWindowResponse, PopupResponse, TorusGenericObject, TorusVerifierResponse } from "./interfaces";
@@ -32,7 +32,8 @@ export default class JwtHandler extends AbstractLoginHandler {
 
   setFinalUrl(): void {
     const { domain } = this.jwtParams;
-    const domainUrl = new URL(domain);
+    const domainUrl = validateAndConstructUrl(domain);
+
     domainUrl.pathname = "/passwordless/start";
     this.finalURL = domainUrl;
   }
