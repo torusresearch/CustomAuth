@@ -4,7 +4,7 @@ import deepmerge from "lodash.merge";
 import log from "loglevel";
 
 import { LOGIN_TYPE, UX_MODE_TYPE } from "../utils/enums";
-import { getVerifierId, loginToConnectionMap, padUrlString } from "../utils/helpers";
+import { getVerifierId, loginToConnectionMap, padUrlString, validateAndConstructUrl } from "../utils/helpers";
 import AbstractLoginHandler from "./AbstractLoginHandler";
 import { Auth0ClientOptions, Auth0UserInfo, LoginWindowResponse, TorusGenericObject, TorusVerifierResponse } from "./interfaces";
 
@@ -31,7 +31,7 @@ export default class JwtHandler extends AbstractLoginHandler {
 
   setFinalUrl(): void {
     const { domain } = this.jwtParams;
-    const finalUrl = new URL(domain);
+    const finalUrl = validateAndConstructUrl(domain);
     finalUrl.pathname += finalUrl.pathname.endsWith("/") ? "authorize" : "/authorize";
     const clonedParams = JSON.parse(JSON.stringify(this.jwtParams));
     delete clonedParams.domain;
