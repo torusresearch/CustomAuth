@@ -1,27 +1,31 @@
 <template>
   <div id="app">
-    <div>
-      <p>Please note that the verifiers listed in the example have http://localhost:3000/serviceworker/redirect configured as the redirect uri.</p>
-      <p>If you use any other domains, they won't work.</p>
-      <p>The verifiers listed here only work with the client id's specified in example. Please don't edit them</p>
-      <p>The verifiers listed here are for example reference only. Please don't use them for anything other than testing purposes.</p>
-      <div>
-        Reach out to us at
-        <a href="mailto:hello@tor.us">hello@tor.us</a>
-        or
-        <a href="https://t.me/torusdev">telegram group</a>
-        to get your verifier deployed for your client id.
-      </div>
-      <span :style="{ marginRight: '20px' }">verifier:</span>
-      <select v-model="selectedVerifier">
-        <option :key="login" v-for="login in Object.keys(verifierMap)" :value="login">{{ verifierMap[login].name }}</option>
-      </select>
-      <input v-model="login_hint" v-if="selectedVerifier === 'torus_email_passwordless'" placeholder="Enter an email" required />
+    <div v-if="!loginResponse">
+        <div class="mt-8">
+          <div>Verifier</div>
+          <select v-model="selectedVerifier" class="select-menu">
+            <option :key="login" v-for="login in Object.keys(verifierMap)" :value="login">{{ verifierMap[login].name }}</option>
+          </select>
+          <input v-model="login_hint" v-if="selectedVerifier === 'torus_email_passwordless'" placeholder="Enter an email" required class="input-field"/>
+          
+        </div>
+        <div :style="{ marginTop: '20px' }">
+          <button @click="login" class="btn-login">Login with Torus</button>
+        </div>
+        <p>Please note that the verifiers listed in the example have http://localhost:3000/serviceworker/redirect configured as the redirect uri.</p>
+          <p>If you use any other domains, they won't work.</p>
+          <p>The verifiers listed here only work with the client id's specified in example. Please don't edit them</p>
+          <p>The verifiers listed here are for example reference only. Please don't use them for anything other than testing purposes.</p>
+          <div>
+            Reach out to us at
+            <a href="mailto:hello@tor.us">hello@tor.us</a>
+            or
+            <a href="https://t.me/torusdev">telegram group</a>
+            to get your verifier deployed for your client id.
+          </div>
     </div>
-    <div :style="{ marginTop: '20px' }">
-      <button @click="login">Login with Torus</button>
-    </div>
-    <div v-if="loginResponse && loginResponse.privateKey">
+    
+    <!-- <div v-if="loginResponse && loginResponse.privateKey">
       <span>Custom Auth Private key: {{ loginResponse.privateKey }}</span>
       <button @click="signMessage" :disabled="!provider">Sign Test Eth Message</button>
       <button @click="signV1Message" :disabled="!provider">Sign Typed data v1 test message</button>
@@ -50,9 +54,158 @@
           <button type="submit" :disabled="!signingMessage">Validate Stark Message</button>
         </form>
       </div>
+    </div> -->
+    <div v-if="loginResponse && loginResponse.privateKey">
+    <div class="flex box md:rows-span-2 m-6 text-left">
+      <div class="mt-7 ml-6 text-ellipsis overflow-hidden">
+        <span class="text-2xl font-semibold">demo-customauth.web3auth.io</span>
+        <h6 class="pb-8 text-left text-ellipsis overflow-hidden">Customauth Private key : {{ getPrivatekey(loginResponse)}}</h6>
+      </div>
+      <div class="ml-auto mt-7">
+        <!-- <span class="pr-32">Connected ChainId : {{ ethereumPrivateKeyProvider.state.chainId }}</span> -->
+        <button type="button" class="btn-logout">
+          <img src="@/assets/logout.svg" class="pr-3 pl-0" />
+          Logout
+        </button>
+      </div>
+    </div>
+    <div class="grid grid-cols-5 gap-7 m-6 height-fit">
+      <div class="grid grid-cols-2 col-span-5 md:col-span-2 text-left gap-2 p-4 box">
+        <!-- <div class="col-span-2 text-left">
+              <div class="font-semibold"></div>
+              <div class="grid grid-cols-2 gap-2">
+                <button class="btn" @click="getUserInfo">Get user info</button>
+                <button class="btn" @click="getEd25519Key">Get Ed25519Key</button>
+              </div>
+            </div> -->
+        <div class="col-span-2 text-left">
+          <div class="font-semibold">Signing</div>
+          <div class="grid grid-cols-2 gap-2">
+            <button class="btn" @click="signMessage" :disabled="!provider">Sign Test Eth Message</button>
+            <button class="btn" @click="signV1Message" :disabled="!provider">Sign Typed data v1 test message</button>
+            <button class="btn" @click="latestBlock" :disabled="!provider">Fetch Latest Block</button>
+
+            <!-- <button class="btn" @click="signMessage" :disabled="!ethereumPrivateKeyProvider.provider">Sign test Eth Message</button>
+                <button class="btn" @click="signV1Message" :disabled="!ethereumPrivateKeyProvider.provider">Sign Typed data v1 test message</button>
+                <button class="btn" @click="latestBlock" :disabled="!ethereumPrivateKeyProvider.provider">Fetch latest block</button>
+                <button class="btn" @click="switchChain" :disabled="!ethereumPrivateKeyProvider.provider">Switch to rinkeby</button>
+                <button class="btn" @click="addChain" :disabled="!ethereumPrivateKeyProvider.provider">Add Rinkeby Chain</button> -->
+          </div>
+        </div>
+        <div class="col-span-2 text-left">
+          <div class="font-semibold">Stark key pair</div>
+          <div class="text-[12px]">Enter HD account index to derive stark key pair from custom auth's private key</div>
+            <form @submit.prevent="starkHdAccount">
+              <div class="grid grid-cols-2 gap-2">
+              <input class="number-input p-4" :min="0" placeholder="Index" id="accountIndex" type="number" required />
+              <button class="btn" type="submit">Get Stark Key Pair</button>
+        <!-- <button class="btn" @click="latestBlock" :disabled="!provider">Fetch Latest Block</button> -->
+
+            <!-- <button class="btn" @click="signMessage" :disabled="!ethereumPrivateKeyProvider.provider">Sign test Eth Message</button>
+                <button class="btn" @click="signV1Message" :disabled="!ethereumPrivateKeyProvider.provider">Sign Typed data v1 test message</button>
+                <button class="btn" @click="latestBlock" :disabled="!ethereumPrivateKeyProvider.provider">Fetch latest block</button>
+                <button class="btn" @click="switchChain" :disabled="!ethereumPrivateKeyProvider.provider">Switch to rinkeby</button>
+                <button class="btn" @click="addChain" :disabled="!ethereumPrivateKeyProvider.provider">Add Rinkeby Chain</button> -->
+          </div>
+            </form>
+
+        </div>
+        <div class="col-span-2 text-left">
+          <div class="font-semibold">Sign message</div>
+            <form @submit.prevent="signMessageWithStarkKey">
+              <div class="grid grid-cols-1 gap-2">
+              <input class="text-areas" id="message" type="textarea" placeholder="Message to encrypt" required />
+              </div>
+              <div class="grid grid-cols-2 gap-2 pt-2">
+                <input class="btn p-2" :min="0" id="accountIndex" type="number" placeholder="Index" required />
+              <!-- <input id="message" type="textarea" placeholder="Enter message" required /> -->
+              <button type="submit" class="btn">Sign Message with StarkKey</button>
+              </div>
+            </form>
+        </div>
+        <div class="col-span-2 text-left">
+          <div class="font-semibold">Validate message</div>
+            <!-- <form @submit.prevent="signMessageWithStarkKey"> -->
+            <form @submit.prevent="validateStarkMessage">
+          <!-- </form> -->
+              <div class="grid grid-cols-2 gap-2 pt-2">
+                <input class="btn p-2" id="accountIndex" type="number" placeholder="Index" required />
+            <button class="btn" type="submit" :disabled="!signingMessage">Validate Stark Message</button>
+          </div>
+            </form>
+        </div>
+        <!-- <div class="col-span-2 text-left">
+              <div class="grid grid-cols-2 gap-2"></div>
+            </div>
+            <div class="col-span-2 text-left">
+              <div class="grid grid-cols-2 gap-2"></div>
+            </div>
+            <div class="col-span-2 text-left">
+              <div class="grid grid-cols-2 gap-2"></div>
+            </div>
+            <div class="col-span-2 text-left">
+              <div class="grid grid-cols-2 gap-2"></div>
+            </div>
+            <div class="col-span-2 text-left">
+              <div class="grid grid-cols-2 gap-2"></div>
+            </div>
+            <div class="col-span-2 text-left">
+              <div class="grid grid-cols-2 gap-2"></div>
+            </div>
+            <div class="col-span-2 text-left">
+              <div class="grid grid-cols-2 gap-2"></div>
+            </div>
+            <div class="col-span-2 text-left">
+              <div class="grid grid-cols-2 gap-2"></div>
+            </div> -->
+      </div>
+      <div class="col-span-5 md:col-span-3">
+        <h6 class="text-left">Note:</h6>
+        <div class="box-note mb-2 p-4 text-xs text-left">
+          <p class="mb-2">
+            Please note that the verifiers listed in the example have http://localhost:3000/serviceworker/redirect configured as the redirect uri.
+          </p>
+          <p class="mb-2">
+            If you use any other domains, they won't work. The verifiers listed here only work with the client id's specified in example. Please don't
+            edit them. The verifiers listed here are for example reference only. Please don't use them for anything other than testing purposes.
+          </p>
+          <p class="mb-2">Reach out to us at hello@tor.us or telegram group to get your verifier deployed for your client id.</p>
+        </div>
+        <div class="box-grey" id="console">
+          <p style="white-space: pre-line"></p>
+          <div><button class="clear-button" @click="clearUiconsole">Clear console</button></div>
+        </div>
+      </div>
     </div>
 
-    <div id="console" :style="{ whiteSpace: 'pre-line', height: 'auto', position: 'inherit' }"><p :style="{ whiteSpace: 'pre-line' }" /></div>
+    <!-- <div v-if="loginDetails && loginDetails.result">
+      <h2>Enter HD account index to derive stark key pair from custom auth's private key</h2>
+      <div :style="{ display: 'flex', flexDirection: 'row', justifyContent: 'space-around' }">
+        <form @submit.prevent="starkHdAccount" :style="{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }">
+          <input :min="0" placeholder="Enter hd account index" id="accountIndex" type="number" required />
+          <button type="submit">Get Stark Key Pair</button>
+        </form>
+        <br />
+        <br />
+        <form @submit.prevent="signMessageWithStarkKey" :style="{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }">
+          <input :min="0" id="accountIndex" type="number" placeholder="Enter hd account index" required />
+          <input id="message" type="textarea" placeholder="Enter message" required />
+          <button type="submit">Sign Message with StarkKey</button>
+        </form>
+        <br />
+        <br />
+        <form
+          @submit.prevent="validateStarkMessage"
+          :style="{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }"
+        >
+          <input id="accountIndex" type="number" placeholder="Enter account index" required />
+          <button type="submit" :disabled="!signingMessage">Validate Stark Message</button>
+        </form>
+      </div>
+    </div>
+    <div id="console" :style="{ whiteSpace: 'pre-line', height: 'auto', position: 'inherit' }"><p :style="{ whiteSpace: 'pre-line' }" /></div> -->
+  </div>
+    <!-- <div id="console" :style="{ whiteSpace: 'pre-line', height: 'auto', position: 'inherit' }"><p :style="{ whiteSpace: 'pre-line' }" /></div> -->
   </div>
 </template>
 
@@ -206,6 +359,16 @@ export default Vue.extend({
         console.error(error, "caught");
       }
     },
+    getPrivatekey(loginDetails: any): unknown {
+      // console.log(loginDetails);
+      return loginDetails.privateKey;
+    },
+    clearUiconsole() {
+      const el = document.querySelector("#console>p");
+      if (el) {
+        el.innerHTML = "";
+      }
+    },
     async signMessage() {
       const signedMessage = await signEthMessage(this.provider as SafeEventEmitterProvider);
       this.console("signedMessage", signedMessage);
@@ -268,8 +431,8 @@ export default Vue.extend({
 
     signMessageWithStarkKey(e: any) {
       e.preventDefault();
-      const accIndex = e.target[0].value;
-      const message = e.target[1].value;
+      const accIndex = e.target[1].value;
+      const message = e.target[0].value;
       const keyPair: ec.KeyPair = this.getStarkAccount(accIndex);
       const hash = this.getPedersenHashRecursively(message);
       this.signedMessage = sign(keyPair, hash);
@@ -289,7 +452,7 @@ export default Vue.extend({
       this.console(`Message is verified: ${isVerified}`);
     },
   },
-  async mounted() {
+  mounted() {
     try {
       var url = new URL(location.href);
       const queryParams: Record<string, any> = {};
@@ -309,7 +472,7 @@ export default Vue.extend({
       // the user login method calls.
       // so don't use torusdirectsdk.init and torusdirectsdk.triggerLogin (or other login methods)
       // in a single function call.
-      await torusdirectsdk.init();
+      torusdirectsdk.init();
       this.torusdirectsdk = torusdirectsdk;
     } catch (error) {
       console.error(error, "mounted caught");
@@ -318,16 +481,60 @@ export default Vue.extend({
 });
 </script>
 
-<style>
+<style scoped>
 #app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
+  /* font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+  color: #2c3e50; */
+}
+.box {
+  @apply bg-white;
+  border: 1px solid #f3f3f4;
+  border-radius: 20px;
+  box-shadow: 4px 4px 20px rgba(46, 91, 255, 0.1);
+}
+.btn-logout {
+  @apply h-12 w-32 bg-white rounded-3xl pl-6 m-2 text-sm inline-flex items-center;
+  border: 1px solid #f3f3f4;
+}
+.number-input{
+ @apply h-11 w-full m-0 bg-[#F9F9FB] rounded-3xl text-[#6F717A] text-sm lg:text-base font-medium
+}
+.btn {
+  @apply h-11 w-full m-0 bg-white rounded-3xl text-[#6F717A] text-sm lg:text-base font-medium;
+  border: 1px solid #6f717a;
+}
+.height-fit {
+  @apply min-h-fit;
+  height: 78vh;
+}
+.box-grey {
+  @apply overflow-hidden h-[500px] bg-[#f3f3f4] rounded-3xl relative;
+  border: 1px solid #f3f3f4;
+  box-shadow: 4px 4px 20px rgba(46, 91, 255, 0.1);
+}
+.box-note {
+  @apply overflow-hidden min-h-[100px] bg-white rounded-3xl relative;
+  border: 1px solid #f3f3f4;
+  box-shadow: 4px 4px 20px rgba(46, 91, 255, 0.1);
 }
 #console {
+  text-align: left;
+  overflow: auto;
+}
+#console > p {
+  @apply m-2;
+}
+.clear-button {
+  @apply fixed right-8 bottom-2 md:right-8 md:bottom-12 w-28 h-7 bg-[#f3f3f4] rounded-md;
+  border: 1px solid #0f1222;
+}
+.text-areas{
+  @apply h-11 w-auto p-2 rounded-3xl bg-[#F9F9FB];
+}
+/* #console {
   border: 1px solid black;
   height: auto;
   padding: 2px;
@@ -336,8 +543,8 @@ export default Vue.extend({
   text-align: left;
   width: calc(100% - 20px);
   border-radius: 5px;
-}
-#console::before {
+} */
+/* #console::before {
   content: "Console :";
   position: absolute;
   top: -20px;
@@ -346,5 +553,17 @@ export default Vue.extend({
 #console > p {
   margin: 0.5em;
   word-wrap: break-word;
+} */
+.btn-login {
+  @apply h-12 w-60 m-2 bg-white rounded-3xl font-[#6F717A] font-medium;
+  border: 1px solid #6f717a;
+}
+.select-menu {
+  @apply bg-white h-12 rounded-3xl text-center;
+  border: solid 1px;
+}
+.input-field{
+  @apply bg-white h-12 rounded-3xl text-center p-2;
+  border: solid 1px;
 }
 </style>

@@ -1,9 +1,15 @@
 <template>
   <div id="app">
     <div class="mode">
-      <router-link to="/redirectMode"><button>Login with Redirect Mode (Recommended)</button></router-link>
-      <router-link to="/popupMode"><button>Login with Popup Mode</button></router-link>
-    </div>
+      <div class="grid text-center justify-center pt-20">
+        <h6 class="font-bold text-3xl">demo-customauth.web3auth.io</h6>
+        <h6 class="pb-10 font-semibold text-[#595857]">Note: Login with Redirect mode is recommended</h6>
+        <div>
+          <router-link to="/redirectMode"><button class="btn-login">Login with Redirect Mode</button></router-link>
+      <router-link to="/popupMode"><button class="btn-login">Login with Popup Mode</button></router-link>
+     </div>
+      </div>
+     </div>
     <div id="console">
       <p></p>
     </div>
@@ -162,16 +168,15 @@ export default Vue.extend({
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  margin-top: 60px;
 }
-.mode {
+/* .mode {
   display: "flex";
   flex-direction: "row";
   justify-content: "center";
   align-items: "center";
   margin: 100;
-}
-
+} */
+/* 
 #console {
   border: 1px solid black;
   height: auto;
@@ -187,15 +192,13 @@ export default Vue.extend({
   position: absolute;
   top: -20px;
   font-size: 12px;
-}
+} */
 #console > p {
   margin: 0.5em;
 }
-button {
-  height: 25px;
-  margin: 5px;
-  background: none;
-  border-radius: 5px;
-  cursor: pointer;
+
+.btn-login {
+  @apply h-12 w-60 m-2 bg-white rounded-3xl font-[#6F717A] font-medium;
+  border: 1px solid #6f717a;
 }
 </style>
