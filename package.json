@@ -22,8 +22,13 @@
     "serviceworker"
   ],
   "peerDependencies": {
-    "@babel/runtime": "7.x",
-    "@sentry/types": "7.x"
+    "@babel/runtime": "^7.x",
+    "@sentry/types": "^7.x"
+  },
+  "peerDependenciesMeta": {
+    "@sentry/types": {
+      "optional": true
+    }
   },
   "dependencies": {
     "@chaitanyapotti/register-service-worker": "^1.7.3",

@@ -1,13 +1,7 @@
-import type { SpanContext, TransactionContext } from "@sentry/types";
+import type { Transaction, TransactionContext } from "@sentry/types";
 
-interface SentryTx {
-  startChild(a: SpanContext): {
-    finish(): void;
-  };
-  finish(): void;
-}
 export interface Sentry {
-  startTransaction(_: TransactionContext): SentryTx;
+  startTransaction(_: TransactionContext): Transaction;
 }
 export default class SentryHandler {
   sentry: Sentry | null = null;
@@ -18,14 +12,13 @@ export default class SentryHandler {
     }
   }
 
-  startTransaction(context: TransactionContext): SentryTx | null {
+  startTransaction(context: TransactionContext): Transaction | void {
     if (this.sentry) {
       return this.sentry.startTransaction(context);
     }
-    return null;
   }
 
-  finishTransaction(tx: SentryTx | null): void {
+  finishTransaction(tx: void | Transaction): void {
     if (tx) {
       tx.finish();
     }

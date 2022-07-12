@@ -178,12 +178,12 @@ class CustomAuth {
         name: SENTRY_TXNS.FETCH_NODE_DETAILS,
       });
       const { torusNodeEndpoints, torusNodePub } = await this.nodeDetailManager.getNodeDetails({ verifier, verifierId: userInfo.verifierId });
-      nodeTx.finish();
+      this.sentryHandler.finishTransaction(nodeTx);
       const lookupTx = this.sentryHandler.startTransaction({
         name: SENTRY_TXNS.PUB_ADDRESS_LOOKUP,
       });
       const torusPubKey = await this.torus.getPublicAddress(torusNodeEndpoints, torusNodePub, { verifier, verifierId: userInfo.verifierId }, true);
-      lookupTx.finish();
+      this.sentryHandler.finishTransaction(lookupTx);
       const res = {
         userInfo: {
           ...userInfo,
@@ -395,14 +395,14 @@ class CustomAuth {
       name: SENTRY_TXNS.FETCH_NODE_DETAILS,
     });
     const { torusNodeEndpoints, torusNodePub, torusIndexes } = await this.nodeDetailManager.getNodeDetails({ verifier, verifierId });
-    nodeTx.finish();
+    this.sentryHandler.finishTransaction(nodeTx);
     log.debug("torus-direct/getTorusKey", { torusNodeEndpoints, torusNodePub, torusIndexes });
 
     const pubLookupTx = this.sentryHandler.startTransaction({
       name: SENTRY_TXNS.PUB_ADDRESS_LOOKUP,
     });
     const address = await this.torus.getPublicAddress(torusNodeEndpoints, torusNodePub, { verifier, verifierId }, true);
-    pubLookupTx.finish();
+    this.sentryHandler.finishTransaction(pubLookupTx);
     if (typeof address === "string") throw new Error("must use extended pub key");
     log.debug("torus-direct/getTorusKey", { getPublicAddress: address });
 
@@ -410,7 +410,7 @@ class CustomAuth {
       name: SENTRY_TXNS.FETCH_SHARES,
     });
     const shares = await this.torus.retrieveShares(torusNodeEndpoints, torusIndexes, verifier, verifierParams, idToken, additionalParams);
-    sharesTx.finish();
+    this.sentryHandler.finishTransaction(sharesTx);
     if (shares.ethAddress.toLowerCase() !== address.address.toLowerCase()) {
       throw new Error("data ethAddress does not match response address");
     }
