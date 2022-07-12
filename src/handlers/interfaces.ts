@@ -1,3 +1,4 @@
+import { Sentry } from "../sentry";
 import { AGGREGATE_VERIFIER_TYPE, LOGIN_TYPE, TORUS_METHOD_TYPE, TORUS_NETWORK_TYPE, UX_MODE_TYPE } from "../utils/enums";
 
 export type TorusGenericObject = {
@@ -242,6 +243,8 @@ export interface CustomAuthArgs {
    * @defaultValue https://broadcast-server.tor.us
    */
   storageServerUrl?: string;
+
+  sentry?: Sentry;
 }
 
 export interface InitParams {

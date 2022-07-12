@@ -23,7 +23,19 @@ import {
   TorusVerifierResponse,
 } from "./handlers/interfaces";
 import { registerServiceWorker } from "./registerServiceWorker";
-import { AGGREGATE_VERIFIER, CONTRACT_MAP, LOGIN, NETWORK_MAP, SIGNER_MAP, TORUS_METHOD, TORUS_NETWORK, UX_MODE, UX_MODE_TYPE } from "./utils/enums";
+import SentryHandler from "./sentry";
+import {
+  AGGREGATE_VERIFIER,
+  CONTRACT_MAP,
+  LOGIN,
+  NETWORK_MAP,
+  SENTRY_TXNS,
+  SIGNER_MAP,
+  TORUS_METHOD,
+  TORUS_NETWORK,
+  UX_MODE,
+  UX_MODE_TYPE,
+} from "./utils/enums";
 import { handleRedirectParameters, isFirefox, padUrlString } from "./utils/helpers";
 import log from "./utils/loglevel";
 import StorageHelper from "./utils/StorageHelper";
@@ -46,6 +58,8 @@ class CustomAuth {
 
   storageHelper: StorageHelper;
 
+  sentryHandler: SentryHandler;
+
   constructor({
     baseUrl,
     network = TORUS_NETWORK.MAINNET,
@@ -60,6 +74,7 @@ class CustomAuth {
     metadataUrl = "https://metadata.tor.us",
     storageServerUrl = "https://broadcast-server.tor.us",
     networkUrl,
+    sentry,
   }: CustomAuthArgs) {
     this.isInitialized = false;
     const baseUri = new URL(baseUrl);
@@ -87,6 +102,7 @@ class CustomAuth {
     if (enableLogging) log.enableAll();
     else log.disableAll();
     this.storageHelper = new StorageHelper(storageServerUrl);
+    this.sentryHandler = new SentryHandler(sentry);
   }
 
   async init({ skipSw = false, skipInit = false, skipPrefetch = false }: InitParams = {}): Promise<void> {
@@ -158,9 +174,16 @@ class CustomAuth {
 
     const userInfo = await loginHandler.getUserInfo(loginParams);
     if (registerOnly) {
+      const nodeTx = this.sentryHandler.startTransaction({
+        name: SENTRY_TXNS.FETCH_NODE_DETAILS,
+      });
       const { torusNodeEndpoints, torusNodePub } = await this.nodeDetailManager.getNodeDetails({ verifier, verifierId: userInfo.verifierId });
+      nodeTx.finish();
+      const lookupTx = this.sentryHandler.startTransaction({
+        name: SENTRY_TXNS.PUB_ADDRESS_LOOKUP,
+      });
       const torusPubKey = await this.torus.getPublicAddress(torusNodeEndpoints, torusNodePub, { verifier, verifierId: userInfo.verifierId }, true);
-
+      lookupTx.finish();
       const res = {
         userInfo: {
           ...userInfo,
@@ -368,14 +391,26 @@ class CustomAuth {
     idToken: string,
     additionalParams?: ExtraParams
   ): Promise<TorusKey> {
+    const nodeTx = this.sentryHandler.startTransaction({
+      name: SENTRY_TXNS.FETCH_NODE_DETAILS,
+    });
     const { torusNodeEndpoints, torusNodePub, torusIndexes } = await this.nodeDetailManager.getNodeDetails({ verifier, verifierId });
+    nodeTx.finish();
     log.debug("torus-direct/getTorusKey", { torusNodeEndpoints, torusNodePub, torusIndexes });
 
+    const pubLookupTx = this.sentryHandler.startTransaction({
+      name: SENTRY_TXNS.PUB_ADDRESS_LOOKUP,
+    });
     const address = await this.torus.getPublicAddress(torusNodeEndpoints, torusNodePub, { verifier, verifierId }, true);
+    pubLookupTx.finish();
     if (typeof address === "string") throw new Error("must use extended pub key");
     log.debug("torus-direct/getTorusKey", { getPublicAddress: address });
 
+    const sharesTx = this.sentryHandler.startTransaction({
+      name: SENTRY_TXNS.FETCH_SHARES,
+    });
     const shares = await this.torus.retrieveShares(torusNodeEndpoints, torusIndexes, verifier, verifierParams, idToken, additionalParams);
+    sharesTx.finish();
     if (shares.ethAddress.toLowerCase() !== address.address.toLowerCase()) {
       throw new Error("data ethAddress does not match response address");
     }

@@ -22,7 +22,8 @@
     "serviceworker"
   ],
   "peerDependencies": {
-    "@babel/runtime": "7.x"
+    "@babel/runtime": "7.x",
+    "@sentry/types": "7.x"
   },
   "dependencies": {
     "@chaitanyapotti/register-service-worker": "^1.7.3",
@@ -59,7 +60,8 @@
     "lint-staged": "^13.0.3",
     "prettier": "^2.7.1",
     "rimraf": "^3.0.2",
-    "typescript": "^4.7.4"
+    "typescript": "^4.7.4",
+    "@sentry/types": "^7.6.0"
   },
   "author": "Torus Labs",
   "license": "MIT",
