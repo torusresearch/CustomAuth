@@ -102,7 +102,7 @@ class CustomAuth {
     if (enableLogging) log.enableAll();
     else log.disableAll();
     this.storageHelper = new StorageHelper(storageServerUrl);
-    this.sentryHandler = new SentryHandler(sentry);
+    this.sentryHandler = new SentryHandler(sentry, networkUrl);
   }
 
   async init({ skipSw = false, skipInit = false, skipPrefetch = false }: InitParams = {}): Promise<void> {
