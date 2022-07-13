@@ -71,3 +71,9 @@ export const SIGNER_MAP = {
   [TORUS_NETWORK.TESTNET]: "https://signer.tor.us",
   [TORUS_NETWORK.CYAN]: "https://signer-polygon.tor.us",
 };
+
+export const SENTRY_TXNS = {
+  FETCH_NODE_DETAILS: "fetchNodeDetails",
+  PUB_ADDRESS_LOOKUP: "pubAddressLookup",
+  FETCH_SHARES: "fetchShares",
+} as const;
