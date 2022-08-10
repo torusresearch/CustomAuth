@@ -194,7 +194,7 @@ export function are3PCSupported(): boolean {
 
 export const validateAndConstructUrl = (domain: string): URL => {
   try {
-    const url = new URL(domain);
+    const url = new URL(decodeURIComponent(domain));
     return url;
   } catch (error) {
     throw new Error(`${error?.message || ""}, Note: Your jwt domain: (i.e ${domain}) must have http:// or https:// prefix`);
