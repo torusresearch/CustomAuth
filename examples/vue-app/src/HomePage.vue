@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <div class="mode">
-      <div class="grid text-center justify-center pt-20">
+      <div class="grid text-center justify-center mt-[15%]">
         <h6 class="font-bold text-3xl">demo-customauth.web3auth.io</h6>
         <h6 class="pb-10 font-semibold text-[#595857]">Note: Login with Redirect mode is recommended</h6>
         <div>

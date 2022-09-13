@@ -1,8 +1,8 @@
 <template>
   <div id="app">
     <div v-if="!loginResponse">
-        <div class="mt-8">
-          <div>Verifier</div>
+        <div class="mt-[10%]">
+          <div class="font-bold">Verifier</div>
           <select v-model="selectedVerifier" class="select-menu">
             <option :key="login" v-for="login in Object.keys(verifierMap)" :value="login">{{ verifierMap[login].name }}</option>
           </select>
@@ -134,6 +134,7 @@
           </div>
             </form>
         </div>
+        
         <!-- <div class="col-span-2 text-left">
               <div class="grid grid-cols-2 gap-2"></div>
             </div>
@@ -511,7 +512,7 @@ export default Vue.extend({
   height: 78vh;
 }
 .box-grey {
-  @apply overflow-hidden h-[500px] bg-[#f3f3f4] rounded-3xl relative;
+  @apply overflow-hidden min-h-[65vh] max-h-[65vh] bg-[#f3f3f4] rounded-3xl relative;
   border: 1px solid #f3f3f4;
   box-shadow: 4px 4px 20px rgba(46, 91, 255, 0.1);
 }

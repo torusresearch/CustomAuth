@@ -103,7 +103,7 @@
               <div class="grid grid-cols-2 gap-2"></div>
             </div> -->
       </div>
-      <div class="col-span-5 md:col-span-3">
+      <div class="col-span-5 md:col-span-3 flex-col relative">
         <h6 class="text-left">Note:</h6>
         <div class="box-note mb-2 p-4 text-xs text-left">
           <p class="mb-2">
@@ -115,7 +115,7 @@
           </p>
           <p class="mb-2">Reach out to us at hello@tor.us or telegram group to get your verifier deployed for your client id.</p>
         </div>
-        <div class="box-grey" id="console">
+        <div class="box-grey flex flex-grow" id="console">
           <p style="white-space: pre-line"></p>
           <div><button class="clear-button" @click="clearUiconsole">Clear console</button></div>
         </div>
@@ -318,7 +318,7 @@ export default Vue.extend({
   height: 78vh;
 }
 .box-grey {
-  @apply overflow-hidden h-[500px] bg-[#f3f3f4] rounded-3xl relative;
+  @apply overflow-hidden min-h-[65vh] max-h-[65vh] bg-[#f3f3f4] rounded-3xl;
   border: 1px solid #f3f3f4;
   box-shadow: 4px 4px 20px rgba(46, 91, 255, 0.1);
 }

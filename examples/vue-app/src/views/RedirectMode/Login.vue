@@ -1,7 +1,8 @@
 <template>
   <div id="app">
-    <div class="mt-8">
-      <div>Verifier</div>
+    <div class="mt-[10%]">
+      <div>
+        <div class="font-bold">Verifier</div>
       <!-- <span>verifier:</span> -->
       <select v-model="selectedVerifier" class="select-menu">
         <option :key="login" v-for="login in Object.keys(verifierMap)" :value="login">{{ verifierMap[login].name }}</option>
@@ -22,6 +23,8 @@
       <a href="https://t.me/torusdev">telegram group</a>
       to get your verifier deployed for your client id.
     </div>
+      </div>
+      
   </div>
 </template>
 
