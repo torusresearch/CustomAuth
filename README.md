@@ -3,9 +3,20 @@
 [![npm version](https://badge.fury.io/js/%40toruslabs%2Fcustomauth.svg)](https://badge.fury.io/js/%40toruslabs%2Fcustomauth)
 ![npm](https://img.shields.io/npm/dw/@toruslabs/customauth)
 
+> [Web3Auth](https://web3auth.io) is where passwordless auth meets non-custodial key infrastructure for Web3 apps and wallets. By aggregating OAuth (Google, Twitter, Discord) logins, different wallets and innovative Multi Party Computation (MPC) - Web3Auth provides a seamless login experience to every user on your application.
 ## Introduction
 
 This repo allows web applications to directly retrieve keys stored on the Torus Network. The attestation layer for the Torus Network is generalizable, below is an example of how to access keys via the SDK via Google.
+
+## 🩹 Examples
+
+Checkout the example of `CustomAuth` in our [examples directory.](https://github.com/torusresearch/CustomAuth/tree/master/examples)
+
+## 💬 Troubleshooting and Discussions
+
+- Have a look at our [GitHub Discussions](https://github.com/Web3Auth/Web3Auth/discussions?discussions_q=sort%3Atop) to see if anyone has any questions or issues you might be having.
+- Checkout our [Troubleshooting Documentation Page](https://web3auth.io/docs/troubleshooting) to know the common issues and solutions
+- Join our [Discord](https://discord.gg/web3auth) to join our community and get private integration support or help with your integration.
 
 ## Features
 
@@ -176,70 +187,65 @@ For other verifiers,
 
 ## FAQ
 
-**Question:** My Redirect page is stuck in iOS Chrome
+1. **Question:** My Redirect page is stuck in iOS Chrome
 
-**Answer:**
+    **Answer:**
 iOS Chrome doesn't support service workers. So, you need to serve a fallback html page `redirect.html`
 Please check if redirect.html is being served correctly by navigating to `baseUrl/redirect#a=123`. It should show a loader
 
-For nginx, here is a simple server configuration
+    For nginx, here is a simple server configuration
 
-```nginx
-    location ~* (/serviceworker/redirect) {
-            add_header 'Access-Control-Allow-Origin' '*';
-            add_header Content-Security-Policy "default-src https:; script-src https: 'unsafe-inline' 'unsafe-eval'; style-src https: 'unsafe-inline';";
-            add_header X-Content-Type-Options nosniff;
-            add_header X-XSS-Protection "1; mode=block";
-            add_header Strict-Transport-Security "max-age=31536000; includeSubdomains; preload";
-            default_type "text/html";
-            alias PATH_TO_REDIRECT_HTML_FILE;
-            autoindex off;
-    }
+    ```nginx
+        location ~* (/serviceworker/redirect) {
+                add_header 'Access-Control-Allow-Origin' '*';
+                add_header Content-Security-Policy "default-src https:; script-src https: 'unsafe-inline' 'unsafe-eval'; style-src https: 'unsafe-inline';";
+                add_header X-Content-Type-Options nosniff;
+                add_header X-XSS-Protection "1; mode=block";
+                add_header Strict-Transport-Security "max-age=31536000; includeSubdomains; preload";
+                default_type "text/html";
+                alias PATH_TO_REDIRECT_HTML_FILE;
+                autoindex off;
+        }
 
-```
+    ```
 
-Alternatively, you can configure your redirect url to include redirect.html by passing in an option `redirectPathName: 'redirect.html'` while instantiating the sdk.
-Please remember to change the oauth redirect url to reflect this change
+    Alternatively, you can configure your redirect url to include redirect.html by passing in an option `redirectPathName: 'redirect.html'` while instantiating the sdk.
+    Please remember to change the oauth redirect url to reflect this change
 
-##
 
-**Question:** Discord Login only works once in 30 min
+2. **Question:** Discord Login only works once in 30 min
 
-**Answer:**
-Torus Login requires a new token for every login attempt. Discord returns the same access token for 30 min unless it's revoked. Unfortunately, it needs to be revoked from the backend since it needs a client secret. Here's some sample code which does it
+    **Answer:**
+    Torus Login requires a new token for every login attempt. Discord returns the same access token for 30 min unless it's revoked. Unfortunately, it needs to be revoked from the backend since it needs a client secret. Here's some sample code which does it
 
-```js
-const axios = require("axios").default;
-const FormData = require("form-data");
+    ```js
+    const axios = require("axios").default;
+    const FormData = require("form-data");
 
-const { DISCORD_CLIENT_SECRET, DISCORD_CLIENT_ID } = process.env;
-const { token } = req.body;
-const formData = new FormData();
-formData.append("token", token);
-await axios.post("https://discord.com/api/oauth2/token/revoke", formData, {
-  headers: {
-    ...formData.getHeaders(),
-    Authorization: `Basic ${Buffer.from(`${DISCORD_CLIENT_ID}:${DISCORD_CLIENT_SECRET}`, "binary").toString("base64")}`,
-  },
-});
-```
+    const { DISCORD_CLIENT_SECRET, DISCORD_CLIENT_ID } = process.env;
+    const { token } = req.body;
+    const formData = new FormData();
+    formData.append("token", token);
+    await axios.post("https://discord.com/api/oauth2/token/revoke", formData, {
+      headers: {
+        ...formData.getHeaders(),
+        Authorization: `Basic ${Buffer.from(`${DISCORD_CLIENT_ID}:${DISCORD_CLIENT_SECRET}`, "binary").toString("base64")}`,
+      },
+    });
+    ```
 
-##
+3. **Question:** How to initialise web3 with private key (returned after login) ?
 
-**Question:** How to initialise web3 with private key (returned after login) ?
+    **Answer:**
+    One can use privateKeyToAccount method to initialise web3 with a privatekey. If you are supplying a hexadecimal number, it must have 0x prefix in order to be in line with other Ethereum libraries.
 
-**Answer:**
-One can use privateKeyToAccount method to initialise web3 with a privatekey. If you are supplying a hexadecimal number, it must have 0x prefix in order to be in line with other Ethereum libraries.
-
-```js
-web3.eth.accounts.privateKeyToAccount(PRIVATE_KEY);
-```
+    ```js
+    web3.eth.accounts.privateKeyToAccount(PRIVATE_KEY);
+    ```
 
 ## Requirements
 
 - This package requires a peer dependency of `@babel/runtime`
 - Node 14+
 
-### Note
-
-If you are using the redirectToOpener option, you _must_ update your redirect.html to [allow whitelisted URIs](serviceworker/redirect.html#L222)
+> Note: If you are using the `redirectToOpener` option, you _must_ update your redirect.html to [allow whitelisted URIs](serviceworker/redirect.html#L222)
