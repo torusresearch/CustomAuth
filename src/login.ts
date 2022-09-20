@@ -443,7 +443,7 @@ class CustomAuth {
         pub_key_X: address.X,
         pub_key_Y: address.Y,
       },
-      ...(shares.tmpKey && { tmpKey: shares.tmpKey }),
+      ...(shares.signatures && { signatures: shares.signatures }),
     };
   }
 
