@@ -246,6 +246,8 @@ export interface CustomAuthArgs {
   storageServerUrl?: string;
 
   sentry?: Sentry;
+
+  proxyRequestURL?: string;
 }
 
 export interface InitParams {

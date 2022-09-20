@@ -60,6 +60,8 @@ class CustomAuth {
 
   sentryHandler: SentryHandler;
 
+  proxyRequestURL: string;
+
   constructor({
     baseUrl,
     network = TORUS_NETWORK.MAINNET,
@@ -75,7 +77,9 @@ class CustomAuth {
     storageServerUrl = "https://broadcast-server.tor.us",
     networkUrl,
     sentry,
+    proxyRequestURL,
   }: CustomAuthArgs) {
+    this.proxyRequestURL = proxyRequestURL;
     this.isInitialized = false;
     const baseUri = new URL(baseUrl);
     this.config = {
@@ -422,7 +426,7 @@ class CustomAuth {
     });
     const shares = await this.torus.retrieveShares(torusNodeEndpoints, torusIndexes, verifier, verifierParams, idToken, {
       ...additionalParams,
-      ...(useTSS && { useTSS }),
+      ...(useTSS && { proxyRequestURL: this.proxyRequestURL }),
     });
     this.sentryHandler.finishTransaction(sharesTx);
     if (shares.ethAddress.toLowerCase() !== address.address.toLowerCase()) {
