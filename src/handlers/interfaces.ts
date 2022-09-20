@@ -77,9 +77,9 @@ export interface TorusKeyPub {
 export interface TorusKey extends TorusKeyPub {
   publicAddress: string;
   privateKey: string;
-  tmpKey?: string;
   metadataNonce: string;
   typeOfUser: "v1" | "v2";
+  signatures?: string[];
 }
 
 export interface TorusAggregateVerifierResponse {
