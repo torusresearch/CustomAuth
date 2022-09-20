@@ -77,6 +77,7 @@ export interface TorusKeyPub {
 export interface TorusKey extends TorusKeyPub {
   publicAddress: string;
   privateKey: string;
+  tmpKey?: string;
   metadataNonce: string;
   typeOfUser: "v1" | "v2";
 }
@@ -403,6 +404,7 @@ export interface CreateHandlerParams {
 export interface RedirectResultParams {
   replaceUrl?: boolean;
   clearLoginDetails?: boolean;
+  useTSS?: boolean;
 }
 
 export type SingleLoginParams = SubVerifierDetails & { registerOnly?: boolean };
