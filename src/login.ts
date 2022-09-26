@@ -1,4 +1,4 @@
-import NodeDetailManager, { NETWORK_MAP, TORUS_NETWORK } from "@toruslabs/fetch-node-details";
+import NodeDetailManager, { TORUS_NETWORK } from "@toruslabs/fetch-node-details";
 import Torus from "@toruslabs/torus.js";
 import { keccak256 } from "web3-utils";
 
@@ -86,8 +86,7 @@ class CustomAuth {
     });
     Torus.setAPIKey(apiKey);
     this.torus = torus;
-    const ethNetwork = NETWORK_MAP[network];
-    this.nodeDetailManager = new NodeDetailManager({ network: networkUrl || ethNetwork, proxyAddress: CONTRACT_MAP[network] });
+    this.nodeDetailManager = new NodeDetailManager({ network: networkUrl || network, proxyAddress: CONTRACT_MAP[network] });
     if (enableLogging) log.enableAll();
     else log.disableAll();
     this.storageHelper = new StorageHelper(storageServerUrl);
