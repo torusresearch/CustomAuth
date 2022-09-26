@@ -25,7 +25,7 @@ export default class FacebookHandler extends AbstractLoginHandler {
   }
 
   setFinalUrl(): void {
-    const finalUrl = new URL("https://www.facebook.com/v6.0/dialog/oauth");
+    const finalUrl = new URL("https://www.facebook.com/v15.0/dialog/oauth");
     const clonedParams = JSON.parse(JSON.stringify(this.jwtParams || {}));
     const finalJwtParams = deepmerge(
       {
