@@ -1,5 +1,7 @@
+import { TORUS_NETWORK_TYPE } from "@toruslabs/fetch-node-details";
+
 import { Sentry } from "../sentry";
-import { AGGREGATE_VERIFIER_TYPE, LOGIN_TYPE, TORUS_METHOD_TYPE, TORUS_NETWORK_TYPE, UX_MODE_TYPE } from "../utils/enums";
+import { AGGREGATE_VERIFIER_TYPE, LOGIN_TYPE, TORUS_METHOD_TYPE, UX_MODE_TYPE } from "../utils/enums";
 
 export type TorusGenericObject = {
   [key: string]: string;
@@ -140,7 +142,7 @@ export interface CustomAuthArgs {
   metadataUrl?: string;
 
   /**
-   * Torus Network to target options: mainnet | testnet | cyan
+   * Torus Network to target options: mainnet | testnet | cyan | aqua
    * @defaultValue mainnet
    */
   network?: TORUS_NETWORK_TYPE;

@@ -1,10 +1,4 @@
-import NodeDetailManager, { ETHEREUM_NETWORK } from "@toruslabs/fetch-node-details";
-
-export const TORUS_NETWORK = {
-  TESTNET: "testnet",
-  MAINNET: "mainnet",
-  CYAN: "cyan",
-} as const;
+import NodeDetailManager, { TORUS_NETWORK } from "@toruslabs/fetch-node-details";
 
 export const LOGIN = {
   GOOGLE: "google",
@@ -47,7 +41,6 @@ export const TORUS_METHOD = {
   TRIGGER_AGGREGATE_HYBRID_LOGIN: "triggerHybridAggregateLogin",
 } as const;
 
-export type TORUS_NETWORK_TYPE = typeof TORUS_NETWORK[keyof typeof TORUS_NETWORK];
 export type LOGIN_TYPE = typeof LOGIN[keyof typeof LOGIN];
 export type AGGREGATE_VERIFIER_TYPE = typeof AGGREGATE_VERIFIER[keyof typeof AGGREGATE_VERIFIER];
 export type UX_MODE_TYPE = typeof UX_MODE[keyof typeof UX_MODE];
@@ -56,20 +49,16 @@ export type REDIRECT_PARAMS_STORAGE_METHOD_TYPE = typeof REDIRECT_PARAMS_STORAGE
 
 export const CONTRACT_MAP = {
   [TORUS_NETWORK.MAINNET]: NodeDetailManager.PROXY_ADDRESS_MAINNET,
-  [TORUS_NETWORK.TESTNET]: NodeDetailManager.PROXY_ADDRESS_ROPSTEN,
-  [TORUS_NETWORK.CYAN]: NodeDetailManager.PROXY_ADDRESS_POLYGON,
-};
-
-export const NETWORK_MAP = {
-  [TORUS_NETWORK.MAINNET]: ETHEREUM_NETWORK.MAINNET,
-  [TORUS_NETWORK.TESTNET]: ETHEREUM_NETWORK.ROPSTEN,
-  [TORUS_NETWORK.CYAN]: ETHEREUM_NETWORK.POLYGON,
+  [TORUS_NETWORK.TESTNET]: NodeDetailManager.PROXY_ADDRESS_TESTNET,
+  [TORUS_NETWORK.CYAN]: NodeDetailManager.PROXY_ADDRESS_CYAN,
+  [TORUS_NETWORK.AQUA]: NodeDetailManager.PROXY_ADDRESS_AQUA,
 };
 
 export const SIGNER_MAP = {
   [TORUS_NETWORK.MAINNET]: "https://signer.tor.us",
   [TORUS_NETWORK.TESTNET]: "https://signer.tor.us",
   [TORUS_NETWORK.CYAN]: "https://signer-polygon.tor.us",
+  [TORUS_NETWORK.AQUA]: "https://signer-polygon.tor.us",
 };
 
 export const SENTRY_TXNS = {
