@@ -1,4 +1,4 @@
-import NodeDetailManager from "@toruslabs/fetch-node-details";
+import NodeDetailManager, { TORUS_NETWORK } from "@toruslabs/fetch-node-details";
 import Torus from "@toruslabs/torus.js";
 import { keccak256 } from "web3-utils";
 
@@ -24,18 +24,7 @@ import {
 } from "./handlers/interfaces";
 import { registerServiceWorker } from "./registerServiceWorker";
 import SentryHandler from "./sentry";
-import {
-  AGGREGATE_VERIFIER,
-  CONTRACT_MAP,
-  LOGIN,
-  NETWORK_MAP,
-  SENTRY_TXNS,
-  SIGNER_MAP,
-  TORUS_METHOD,
-  TORUS_NETWORK,
-  UX_MODE,
-  UX_MODE_TYPE,
-} from "./utils/enums";
+import { AGGREGATE_VERIFIER, CONTRACT_MAP, LOGIN, SENTRY_TXNS, SIGNER_MAP, TORUS_METHOD, UX_MODE, UX_MODE_TYPE } from "./utils/enums";
 import { handleRedirectParameters, isFirefox, padUrlString } from "./utils/helpers";
 import log from "./utils/loglevel";
 import StorageHelper from "./utils/StorageHelper";
@@ -101,8 +90,7 @@ class CustomAuth {
     });
     Torus.setAPIKey(apiKey);
     this.torus = torus;
-    const ethNetwork = NETWORK_MAP[network];
-    this.nodeDetailManager = new NodeDetailManager({ network: networkUrl || ethNetwork, proxyAddress: CONTRACT_MAP[network] });
+    this.nodeDetailManager = new NodeDetailManager({ network: networkUrl || network, proxyAddress: CONTRACT_MAP[network] });
     if (enableLogging) log.enableAll();
     else log.disableAll();
     this.storageHelper = new StorageHelper(storageServerUrl);

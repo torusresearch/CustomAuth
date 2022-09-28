@@ -4,7 +4,7 @@ import deepmerge from "lodash.merge";
 import { LOGIN_TYPE, UX_MODE_TYPE } from "../utils/enums";
 import log from "../utils/loglevel";
 import AbstractLoginHandler from "./AbstractLoginHandler";
-import { Auth0ClientOptions, LoginWindowResponse, TorusGenericObject, TorusVerifierResponse } from "./interfaces";
+import { Auth0ClientOptions, LoginWindowResponse, TorusGenericObject, TorusVerifierResponse, WebAuthnExtraParams } from "./interfaces";
 
 const WEBAUTHN_LOOKUP_SERVER = "https://api.webauthn.openlogin.com";
 
@@ -77,7 +77,7 @@ export default class WebAuthnHandler extends AbstractLoginHandler {
           challenge,
           rpOrigin,
           credId,
-        } = await get(`${WEBAUTHN_LOOKUP_SERVER}/signature/fetch/${idToken}`));
+        } = await get<WebAuthnExtraParams & { verifier_id: string }>(`${WEBAUTHN_LOOKUP_SERVER}/signature/fetch/${idToken}`));
       }
     } else {
       log.debug("extraParamsPassed is false, using extraParams passed through bridge server");
@@ -90,7 +90,7 @@ export default class WebAuthnHandler extends AbstractLoginHandler {
         challenge,
         rpOrigin,
         credId,
-      } = await get(`${WEBAUTHN_LOOKUP_SERVER}/signature/fetch/${idToken}`));
+      } = await get<WebAuthnExtraParams & { verifier_id: string }>(`${WEBAUTHN_LOOKUP_SERVER}/signature/fetch/${idToken}`));
     }
 
     if (signature !== idToken) {
