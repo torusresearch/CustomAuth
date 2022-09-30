@@ -81,7 +81,7 @@ export interface TorusKey extends TorusKeyPub {
   privateKey: string;
   metadataNonce: string;
   typeOfUser: "v1" | "v2";
-  signatures?: string[];
+  signatures: string[];
 }
 
 export interface TorusAggregateVerifierResponse {

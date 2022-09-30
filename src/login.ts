@@ -1,4 +1,4 @@
-import NodeDetailManager, { TORUS_NETWORK } from "@toruslabs/fetch-node-details";
+import { TORUS_NETWORK } from "@toruslabs/fetch-node-details";
 import Torus from "@toruslabs/torus.js";
 import { keccak256 } from "web3-utils";
 
@@ -24,11 +24,16 @@ import {
 } from "./handlers/interfaces";
 import { registerServiceWorker } from "./registerServiceWorker";
 import SentryHandler from "./sentry";
-import { AGGREGATE_VERIFIER, CONTRACT_MAP, LOGIN, SENTRY_TXNS, SIGNER_MAP, TORUS_METHOD, UX_MODE, UX_MODE_TYPE } from "./utils/enums";
+import { AGGREGATE_VERIFIER, LOGIN, SENTRY_TXNS, SIGNER_MAP, TORUS_METHOD, UX_MODE, UX_MODE_TYPE } from "./utils/enums";
 import { handleRedirectParameters, isFirefox, padUrlString } from "./utils/helpers";
 import log from "./utils/loglevel";
 import StorageHelper from "./utils/StorageHelper";
 
+const torusNodeEndpoints = [
+  "https://swaraj-test-coordinator-1.k8.authnetwork.dev/sss/jrpc",
+  "https://swaraj-test-coordinator-2.k8.authnetwork.dev/sss/jrpc",
+  "https://swaraj-test-coordinator-3.k8.authnetwork.dev/sss/jrpc",
+];
 class CustomAuth {
   isInitialized: boolean;
 
@@ -43,7 +48,7 @@ class CustomAuth {
 
   torus: Torus;
 
-  nodeDetailManager: NodeDetailManager;
+  // nodeDetailManager: NodeDetailManager;
 
   storageHelper: StorageHelper;
 
@@ -90,7 +95,7 @@ class CustomAuth {
     });
     Torus.setAPIKey(apiKey);
     this.torus = torus;
-    this.nodeDetailManager = new NodeDetailManager({ network: networkUrl || network, proxyAddress: CONTRACT_MAP[network] });
+    // this.nodeDetailManager = new NodeDetailManager({ network: networkUrl || network, proxyAddress: CONTRACT_MAP[network] });
     if (enableLogging) log.enableAll();
     else log.disableAll();
     this.storageHelper = new StorageHelper(storageServerUrl);
@@ -169,12 +174,11 @@ class CustomAuth {
       const nodeTx = this.sentryHandler.startTransaction({
         name: SENTRY_TXNS.FETCH_NODE_DETAILS,
       });
-      const { torusNodeEndpoints, torusNodePub } = await this.nodeDetailManager.getNodeDetails({ verifier, verifierId: userInfo.verifierId });
       this.sentryHandler.finishTransaction(nodeTx);
       const lookupTx = this.sentryHandler.startTransaction({
         name: SENTRY_TXNS.PUB_ADDRESS_LOOKUP,
       });
-      const torusPubKey = await this.torus.getPublicAddress(torusNodeEndpoints, torusNodePub, { verifier, verifierId: userInfo.verifierId }, true);
+      const torusPubKey = await this.torus.getPublicAddress(torusNodeEndpoints, { verifier, verifierId: userInfo.verifierId }, true);
       this.sentryHandler.finishTransaction(lookupTx);
       const res = {
         userInfo: {
@@ -194,6 +198,7 @@ class CustomAuth {
         publicAddress: torusPubKey.address,
         privateKey: null,
         metadataNonce: null,
+        signatures: [],
       };
       return { ...res, ...torusKey };
     }
@@ -397,14 +402,14 @@ class CustomAuth {
     const nodeTx = this.sentryHandler.startTransaction({
       name: SENTRY_TXNS.FETCH_NODE_DETAILS,
     });
-    const { torusNodeEndpoints, torusNodePub, torusIndexes } = await this.nodeDetailManager.getNodeDetails({ verifier, verifierId });
+    // const { torusNodeEndpoints, torusNodePub, torusIndexes } = await this.nodeDetailManager.getNodeDetails({ verifier, verifierId });
     this.sentryHandler.finishTransaction(nodeTx);
-    log.debug("torus-direct/getTorusKey", { torusNodeEndpoints, torusNodePub, torusIndexes });
+    log.debug("torus-direct/getTorusKey", { torusNodeEndpoints });
 
     const pubLookupTx = this.sentryHandler.startTransaction({
       name: SENTRY_TXNS.PUB_ADDRESS_LOOKUP,
     });
-    const address = await this.torus.getPublicAddress(torusNodeEndpoints, torusNodePub, { verifier, verifierId }, true);
+    const address = await this.torus.getPublicAddress(torusNodeEndpoints, { verifier, verifierId }, true);
     this.sentryHandler.finishTransaction(pubLookupTx);
     if (typeof address === "string") throw new Error("must use extended pub key");
     log.debug("torus-direct/getTorusKey", { getPublicAddress: address });
@@ -412,7 +417,7 @@ class CustomAuth {
     const sharesTx = this.sentryHandler.startTransaction({
       name: SENTRY_TXNS.FETCH_SHARES,
     });
-    const shares = await this.torus.retrieveShares(torusNodeEndpoints, torusIndexes, verifier, verifierParams, idToken, {
+    const shares = await this.torus.retrieveShares(torusNodeEndpoints, verifier, verifierParams, idToken, {
       ...additionalParams,
       ...(useTSS && { proxyRequestURL: this.proxyRequestURL }),
     });
@@ -422,6 +427,7 @@ class CustomAuth {
     }
     log.debug("torus-direct/getTorusKey", { retrieveShares: shares });
 
+    const signatures = (shares.sessionTokensData || []).map((x) => x.signature);
     return {
       publicAddress: shares.ethAddress.toString(),
       privateKey: shares.privKey.toString(),
@@ -431,7 +437,7 @@ class CustomAuth {
         pub_key_X: address.X,
         pub_key_Y: address.Y,
       },
-      ...(shares.signatures && { signatures: shares.signatures }),
+      signatures,
     };
   }
 
