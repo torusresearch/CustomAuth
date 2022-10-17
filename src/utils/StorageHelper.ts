@@ -5,6 +5,7 @@ import { decryptData, encryptData, keccak256 } from "@toruslabs/metadata-helpers
 import { LoginDetails } from "../handlers/interfaces";
 import { REDIRECT_PARAMS_STORAGE_METHOD, REDIRECT_PARAMS_STORAGE_METHOD_TYPE } from "./enums";
 import { are3PCSupported, storageAvailable } from "./helpers";
+import log from "./loglevel";
 
 class StorageHelper {
   private currentStorageMethod: REDIRECT_PARAMS_STORAGE_METHOD_TYPE = REDIRECT_PARAMS_STORAGE_METHOD.LOCAL_STORAGE;
@@ -50,9 +51,19 @@ class StorageHelper {
       const privKey = keccak256(scope);
       const privKeyHex = privKey.toString("hex");
       const publicKeyHex = getPublic(privKey).toString("hex");
-      const encData: { message: string; success: boolean } = await get(`${this.storageServerUrl}/store/get?key=${publicKeyHex}`);
-      const loginDetails = await decryptData<LoginDetails>(privKeyHex, encData.message);
-      return loginDetails;
+      try {
+        const encData: { message: string; success: boolean } = await get(`${this.storageServerUrl}/store/get?key=${publicKeyHex}`);
+        if (encData.message) {
+          const loginDetails = await decryptData<LoginDetails>(privKeyHex, encData.message);
+          return loginDetails;
+        }
+      } catch (error) {
+        if ((error as Response).status === 404) {
+          log.warn(error, "Session likely expired");
+        } else {
+          throw error;
+        }
+      }
     }
     const loginDetails = window.localStorage.getItem(`torus_login_${scope}`);
     return JSON.parse(loginDetails || "{}") as LoginDetails;
