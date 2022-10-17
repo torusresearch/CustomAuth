@@ -30,9 +30,9 @@ import log from "./utils/loglevel";
 import StorageHelper from "./utils/StorageHelper";
 
 const torusNodeEndpoints = [
-  "https://swaraj-test-coordinator-1.k8.authnetwork.dev/sss/jrpc",
-  "https://swaraj-test-coordinator-2.k8.authnetwork.dev/sss/jrpc",
-  "https://swaraj-test-coordinator-3.k8.authnetwork.dev/sss/jrpc",
+  "https://mpc-beta-1.authnetwork.dev/sss/jrpc",
+  "https://mpc-beta-2.authnetwork.dev/sss/jrpc",
+  "https://mpc-beta-3.authnetwork.dev/sss/jrpc",
 ];
 class CustomAuth {
   isInitialized: boolean;
