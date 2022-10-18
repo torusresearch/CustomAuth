@@ -139,6 +139,7 @@ export default Vue.extend({
         baseUrl: `${location.origin}/serviceworker`,
         enableLogging: true,
         network: "testnet", // details for test net
+        networkUrl: "https://small-long-brook.ropsten.quiknode.pro/e2fd2eb01412e80623787d1c40094465aa67624a",
       });
       await torusdirectsdk.init({ skipSw: false });
       this.torusdirectsdk = torusdirectsdk;
