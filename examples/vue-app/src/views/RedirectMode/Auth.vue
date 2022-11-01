@@ -150,7 +150,7 @@ export default Vue.extend({
       enableLogging: true,
       uxMode: "redirect",
       network: "testnet",
-      networkUrl: "https://small-long-brook.ropsten.quiknode.pro/e2fd2eb01412e80623787d1c40094465aa67624a",
+      networkUrl: "https://small-long-brook.goerli.quiknode.pro/e2fd2eb01412e80623787d1c40094465aa67624a",
     });
     const loginDetails = await torusdirectsdk.getRedirectResult();
     const providerInstance = await EthereumPrivateKeyProvider.getProviderInstance({
