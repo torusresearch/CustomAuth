@@ -162,7 +162,9 @@ class CustomAuth {
       loginParams = { accessToken, idToken, ...rest, state: instanceParameters };
     } else {
       this.storageHelper.clearOrphanedLoginDetails();
-      await this.storageHelper.storeLoginDetails({ method: TORUS_METHOD.TRIGGER_LOGIN, args }, loginHandler.nonce);
+      if (this.config.uxMode === UX_MODE.REDIRECT) {
+        await this.storageHelper.storeLoginDetails({ method: TORUS_METHOD.TRIGGER_LOGIN, args }, loginHandler.nonce);
+      }
       loginParams = await loginHandler.handleLoginWindow({
         locationReplaceOnRedirect: this.config.locationReplaceOnRedirect,
         popupFeatures: this.config.popupFeatures,
@@ -257,7 +259,9 @@ class CustomAuth {
         loginParams = { accessToken, idToken, ...rest, state: instanceParameters };
       } else {
         this.storageHelper.clearOrphanedLoginDetails();
-        await this.storageHelper.storeLoginDetails({ method: TORUS_METHOD.TRIGGER_AGGREGATE_LOGIN, args }, loginHandler.nonce);
+        if (this.config.uxMode === UX_MODE.REDIRECT) {
+          await this.storageHelper.storeLoginDetails({ method: TORUS_METHOD.TRIGGER_AGGREGATE_LOGIN, args }, loginHandler.nonce);
+        }
         loginParams = await loginHandler.handleLoginWindow({
           locationReplaceOnRedirect: this.config.locationReplaceOnRedirect,
           popupFeatures: this.config.popupFeatures,
@@ -341,7 +345,9 @@ class CustomAuth {
       loginParams = { accessToken, idToken, ...rest, state: instanceParameters };
     } else {
       this.storageHelper.clearOrphanedLoginDetails();
-      await this.storageHelper.storeLoginDetails({ method: TORUS_METHOD.TRIGGER_AGGREGATE_HYBRID_LOGIN, args }, loginHandler.nonce);
+      if (this.config.uxMode === UX_MODE.REDIRECT) {
+        await this.storageHelper.storeLoginDetails({ method: TORUS_METHOD.TRIGGER_AGGREGATE_HYBRID_LOGIN, args }, loginHandler.nonce);
+      }
       loginParams = await loginHandler.handleLoginWindow({
         locationReplaceOnRedirect: this.config.locationReplaceOnRedirect,
         popupFeatures: this.config.popupFeatures,
