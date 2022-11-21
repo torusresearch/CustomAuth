@@ -29,12 +29,13 @@ import { handleRedirectParameters, isFirefox, padUrlString } from "./utils/helpe
 import log from "./utils/loglevel";
 import StorageHelper from "./utils/StorageHelper";
 
-const torusNodeEndpoints = [
-  "https://mpc-beta-1.authnetwork.dev/sss/jrpc",
-  "https://mpc-beta-2.authnetwork.dev/sss/jrpc",
-  "https://mpc-beta-3.authnetwork.dev/sss/jrpc",
-];
 class CustomAuth {
+  static torusNodeEndpoints = [
+    "https://mpc-beta-1.authnetwork.dev/sss/jrpc",
+    "https://mpc-beta-2.authnetwork.dev/sss/jrpc",
+    "https://mpc-beta-3.authnetwork.dev/sss/jrpc",
+  ];
+
   isInitialized: boolean;
 
   config: {
@@ -178,7 +179,7 @@ class CustomAuth {
       const lookupTx = this.sentryHandler.startTransaction({
         name: SENTRY_TXNS.PUB_ADDRESS_LOOKUP,
       });
-      const torusPubKey = await this.torus.getPublicAddress(torusNodeEndpoints, { verifier, verifierId: userInfo.verifierId }, true);
+      const torusPubKey = await this.torus.getPublicAddress(CustomAuth.torusNodeEndpoints, { verifier, verifierId: userInfo.verifierId }, true);
       this.sentryHandler.finishTransaction(lookupTx);
       const res = {
         userInfo: {
@@ -404,27 +405,21 @@ class CustomAuth {
     });
     // const { torusNodeEndpoints, torusNodePub, torusIndexes } = await this.nodeDetailManager.getNodeDetails({ verifier, verifierId });
     this.sentryHandler.finishTransaction(nodeTx);
-    log.debug("torus-direct/getTorusKey", { torusNodeEndpoints });
+    log.debug("torus-direct/getTorusKey", { torusNodeEndpoints: CustomAuth.torusNodeEndpoints });
 
     const pubLookupTx = this.sentryHandler.startTransaction({
       name: SENTRY_TXNS.PUB_ADDRESS_LOOKUP,
     });
-    const address = await this.torus.getPublicAddress(torusNodeEndpoints, { verifier, verifierId }, true);
     this.sentryHandler.finishTransaction(pubLookupTx);
-    if (typeof address === "string") throw new Error("must use extended pub key");
-    log.debug("torus-direct/getTorusKey", { getPublicAddress: address });
 
     const sharesTx = this.sentryHandler.startTransaction({
       name: SENTRY_TXNS.FETCH_SHARES,
     });
-    const shares = await this.torus.retrieveShares(torusNodeEndpoints, verifier, verifierParams, idToken, {
+    const shares = await this.torus.retrieveShares(CustomAuth.torusNodeEndpoints, verifier, verifierParams, idToken, {
       ...additionalParams,
       ...(useTSS && { proxyRequestURL: this.proxyRequestURL }),
     });
     this.sentryHandler.finishTransaction(sharesTx);
-    if (shares.ethAddress.toLowerCase() !== address.address.toLowerCase()) {
-      throw new Error("data ethAddress does not match response address");
-    }
     log.debug("torus-direct/getTorusKey", { retrieveShares: shares });
 
     const signatures = (shares.sessionTokensData || []).map((x) => {
@@ -437,10 +432,10 @@ class CustomAuth {
       publicAddress: shares.ethAddress.toString(),
       privateKey: shares.privKey.toString(),
       metadataNonce: shares.metadataNonce.toString("hex"),
-      typeOfUser: address.typeOfUser,
+      typeOfUser: shares.typeOfUser,
       pubKey: {
-        pub_key_X: address.X,
-        pub_key_Y: address.Y,
+        pub_key_X: shares.X,
+        pub_key_Y: shares.Y,
       },
       signatures,
     };
