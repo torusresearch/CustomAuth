@@ -79,6 +79,7 @@ export default class WebAuthnHandler extends AbstractLoginHandler {
           challenge,
           rpOrigin,
           credId,
+          transports,
         } = await get<WebAuthnExtraParams & { verifier_id: string }>(`${WEBAUTHN_LOOKUP_SERVER}/signature/fetch/${idToken}`));
       }
     } else {
@@ -92,6 +93,7 @@ export default class WebAuthnHandler extends AbstractLoginHandler {
         challenge,
         rpOrigin,
         credId,
+        transports,
       } = await get<WebAuthnExtraParams & { verifier_id: string }>(`${WEBAUTHN_LOOKUP_SERVER}/signature/fetch/${idToken}`));
     }
 
