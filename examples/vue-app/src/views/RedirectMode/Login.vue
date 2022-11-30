@@ -2,35 +2,34 @@
   <div id="app">
     <div class="mt-[10%]">
       <div>
-        <div class="font-bold">Verifier</div>
-      <!-- <span>verifier:</span> -->
-      <select v-model="selectedVerifier" class="select-menu">
-        <option :key="login" v-for="login in Object.keys(verifierMap)" :value="login">{{ verifierMap[login].name }}</option>
-      </select>
-    </div>
-    <input v-model="login_hint" v-if="selectedVerifier === 'torus_email_passwordless'" placeholder="Enter an email" required />
-    <div :style="{ marginTop: '20px' }">
-      <button @click="login" class="btn-login">Login with Torus</button>
-    </div>
-    <p>Please note that the verifiers listed in the example have http://localhost:3000/serviceworker/redirect configured as the redirect uri.</p>
-    <p>If you use any other domains, they won't work.</p>
-    <p>The verifiers listed here only work with the client id's specified in example. Please don't edit them</p>
-    <p>The verifiers listed here are for example reference only. Please don't use them for anything other than testing purposes.</p>
-    <div>
-      Reach out to us at
-      <a href="mailto:hello@tor.us">hello@tor.us</a>
-      or
-      <a href="https://t.me/torusdev">telegram group</a>
-      to get your verifier deployed for your client id.
-    </div>
+        <div class="font-bold mb-3">Verifier</div>
+        <!-- <span>verifier:</span> -->
+        <select v-model="selectedVerifier" class="select select-bordered w-full max-w-xs">
+          <option :key="login" v-for="login in Object.keys(verifierMap)" :value="login">{{ verifierMap[login].name }}</option>
+        </select>
       </div>
-      
+      <input v-model="login_hint" v-if="selectedVerifier === 'torus_email_passwordless'" placeholder="Enter an email" required />
+      <div :style="{ marginTop: '20px' }">
+        <button @click="login" class="btn-login">Login with Torus</button>
+      </div>
+      <p>Please note that the verifiers listed in the example have http://localhost:3000/serviceworker/redirect configured as the redirect uri.</p>
+      <p>If you use any other domains, they won't work.</p>
+      <p>The verifiers listed here only work with the client id's specified in example. Please don't edit them</p>
+      <p>The verifiers listed here are for example reference only. Please don't use them for anything other than testing purposes.</p>
+      <div>
+        Reach out to us at
+        <a href="mailto:hello@tor.us">hello@tor.us</a>
+        or
+        <a href="https://t.me/torusdev">telegram group</a>
+        to get your verifier deployed for your client id.
+      </div>
+    </div>
   </div>
 </template>
 
 <script lang="ts">
 import TorusSdk, { UX_MODE } from "@toruslabs/customauth";
-import Vue from "vue";
+import { defineComponent } from "vue";
 
 import {
   APPLE,
@@ -49,7 +48,7 @@ import {
   verifierMap,
   WEIBO,
 } from "../../constants";
-export default Vue.extend({
+export default defineComponent({
   name: "RedirectLogin",
   data() {
     return {
