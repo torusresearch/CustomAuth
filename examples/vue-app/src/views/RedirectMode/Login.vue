@@ -1,14 +1,16 @@
 <template>
   <div id="app">
-    <div>
-      <span :style="{ marginRight: '20px' }">verifier:</span>
-      <select v-model="selectedVerifier">
+    <div class="mt-[10%]">
+      <div>
+        <div class="font-bold">Verifier</div>
+      <!-- <span>verifier:</span> -->
+      <select v-model="selectedVerifier" class="select-menu">
         <option :key="login" v-for="login in Object.keys(verifierMap)" :value="login">{{ verifierMap[login].name }}</option>
       </select>
     </div>
     <input v-model="login_hint" v-if="selectedVerifier === 'torus_email_passwordless'" placeholder="Enter an email" required />
     <div :style="{ marginTop: '20px' }">
-      <button @click="login">Login with Torus</button>
+      <button @click="login" class="btn-login">Login with Torus</button>
     </div>
     <p>Please note that the verifiers listed in the example have http://localhost:3000/serviceworker/redirect configured as the redirect uri.</p>
     <p>If you use any other domains, they won't work.</p>
@@ -21,6 +23,8 @@
       <a href="https://t.me/torusdev">telegram group</a>
       to get your verifier deployed for your client id.
     </div>
+      </div>
+      
   </div>
 </template>
 
@@ -106,3 +110,14 @@ export default Vue.extend({
   },
 });
 </script>
+
+<style scoped>
+.btn-login {
+  @apply h-12 w-60 m-2 bg-white rounded-3xl font-[#6F717A] font-medium;
+  border: 1px solid #6f717a;
+}
+.select-menu {
+  @apply bg-white h-12 w-80 rounded-3xl text-center;
+  border: solid 1px;
+}
+</style>
