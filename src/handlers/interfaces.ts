@@ -32,6 +32,7 @@ export type WebAuthnExtraParams = {
   challenge?: string;
   rpOrigin?: string;
   credId?: string;
+  transports?: AuthenticatorTransport[];
 };
 export interface TorusVerifierResponse {
   email: string;
