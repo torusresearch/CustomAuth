@@ -2,14 +2,14 @@
   <div id="app">
     <div class="mode">
       <div class="grid text-center justify-center mt-[15%]">
-        <h6 class="font-bold text-3xl">demo-customauth.web3auth.io</h6>
+        <h6 class="mb-2 font-bold text-3xl">demo-customauth.web3auth.io</h6>
         <h6 class="pb-10 font-semibold text-[#595857]">Note: Login with Redirect mode is recommended</h6>
         <div>
           <router-link to="/redirectMode"><button class="btn-login">Login with Redirect Mode</button></router-link>
-      <router-link to="/popupMode"><button class="btn-login">Login with Popup Mode</button></router-link>
-     </div>
+          <router-link to="/popupMode"><button class="btn-login">Login with Popup Mode</button></router-link>
+        </div>
       </div>
-     </div>
+    </div>
     <div id="console">
       <p></p>
     </div>
@@ -18,7 +18,7 @@
 
 <script lang="ts">
 import TorusSdk from "@toruslabs/customauth";
-import Vue from "vue";
+import { defineComponent } from "vue";
 
 import {
   APPLE,
@@ -36,7 +36,7 @@ import {
   WEIBO,
 } from "./constants";
 
-export default Vue.extend({
+export default defineComponent({
   name: "HomePage",
   data() {
     return {
@@ -134,10 +134,10 @@ export default Vue.extend({
      * in your code.
      */
     try {
-      var url = new URL(location.href);
+      const url = new URL(location.href);
       const hash = url.hash.substr(1);
       const queryParams = {} as Record<string, string | null>;
-      for (let key of url.searchParams.keys()) {
+      for (const key of url.searchParams.keys()) {
         queryParams[key] = url.searchParams.get(key);
       }
       const { error, instanceParameters } = this._handleRedirectParameters(hash, queryParams);

@@ -15,7 +15,7 @@ module.exports = {
   },
   configureWebpack: (config) => {
     if (process.env.NODE_ENV !== "production") {
-      config.devtool = "eval-source-map";
+      config.devtool = "source-map";
     }
     // console.log(config);
     config.resolve.alias = { ...config.resolve.alias, "bn.js": path.resolve(__dirname, "node_modules/bn.js") };

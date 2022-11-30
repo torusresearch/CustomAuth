@@ -7,7 +7,7 @@
       </div>
       <div class="ml-auto mt-7">
         <!-- <span class="pr-32">Connected ChainId : {{ ethereumPrivateKeyProvider.state.chainId }}</span> -->
-        <button type="button" class="btn-logout">
+        <button type="button" class="btn-logout" @click="logout">
           <img src="@/assets/logout.svg" class="pr-3 pl-0" />
           Logout
         </button>
@@ -39,44 +39,43 @@
         <div class="col-span-2 text-left">
           <div class="font-semibold">Stark key pair</div>
           <div class="text-[12px]">Enter HD account index to derive stark key pair from custom auth's private key</div>
-            <form @submit.prevent="starkHdAccount">
-              <div class="grid grid-cols-2 gap-2">
+          <form @submit.prevent="starkHdAccount">
+            <div class="grid grid-cols-2 gap-2">
               <input class="number-input p-4" :min="0" placeholder="Index" id="accountIndex" type="number" required />
               <button class="btn" type="submit">Get Stark Key Pair</button>
-        <!-- <button class="btn" @click="latestBlock" :disabled="!provider">Fetch Latest Block</button> -->
+              <!-- <button class="btn" @click="latestBlock" :disabled="!provider">Fetch Latest Block</button> -->
 
-            <!-- <button class="btn" @click="signMessage" :disabled="!ethereumPrivateKeyProvider.provider">Sign test Eth Message</button>
+              <!-- <button class="btn" @click="signMessage" :disabled="!ethereumPrivateKeyProvider.provider">Sign test Eth Message</button>
                 <button class="btn" @click="signV1Message" :disabled="!ethereumPrivateKeyProvider.provider">Sign Typed data v1 test message</button>
                 <button class="btn" @click="latestBlock" :disabled="!ethereumPrivateKeyProvider.provider">Fetch latest block</button>
                 <button class="btn" @click="switchChain" :disabled="!ethereumPrivateKeyProvider.provider">Switch to rinkeby</button>
                 <button class="btn" @click="addChain" :disabled="!ethereumPrivateKeyProvider.provider">Add Rinkeby Chain</button> -->
-          </div>
-            </form>
-
+            </div>
+          </form>
         </div>
         <div class="col-span-2 text-left">
           <div class="font-semibold">Sign message</div>
-            <form @submit.prevent="signMessageWithStarkKey">
-              <div class="grid grid-cols-1 gap-2">
+          <form @submit.prevent="signMessageWithStarkKey">
+            <div class="grid grid-cols-1 gap-2">
               <input class="text-areas" id="message" type="textarea" placeholder="Message to encrypt" required />
-              </div>
-              <div class="grid grid-cols-2 gap-2 pt-2">
-                <input class="btn p-2" :min="0" id="accountIndex" type="number" placeholder="Index" required />
+            </div>
+            <div class="grid grid-cols-2 gap-2 pt-2">
+              <input class="btn p-2" :min="0" id="accountIndex" type="number" placeholder="Index" required />
               <!-- <input id="message" type="textarea" placeholder="Enter message" required /> -->
               <button type="submit" class="btn">Sign Message with StarkKey</button>
-              </div>
-            </form>
+            </div>
+          </form>
         </div>
         <div class="col-span-2 text-left">
           <div class="font-semibold">Validate message</div>
-            <!-- <form @submit.prevent="signMessageWithStarkKey"> -->
-            <form @submit.prevent="validateStarkMessage">
-          <!-- </form> -->
-              <div class="grid grid-cols-2 gap-2 pt-2">
-                <input class="btn p-2" id="accountIndex" type="number" placeholder="Index" required />
-            <button class="btn" type="submit" :disabled="!signingMessage">Validate Stark Message</button>
-          </div>
-            </form>
+          <!-- <form @submit.prevent="signMessageWithStarkKey"> -->
+          <form @submit.prevent="validateStarkMessage">
+            <!-- </form> -->
+            <div class="grid grid-cols-2 gap-2 pt-2">
+              <input class="btn p-2" id="accountIndex" type="number" placeholder="Index" required />
+              <button class="btn" type="submit" :disabled="!signingMessage">Validate Stark Message</button>
+            </div>
+          </form>
         </div>
         <!-- <div class="col-span-2 text-left">
               <div class="grid grid-cols-2 gap-2"></div>
@@ -158,10 +157,11 @@ import { SafeEventEmitterProvider } from "@web3auth/base";
 import { EthereumPrivateKeyProvider } from "@web3auth/ethereum-provider";
 import { ec } from "elliptic";
 import { binaryToHex, binaryToUtf8, bufferToBinary, bufferToHex, hexToBinary } from "enc-utils";
-import Vue from "vue";
+import { defineComponent } from "vue";
 
 import { fetchLatestBlock, signEthMessage, signTypedData_v1 } from "../../services/chainHandlers";
-export default Vue.extend({
+
+export default defineComponent({
   name: "Auth",
   data() {
     return {
@@ -179,7 +179,7 @@ export default Vue.extend({
       }
     },
     getPrivatekey(loginDetails: any): unknown {
-      return loginDetails.result.privateKey;
+      return loginDetails?.result?.privateKey;
     },
     async signMessage() {
       const signedMessage = await signEthMessage(this.provider as SafeEventEmitterProvider);
@@ -266,6 +266,9 @@ export default Vue.extend({
       const isVerified = verify(keyPair, hash, this.signedMessage as unknown as ec.Signature);
       this.console(`Message is verified: ${isVerified}`);
     },
+    logout() {
+      this.$router.push("/");
+    },
   },
   async mounted() {
     const torusdirectsdk = new TorusSdk({
@@ -306,8 +309,8 @@ export default Vue.extend({
   @apply h-12 w-32 bg-white rounded-3xl pl-6 m-2 text-sm inline-flex items-center;
   border: 1px solid #f3f3f4;
 }
-.number-input{
- @apply h-11 w-full m-0 bg-[#F9F9FB] rounded-3xl text-[#6F717A] text-sm lg:text-base font-medium
+.number-input {
+  @apply h-11 w-full m-0 bg-[#F9F9FB] rounded-3xl text-[#6F717A] text-sm lg:text-base font-medium;
 }
 .btn {
   @apply h-11 w-full m-0 bg-white rounded-3xl text-[#6F717A] text-sm lg:text-base font-medium;
@@ -338,7 +341,7 @@ export default Vue.extend({
   @apply fixed right-8 bottom-2 md:right-8 md:bottom-12 w-28 h-7 bg-[#f3f3f4] rounded-md;
   border: 1px solid #0f1222;
 }
-.text-areas{
+.text-areas {
   @apply h-11 w-auto p-2 rounded-3xl bg-[#F9F9FB];
 }
 </style>
