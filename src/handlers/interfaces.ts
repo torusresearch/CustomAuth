@@ -80,7 +80,6 @@ export interface TorusKey extends TorusKeyPub {
   publicAddress: string;
   privateKey: string;
   metadataNonce: string;
-  typeOfUser: "v1" | "v2";
   signatures: string[];
 }
 
