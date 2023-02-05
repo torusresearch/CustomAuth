@@ -24,7 +24,17 @@ import {
 } from "./handlers/interfaces";
 import { registerServiceWorker } from "./registerServiceWorker";
 import SentryHandler from "./sentry";
-import { AGGREGATE_VERIFIER, CONTRACT_MAP, LOGIN, SENTRY_TXNS, SIGNER_MAP, TORUS_METHOD, UX_MODE, UX_MODE_TYPE } from "./utils/enums";
+import {
+  AGGREGATE_VERIFIER,
+  CONTRACT_MAP,
+  KEY_ASSIGN_SIGNER_QUEUE,
+  LOGIN,
+  SENTRY_TXNS,
+  SIGNER_MAP,
+  TORUS_METHOD,
+  UX_MODE,
+  UX_MODE_TYPE,
+} from "./utils/enums";
 import { handleRedirectParameters, isFirefox, padUrlString } from "./utils/helpers";
 import log from "./utils/loglevel";
 import StorageHelper from "./utils/StorageHelper";
@@ -80,6 +90,7 @@ class CustomAuth {
     const torus = new Torus({
       enableOneKey,
       metadataHost: metadataUrl,
+      keyAssignQueueHost: `${KEY_ASSIGN_SIGNER_QUEUE[network]}`,
       allowHost: `${SIGNER_MAP[network]}/api/allow`,
       signerHost: `${SIGNER_MAP[network]}/api/sign`,
       network,
@@ -172,7 +183,12 @@ class CustomAuth {
       const lookupTx = this.sentryHandler.startTransaction({
         name: SENTRY_TXNS.PUB_ADDRESS_LOOKUP,
       });
-      const torusPubKey = await this.torus.getPublicAddress(torusNodeEndpoints, torusNodePub, { verifier, verifierId: userInfo.verifierId }, true);
+      const torusPubKey = await this.torus.getPublicAddress(
+        torusNodeEndpoints,
+        torusNodePub,
+        { verifier, verifierId: userInfo.verifierId, instanceId: args.instanceId },
+        true
+      );
       this.sentryHandler.finishTransaction(lookupTx);
       const res = {
         userInfo: {
@@ -201,7 +217,10 @@ class CustomAuth {
       userInfo.verifierId,
       { verifier_id: userInfo.verifierId },
       loginParams.idToken || loginParams.accessToken,
-      userInfo.extraVerifierParams
+      {
+        ...userInfo.extraVerifierParams,
+        instanceId: args.instanceId,
+      }
     );
     return {
       ...torusKey,
@@ -267,7 +286,7 @@ class CustomAuth {
     const aggregateVerifierParams = { verify_params: [], sub_verifier_ids: [], verifier_id: "" };
     const aggregateIdTokenSeeds = [];
     let aggregateVerifierId = "";
-    let extraVerifierParams = {};
+    let extraVerifierParams: Record<string, unknown> = {};
     for (let index = 0; index < subVerifierDetailsArray.length; index += 1) {
       const loginParams = loginParamsArray[index];
       const { idToken, accessToken } = loginParams;
@@ -281,7 +300,10 @@ class CustomAuth {
     aggregateIdTokenSeeds.sort();
     const aggregateIdToken = keccak256(aggregateIdTokenSeeds.join(String.fromCharCode(29))).slice(2);
     aggregateVerifierParams.verifier_id = aggregateVerifierId;
-    const torusKey = await this.getTorusKey(verifierIdentifier, aggregateVerifierId, aggregateVerifierParams, aggregateIdToken, extraVerifierParams);
+    const torusKey = await this.getTorusKey(verifierIdentifier, aggregateVerifierId, aggregateVerifierParams, aggregateIdToken, {
+      ...extraVerifierParams,
+      instanceId: args.instanceId,
+    });
     return {
       ...torusKey,
       userInfo: userInfoArray.map((x, index) => ({ ...x, ...loginParamsArray[index] })),
@@ -343,7 +365,10 @@ class CustomAuth {
       userInfo.verifierId,
       { verifier_id: userInfo.verifierId },
       loginParams.idToken || loginParams.accessToken,
-      userInfo.extraVerifierParams
+      {
+        ...userInfo.extraVerifierParams,
+        instanceId: args.instanceId,
+      }
     );
 
     const { verifierIdentifier, subVerifierDetailsArray } = aggregateLoginParams;
@@ -361,13 +386,10 @@ class CustomAuth {
     aggregateIdTokenSeeds.sort();
     const aggregateIdToken = keccak256(aggregateIdTokenSeeds.join(String.fromCharCode(29))).slice(2);
     aggregateVerifierParams.verifier_id = aggregateVerifierId;
-    const torusKey2Promise = this.getTorusKey(
-      verifierIdentifier,
-      aggregateVerifierId,
-      aggregateVerifierParams,
-      aggregateIdToken,
-      userInfo.extraVerifierParams
-    );
+    const torusKey2Promise = this.getTorusKey(verifierIdentifier, aggregateVerifierId, aggregateVerifierParams, aggregateIdToken, {
+      ...userInfo.extraVerifierParams,
+      instanceId: args.instanceId,
+    });
     const [torusKey1, torusKey2] = await Promise.all([torusKey1Promise, torusKey2Promise]);
     return {
       singleLogin: {
@@ -395,7 +417,12 @@ class CustomAuth {
     const pubLookupTx = this.sentryHandler.startTransaction({
       name: SENTRY_TXNS.PUB_ADDRESS_LOOKUP,
     });
-    const address = await this.torus.getPublicAddress(torusNodeEndpoints, torusNodePub, { verifier, verifierId }, true);
+    const address = await this.torus.getPublicAddress(
+      torusNodeEndpoints,
+      torusNodePub,
+      { verifier, verifierId, instanceId: additionalParams?.instanceId as string },
+      true
+    );
     this.sentryHandler.finishTransaction(pubLookupTx);
     if (typeof address === "string") throw new Error("must use extended pub key");
     log.debug("torus-direct/getTorusKey", { getPublicAddress: address });
@@ -425,7 +452,8 @@ class CustomAuth {
   async getAggregateTorusKey(
     verifier: string,
     verifierId: string, // unique identifier for user e.g. sub on jwt
-    subVerifierInfoArray: TorusSubVerifierInfo[]
+    subVerifierInfoArray: TorusSubVerifierInfo[],
+    instanceId?: string
   ): Promise<TorusKey> {
     const aggregateVerifierParams = { verify_params: [], sub_verifier_ids: [], verifier_id: "" };
     const aggregateIdTokenSeeds = [];
@@ -440,11 +468,28 @@ class CustomAuth {
     aggregateIdTokenSeeds.sort();
     const aggregateIdToken = keccak256(aggregateIdTokenSeeds.join(String.fromCharCode(29))).slice(2);
     aggregateVerifierParams.verifier_id = verifierId;
-    return this.getTorusKey(verifier, verifierId, aggregateVerifierParams, aggregateIdToken, extraVerifierParams);
+    return this.getTorusKey(verifier, verifierId, aggregateVerifierParams, aggregateIdToken, { ...extraVerifierParams, instanceId });
   }
 
   getPostboxKeyFrom1OutOf1(privKey: string, nonce: string): string {
     return this.torus.getPostboxKeyFrom1OutOf1(privKey, nonce);
+  }
+
+  async getInstanceId(): Promise<string> {
+    await this.init({ skipInit: true });
+    const url = new URL(window.location.href);
+    const hash = url.hash.substring(1);
+    const queryParams = {};
+    url.searchParams.forEach((value, key) => {
+      queryParams[key] = value;
+    });
+
+    if (!hash && Object.keys(queryParams).length === 0) {
+      throw new Error("Unable to fetch result from OAuth login");
+    }
+    const { instanceParameters } = handleRedirectParameters(hash, queryParams);
+    const { instanceId } = instanceParameters;
+    return instanceId;
   }
 
   async getRedirectResult({ replaceUrl = true, clearLoginDetails = true }: RedirectResultParams = {}): Promise<RedirectResult> {
@@ -486,9 +531,10 @@ class CustomAuth {
 
     try {
       if (method === TORUS_METHOD.TRIGGER_LOGIN) {
-        const methodArgs = args as SubVerifierDetails & { registerOnly?: boolean };
+        const methodArgs = args as SubVerifierDetails & { registerOnly?: boolean; instanceId?: string };
         methodArgs.hash = hash;
         methodArgs.queryParameters = queryParams;
+        methodArgs.instanceId = instanceId;
         result = await this.triggerLogin(methodArgs);
       } else if (method === TORUS_METHOD.TRIGGER_AGGREGATE_LOGIN) {
         const methodArgs = args as AggregateLoginParams;
@@ -496,11 +542,13 @@ class CustomAuth {
           x.hash = hash;
           x.queryParameters = queryParams;
         });
+        methodArgs.instanceId = instanceId;
         result = await this.triggerAggregateLogin(methodArgs);
       } else if (method === TORUS_METHOD.TRIGGER_AGGREGATE_HYBRID_LOGIN) {
         const methodArgs = args as HybridAggregateLoginParams;
         methodArgs.singleLogin.hash = hash;
         methodArgs.singleLogin.queryParameters = queryParams;
+        methodArgs.instanceId = instanceId;
         result = await this.triggerHybridAggregateLogin(methodArgs);
       }
     } catch (err) {

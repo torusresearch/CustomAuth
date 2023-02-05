@@ -37,7 +37,7 @@
     "@toruslabs/fetch-node-details": "^8.1.0",
     "@toruslabs/http-helpers": "^3.2.0",
     "@toruslabs/metadata-helpers": "^3.0.0",
-    "@toruslabs/torus.js": "^6.3.2",
+    "@toruslabs/torus.js": "file:./toruslabs-torus.js-6.3.2.tgz",
     "bowser": "^2.11.0",
     "events": "^3.3.0",
     "jwt-decode": "^3.1.2",

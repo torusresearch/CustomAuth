@@ -63,6 +63,10 @@ export const SIGNER_MAP = {
   [TORUS_NETWORK.CELESTE]: "https://signer-polygon.tor.us",
 };
 
+export const KEY_ASSIGN_SIGNER_QUEUE = {
+  [TORUS_NETWORK.CYAN]: "http://localhost:3060",
+};
+
 export const SENTRY_TXNS = {
   FETCH_NODE_DETAILS: "fetchNodeDetails",
   PUB_ADDRESS_LOOKUP: "pubAddressLookup",

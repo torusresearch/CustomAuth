@@ -408,17 +408,19 @@ export interface RedirectResultParams {
   clearLoginDetails?: boolean;
 }
 
-export type SingleLoginParams = SubVerifierDetails & { registerOnly?: boolean };
+export type SingleLoginParams = SubVerifierDetails & { registerOnly?: boolean; instanceId?: string };
 
 export interface AggregateLoginParams {
   aggregateVerifierType: AGGREGATE_VERIFIER_TYPE;
   verifierIdentifier: string;
   subVerifierDetailsArray: SubVerifierDetails[];
+  instanceId?: string;
 }
 
 export interface HybridAggregateLoginParams {
   singleLogin: SubVerifierDetails;
   aggregateLoginParams: AggregateLoginParams;
+  instanceId?: string;
 }
 
 export type LoginDetails = { method: TORUS_METHOD_TYPE; args: SingleLoginParams | AggregateLoginParams | HybridAggregateLoginParams };
