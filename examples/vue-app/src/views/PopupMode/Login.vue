@@ -13,6 +13,13 @@
           required
           class="input-field"
         />
+        <input
+          v-model="login_hint"
+          v-if="selectedVerifier === 'torus_sms_passwordless'"
+          placeholder="Eg: +{cc}-{number}"
+          required
+          class="input-field"
+        />
       </div>
       <div :style="{ marginTop: '20px' }">
         <button @click="login()" class="btn-login">Login with Torus</button>
@@ -61,21 +68,21 @@
       </div>
     </div> -->
     <div v-if="loginResponse && loginResponse.privateKey">
-      <div class="flex box md:rows-span-2 m-6 text-left">
-        <div class="mt-7 ml-6 text-ellipsis overflow-hidden">
+      <div class="flex m-6 text-left box md:rows-span-2">
+        <div class="ml-6 overflow-hidden mt-7 text-ellipsis">
           <span class="text-2xl font-semibold">demo-customauth.web3auth.io</span>
-          <h6 class="pb-8 text-left text-ellipsis overflow-hidden">Customauth Private key : {{ getPrivatekey(loginResponse) }}</h6>
+          <h6 class="pb-8 overflow-hidden text-left text-ellipsis">Customauth Private key : {{ getPrivatekey(loginResponse) }}</h6>
         </div>
         <div class="ml-auto mt-7">
           <!-- <span class="pr-32">Connected ChainId : {{ ethereumPrivateKeyProvider.state.chainId }}</span> -->
           <button type="button" class="btn-logout" @click="logout">
-            <img src="@/assets/logout.svg" class="pr-3 pl-0" />
+            <img src="@/assets/logout.svg" class="pl-0 pr-3" />
             Logout
           </button>
         </div>
       </div>
-      <div class="grid grid-cols-5 gap-7 m-6 height-fit">
-        <div class="grid grid-cols-2 col-span-5 md:col-span-2 text-left gap-2 p-4 box">
+      <div class="grid grid-cols-5 m-6 gap-7 height-fit">
+        <div class="grid grid-cols-2 col-span-5 gap-2 p-4 text-left md:col-span-2 box">
           <!-- <div class="col-span-2 text-left">
               <div class="font-semibold"></div>
               <div class="grid grid-cols-2 gap-2">
@@ -102,7 +109,7 @@
             <div class="text-[12px]">Enter HD account index to derive stark key pair from custom auth's private key</div>
             <form @submit.prevent="starkHdAccount">
               <div class="grid grid-cols-2 gap-2">
-                <input class="number-input p-4" :min="0" placeholder="Index" id="accountIndex" type="number" required />
+                <input class="p-4 number-input" :min="0" placeholder="Index" id="accountIndex" type="number" required />
                 <button class="btn" type="submit">Get Stark Key Pair</button>
                 <!-- <button class="btn" @click="latestBlock" :disabled="!provider">Fetch Latest Block</button> -->
 
@@ -121,7 +128,7 @@
                 <input class="text-areas" id="message" type="textarea" placeholder="Message to encrypt" required />
               </div>
               <div class="grid grid-cols-2 gap-2 pt-2">
-                <input class="btn p-2" :min="0" id="accountIndex" type="number" placeholder="Index" required />
+                <input class="p-2 btn" :min="0" id="accountIndex" type="number" placeholder="Index" required />
                 <!-- <input id="message" type="textarea" placeholder="Enter message" required /> -->
                 <button type="submit" class="btn">Sign Message with StarkKey</button>
               </div>
@@ -133,7 +140,7 @@
             <form @submit.prevent="validateStarkMessage">
               <!-- </form> -->
               <div class="grid grid-cols-2 gap-2 pt-2">
-                <input class="btn p-2" id="accountIndex" type="number" placeholder="Index" required />
+                <input class="p-2 btn" id="accountIndex" type="number" placeholder="Index" required />
                 <button class="btn" type="submit" :disabled="!signingMessage">Validate Stark Message</button>
               </div>
             </form>
@@ -166,7 +173,7 @@
         </div>
         <div class="col-span-5 md:col-span-3">
           <h6 class="text-left">Note:</h6>
-          <div class="box-note mb-2 p-4 text-xs text-left">
+          <div class="p-4 mb-2 text-xs text-left box-note">
             <p class="mb-2">
               Please note that the verifiers listed in the example have http://localhost:3000/serviceworker/redirect configured as the redirect uri.
             </p>
@@ -237,6 +244,7 @@ import {
   LINKEDIN,
   REDDIT,
   TORUS_EMAIL_PASSWORDLESS,
+  TORUS_SMS_PASSWORDLESS,
   TWITTER,
   verifierMap,
   WEIBO,
@@ -277,6 +285,13 @@ export default defineComponent({
           verifierIdField: "name",
           isVerifierIdCaseSensitive: false,
           login_hint: this.login_hint,
+          connection: "email",
+        },
+        [TORUS_SMS_PASSWORDLESS]: {
+          domain: "https://lrc.auth.openlogin.com",
+          verifierIdField: "name",
+          login_hint: this.login_hint,
+          connection: "sms",
         },
       };
     },
