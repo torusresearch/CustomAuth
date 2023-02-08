@@ -1,4 +1,4 @@
-import Bowser, { ENGINE_MAP } from "bowser";
+import Bowser from "bowser";
 
 import { Auth0UserInfo, TorusGenericObject } from "../handlers/interfaces";
 import { LOGIN, LOGIN_TYPE, REDIRECT_PARAMS_STORAGE_METHOD_TYPE } from "./enums";
@@ -185,7 +185,7 @@ export function are3PCSupported(): boolean {
   }
   // All webkit & gecko engine instances use itp (intelligent tracking prevention -
   // https://webkit.org/tracking-prevention/#intelligent-tracking-prevention-itp)
-  if (browserInfo.engine.name === ENGINE_MAP.WebKit || browserInfo.engine.name === ENGINE_MAP.Gecko) {
+  if (browserInfo.engine.name === Bowser.ENGINE_MAP.WebKit || browserInfo.engine.name === Bowser.ENGINE_MAP.Gecko) {
     thirdPartyCookieSupport = false;
   }
 
