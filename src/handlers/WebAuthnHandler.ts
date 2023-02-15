@@ -52,6 +52,7 @@ export default class WebAuthnHandler extends AbstractLoginHandler {
     let challenge: string;
     let rpOrigin: string;
     let credId: string;
+    let transports: AuthenticatorTransport[];
 
     if (extraParamsPassed === "true") {
       log.debug("extraParamsPassed is true, using extraParams passed through hashParams");
@@ -65,6 +66,7 @@ export default class WebAuthnHandler extends AbstractLoginHandler {
           challenge,
           rpOrigin,
           credId,
+          transports,
         } = JSON.parse(atob(extraParams)));
       } catch (error) {
         log.warn("unable to parse extraParams", error);
@@ -77,6 +79,7 @@ export default class WebAuthnHandler extends AbstractLoginHandler {
           challenge,
           rpOrigin,
           credId,
+          transports,
         } = await get<WebAuthnExtraParams & { verifier_id: string }>(`${WEBAUTHN_LOOKUP_SERVER}/signature/fetch/${idToken}`));
       }
     } else {
@@ -90,6 +93,7 @@ export default class WebAuthnHandler extends AbstractLoginHandler {
         challenge,
         rpOrigin,
         credId,
+        transports,
       } = await get<WebAuthnExtraParams & { verifier_id: string }>(`${WEBAUTHN_LOOKUP_SERVER}/signature/fetch/${idToken}`));
     }
 
@@ -114,6 +118,7 @@ export default class WebAuthnHandler extends AbstractLoginHandler {
         challenge,
         rpOrigin,
         credId,
+        transports,
       },
     };
   }
