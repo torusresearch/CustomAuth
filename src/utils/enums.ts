@@ -41,11 +41,11 @@ export const TORUS_METHOD = {
   TRIGGER_AGGREGATE_HYBRID_LOGIN: "triggerHybridAggregateLogin",
 } as const;
 
-export type LOGIN_TYPE = typeof LOGIN[keyof typeof LOGIN];
-export type AGGREGATE_VERIFIER_TYPE = typeof AGGREGATE_VERIFIER[keyof typeof AGGREGATE_VERIFIER];
-export type UX_MODE_TYPE = typeof UX_MODE[keyof typeof UX_MODE];
-export type TORUS_METHOD_TYPE = typeof TORUS_METHOD[keyof typeof TORUS_METHOD];
-export type REDIRECT_PARAMS_STORAGE_METHOD_TYPE = typeof REDIRECT_PARAMS_STORAGE_METHOD[keyof typeof REDIRECT_PARAMS_STORAGE_METHOD];
+export type LOGIN_TYPE = (typeof LOGIN)[keyof typeof LOGIN];
+export type AGGREGATE_VERIFIER_TYPE = (typeof AGGREGATE_VERIFIER)[keyof typeof AGGREGATE_VERIFIER];
+export type UX_MODE_TYPE = (typeof UX_MODE)[keyof typeof UX_MODE];
+export type TORUS_METHOD_TYPE = (typeof TORUS_METHOD)[keyof typeof TORUS_METHOD];
+export type REDIRECT_PARAMS_STORAGE_METHOD_TYPE = (typeof REDIRECT_PARAMS_STORAGE_METHOD)[keyof typeof REDIRECT_PARAMS_STORAGE_METHOD];
 
 export const CONTRACT_MAP = {
   [TORUS_NETWORK.MAINNET]: NodeDetailManager.PROXY_ADDRESS_MAINNET,

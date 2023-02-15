@@ -24,7 +24,7 @@ import {
 } from "./handlers/interfaces";
 import { registerServiceWorker } from "./registerServiceWorker";
 import SentryHandler from "./sentry";
-import { AGGREGATE_VERIFIER, LOGIN, SENTRY_TXNS, SIGNER_MAP, TORUS_METHOD, UX_MODE, UX_MODE_TYPE } from "./utils/enums";
+import { AGGREGATE_VERIFIER, LOGIN, SENTRY_TXNS, TORUS_METHOD, UX_MODE, UX_MODE_TYPE } from "./utils/enums";
 import { handleRedirectParameters, isFirefox, padUrlString } from "./utils/helpers";
 import log from "./utils/loglevel";
 import StorageHelper from "./utils/StorageHelper";
@@ -92,8 +92,6 @@ class CustomAuth {
     const torus = new Torus({
       enableOneKey,
       metadataHost: metadataUrl,
-      allowHost: `${SIGNER_MAP[network]}/api/allow`,
-      signerHost: `${SIGNER_MAP[network]}/api/sign`,
       network,
     });
     Torus.setAPIKey(apiKey);
@@ -195,7 +193,6 @@ class CustomAuth {
         throw new Error("should have returned extended pub key");
       }
       const torusKey: TorusKey = {
-        typeOfUser: torusPubKey.typeOfUser,
         pubKey: {
           pub_key_X: torusPubKey.X,
           pub_key_Y: torusPubKey.Y,
@@ -440,7 +437,6 @@ class CustomAuth {
       publicAddress: shares.ethAddress.toString(),
       privateKey: shares.privKey.toString(),
       metadataNonce: shares.metadataNonce.toString("hex"),
-      typeOfUser: shares.typeOfUser,
       pubKey: {
         pub_key_X: shares.X,
         pub_key_Y: shares.Y,
