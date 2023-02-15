@@ -428,6 +428,7 @@ class CustomAuth {
     log.debug("torus-direct/getTorusKey", { retrieveShares: shares });
 
     const signatures = (shares.sessionTokensData || []).map((x) => {
+      if (!x) return null;
       return JSON.stringify({
         data: x.token,
         sig: x.signature,
