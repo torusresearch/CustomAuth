@@ -47,10 +47,10 @@ const createHandler = ({
     case LOGIN.LINE:
     case LOGIN.EMAIL_PASSWORD:
     case LOGIN.JWT:
-      if (!domain) throw new Error("Invalid params");
       if (id_token || access_token) {
         return new MockLoginHandler(clientId, verifier, redirect_uri, typeOfLogin, uxMode, redirectToOpener, jwtParams, customState);
       }
+      if (!domain) throw new Error("Invalid params");
       return new JwtHandler(clientId, verifier, redirect_uri, typeOfLogin, uxMode, redirectToOpener, jwtParams, customState);
     case LOGIN.WEBAUTHN:
       return new WebAuthnHandler(clientId, verifier, redirect_uri, typeOfLogin, uxMode, redirectToOpener, jwtParams, customState, registerOnly);
