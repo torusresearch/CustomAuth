@@ -31,11 +31,11 @@ import StorageHelper from "./utils/StorageHelper";
 
 class CustomAuth {
   static torusNodeEndpoints = [
-    "https://mpcmain-cluster-1.k8.authnetwork.dev/sss/jrpc",
-    "https://mpcmain-cluster-2.k8.authnetwork.dev/sss/jrpc",
-    "https://mpcmain-cluster-3.k8.authnetwork.dev/sss/jrpc",
-    "https://mpcmain-cluster-4.k8.authnetwork.dev/sss/jrpc",
-    "https://mpcmain-cluster-5.k8.authnetwork.dev/sss/jrpc",
+    "https://lrc1.authnetwork.dev/sss/jrpc",
+    "https://lrc2.authnetwork.dev/sss/jrpc",
+    "https://lrc3.authnetwork.dev/sss/jrpc",
+    "https://lrc4.authnetwork.dev/sss/jrpc",
+    "https://lrc5.authnetwork.dev/sss/jrpc",
   ];
 
   isInitialized: boolean;
