@@ -11,6 +11,7 @@ import {
   ILoginHandler,
   InitParams,
   LoginWindowResponse,
+  PointHex,
   RedirectResult,
   RedirectResultParams,
   SingleLoginParams,
@@ -31,11 +32,34 @@ import StorageHelper from "./utils/StorageHelper";
 
 class CustomAuth {
   static torusNodeEndpoints = [
-    "https://lrc1.authnetwork.dev/sss/jrpc",
-    "https://lrc2.authnetwork.dev/sss/jrpc",
-    "https://lrc3.authnetwork.dev/sss/jrpc",
-    "https://lrc4.authnetwork.dev/sss/jrpc",
-    "https://lrc5.authnetwork.dev/sss/jrpc",
+    "https://sapphire-dev-2-1.authnetwork.dev",
+    "https://sapphire-dev-2-2.authnetwork.dev",
+    "https://sapphire-dev-2-3.authnetwork.dev",
+    "https://sapphire-dev-2-4.authnetwork.dev",
+    "https://sapphire-dev-2-5.authnetwork.dev",
+  ];
+
+  static torusPubKeys: PointHex[] = [
+    {
+      x: "f74389b0a4c8d10d2a687ae575f69b20f412d41ab7f1fe6b358aa14871327247",
+      y: "54e3a73098ed9bced3ef8821736e9794f9264a1420c0c7ad15d2fa617ba35ef7",
+    },
+    {
+      x: "bc38813a6873e526087918507c78fc3a61624670ee851ecfb4f3bef55d027b5a",
+      y: "ac4b21229f662a0aefdfdac21cf17c3261a392c74a8790db218b34e3e4c1d56a",
+    },
+    {
+      x: "b56541684ea5fa40c8337b7688d502f0e9e092098962ad344c34e94f06d293fb",
+      y: "759a998cef79d389082f9a75061a29190eec0cac99b8c25ddcf6b58569dad55c",
+    },
+    {
+      x: "7bcb058d4c6ffc6ba4bfdfd93d141af35a66338a62c7c27cdad2ae3f8289b767",
+      y: "336ab1935e41ed4719e162587f0ab55518db4207a1eb36cc72303f1b86689d2b",
+    },
+    {
+      x: "bf12a136ef94399ea098f926f04e26a4ec4ac70f69cce274e8893704c4951773",
+      y: "bdd44828020f52ce510e026338216ada184a6867eb4e19fb4c2d495d4a7e15e4",
+    },
   ];
 
   isInitialized: boolean;
@@ -101,6 +125,24 @@ class CustomAuth {
     else log.disableAll();
     this.storageHelper = new StorageHelper(storageServerUrl);
     this.sentryHandler = new SentryHandler(sentry, networkUrl);
+  }
+
+  static getSSSEndpoints() {
+    return CustomAuth.torusNodeEndpoints.map((endpoint) => {
+      return `${endpoint}/sss/jrpc`;
+    });
+  }
+
+  static getTSSEndpoints() {
+    return CustomAuth.torusNodeEndpoints.map((endpoint) => {
+      return `${endpoint}/tss`;
+    });
+  }
+
+  static getRSSEndpoints() {
+    return CustomAuth.torusNodeEndpoints.map((endpoint) => {
+      return `${endpoint}/rss`;
+    });
   }
 
   async init({ skipSw = false, skipInit = false, skipPrefetch = false }: InitParams = {}): Promise<void> {
@@ -181,7 +223,7 @@ class CustomAuth {
       const lookupTx = this.sentryHandler.startTransaction({
         name: SENTRY_TXNS.PUB_ADDRESS_LOOKUP,
       });
-      const torusPubKey = await this.torus.getPublicAddress(CustomAuth.torusNodeEndpoints, { verifier, verifierId: userInfo.verifierId }, true);
+      const torusPubKey = await this.torus.getPublicAddress(CustomAuth.getSSSEndpoints(), { verifier, verifierId: userInfo.verifierId }, true);
       this.sentryHandler.finishTransaction(lookupTx);
       const res = {
         userInfo: {
@@ -410,7 +452,7 @@ class CustomAuth {
     });
     // const { torusNodeEndpoints, torusNodePub, torusIndexes } = await this.nodeDetailManager.getNodeDetails({ verifier, verifierId });
     this.sentryHandler.finishTransaction(nodeTx);
-    log.debug("torus-direct/getTorusKey", { torusNodeEndpoints: CustomAuth.torusNodeEndpoints });
+    log.debug("torus-direct/getTorusKey", { torusNodeEndpoints: CustomAuth.getSSSEndpoints() });
 
     const pubLookupTx = this.sentryHandler.startTransaction({
       name: SENTRY_TXNS.PUB_ADDRESS_LOOKUP,
@@ -420,7 +462,7 @@ class CustomAuth {
     const sharesTx = this.sentryHandler.startTransaction({
       name: SENTRY_TXNS.FETCH_SHARES,
     });
-    const shares = await this.torus.retrieveShares(CustomAuth.torusNodeEndpoints, verifier, verifierParams, idToken, {
+    const shares = await this.torus.retrieveShares(CustomAuth.getSSSEndpoints(), verifier, verifierParams, idToken, {
       ...additionalParams,
       ...(useTSS && { proxyRequestURL: this.proxyRequestURL }),
     });
