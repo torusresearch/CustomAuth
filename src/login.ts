@@ -62,6 +62,8 @@ class CustomAuth {
     },
   ];
 
+  static nodeIndexes = [1, 2, 3, 4, 5];
+
   isInitialized: boolean;
 
   config: {
