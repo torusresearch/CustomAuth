@@ -37,7 +37,7 @@
     "@toruslabs/fetch-node-details": "^8.1.0",
     "@toruslabs/http-helpers": "^3.2.0",
     "@toruslabs/metadata-helpers": "^3.0.0",
-    "@toruslabs/torus.js": "6.2.0-alpha.0",
+    "@toruslabs/torus.js": "6.2.0-alpha.1",
     "bowser": "^2.11.0",
     "events": "^3.3.0",
     "jwt-decode": "^3.1.2",
@@ -46,6 +46,7 @@
     "web3-utils": "^1.8.1"
   },
   "devDependencies": {
+    "@sentry/types": "^7.30.0",
     "@toruslabs/eslint-config-typescript": "^1.4.0",
     "@toruslabs/torus-scripts": "^3.0.2",
     "@types/lodash.merge": "^4.6.7",
@@ -64,8 +65,7 @@
     "lint-staged": "^13.1.0",
     "prettier": "^2.8.2",
     "rimraf": "^3.0.2",
-    "typescript": "^4.9.4",
-    "@sentry/types": "^7.30.0"
+    "typescript": "^4.9.4"
   },
   "author": "Torus Labs",
   "license": "MIT",
