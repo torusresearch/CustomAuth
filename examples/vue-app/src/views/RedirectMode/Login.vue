@@ -97,7 +97,7 @@ export default defineComponent({
       redirectPathName: "auth",
       enableLogging: true,
       uxMode: UX_MODE.REDIRECT,
-      network: "testnet",
+      network: "mainnet",
     });
     this.torusdirectsdk = torusdirectsdk;
     await torusdirectsdk.init({ skipSw: true });
@@ -106,13 +106,18 @@ export default defineComponent({
     async login() {
       if (!this.torusdirectsdk) return;
       const jwtParams = this.loginToConnectionMap[this.selectedVerifier] || {};
-      const { typeOfLogin, clientId, verifier } = verifierMap[this.selectedVerifier];
+      const { typeOfLogin, clientId, verifier, name } = verifierMap[this.selectedVerifier];
+      const webauthnRegister = name === "WebAuthn Register"
+      const registerOnly = webauthnRegister ? true : false;
+      const loginOnly = webauthnRegister ? "false" : "true";
+
       return this.torusdirectsdk.triggerLogin({
         typeOfLogin,
         verifier,
         clientId,
         jwtParams,
-        customState: { client: "great-company" },
+        registerOnly,
+        customState: { client: "great-company", webauthnURL: "https://d1f8-115-66-172-125.ngrok.io/", localhostAll: "true", loginOnly, webauthnTransports: 'ble', credTransports: 'ble' },
       });
     },
   },
