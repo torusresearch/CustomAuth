@@ -56,8 +56,8 @@ export default class DiscordHandler extends AbstractLoginHandler {
     const { id, avatar, email = "", username: name = "", discriminator = "" } = userInfo;
     const profileImage =
       avatar === null
-        ? `https://cdn.discord.com/embed/avatars/${Number(discriminator) % 5}.png`
-        : `https://cdn.discord.com/avatars/${id}/${avatar}.png?size=2048`;
+        ? `https://cdn.discordapp.com/embed/avatars/${Number(discriminator) % 5}.png`
+        : `https://cdn.discordapp.com/avatars/${id}/${avatar}.png?size=2048`;
     return {
       profileImage,
       name: `${name}#${discriminator}`,
