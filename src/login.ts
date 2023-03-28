@@ -32,33 +32,33 @@ import StorageHelper from "./utils/StorageHelper";
 
 class CustomAuth {
   static torusNodeEndpoints = [
-    "https://sapphire-dev-2-1.authnetwork.dev",
-    "https://sapphire-dev-2-2.authnetwork.dev",
-    "https://sapphire-dev-2-3.authnetwork.dev",
-    "https://sapphire-dev-2-4.authnetwork.dev",
-    "https://sapphire-dev-2-5.authnetwork.dev",
+    "https://sapphire-1.auth.network/sss/jrpc",
+    "https://sapphire-2.auth.network/sss/jrpc",
+    "https://sapphire-3.auth.network/sss/jrpc",
+    "https://sapphire-4.auth.network/sss/jrpc",
+    "https://sapphire-5.auth.network/sss/jrpc",
   ];
 
   static torusPubKeys: PointHex[] = [
     {
-      x: "f74389b0a4c8d10d2a687ae575f69b20f412d41ab7f1fe6b358aa14871327247",
-      y: "54e3a73098ed9bced3ef8821736e9794f9264a1420c0c7ad15d2fa617ba35ef7",
+      x: "b00e38a144591d28529a9e823876f8bb40bd1950d975d3046b33a063a28be91a",
+      y: "35b40356167bbda44a9f0a583be7ada771c4d715ce5e63da5b59b8d3f5f5a186",
     },
     {
-      x: "bc38813a6873e526087918507c78fc3a61624670ee851ecfb4f3bef55d027b5a",
-      y: "ac4b21229f662a0aefdfdac21cf17c3261a392c74a8790db218b34e3e4c1d56a",
+      x: "4b41b0dec6fd3b7400cf79b70bda3e2867591befbb1ce92904a71e6cbc185191",
+      y: "7ada2a90a57f8c39dd4c23007dcdb85b23b03a651fee115c7cdd53872f59b47b",
     },
     {
-      x: "b56541684ea5fa40c8337b7688d502f0e9e092098962ad344c34e94f06d293fb",
-      y: "759a998cef79d389082f9a75061a29190eec0cac99b8c25ddcf6b58569dad55c",
+      x: "2dba245d0c31791b298791560a77531e0a65c0bb8f6a3942d87ed3e35cdd1749",
+      y: "db0ec14143ba59c2a63365f73cb9b04e79abb7905e05d34b5065928a77fd1ef0",
     },
     {
-      x: "7bcb058d4c6ffc6ba4bfdfd93d141af35a66338a62c7c27cdad2ae3f8289b767",
-      y: "336ab1935e41ed4719e162587f0ab55518db4207a1eb36cc72303f1b86689d2b",
+      x: "22e3cae184a39aed60feb2fdc3a8b6ce56007229d9fb99b24f72ef8bd539b0c9",
+      y: "2d6a9acbfa73a38be0f4dc190818a60e1529eedf5beb6ebf71b9c463b9969edb",
     },
     {
-      x: "bf12a136ef94399ea098f926f04e26a4ec4ac70f69cce274e8893704c4951773",
-      y: "bdd44828020f52ce510e026338216ada184a6867eb4e19fb4c2d495d4a7e15e4",
+      x: "dfc312eba53e8427c5bc59694d27428f92ee4781129130c0c4f2fa439df4cb82",
+      y: "3fe9a620cb40c292e29f4ef0913a0717c16a8c1526dbf57d16981ed8ebb7839b",
     },
   ];
 
