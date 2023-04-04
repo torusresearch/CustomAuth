@@ -1,4 +1,4 @@
-import { TORUS_NETWORK_TYPE } from "@toruslabs/fetch-node-details";
+import { TORUS_NETWORK_TYPE } from "@toruslabs/fnd-base";
 
 import { Sentry } from "../sentry";
 import { AGGREGATE_VERIFIER_TYPE, LOGIN_TYPE, TORUS_METHOD_TYPE, UX_MODE_TYPE } from "../utils/enums";
