@@ -64,7 +64,9 @@ class CustomAuth {
     storageServerUrl = "https://broadcast-server.tor.us",
     networkUrl,
     sentry,
+    clientId,
   }: CustomAuthArgs) {
+    if (!clientId) throw Error("Please provide a valid clientId in constructor");
     this.isInitialized = false;
     const baseUri = new URL(baseUrl);
     this.config = {
@@ -83,6 +85,7 @@ class CustomAuth {
       allowHost: `${SIGNER_MAP[network]}/api/allow`,
       signerHost: `${SIGNER_MAP[network]}/api/sign`,
       network,
+      clientId,
     });
     Torus.setAPIKey(apiKey);
     this.torus = torus;
