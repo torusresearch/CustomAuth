@@ -55,14 +55,6 @@ export const CONTRACT_MAP = {
   [TORUS_NETWORK.CELESTE]: NodeDetailManager.PROXY_ADDRESS_CELESTE,
 };
 
-export const SIGNER_MAP = {
-  [TORUS_NETWORK.MAINNET]: "https://signer.tor.us",
-  [TORUS_NETWORK.TESTNET]: "https://signer.tor.us",
-  [TORUS_NETWORK.CYAN]: "https://signer-polygon.tor.us",
-  [TORUS_NETWORK.AQUA]: "https://signer-polygon.tor.us",
-  [TORUS_NETWORK.CELESTE]: "https://signer-polygon.tor.us",
-};
-
 export const SENTRY_TXNS = {
   FETCH_NODE_DETAILS: "fetchNodeDetails",
   PUB_ADDRESS_LOOKUP: "pubAddressLookup",
