@@ -89,7 +89,7 @@ CustomAuth Sdk supports two modes of login (`uxMode: "popup"` and `uxMode: "redi
 const torus = new CustomAuth({
   baseUrl: "http://localhost:3000/serviceworker/",
   network: "testnet", // details for test net
-  clientId: "YOUR_CLIENT_ID" // get client_id from Web3Auth Dashboard
+  web3authClientId: "YOUR_CLIENT_ID" // get Client ID from Web3Auth Dashboard
 });
 await torus.init();
 ```

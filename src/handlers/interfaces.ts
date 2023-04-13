@@ -250,7 +250,7 @@ export interface CustomAuthArgs {
   /**
    * Get your Client ID from Web3Auth Dashboard
    */
-  clientId: string;
+  web3authClientId: string;
 
   sentry?: Sentry;
 }
