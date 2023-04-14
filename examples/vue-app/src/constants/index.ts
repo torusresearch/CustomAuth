@@ -18,6 +18,7 @@ export const COGNITO = "cognito";
 export const AUTH_DOMAIN = "https://torus-test.auth0.com";
 export const COGNITO_AUTH_DOMAIN = "https://torus-test.auth.ap-southeast-1.amazoncognito.com/oauth2/";
 export const TORUS_EMAIL_PASSWORDLESS = "torus_email_passwordless";
+export const TORUS_SMS_PASSWORDLESS = "torus_sms_passwordless";
 
 export const WEB3AUTH_CLIENT_ID = "BCtbnOamqh0cJFEUYA0NB5YkvBECZ3HLZsKfvSRBvew2EiiKW3UxpyQASSR0artjQkiUOCHeZ_ZeygXpYpxZjOs";
 
@@ -68,5 +69,11 @@ export const verifierMap = {
     typeOfLogin: "jwt",
     clientId: "P7PJuBCXIHP41lcyty0NEb7Lgf7Zme8Q",
     verifier: "torus-auth0-email-passwordless-lrc",
+  },
+  [TORUS_SMS_PASSWORDLESS]: {
+    name: "Torus Sms Passwordless",
+    typeOfLogin: "jwt",
+    clientId: "P7PJuBCXIHP41lcyty0NEb7Lgf7Zme8Q",
+    verifier: "torus-sms-passwordless-lrc",
   },
 } as Record<string, any>;

@@ -2,13 +2,14 @@
   <div id="app">
     <div class="mt-[10%]">
       <div>
-        <div class="font-bold mb-3">Verifier</div>
+        <div class="mb-3 font-bold">Verifier</div>
         <!-- <span>verifier:</span> -->
-        <select v-model="selectedVerifier" class="select select-bordered w-full max-w-xs">
+        <select v-model="selectedVerifier" class="w-full max-w-xs select select-bordered">
           <option :key="login" v-for="login in Object.keys(verifierMap)" :value="login">{{ verifierMap[login].name }}</option>
         </select>
       </div>
-      <input v-model="login_hint" v-if="selectedVerifier === 'torus_email_passwordless'" placeholder="Enter an email" required />
+      <input v-model="login_hint" v-if="selectedVerifier === 'torus_email_passwordless'" placeholder="Enter an email" required class="input-field" />
+      <input v-model="login_hint" v-if="selectedVerifier === 'torus_sms_passwordless'" placeholder="Eg: (+{cc}-{number})" required class="input-field" />
       <div :style="{ marginTop: '20px' }">
         <button @click="login" class="btn-login">Login with Torus</button>
       </div>
@@ -45,6 +46,7 @@ import {
   LINKEDIN,
   REDDIT,
   TORUS_EMAIL_PASSWORDLESS,
+  TORUS_SMS_PASSWORDLESS,
   TWITTER,
   verifierMap,
   WEIBO,
@@ -79,7 +81,14 @@ export default defineComponent({
           verifierIdField: "name",
           isVerifierIdCaseSensitive: false,
           login_hint: this.login_hint,
+          connection: "email",
         },
+        [TORUS_SMS_PASSWORDLESS]: {
+          domain: "https://lrc.auth.openlogin.com",
+          verifierIdField: "name",
+          login_hint: this.login_hint,
+          connection: "sms",
+        }
       };
     },
   },
@@ -114,11 +123,15 @@ export default defineComponent({
 
 <style scoped>
 .btn-login {
-  @apply h-12 w-60 m-2 bg-white rounded-3xl font-[#6F717A] font-medium;
+  @apply h-12 w-40 m-2 bg-white rounded-3xl font-[#6F717A] font-medium;
   border: 1px solid #6f717a;
 }
 .select-menu {
   @apply bg-white h-12 w-80 rounded-3xl text-center;
+  border: solid 1px;
+}
+.input-field {
+  @apply bg-white h-12 rounded-xl text-center p-2 mt-4 w-80;
   border: solid 1px;
 }
 </style>
