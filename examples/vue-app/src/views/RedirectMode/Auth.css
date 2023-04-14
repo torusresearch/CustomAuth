@@ -135,7 +135,6 @@ body,
 }
 
 .dashboard-details-btn-container {
-  --container-width: 582;
   background: linear-gradient(0deg, #ffffff, #ffffff), #f3f3f4;
   border: 1px solid #f3f3f4;
   box-shadow: 4px 4px 20px rgba(46, 91, 255, 0.1);
@@ -188,6 +187,7 @@ body,
   font-size: 14px;
   line-height: 26px;
   color: #000000;
+  word-wrap: break-word;
 }
 
 .console-heading {
