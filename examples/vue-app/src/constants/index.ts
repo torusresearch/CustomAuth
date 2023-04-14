@@ -20,7 +20,7 @@ export const COGNITO_AUTH_DOMAIN = "https://torus-test.auth.ap-southeast-1.amazo
 export const TORUS_EMAIL_PASSWORDLESS = "torus_email_passwordless";
 export const TORUS_SMS_PASSWORDLESS = "torus_sms_passwordless";
 
-export const WEB3AUTH_CLIENT_ID = "BCtbnOamqh0cJFEUYA0NB5YkvBECZ3HLZsKfvSRBvew2EiiKW3UxpyQASSR0artjQkiUOCHeZ_ZeygXpYpxZjOs";
+export const WEB3AUTH_CLIENT_ID = "BJ6l3_kIQiy6YVL7zDlCcEAvGpGukwFgp-C_0WvNI_fAEeIaoVRLDrV5OjtbZr_zJxbyXFsXMT-yhQiUNYvZWpo";
 
 export const verifierMap = {
   [GOOGLE]: {
