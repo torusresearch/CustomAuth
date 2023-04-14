@@ -90,7 +90,7 @@ export default defineComponent({
       enableLogging: true,
       uxMode: UX_MODE.REDIRECT,
       network: "testnet",
-      web3authClientId: WEB3AUTH_CLIENT_ID,
+      web3AuthClientId: WEB3AUTH_CLIENT_ID,
     });
     this.torusdirectsdk = torusdirectsdk;
     await torusdirectsdk.init({ skipSw: true });

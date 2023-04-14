@@ -146,7 +146,7 @@ export default defineComponent({
         baseUrl: `${location.origin}/serviceworker`,
         enableLogging: true,
         network: "testnet", // details for test net
-        web3authClientId: WEB3AUTH_CLIENT_ID,
+        web3AuthClientId: WEB3AUTH_CLIENT_ID,
       });
       await torusdirectsdk.init({ skipSw: false });
       this.torusdirectsdk = torusdirectsdk;

@@ -10,7 +10,7 @@
       const torus = new CustomAuth({
         baseUrl: "http://localhost:3000/serviceworker/",
         network: "testnet", // details for test net
-        web3authClientId: "YOUR_CLIENT_ID", // get Client ID from Web3Auth Dashboard
+        web3AuthClientId: "YOUR_CLIENT_ID", // get Client ID from Web3Auth Dashboard
       });
       await torus.init();
       const userInfo = await torus.triggerLogin({

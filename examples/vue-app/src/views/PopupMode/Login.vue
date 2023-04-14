@@ -476,7 +476,7 @@ export default defineComponent({
         enableLogging: true,
         network: "testnet", // details for test net
         popupFeatures: `titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=500,width=500,top=100,left=100`,
-        web3authClientId: WEB3AUTH_CLIENT_ID
+        web3AuthClientId: WEB3AUTH_CLIENT_ID,
       });
       // note: Due to browser restrictions on popups, you should reduce the time taken
       // between user interaction and the login popups being opened. This is highly browser dependent,

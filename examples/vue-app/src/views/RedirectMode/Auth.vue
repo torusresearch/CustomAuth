@@ -278,7 +278,7 @@ export default defineComponent({
       enableLogging: true,
       uxMode: "redirect",
       network: "testnet",
-      web3authClientId: WEB3AUTH_CLIENT_ID,
+      web3AuthClientId: WEB3AUTH_CLIENT_ID,
     });
     const loginDetails = await torusdirectsdk.getRedirectResult();
     const providerInstance = await EthereumPrivateKeyProvider.getProviderInstance({
