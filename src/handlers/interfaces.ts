@@ -247,6 +247,11 @@ export interface CustomAuthArgs {
    */
   storageServerUrl?: string;
 
+  /**
+   * Get your Client ID from Web3Auth Dashboard (https://dashboard.web3auth.io)
+   */
+  web3AuthClientId: string;
+
   sentry?: Sentry;
 }
 

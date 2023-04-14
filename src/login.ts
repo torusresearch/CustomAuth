@@ -24,7 +24,7 @@ import {
 } from "./handlers/interfaces";
 import { registerServiceWorker } from "./registerServiceWorker";
 import SentryHandler from "./sentry";
-import { AGGREGATE_VERIFIER, CONTRACT_MAP, LOGIN, SENTRY_TXNS, SIGNER_MAP, TORUS_METHOD, UX_MODE, UX_MODE_TYPE } from "./utils/enums";
+import { AGGREGATE_VERIFIER, CONTRACT_MAP, LOGIN, SENTRY_TXNS, TORUS_METHOD, UX_MODE, UX_MODE_TYPE } from "./utils/enums";
 import { handleRedirectParameters, isFirefox, padUrlString } from "./utils/helpers";
 import log from "./utils/loglevel";
 import StorageHelper from "./utils/StorageHelper";
@@ -64,7 +64,9 @@ class CustomAuth {
     storageServerUrl = "https://broadcast-server.tor.us",
     networkUrl,
     sentry,
+    web3AuthClientId,
   }: CustomAuthArgs) {
+    if (!web3AuthClientId) throw Error("Please provide a valid web3AuthClientId in constructor");
     this.isInitialized = false;
     const baseUri = new URL(baseUrl);
     this.config = {
@@ -80,9 +82,8 @@ class CustomAuth {
     const torus = new Torus({
       enableOneKey,
       metadataHost: metadataUrl,
-      allowHost: `${SIGNER_MAP[network]}/api/allow`,
-      signerHost: `${SIGNER_MAP[network]}/api/sign`,
       network,
+      clientId: web3AuthClientId,
     });
     Torus.setAPIKey(apiKey);
     this.torus = torus;
