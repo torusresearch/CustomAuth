@@ -1,16 +1,12 @@
 <template>
-  <div id="app">
-    <div class="mode">
-      <div class="grid text-center justify-center mt-[15%]">
-        <h6 class="mb-2 text-3xl font-bold">demo-customauth.web3auth.io</h6>
-        <h6 class="pb-10 font-semibold text-[#595857]">Note: Login with Redirect mode is recommended</h6>
-        <div>
-          <router-link to="/redirectMode"><button class="btn-login">Login with Redirect Mode</button></router-link>
-          <router-link to="/popupMode"><button class="btn-login">Login with Popup Mode</button></router-link>
-        </div>
-      </div>
+  <div class="grid text-center justify-center mt-[15%]">
+    <h6 class="mb-2 text-3xl font-bold">demo-customauth.web3auth.io</h6>
+    <h6 class="pb-10 text-base font-normal text-[#595857]">Note: Login with Redirect mode is recommended</h6>
+    <div class="flex gap-4">
+      <router-link to="/redirectMode"><button class="custom-btn">Login with Redirect Mode</button></router-link>
+      <router-link to="/popupMode"><button class="custom-btn">Login with Popup Mode</button></router-link>
     </div>
-    <div id="console">
+    <div id="console" class="mt-10">
       <p></p>
     </div>
   </div>
@@ -161,44 +157,6 @@ export default defineComponent({
 });
 </script>
 
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
-/* .mode {
-  display: "flex";
-  flex-direction: "row";
-  justify-content: "center";
-  align-items: "center";
-  margin: 100;
-} */
-/* 
-#console {
-  border: 1px solid black;
-  height: auto;
-  padding: 2px;
-  bottom: 10px;
-  position: absolute;
-  text-align: left;
-  width: calc(100% - 20px);
-  border-radius: 5px;
-}
-#console::before {
-  content: "Console :";
-  position: absolute;
-  top: -20px;
-  font-size: 12px;
-} */
-#console > p {
-  margin: 0.5em;
-}
-
-.btn-login {
-  @apply h-12 w-60 m-2 bg-white rounded-3xl font-[#6F717A] font-medium;
-  border: 1px solid #6f717a;
-}
+<style scoped>
+@import "./views/RedirectMode/Auth.css";
 </style>

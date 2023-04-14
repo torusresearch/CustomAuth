@@ -1,29 +1,44 @@
 <template>
-  <div id="app">
-    <div class="mt-[10%]">
-      <div>
-        <div class="mb-3 font-bold">Verifier</div>
-        <!-- <span>verifier:</span> -->
-        <select v-model="selectedVerifier" class="w-full max-w-xs select select-bordered">
-          <option :key="login" v-for="login in Object.keys(verifierMap)" :value="login">{{ verifierMap[login].name }}</option>
-        </select>
-      </div>
-      <input v-model="login_hint" v-if="selectedVerifier === 'torus_email_passwordless'" placeholder="Enter an email" required class="input-field" />
-      <input v-model="login_hint" v-if="selectedVerifier === 'torus_sms_passwordless'" placeholder="Eg: (+{cc}-{number})" required class="input-field" />
-      <div :style="{ marginTop: '20px' }">
-        <button @click="login" class="btn-login">Login with Torus</button>
-      </div>
-      <p>Please note that the verifiers listed in the example have http://localhost:3000/serviceworker/redirect configured as the redirect uri.</p>
-      <p>If you use any other domains, they won't work.</p>
-      <p>The verifiers listed here only work with the client id's specified in example. Please don't edit them</p>
-      <p>The verifiers listed here are for example reference only. Please don't use them for anything other than testing purposes.</p>
-      <div>
-        Reach out to us at
-        <a href="mailto:hello@tor.us">hello@tor.us</a>
-        or
-        <a href="https://t.me/torusdev">telegram group</a>
-        to get your verifier deployed for your client id.
-      </div>
+  <div class="flex flex-col justify-center items-center text-center mt-[150px]">
+    <div class="mb-3 text-xl font-medium">Verifier</div>
+    <!-- <span>verifier:</span> -->
+    <select v-model="selectedVerifier" class="w-full max-w-xs select select-bordered">
+      <option :key="login" v-for="login in Object.keys(verifierMap)" :value="login">{{ verifierMap[login].name }}</option>
+    </select>
+    <input
+      v-model="login_hint"
+      v-if="selectedVerifier === 'torus_email_passwordless'"
+      placeholder="Enter an email"
+      required
+      class="login-input mt-4 w-[320px] border-app-gray-400 !border"
+    />
+    <input
+      v-model="login_hint"
+      v-if="selectedVerifier === 'torus_sms_passwordless'"
+      placeholder="Eg: (+{cc}-{number})"
+      required
+      class="login-input mt-4 w-[320px] border-app-gray-400 !border"
+    />
+    <div class="my-5 flex gap-4 w-[400px]">
+      <button @click="login()" class="custom-btn">Login with Torus</button>
+      <button @click="onBack" class="custom-btn">Back</button>
+    </div>
+    <ul class="text-sm text-app-gray-700 font-normal mt-4 mb-5">
+      <li>
+        Please note that the verifiers listed in the example have
+        <span class="font-semibold text-app-gray-900">http://localhost:3000/serviceworker/redirect</span>
+        configured as the redirect uri.
+      </li>
+      <li>If you use any other domains, they won't work.</li>
+      <li>The verifiers listed here only work with the client id's specified in example. Please don't edit them</li>
+      <li>The verifiers listed here are for example reference only. Please don't use them for anything other than testing purposes.</li>
+    </ul>
+    <div class="text-base text-app-gray-900 font-medium mt-4 mb-5">
+      Reach out to us at
+      <a class="text-app-primary-600 underline" href="mailto:hello@tor.us">hello@tor.us</a>
+      or
+      <a class="text-app-primary-600 underline" href="https://t.me/torusdev">telegram group</a>
+      to get your verifier deployed for your client id.
     </div>
   </div>
 </template>
@@ -87,7 +102,7 @@ export default defineComponent({
           verifierIdField: "name",
           login_hint: this.login_hint,
           connection: "sms",
-        }
+        },
       };
     },
   },
@@ -115,21 +130,13 @@ export default defineComponent({
         customState: { client: "great-company" },
       });
     },
+    onBack() {
+      this.$router.push("/");
+    },
   },
 });
 </script>
 
 <style scoped>
-.btn-login {
-  @apply h-12 w-40 m-2 bg-white rounded-3xl font-[#6F717A] font-medium;
-  border: 1px solid #6f717a;
-}
-.select-menu {
-  @apply bg-white h-12 w-80 rounded-3xl text-center;
-  border: solid 1px;
-}
-.input-field {
-  @apply bg-white h-12 rounded-xl text-center p-2 mt-4 w-80;
-  border: solid 1px;
-}
+@import "./Auth.css";
 </style>
