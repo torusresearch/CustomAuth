@@ -227,6 +227,12 @@ body,
   flex: 1;
 }
 
+.custom-btn:disabled {
+  cursor: not-allowed;
+  border: 1px solid #bcbcbd;
+  color: #bcbcbd;
+}
+
 .console-btn {
   padding: 4px 10px !important;
   border-radius: 8px !important;

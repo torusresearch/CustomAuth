@@ -252,10 +252,11 @@ export default defineComponent({
       },
       privKey: ((loginDetails as any)?.result?.privateKey as string).padStart(64, "0"),
     });
-    this.provider = providerInstance.provider;
-    console.log(loginDetails);
     this.loginDetails = loginDetails;
-    this.console("Login Details", loginDetails);
+    setTimeout(() => {
+      this.provider = providerInstance.provider;
+      this.console("Login Details", loginDetails);
+    }, 1000);
   },
 });
 </script>
