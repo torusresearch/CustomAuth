@@ -1,6 +1,6 @@
-import { TORUS_NETWORK, TORUS_NETWORK_TYPE } from "@toruslabs/constants";
+import { TORUS_NETWORK } from "@toruslabs/constants";
 import NodeDetailManager from "@toruslabs/fetch-node-details";
-import Torus, { TorusPublicKey } from "@toruslabs/torus.js";
+import Torus, { getPostboxKeyFrom1OutOf1, TorusPublicKey } from "@toruslabs/torus.js";
 import { keccak256 } from "web3-utils";
 
 import createHandler from "./handlers/HandlerFactory";
@@ -52,11 +52,9 @@ class CustomAuth {
 
   proxyRequestURL: string;
 
-  private network: TORUS_NETWORK_TYPE;
-
   constructor({
     baseUrl,
-    network = TORUS_NETWORK.MAINNET,
+    network = TORUS_NETWORK.SAPPHIRE_MAINNET,
     enableLogging = false,
     enableOneKey = false,
     redirectToOpener = false,
@@ -65,10 +63,10 @@ class CustomAuth {
     uxMode = UX_MODE.POPUP,
     locationReplaceOnRedirect = false,
     popupFeatures,
-    metadataUrl = "https://metadata.tor.us",
     storageServerUrl = "https://broadcast-server.tor.us",
     sentry,
     proxyRequestURL,
+    clientId,
   }: CustomAuthArgs) {
     this.proxyRequestURL = proxyRequestURL;
     this.isInitialized = false;
@@ -85,13 +83,12 @@ class CustomAuth {
     };
     const torus = new Torus({
       enableOneKey,
-      metadataHost: metadataUrl,
       network,
+      clientId,
     });
     Torus.setAPIKey(apiKey);
     this.torus = torus;
     this.nodeDetailManager = new NodeDetailManager({ network });
-    this.network = network;
     if (enableLogging) log.enableAll();
     else log.disableAll();
     this.storageHelper = new StorageHelper(storageServerUrl);
@@ -472,7 +469,7 @@ class CustomAuth {
   }
 
   getPostboxKeyFrom1OutOf1(privKey: string, nonce: string): string {
-    return this.torus.getPostboxKeyFrom1OutOf1(privKey, nonce);
+    return getPostboxKeyFrom1OutOf1(this.torus.ec, privKey, nonce);
   }
 
   async getRedirectResult({ replaceUrl = true, clearLoginDetails = true, useTSS = false }: RedirectResultParams = {}): Promise<RedirectResult> {
