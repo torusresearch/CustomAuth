@@ -1,5 +1,5 @@
+import { TORUS_NETWORK, TORUS_NETWORK_TYPE } from "@toruslabs/constants";
 import NodeDetailManager from "@toruslabs/fetch-node-details";
-import { TORUS_NETWORK, TORUS_NETWORK_TYPE } from "@toruslabs/fnd-base";
 import Torus, { TorusPublicKey } from "@toruslabs/torus.js";
 import { keccak256 } from "web3-utils";
 
@@ -25,7 +25,7 @@ import {
 } from "./handlers/interfaces";
 import { registerServiceWorker } from "./registerServiceWorker";
 import SentryHandler from "./sentry";
-import { AGGREGATE_VERIFIER, CONTRACT_MAP, LOGIN, SENTRY_TXNS, TORUS_METHOD, UX_MODE, UX_MODE_TYPE } from "./utils/enums";
+import { AGGREGATE_VERIFIER, LOGIN, SENTRY_TXNS, TORUS_METHOD, UX_MODE, UX_MODE_TYPE } from "./utils/enums";
 import { handleRedirectParameters, isFirefox, padUrlString } from "./utils/helpers";
 import log from "./utils/loglevel";
 import StorageHelper from "./utils/StorageHelper";
@@ -67,7 +67,6 @@ class CustomAuth {
     popupFeatures,
     metadataUrl = "https://metadata.tor.us",
     storageServerUrl = "https://broadcast-server.tor.us",
-    networkUrl,
     sentry,
     proxyRequestURL,
   }: CustomAuthArgs) {
@@ -91,24 +90,15 @@ class CustomAuth {
     });
     Torus.setAPIKey(apiKey);
     this.torus = torus;
-    if (network.startsWith("sapphire")) {
-      // for sapphire
-      this.nodeDetailManager = new NodeDetailManager({ network });
-    } else {
-      // for old networks
-      this.nodeDetailManager = new NodeDetailManager({ network: networkUrl || network, proxyAddress: CONTRACT_MAP[network] });
-    }
+    this.nodeDetailManager = new NodeDetailManager({ network });
     this.network = network;
     if (enableLogging) log.enableAll();
     else log.disableAll();
     this.storageHelper = new StorageHelper(storageServerUrl);
-    this.sentryHandler = new SentryHandler(sentry, networkUrl);
+    this.sentryHandler = new SentryHandler(sentry);
   }
 
   async init({ skipSw = false, skipInit = false, skipPrefetch = false }: InitParams = {}): Promise<void> {
-    if (this.network.startsWith("sapphire")) {
-      await this.nodeDetailManager.getNodeDetails({});
-    }
     this.storageHelper.init();
     if (skipInit) {
       this.isInitialized = true;
@@ -420,10 +410,9 @@ class CustomAuth {
     const nodeTx = this.sentryHandler.startTransaction({
       name: SENTRY_TXNS.FETCH_NODE_DETAILS,
     });
-    // const { torusNodeEndpoints, torusNodePub, torusIndexes } = await this.nodeDetailManager.getNodeDetails({ verifier, verifierId });
+    const nodeDetails = await this.nodeDetailManager.getNodeDetails({ verifier, verifierId });
     this.sentryHandler.finishTransaction(nodeTx);
 
-    const nodeDetails = await this.nodeDetailManager.getNodeDetails({ verifier, verifierId });
     log.debug("torus-direct/getTorusKey", { torusNodeEndpoints: nodeDetails.torusNodeSSSEndpoints });
 
     const pubLookupTx = this.sentryHandler.startTransaction({

@@ -1,4 +1,4 @@
-import { PROXY_CONTRACT_ADDRESS, TORUS_NETWORK } from "@toruslabs/fnd-base";
+import { PROXY_CONTRACT_ADDRESS, TORUS_NETWORK } from "@toruslabs/constants";
 
 export const LOGIN = {
   GOOGLE: "google",
