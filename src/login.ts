@@ -66,8 +66,9 @@ class CustomAuth {
     storageServerUrl = "https://broadcast-server.tor.us",
     sentry,
     proxyRequestURL,
-    clientId,
+    web3AuthClientId,
   }: CustomAuthArgs) {
+    if (!web3AuthClientId) throw Error("Please provide a valid web3AuthClientId in constructor");
     this.proxyRequestURL = proxyRequestURL;
     this.isInitialized = false;
     const baseUri = new URL(baseUrl);
@@ -84,7 +85,7 @@ class CustomAuth {
     const torus = new Torus({
       enableOneKey,
       network,
-      clientId,
+      clientId: web3AuthClientId,
     });
     Torus.setAPIKey(apiKey);
     this.torus = torus;

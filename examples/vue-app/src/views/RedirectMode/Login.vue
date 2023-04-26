@@ -35,6 +35,7 @@ import { defineComponent } from "vue";
 import {
   APPLE,
   AUTH_DOMAIN,
+  WEB3AUTH_CLIENT_ID,
   COGNITO,
   COGNITO_AUTH_DOMAIN,
   EMAIL_PASSWORD,
@@ -97,7 +98,8 @@ export default defineComponent({
       redirectPathName: "auth",
       enableLogging: true,
       uxMode: UX_MODE.REDIRECT,
-      network: "mainnet",
+      network: "sapphire_mainnet",
+      web3AuthClientId: WEB3AUTH_CLIENT_ID,
     });
     this.torusdirectsdk = torusdirectsdk;
     await torusdirectsdk.init({ skipSw: true });

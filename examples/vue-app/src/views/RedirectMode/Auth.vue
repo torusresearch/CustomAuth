@@ -158,6 +158,7 @@ import { EthereumPrivateKeyProvider } from "@web3auth/ethereum-provider";
 import { ec } from "elliptic";
 import { binaryToHex, binaryToUtf8, bufferToBinary, bufferToHex, hexToBinary } from "enc-utils";
 import { defineComponent } from "vue";
+import { WEB3AUTH_CLIENT_ID } from "../../constants";
 
 import { fetchLatestBlock, signEthMessage, signTypedData_v1 } from "../../services/chainHandlers";
 
@@ -277,6 +278,7 @@ export default defineComponent({
       enableLogging: true,
       uxMode: "redirect",
       network: "testnet",
+      web3AuthClientId: WEB3AUTH_CLIENT_ID,
     });
     const loginDetails = await torusdirectsdk.getRedirectResult();
     const providerInstance = await EthereumPrivateKeyProvider.getProviderInstance({

@@ -137,12 +137,6 @@ export interface CustomAuthArgs {
   baseUrl: string;
 
   /**
-   * Web3auth's project client id.
-   *
-   */
-  clientId: string;
-
-  /**
    * Specify a custom metadata host
    * @defaultValue https://metadata.tor.us
    */
@@ -247,6 +241,11 @@ export interface CustomAuthArgs {
    * @defaultValue https://broadcast-server.tor.us
    */
   storageServerUrl?: string;
+
+  /**
+   * Get your Client ID from Web3Auth Dashboard (https://dashboard.web3auth.io)
+   */
+  web3AuthClientId: string;
 
   sentry?: Sentry;
 
