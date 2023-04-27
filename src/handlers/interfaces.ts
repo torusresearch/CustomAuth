@@ -1,4 +1,4 @@
-import { TORUS_NETWORK_TYPE } from "@toruslabs/fetch-node-details";
+import type { TORUS_NETWORK_TYPE } from "@toruslabs/constants";
 
 import { Sentry } from "../sentry";
 import { AGGREGATE_VERIFIER_TYPE, LOGIN_TYPE, TORUS_METHOD_TYPE, UX_MODE_TYPE } from "../utils/enums";
@@ -147,11 +147,6 @@ export interface CustomAuthArgs {
    * @defaultValue mainnet
    */
   network?: TORUS_NETWORK_TYPE;
-
-  /**
-   * Network Url to read blockchain data from (eg: infura url)
-   */
-  networkUrl?: string;
 
   /**
    * This option is used to specify whether to enable logging
