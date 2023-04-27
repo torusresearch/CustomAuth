@@ -1,5 +1,3 @@
-import NodeDetailManager, { TORUS_NETWORK } from "@toruslabs/fetch-node-details";
-
 export const LOGIN = {
   GOOGLE: "google",
   FACEBOOK: "facebook",
@@ -46,14 +44,6 @@ export type AGGREGATE_VERIFIER_TYPE = (typeof AGGREGATE_VERIFIER)[keyof typeof A
 export type UX_MODE_TYPE = (typeof UX_MODE)[keyof typeof UX_MODE];
 export type TORUS_METHOD_TYPE = (typeof TORUS_METHOD)[keyof typeof TORUS_METHOD];
 export type REDIRECT_PARAMS_STORAGE_METHOD_TYPE = (typeof REDIRECT_PARAMS_STORAGE_METHOD)[keyof typeof REDIRECT_PARAMS_STORAGE_METHOD];
-
-export const CONTRACT_MAP = {
-  [TORUS_NETWORK.MAINNET]: NodeDetailManager.PROXY_ADDRESS_MAINNET,
-  [TORUS_NETWORK.TESTNET]: NodeDetailManager.PROXY_ADDRESS_TESTNET,
-  [TORUS_NETWORK.CYAN]: NodeDetailManager.PROXY_ADDRESS_CYAN,
-  [TORUS_NETWORK.AQUA]: NodeDetailManager.PROXY_ADDRESS_AQUA,
-  [TORUS_NETWORK.CELESTE]: NodeDetailManager.PROXY_ADDRESS_CELESTE,
-};
 
 export const SENTRY_TXNS = {
   FETCH_NODE_DETAILS: "fetchNodeDetails",
