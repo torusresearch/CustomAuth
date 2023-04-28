@@ -34,11 +34,11 @@ class StorageHelper {
   async storeLoginDetails(params: LoginDetails, scope: string): Promise<void> {
     if (!this.isInitialized) throw new Error("StorageHelper is not initialized");
     if (this.currentStorageMethod === REDIRECT_PARAMS_STORAGE_METHOD.SERVER) {
-      const privKey = keccak256(scope);
+      const privKey = keccak256(Buffer.from(scope, "utf8"));
       const privKeyHex = privKey.toString("hex");
       const publicKeyHex = getPublic(privKey).toString("hex");
       const encData = await encryptData(privKeyHex, params);
-      const signature = (await sign(privKey, keccak256(encData))).toString("hex");
+      const signature = (await sign(privKey, keccak256(Buffer.from(encData, "utf8")))).toString("hex");
       await post(`${this.storageServerUrl}/store/set`, { key: publicKeyHex, data: encData, signature });
     } else {
       window.localStorage.setItem(`torus_login_${scope}`, JSON.stringify(params));
@@ -48,7 +48,7 @@ class StorageHelper {
   async retrieveLoginDetails(scope: string): Promise<LoginDetails> {
     if (!this.isInitialized) throw new Error("StorageHelper is not initialized");
     if (this.currentStorageMethod === REDIRECT_PARAMS_STORAGE_METHOD.SERVER) {
-      const privKey = keccak256(scope);
+      const privKey = keccak256(Buffer.from(scope, "utf8"));
       const privKeyHex = privKey.toString("hex");
       const publicKeyHex = getPublic(privKey).toString("hex");
       try {

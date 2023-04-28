@@ -1,7 +1,6 @@
 import { TORUS_NETWORK } from "@toruslabs/constants";
 import { NodeDetailManager } from "@toruslabs/fetch-node-details";
-import Torus from "@toruslabs/torus.js";
-import { keccak256 } from "web3-utils";
+import Torus, { keccak256 } from "@toruslabs/torus.js";
 
 import createHandler from "./handlers/HandlerFactory";
 import {
@@ -280,7 +279,7 @@ class CustomAuth {
       extraVerifierParams = userInfo.extraVerifierParams;
     }
     aggregateIdTokenSeeds.sort();
-    const aggregateIdToken = keccak256(aggregateIdTokenSeeds.join(String.fromCharCode(29))).slice(2);
+    const aggregateIdToken = keccak256(Buffer.from(aggregateIdTokenSeeds.join(String.fromCharCode(29)), "utf8")).slice(2);
     aggregateVerifierParams.verifier_id = aggregateVerifierId;
     const torusKey = await this.getTorusKey(verifierIdentifier, aggregateVerifierId, aggregateVerifierParams, aggregateIdToken, extraVerifierParams);
     return {
@@ -360,7 +359,7 @@ class CustomAuth {
       aggregateVerifierId = userInfo.verifierId; // using last because idk
     }
     aggregateIdTokenSeeds.sort();
-    const aggregateIdToken = keccak256(aggregateIdTokenSeeds.join(String.fromCharCode(29))).slice(2);
+    const aggregateIdToken = keccak256(Buffer.from(aggregateIdTokenSeeds.join(String.fromCharCode(29)), "utf8")).slice(2);
     aggregateVerifierParams.verifier_id = aggregateVerifierId;
     const torusKey2Promise = this.getTorusKey(
       verifierIdentifier,
@@ -439,7 +438,7 @@ class CustomAuth {
       extraVerifierParams = userInfo.extraVerifierParams;
     }
     aggregateIdTokenSeeds.sort();
-    const aggregateIdToken = keccak256(aggregateIdTokenSeeds.join(String.fromCharCode(29))).slice(2);
+    const aggregateIdToken = keccak256(Buffer.from(aggregateIdTokenSeeds.join(String.fromCharCode(29)), "utf8")).slice(2);
     aggregateVerifierParams.verifier_id = verifierId;
     return this.getTorusKey(verifier, verifierId, aggregateVerifierParams, aggregateIdToken, extraVerifierParams);
   }
