@@ -34,7 +34,7 @@
     "@chaitanyapotti/register-service-worker": "^1.7.3",
     "@toruslabs/broadcast-channel": "^6.2.0",
     "@toruslabs/eccrypto": "^2.1.1",
-    "@toruslabs/torus.js": "file:./toruslabs-torus.js-6.2.0.tgz",
+    "@toruslabs/torus.js": "file:./toruslabs-torus.js-7.1.0.tgz",
     "@toruslabs/constants": "^9.0.0",
     "@toruslabs/fetch-node-details": "^9.0.0",
     "@toruslabs/http-helpers": "^3.3.0",

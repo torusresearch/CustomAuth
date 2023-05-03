@@ -81,6 +81,7 @@ export interface TorusKey extends TorusKeyPub {
   publicAddress: string;
   privateKey: string;
   signatures: string[];
+  sessionAuthKey: string;
   metadataNonce: string;
 }
 

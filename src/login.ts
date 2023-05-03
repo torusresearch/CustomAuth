@@ -199,6 +199,7 @@ class CustomAuth {
         },
         publicAddress: torusPubKey.address,
         privateKey: null,
+        sessionAuthKey: null,
         metadataNonce: null,
         signatures: [],
       };
@@ -428,7 +429,7 @@ class CustomAuth {
     this.sentryHandler.finishTransaction(sharesTx);
     log.debug("torus-direct/getTorusKey", { retrieveShares: shares });
 
-    const signatures = (shares.sessionTokensData || []).map((x) => {
+    const signatures = (shares.sessionTokenData || []).map((x) => {
       if (!x) return null;
       return JSON.stringify({
         data: x.token,
@@ -443,6 +444,7 @@ class CustomAuth {
         pub_key_X: shares.X,
         pub_key_Y: shares.Y,
       },
+      sessionAuthKey: shares.sessionAuthKey,
       signatures,
     };
   }
