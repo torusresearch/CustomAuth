@@ -32,13 +32,13 @@
   },
   "dependencies": {
     "@chaitanyapotti/register-service-worker": "^1.7.3",
-    "@toruslabs/broadcast-channel": "^6.3.0",
-    "@toruslabs/constants": "^9.0.1",
-    "@toruslabs/eccrypto": "^2.1.1",
-    "@toruslabs/fetch-node-details": "^9.0.1",
-    "@toruslabs/http-helpers": "^3.4.0",
-    "@toruslabs/metadata-helpers": "^3.2.0",
-    "@toruslabs/torus.js": "^7.1.0",
+    "@toruslabs/broadcast-channel": "^7.0.0",
+    "@toruslabs/constants": "^10.0.0",
+    "@toruslabs/eccrypto": "^3.0.0",
+    "@toruslabs/fetch-node-details": "^10.0.0",
+    "@toruslabs/http-helpers": "^4.0.0",
+    "@toruslabs/metadata-helpers": "^4.0.0",
+    "@toruslabs/torus.js": "^8.0.0",
     "bowser": "^2.11.0",
     "events": "^3.3.0",
     "jwt-decode": "^3.1.2",
@@ -47,11 +47,11 @@
   },
   "devDependencies": {
     "@sentry/types": "^7.50.0",
-    "@toruslabs/eslint-config-typescript": "^1.4.3",
-    "@toruslabs/torus-scripts": "^3.0.8",
+    "@toruslabs/eslint-config-typescript": "^2.0.0",
+    "@toruslabs/torus-scripts": "^4.0.0",
     "@types/lodash.merge": "^4.6.7",
-    "@typescript-eslint/eslint-plugin": "^5.59.1",
-    "@typescript-eslint/parser": "^5.59.1",
+    "@typescript-eslint/eslint-plugin": "^5.59.2",
+    "@typescript-eslint/parser": "^5.59.2",
     "eslint": "^8.39.0",
     "eslint-plugin-import": "^2.27.5",
     "eslint-plugin-mocha": "^10.1.0",
@@ -95,7 +95,7 @@
     "direct auth"
   ],
   "engines": {
-    "node": ">=14.17.0",
-    "npm": ">=6.x"
+    "node": ">=16.18.1",
+    "npm": ">=8.x"
   }
 }
