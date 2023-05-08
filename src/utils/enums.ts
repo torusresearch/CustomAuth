@@ -1,5 +1,3 @@
-import { PROXY_CONTRACT_ADDRESS, TORUS_NETWORK } from "@toruslabs/constants";
-
 export const LOGIN = {
   GOOGLE: "google",
   FACEBOOK: "facebook",
@@ -46,14 +44,6 @@ export type AGGREGATE_VERIFIER_TYPE = (typeof AGGREGATE_VERIFIER)[keyof typeof A
 export type UX_MODE_TYPE = (typeof UX_MODE)[keyof typeof UX_MODE];
 export type TORUS_METHOD_TYPE = (typeof TORUS_METHOD)[keyof typeof TORUS_METHOD];
 export type REDIRECT_PARAMS_STORAGE_METHOD_TYPE = (typeof REDIRECT_PARAMS_STORAGE_METHOD)[keyof typeof REDIRECT_PARAMS_STORAGE_METHOD];
-
-export const CONTRACT_MAP = {
-  [TORUS_NETWORK.MAINNET]: PROXY_CONTRACT_ADDRESS.mainnet,
-  [TORUS_NETWORK.TESTNET]: PROXY_CONTRACT_ADDRESS.testnet,
-  [TORUS_NETWORK.CYAN]: PROXY_CONTRACT_ADDRESS.cyan,
-  [TORUS_NETWORK.AQUA]: PROXY_CONTRACT_ADDRESS.aqua,
-  [TORUS_NETWORK.CELESTE]: PROXY_CONTRACT_ADDRESS.celeste,
-};
 
 export const SENTRY_TXNS = {
   FETCH_NODE_DETAILS: "fetchNodeDetails",
