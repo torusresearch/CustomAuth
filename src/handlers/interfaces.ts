@@ -249,8 +249,6 @@ export interface CustomAuthArgs {
   web3AuthClientId: string;
 
   sentry?: Sentry;
-
-  proxyRequestURL?: string;
 }
 
 export interface InitParams {
@@ -409,7 +407,6 @@ export interface CreateHandlerParams {
 export interface RedirectResultParams {
   replaceUrl?: boolean;
   clearLoginDetails?: boolean;
-  useTSS?: boolean;
 }
 
 export type SingleLoginParams = SubVerifierDetails & { registerOnly?: boolean };

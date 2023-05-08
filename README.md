@@ -28,11 +28,10 @@ Checkout the example of `CustomAuth` in our [examples directory.](https://github
 
 ### Bundling
 
-This module is distributed in 4 formats
+This module is distributed in 3 formats
 
 - `esm` build `dist/customauth.esm.js` in es6 format
 - `commonjs` build `dist/customauth.cjs.js` in es5 format
-- `commonjs` build `dist/customauth-bundled.cjs.js` in es5 format with problematic packages bundled (benfits non-webpack users)
 - `umd` build `dist/customauth.umd.min.js` in es5 format without polyfilling corejs minified
 
 By default, the appropriate format is used for your specified usecase
@@ -164,8 +163,8 @@ Please refer to examples
 
 Hosted Example for testing
 
-- [Popup Flow](https://vue-direct.tor.us/)
-- [Redirect Flow](https://vue-redirect.tor.us/)
+- [Popup Flow](https://demo-customauth.tor.us/)
+- [Redirect Flow](https://demo-customauth.tor.us/)
 
 ## Info
 
@@ -248,6 +247,6 @@ For other verifiers,
 ## Requirements
 
 - This package requires a peer dependency of `@babel/runtime`
-- Node 14+
+- Node 16+
 
 > Note: If you are using the `redirectToOpener` option, you _must_ update your redirect.html to [allow whitelisted URIs](serviceworker/redirect.html#L222)
