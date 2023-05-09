@@ -163,13 +163,11 @@ class CustomAuth {
       const nodeTx = this.sentryHandler.startTransaction({
         name: SENTRY_TXNS.FETCH_NODE_DETAILS,
       });
+      const nodeDetails = await this.nodeDetailManager.getNodeDetails({ verifier, verifierId: userInfo.verifierId });
       this.sentryHandler.finishTransaction(nodeTx);
       const lookupTx = this.sentryHandler.startTransaction({
         name: SENTRY_TXNS.PUB_ADDRESS_LOOKUP,
       });
-
-      const nodeDetails = await this.nodeDetailManager.getNodeDetails({ verifier, verifierId: userInfo.verifierId });
-
       const torusPubKey = (await this.torus.getPublicAddress(
         nodeDetails.torusNodeSSSEndpoints,
         { verifier, verifierId: userInfo.verifierId },
@@ -396,11 +394,6 @@ class CustomAuth {
 
     log.debug("torus-direct/getTorusKey", { torusNodeEndpoints: nodeDetails.torusNodeSSSEndpoints });
 
-    const pubLookupTx = this.sentryHandler.startTransaction({
-      name: SENTRY_TXNS.PUB_ADDRESS_LOOKUP,
-    });
-    this.sentryHandler.finishTransaction(pubLookupTx);
-
     const sharesTx = this.sentryHandler.startTransaction({
       name: SENTRY_TXNS.FETCH_SHARES,
     });
@@ -418,9 +411,9 @@ class CustomAuth {
       });
     });
     return {
-      publicAddress: shares.ethAddress.toString(),
-      privateKey: shares.privKey.toString(),
-      metadataNonce: shares.metadataNonce.toString("hex"),
+      publicAddress: shares.ethAddress,
+      privateKey: shares.privKey,
+      metadataNonce: shares.metadataNonce.toString(16, 64),
       pubKey: {
         pub_key_X: shares.X,
         pub_key_Y: shares.Y,

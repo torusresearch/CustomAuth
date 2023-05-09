@@ -432,8 +432,3 @@ export interface RedirectResult {
   hashParameters?: Record<string, string>;
   args: SingleLoginParams | AggregateLoginParams | HybridAggregateLoginParams;
 }
-
-export type PointHex = {
-  x: string | null;
-  y: string | null;
-};
