@@ -25,7 +25,8 @@ export default class WebAuthnHandler extends AbstractLoginHandler {
   }
 
   setFinalUrl(): void {
-    const finalUrl = new URL("https://webauthn.openlogin.com");
+    const { webauthnURL } = this.customState || {};
+    const finalUrl = webauthnURL ? new URL(webauthnURL) : new URL("https://webauthn.openlogin.com");
     const clonedParams = JSON.parse(JSON.stringify(this.jwtParams || {}));
     const finalJwtParams = deepmerge(
       {

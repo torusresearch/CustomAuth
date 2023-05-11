@@ -1,4 +1,4 @@
-import type { TORUS_NETWORK_TYPE } from "@toruslabs/constants";
+import { TORUS_SAPPHIRE_NETWORK_TYPE } from "@toruslabs/constants";
 
 import { Sentry } from "../sentry";
 import { AGGREGATE_VERIFIER_TYPE, LOGIN_TYPE, TORUS_METHOD_TYPE, UX_MODE_TYPE } from "../utils/enums";
@@ -80,8 +80,9 @@ export interface TorusKeyPub {
 export interface TorusKey extends TorusKeyPub {
   publicAddress: string;
   privateKey: string;
+  signatures: string[];
+  sessionAuthKey: string;
   metadataNonce: string;
-  typeOfUser: "v1" | "v2";
 }
 
 export interface TorusAggregateVerifierResponse {
@@ -146,7 +147,7 @@ export interface CustomAuthArgs {
    * Torus Network to target options: mainnet | testnet | cyan | aqua
    * @defaultValue mainnet
    */
-  network?: TORUS_NETWORK_TYPE;
+  network?: TORUS_SAPPHIRE_NETWORK_TYPE;
 
   /**
    * This option is used to specify whether to enable logging
