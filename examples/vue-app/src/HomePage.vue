@@ -19,6 +19,7 @@ import { defineComponent } from "vue";
 import {
   APPLE,
   AUTH_DOMAIN,
+  WEB3AUTH_CLIENT_ID,
   COGNITO,
   COGNITO_AUTH_DOMAIN,
   EMAIL_PASSWORD,
@@ -31,6 +32,7 @@ import {
   verifierMap,
   WEIBO,
 } from "./constants";
+import { TORUS_SAPPHIRE_NETWORK } from "@toruslabs/constants";
 
 export default defineComponent({
   name: "HomePage",
@@ -140,7 +142,8 @@ export default defineComponent({
       const torusdirectsdk = new TorusSdk({
         baseUrl: `${location.origin}/serviceworker`,
         enableLogging: true,
-        network: "testnet", // details for test net
+        network: TORUS_SAPPHIRE_NETWORK.SAPPHIRE_DEVNET, // details for test net
+        web3AuthClientId: WEB3AUTH_CLIENT_ID,
       });
       await torusdirectsdk.init({ skipSw: false });
       this.torusdirectsdk = torusdirectsdk;

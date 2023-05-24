@@ -146,6 +146,7 @@ import { defineComponent } from "vue";
 import {
   APPLE,
   AUTH_DOMAIN,
+  WEB3AUTH_CLIENT_ID,
   COGNITO,
   COGNITO_AUTH_DOMAIN,
   EMAIL_PASSWORD,
@@ -162,6 +163,7 @@ import {
   WEIBO,
 } from "../../constants";
 import { fetchLatestBlock, signEthMessage, signTypedData_v1 } from "../../services/chainHandlers";
+import { TORUS_SAPPHIRE_NETWORK } from "@toruslabs/constants";
 
 export default defineComponent({
   name: "PopupLogin",
@@ -345,7 +347,7 @@ export default defineComponent({
     },
 
     getStarkAccount(index: number): ec.KeyPair {
-      const account = getStarkHDAccount((this.loginResponse?.privateKey as string).padStart(64, "0"), index, STARKNET_NETWORKS.testnet);
+      const account = getStarkHDAccount((this.loginResponse?.privateKey as string)?.padStart(64, "0"), index, STARKNET_NETWORKS.testnet);
       return account;
     },
 
@@ -425,8 +427,9 @@ export default defineComponent({
         uxMode: UX_MODE.POPUP,
         baseUrl: `${location.origin}/serviceworker`,
         enableLogging: true,
-        network: "testnet", // details for test net
+        network: TORUS_SAPPHIRE_NETWORK.SAPPHIRE_DEVNET, // details for test net
         popupFeatures: `titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=500,width=500,top=100,left=100`,
+        web3AuthClientId: WEB3AUTH_CLIENT_ID,
       });
       // note: Due to browser restrictions on popups, you should reduce the time taken
       // between user interaction and the login popups being opened. This is highly browser dependent,

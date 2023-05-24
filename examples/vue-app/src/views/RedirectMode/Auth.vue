@@ -96,8 +96,10 @@ import { EthereumPrivateKeyProvider } from "@web3auth/ethereum-provider";
 import { ec } from "elliptic";
 import { binaryToHex, binaryToUtf8, bufferToBinary, bufferToHex, hexToBinary } from "enc-utils";
 import { defineComponent } from "vue";
+import { WEB3AUTH_CLIENT_ID } from "../../constants";
 
 import { fetchLatestBlock, signEthMessage, signTypedData_v1 } from "../../services/chainHandlers";
+import { TORUS_SAPPHIRE_NETWORK } from "@toruslabs/constants";
 
 export default defineComponent({
   name: "Auth",
@@ -146,7 +148,7 @@ export default defineComponent({
 
     getStarkAccount(index: number): ec.KeyPair {
       const account = getStarkHDAccount(
-        ((this.loginDetails as any)?.result?.privateKey as string).padStart(64, "0"),
+        ((this.loginDetails as any)?.result?.privateKey as string)?.padStart(64, "0"),
         index,
         STARKNET_NETWORKS.testnet
       );
@@ -238,7 +240,8 @@ export default defineComponent({
       redirectPathName: "auth",
       enableLogging: true,
       uxMode: "redirect",
-      network: "testnet",
+      network: TORUS_SAPPHIRE_NETWORK.SAPPHIRE_DEVNET,
+      web3AuthClientId: WEB3AUTH_CLIENT_ID,
     });
     const loginDetails = await torusdirectsdk.getRedirectResult();
     const providerInstance = await EthereumPrivateKeyProvider.getProviderInstance({
@@ -250,7 +253,7 @@ export default defineComponent({
         displayName: "Polygon Mainnet",
         blockExplorer: "https://polygonscan.com",
       },
-      privKey: ((loginDetails as any)?.result?.privateKey as string).padStart(64, "0"),
+      privKey: ((loginDetails as any)?.result?.privateKey as string)?.padStart(64, "0"),
     });
     this.loginDetails = loginDetails;
     setTimeout(() => {

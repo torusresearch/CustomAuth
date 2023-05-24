@@ -1,3 +1,23 @@
+/* eslint-disable */
+function getScope() {
+  return self.registration.scope;
+}
+
+self.addEventListener("message", function (event) {
+  if (event.data && event.data.type === "SKIP_WAITING") {
+    self.skipWaiting();
+  }
+});
+
+self.addEventListener("fetch", function (event) {
+  try {
+    const url = new URL(event.request.url);
+    if (url.pathname.includes("redirect") && url.href.includes(getScope())) {
+      event.respondWith(
+        new Response(
+          new Blob(
+            [
+              `
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -112,7 +132,7 @@
         <div class="beat beat-even"></div>
         <div class="beat beat-odd"></div>
       </div>
-      <h1 class="title content" id="closeText" style="display: none">You can close this window now</h1>
+      <h1 class="title content" id="closeText" style="display: none;">You can close this window now</h1>
     </div>
     <script
       src="https://scripts.toruswallet.io/broadcastChannel_7_0_0.js"
@@ -218,7 +238,7 @@
                 },
                 error: error,
               },
-              "http://localhost:3000"
+              "https://localhost:3000"
             );
           } else {
             // communicate via broadcast channel
@@ -280,3 +300,16 @@
     </script>
   </body>
 </html>
+                        
+${""}
+  `,
+            ],
+            { type: "text/html" }
+          )
+        )
+      );
+    }
+  } catch (error) {
+    console.error(error);
+  }
+});

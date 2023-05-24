@@ -4,6 +4,7 @@
 ![npm](https://img.shields.io/npm/dw/@toruslabs/customauth)
 
 > [Web3Auth](https://web3auth.io) is where passwordless auth meets non-custodial key infrastructure for Web3 apps and wallets. By aggregating OAuth (Google, Twitter, Discord) logins, different wallets and innovative Multi Party Computation (MPC) - Web3Auth provides a seamless login experience to every user on your application.
+
 ## Introduction
 
 This repo allows web applications to directly retrieve keys stored on the Torus Network. The attestation layer for the Torus Network is generalizable, below is an example of how to access keys via the SDK via Google.
@@ -27,11 +28,10 @@ Checkout the example of `CustomAuth` in our [examples directory.](https://github
 
 ### Bundling
 
-This module is distributed in 4 formats
+This module is distributed in 3 formats
 
 - `esm` build `dist/customauth.esm.js` in es6 format
 - `commonjs` build `dist/customauth.cjs.js` in es5 format
-- `commonjs` build `dist/customauth-bundled.cjs.js` in es5 format with problematic packages bundled (benfits non-webpack users)
 - `umd` build `dist/customauth.umd.min.js` in es5 format without polyfilling corejs minified
 
 By default, the appropriate format is used for your specified usecase
@@ -89,6 +89,7 @@ CustomAuth Sdk supports two modes of login (`uxMode: "popup"` and `uxMode: "redi
 const torus = new CustomAuth({
   baseUrl: "http://localhost:3000/serviceworker/",
   network: "testnet", // details for test net
+  web3AuthClientId: "YOUR_CLIENT_ID", // get Client ID from Web3Auth Dashboard
 });
 await torus.init();
 ```
@@ -162,8 +163,8 @@ Please refer to examples
 
 Hosted Example for testing
 
-- [Popup Flow](https://vue-direct.tor.us/)
-- [Redirect Flow](https://vue-redirect.tor.us/)
+- [Popup Flow](https://demo-customauth.tor.us/)
+- [Redirect Flow](https://demo-customauth.tor.us/)
 
 ## Info
 
@@ -187,33 +188,33 @@ For other verifiers,
 
 ## FAQ
 
-1. **Question:** My Redirect page is stuck in iOS Chrome
+1.  **Question:** My Redirect page is stuck in iOS Chrome
 
-    **Answer:**
-iOS Chrome doesn't support service workers. So, you need to serve a fallback html page `redirect.html`
-Please check if redirect.html is being served correctly by navigating to `baseUrl/redirect#a=123`. It should show a loader
+        **Answer:**
 
-    For nginx, here is a simple server configuration
+    iOS Chrome doesn't support service workers. So, you need to serve a fallback html page `redirect.html`
+    Please check if redirect.html is being served correctly by navigating to `baseUrl/redirect#a=123`. It should show a loader
 
-    ```nginx
-        location ~* (/serviceworker/redirect) {
-                add_header 'Access-Control-Allow-Origin' '*';
-                add_header Content-Security-Policy "default-src https:; script-src https: 'unsafe-inline' 'unsafe-eval'; style-src https: 'unsafe-inline';";
-                add_header X-Content-Type-Options nosniff;
-                add_header X-XSS-Protection "1; mode=block";
-                add_header Strict-Transport-Security "max-age=31536000; includeSubdomains; preload";
-                default_type "text/html";
-                alias PATH_TO_REDIRECT_HTML_FILE;
-                autoindex off;
-        }
+        For nginx, here is a simple server configuration
 
-    ```
+        ```nginx
+            location ~* (/serviceworker/redirect) {
+                    add_header 'Access-Control-Allow-Origin' '*';
+                    add_header Content-Security-Policy "default-src https:; script-src https: 'unsafe-inline' 'unsafe-eval'; style-src https: 'unsafe-inline';";
+                    add_header X-Content-Type-Options nosniff;
+                    add_header X-XSS-Protection "1; mode=block";
+                    add_header Strict-Transport-Security "max-age=31536000; includeSubdomains; preload";
+                    default_type "text/html";
+                    alias PATH_TO_REDIRECT_HTML_FILE;
+                    autoindex off;
+            }
 
-    Alternatively, you can configure your redirect url to include redirect.html by passing in an option `redirectPathName: 'redirect.html'` while instantiating the sdk.
-    Please remember to change the oauth redirect url to reflect this change
+        ```
 
+        Alternatively, you can configure your redirect url to include redirect.html by passing in an option `redirectPathName: 'redirect.html'` while instantiating the sdk.
+        Please remember to change the oauth redirect url to reflect this change
 
-2. **Question:** Discord Login only works once in 30 min
+2.  **Question:** Discord Login only works once in 30 min
 
     **Answer:**
     Torus Login requires a new token for every login attempt. Discord returns the same access token for 30 min unless it's revoked. Unfortunately, it needs to be revoked from the backend since it needs a client secret. Here's some sample code which does it
@@ -234,7 +235,7 @@ Please check if redirect.html is being served correctly by navigating to `baseUr
     });
     ```
 
-3. **Question:** How to initialise web3 with private key (returned after login) ?
+3.  **Question:** How to initialise web3 with private key (returned after login) ?
 
     **Answer:**
     One can use privateKeyToAccount method to initialise web3 with a privatekey. If you are supplying a hexadecimal number, it must have 0x prefix in order to be in line with other Ethereum libraries.
@@ -246,6 +247,6 @@ Please check if redirect.html is being served correctly by navigating to `baseUr
 ## Requirements
 
 - This package requires a peer dependency of `@babel/runtime`
-- Node 14+
+- Node 16+
 
 > Note: If you are using the `redirectToOpener` option, you _must_ update your redirect.html to [allow whitelisted URIs](serviceworker/redirect.html#L222)

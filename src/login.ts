@@ -1,6 +1,6 @@
-import NodeDetailManager, { TORUS_NETWORK } from "@toruslabs/fetch-node-details";
-import Torus from "@toruslabs/torus.js";
-import { keccak256 } from "web3-utils";
+import { TORUS_NETWORK } from "@toruslabs/constants";
+import { NodeDetailManager } from "@toruslabs/fetch-node-details";
+import Torus, { getPostboxKeyFrom1OutOf1, keccak256, TorusPublicKey } from "@toruslabs/torus.js";
 
 import createHandler from "./handlers/HandlerFactory";
 import {
@@ -24,7 +24,7 @@ import {
 } from "./handlers/interfaces";
 import { registerServiceWorker } from "./registerServiceWorker";
 import SentryHandler from "./sentry";
-import { AGGREGATE_VERIFIER, CONTRACT_MAP, LOGIN, SENTRY_TXNS, SIGNER_MAP, TORUS_METHOD, UX_MODE, UX_MODE_TYPE } from "./utils/enums";
+import { AGGREGATE_VERIFIER, LOGIN, SENTRY_TXNS, TORUS_METHOD, UX_MODE, UX_MODE_TYPE } from "./utils/enums";
 import { handleRedirectParameters, isFirefox, padUrlString } from "./utils/helpers";
 import log from "./utils/loglevel";
 import StorageHelper from "./utils/StorageHelper";
@@ -51,20 +51,19 @@ class CustomAuth {
 
   constructor({
     baseUrl,
-    network = TORUS_NETWORK.MAINNET,
+    network = TORUS_NETWORK.SAPPHIRE_MAINNET,
     enableLogging = false,
-    enableOneKey = false,
     redirectToOpener = false,
     redirectPathName = "redirect",
     apiKey = "torus-default",
     uxMode = UX_MODE.POPUP,
     locationReplaceOnRedirect = false,
     popupFeatures,
-    metadataUrl = "https://metadata.tor.us",
     storageServerUrl = "https://broadcast-server.tor.us",
-    networkUrl,
     sentry,
+    web3AuthClientId,
   }: CustomAuthArgs) {
+    if (!web3AuthClientId) throw Error("Please provide a valid web3AuthClientId in constructor");
     this.isInitialized = false;
     const baseUri = new URL(baseUrl);
     this.config = {
@@ -78,19 +77,16 @@ class CustomAuth {
       popupFeatures,
     };
     const torus = new Torus({
-      enableOneKey,
-      metadataHost: metadataUrl,
-      allowHost: `${SIGNER_MAP[network]}/api/allow`,
-      signerHost: `${SIGNER_MAP[network]}/api/sign`,
       network,
+      clientId: web3AuthClientId,
     });
     Torus.setAPIKey(apiKey);
     this.torus = torus;
-    this.nodeDetailManager = new NodeDetailManager({ network: networkUrl || network, proxyAddress: CONTRACT_MAP[network] });
+    this.nodeDetailManager = new NodeDetailManager({ network });
     if (enableLogging) log.enableAll();
     else log.disableAll();
     this.storageHelper = new StorageHelper(storageServerUrl);
-    this.sentryHandler = new SentryHandler(sentry, networkUrl);
+    this.sentryHandler = new SentryHandler(sentry);
   }
 
   async init({ skipSw = false, skipInit = false, skipPrefetch = false }: InitParams = {}): Promise<void> {
@@ -167,12 +163,16 @@ class CustomAuth {
       const nodeTx = this.sentryHandler.startTransaction({
         name: SENTRY_TXNS.FETCH_NODE_DETAILS,
       });
-      const { torusNodeEndpoints, torusNodePub } = await this.nodeDetailManager.getNodeDetails({ verifier, verifierId: userInfo.verifierId });
+      const nodeDetails = await this.nodeDetailManager.getNodeDetails({ verifier, verifierId: userInfo.verifierId });
       this.sentryHandler.finishTransaction(nodeTx);
       const lookupTx = this.sentryHandler.startTransaction({
         name: SENTRY_TXNS.PUB_ADDRESS_LOOKUP,
       });
-      const torusPubKey = await this.torus.getPublicAddress(torusNodeEndpoints, torusNodePub, { verifier, verifierId: userInfo.verifierId }, true);
+      const torusPubKey = (await this.torus.getPublicAddress(
+        nodeDetails.torusNodeSSSEndpoints,
+        { verifier, verifierId: userInfo.verifierId },
+        true
+      )) as TorusPublicKey;
       this.sentryHandler.finishTransaction(lookupTx);
       const res = {
         userInfo: {
@@ -184,14 +184,15 @@ class CustomAuth {
         throw new Error("should have returned extended pub key");
       }
       const torusKey: TorusKey = {
-        typeOfUser: torusPubKey.typeOfUser,
         pubKey: {
           pub_key_X: torusPubKey.X,
           pub_key_Y: torusPubKey.Y,
         },
         publicAddress: torusPubKey.address,
         privateKey: null,
+        sessionAuthKey: null,
         metadataNonce: null,
+        signatures: [],
       };
       return { ...res, ...torusKey };
     }
@@ -279,7 +280,7 @@ class CustomAuth {
       extraVerifierParams = userInfo.extraVerifierParams;
     }
     aggregateIdTokenSeeds.sort();
-    const aggregateIdToken = keccak256(aggregateIdTokenSeeds.join(String.fromCharCode(29))).slice(2);
+    const aggregateIdToken = keccak256(Buffer.from(aggregateIdTokenSeeds.join(String.fromCharCode(29)), "utf8")).slice(2);
     aggregateVerifierParams.verifier_id = aggregateVerifierId;
     const torusKey = await this.getTorusKey(verifierIdentifier, aggregateVerifierId, aggregateVerifierParams, aggregateIdToken, extraVerifierParams);
     return {
@@ -359,7 +360,7 @@ class CustomAuth {
       aggregateVerifierId = userInfo.verifierId; // using last because idk
     }
     aggregateIdTokenSeeds.sort();
-    const aggregateIdToken = keccak256(aggregateIdTokenSeeds.join(String.fromCharCode(29))).slice(2);
+    const aggregateIdToken = keccak256(Buffer.from(aggregateIdTokenSeeds.join(String.fromCharCode(29)), "utf8")).slice(2);
     aggregateVerifierParams.verifier_id = aggregateVerifierId;
     const torusKey2Promise = this.getTorusKey(
       verifierIdentifier,
@@ -388,37 +389,37 @@ class CustomAuth {
     const nodeTx = this.sentryHandler.startTransaction({
       name: SENTRY_TXNS.FETCH_NODE_DETAILS,
     });
-    const { torusNodeEndpoints, torusNodePub, torusIndexes } = await this.nodeDetailManager.getNodeDetails({ verifier, verifierId });
+    const nodeDetails = await this.nodeDetailManager.getNodeDetails({ verifier, verifierId });
     this.sentryHandler.finishTransaction(nodeTx);
-    log.debug("torus-direct/getTorusKey", { torusNodeEndpoints, torusNodePub, torusIndexes });
 
-    const pubLookupTx = this.sentryHandler.startTransaction({
-      name: SENTRY_TXNS.PUB_ADDRESS_LOOKUP,
-    });
-    const address = await this.torus.getPublicAddress(torusNodeEndpoints, torusNodePub, { verifier, verifierId }, true);
-    this.sentryHandler.finishTransaction(pubLookupTx);
-    if (typeof address === "string") throw new Error("must use extended pub key");
-    log.debug("torus-direct/getTorusKey", { getPublicAddress: address });
+    log.debug("torus-direct/getTorusKey", { torusNodeEndpoints: nodeDetails.torusNodeSSSEndpoints });
 
     const sharesTx = this.sentryHandler.startTransaction({
       name: SENTRY_TXNS.FETCH_SHARES,
     });
-    const shares = await this.torus.retrieveShares(torusNodeEndpoints, torusIndexes, verifier, verifierParams, idToken, additionalParams);
+    const shares = await this.torus.retrieveShares(nodeDetails.torusNodeSSSEndpoints, verifier, verifierParams, idToken, {
+      ...additionalParams,
+    });
     this.sentryHandler.finishTransaction(sharesTx);
-    if (shares.ethAddress.toLowerCase() !== address.address.toLowerCase()) {
-      throw new Error("data ethAddress does not match response address");
-    }
     log.debug("torus-direct/getTorusKey", { retrieveShares: shares });
 
+    const signatures = (shares.sessionTokenData || []).map((x) => {
+      if (!x) return null;
+      return JSON.stringify({
+        data: x.token,
+        sig: x.signature,
+      });
+    });
     return {
-      publicAddress: shares.ethAddress.toString(),
-      privateKey: shares.privKey.toString(),
-      metadataNonce: shares.metadataNonce.toString("hex"),
-      typeOfUser: address.typeOfUser,
+      publicAddress: shares.ethAddress,
+      privateKey: shares.privKey,
+      metadataNonce: shares.metadataNonce.toString(16, 64),
       pubKey: {
-        pub_key_X: address.X,
-        pub_key_Y: address.Y,
+        pub_key_X: shares.X,
+        pub_key_Y: shares.Y,
       },
+      sessionAuthKey: shares.sessionAuthKey,
+      signatures,
     };
   }
 
@@ -438,13 +439,13 @@ class CustomAuth {
       extraVerifierParams = userInfo.extraVerifierParams;
     }
     aggregateIdTokenSeeds.sort();
-    const aggregateIdToken = keccak256(aggregateIdTokenSeeds.join(String.fromCharCode(29))).slice(2);
+    const aggregateIdToken = keccak256(Buffer.from(aggregateIdTokenSeeds.join(String.fromCharCode(29)), "utf8")).slice(2);
     aggregateVerifierParams.verifier_id = verifierId;
     return this.getTorusKey(verifier, verifierId, aggregateVerifierParams, aggregateIdToken, extraVerifierParams);
   }
 
   getPostboxKeyFrom1OutOf1(privKey: string, nonce: string): string {
-    return this.torus.getPostboxKeyFrom1OutOf1(privKey, nonce);
+    return getPostboxKeyFrom1OutOf1(this.torus.ec, privKey, nonce);
   }
 
   async getRedirectResult({ replaceUrl = true, clearLoginDetails = true }: RedirectResultParams = {}): Promise<RedirectResult> {

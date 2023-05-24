@@ -13,12 +13,15 @@ export const EMAIL_PASSWORD = "email_password";
 export const PASSWORDLESS = "passwordless";
 export const HOSTED_EMAIL_PASSWORDLESS = "hosted_email_passwordless";
 export const HOSTED_SMS_PASSWORDLESS = "hosted_sms_passwordless";
-export const WEBAUTHN = "webauthn";
+export const WEBAUTHN_LOGIN = "webauthn_login";
+export const WEBAUTHN_REGISTER = "webauthn_register";
 export const COGNITO = "cognito";
 export const AUTH_DOMAIN = "https://torus-test.auth0.com";
 export const COGNITO_AUTH_DOMAIN = "https://torus-test.auth.ap-southeast-1.amazoncognito.com/oauth2/";
 export const TORUS_EMAIL_PASSWORDLESS = "torus_email_passwordless";
 export const TORUS_SMS_PASSWORDLESS = "torus_sms_passwordless";
+
+export const WEB3AUTH_CLIENT_ID = "BJ6l3_kIQiy6YVL7zDlCcEAvGpGukwFgp-C_0WvNI_fAEeIaoVRLDrV5OjtbZr_zJxbyXFsXMT-yhQiUNYvZWpo";
 
 export const verifierMap = {
   [GOOGLE]: {
@@ -55,7 +58,8 @@ export const verifierMap = {
     clientId: "nSYBFalV2b1MSg5b2raWqHl63tfH3KQa",
     verifier: "torus-auth0-sms-passwordless",
   },
-  [WEBAUTHN]: { name: "WebAuthn", typeOfLogin: "webauthn", clientId: "webauthn", verifier: "webauthn-lrc" },
+  [WEBAUTHN_LOGIN]: { name: "WebAuthn Login", typeOfLogin: "webauthn", clientId: "webauthn", verifier: "webauthntest" },
+  [WEBAUTHN_REGISTER]: { name: "WebAuthn Register", typeOfLogin: "webauthn", clientId: "webauthn", verifier: "webauthntest" },
   [COGNITO]: {
     name: "Cognito",
     typeOfLogin: "jwt",
