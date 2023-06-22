@@ -2,8 +2,8 @@
   <div class="loader-container" v-if="!getPrivatekey(loginDetails)">Loading...</div>
   <div v-else class="dashboard-container">
     <!-- Dashboard Header -->
-    <div class="dashboard-header">
-      <div>
+    <div class="dashboard-header w-full">
+      <div class="w-full">
         <h1 class="dashboard-heading">demo-customauth.web3auth.io</h1>
         <p class="dashboard-subheading">CustomAuth Private key : {{ getPrivatekey(loginDetails) }}</p>
       </div>
@@ -17,46 +17,52 @@
     <!-- Dashboard Action Container -->
     <div class="dashboard-details-container">
       <div class="dashboard-details-btn-container">
-        <p class="btn-label">Signing</p>
-        <div class="flex-row bottom-gutter">
-          <button class="custom-btn" @click="signMessage" :disabled="!provider">Sign Test Eth Message</button>
-          <button class="custom-btn" @click="latestBlock" :disabled="!provider">Fetch Latest block</button>
-        </div>
-        <div class="flex-row bottom-gutter">
-          <button class="custom-btn" @click="signV1Message" :disabled="!provider">Sign Typed data v1 test Message</button>
-        </div>
-        <p class="btn-label !mb-0">Stark key pair</p>
-        <p class="text-xs text-app-gray-500 mb-2">Enter HD account index to derive stark key pair from custom auth's private key</p>
-        <form class="flex-row bottom-gutter" @submit.prevent="starkHdAccount">
-          <input class="custom-input" type="number" placeholder="Index" :min="0" id="accountIndex" required />
-          <button type="submit" class="custom-btn">Get Stark Key Pair</button>
-        </form>
-        <p class="btn-label">Sign message</p>
-        <form @submit.prevent="signMessageWithStarkKey">
-          <div class="flex-row bottom-gutter">
-            <textarea class="custom-input w-full" rows="4" placeholder="Message to encrypt" />
+        <h1 class="details-heading flex justify-between items-center">
+          <span>CustomAuth Specific Info</span>
+          <span><img alt="down" class="cursor-pointer" src="../../assets/down.svg" @click="isExpanded = !isExpanded" /></span>
+        </h1>
+        <div v-show="isExpanded" class="mt-4 overflow-y-auto">
+          <p class="btn-label">Signing</p>
+          <div class="flex flex-col sm:flex-row gap-4 bottom-gutter">
+            <button class="custom-btn" @click="signMessage" :disabled="!provider">Sign Test Eth Message</button>
+            <button class="custom-btn" @click="latestBlock" :disabled="!provider">Fetch Latest block</button>
           </div>
-          <div class="flex-row bottom-gutter">
+          <div class="flex flex-col sm:flex-row gap-4 bottom-gutter">
+            <button class="custom-btn" @click="signV1Message" :disabled="!provider">Sign Typed data v1 test Msg</button>
+          </div>
+          <p class="btn-label !mb-0">Stark key pair</p>
+          <p class="text-xs text-app-gray-500 mb-2">Enter HD account index to derive stark key pair from custom auth's private key</p>
+          <form class="flex flex-col sm:flex-row gap-4 bottom-gutter" @submit.prevent="starkHdAccount">
             <input class="custom-input" type="number" placeholder="Index" :min="0" id="accountIndex" required />
-            <button type="submit" class="custom-btn">Sign message with Stark key</button>
-          </div>
-        </form>
-        <p class="btn-label">Validate message</p>
-        <form class="flex-row bottom-gutter" @submit.prevent="validateStarkMessage">
-          <input
-            class="custom-input disabled:cursor-not-allowed"
-            :disabled="!signingMessage"
-            type="number"
-            placeholder="Index"
-            :min="0"
-            id="accountIndex"
-            required
-          />
-          <button type="submit" :disabled="!signingMessage" class="custom-btn disabled:cursor-not-allowed">Validate Stark Message</button>
-        </form>
+            <button type="submit" class="custom-btn">Get Stark Key Pair</button>
+          </form>
+          <p class="btn-label">Sign message</p>
+          <form @submit.prevent="signMessageWithStarkKey">
+            <div class="flex flex-col sm:flex-row gap-4 bottom-gutter">
+              <textarea class="custom-input w-full" rows="2" placeholder="Message to encrypt" />
+            </div>
+            <div class="flex flex-col sm:flex-row gap-4 bottom-gutter">
+              <input class="custom-input" type="number" placeholder="Index" :min="0" id="accountIndex" required />
+              <button type="submit" class="custom-btn">Sign message with Stark key</button>
+            </div>
+          </form>
+          <p class="btn-label">Validate message</p>
+          <form class="flex flex-col sm:flex-row gap-4 bottom-gutter" @submit.prevent="validateStarkMessage">
+            <input
+              class="custom-input disabled:cursor-not-allowed"
+              :disabled="!signingMessage"
+              type="number"
+              placeholder="Index"
+              :min="0"
+              id="accountIndex"
+              required
+            />
+            <button type="submit" :disabled="!signingMessage" class="custom-btn disabled:cursor-not-allowed">Validate Stark Message</button>
+          </form>
+        </div>
       </div>
       <!-- Dashboard Console Container -->
-      <div class="flex flex-col flex-1 details-container">
+      <div class="flex flex-col flex-1 details-container w-full">
         <p class="text-sm font-semibold text-app-gray-700 mb-2">Note:</p>
         <div class="bg-app-white shadow-md rounded-lg p-5 text-xs font-normal text-app-gray-600 mb-6">
           <p class="mb-2">
@@ -109,6 +115,7 @@ export default defineComponent({
       signedMessage: null as ec.Signature | null,
       signingMessage: null as string | null,
       provider: null as SafeEventEmitterProvider | null,
+      isExpanded: true,
     };
   },
   methods: {

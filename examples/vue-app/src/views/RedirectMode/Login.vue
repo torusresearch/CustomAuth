@@ -19,11 +19,11 @@
       required
       class="login-input mt-4 w-[320px] border-app-gray-400 !border"
     />
-    <div class="my-5 flex gap-4 w-[400px]">
+    <div class="my-5 flex flex-col px-6 sm:px-0 sm:flex-row gap-4 w-full sm:w-[400px]">
       <button @click="login()" class="custom-btn">Login with Torus</button>
       <button @click="onBack" class="custom-btn">Back</button>
     </div>
-    <ul class="text-sm text-app-gray-700 font-normal mt-4 mb-5">
+    <ul class="text-sm text-app-gray-700 font-normal mt-4 mb-5 px-6">
       <li>
         Please note that the verifiers listed in the example have
         <span class="font-semibold text-app-gray-900">http://localhost:3000/serviceworker/redirect</span>
@@ -33,7 +33,7 @@
       <li>The verifiers listed here only work with the client id's specified in example. Please don't edit them</li>
       <li>The verifiers listed here are for example reference only. Please don't use them for anything other than testing purposes.</li>
     </ul>
-    <div class="text-base text-app-gray-900 font-medium mt-4 mb-5">
+    <div class="text-base text-app-gray-900 font-medium mt-4 mb-5 px-6">
       Reach out to us at
       <a class="text-app-primary-600 underline" href="mailto:hello@tor.us">hello@tor.us</a>
       or
@@ -124,7 +124,7 @@ export default defineComponent({
       if (!this.torusdirectsdk) return;
       const jwtParams = this.loginToConnectionMap[this.selectedVerifier] || {};
       const { typeOfLogin, clientId, verifier, name } = verifierMap[this.selectedVerifier];
-      const webauthnRegister = name === "WebAuthn Register"
+      const webauthnRegister = name === "WebAuthn Register";
       const registerOnly = webauthnRegister ? true : false;
       const loginOnly = webauthnRegister ? "false" : "true";
 
@@ -134,7 +134,14 @@ export default defineComponent({
         clientId,
         jwtParams,
         registerOnly,
-        customState: { client: "great-company", webauthnURL: "https://d1f8-115-66-172-125.ngrok.io/", localhostAll: "true", loginOnly, webauthnTransports: 'ble', credTransports: 'ble' },
+        customState: {
+          client: "great-company",
+          webauthnURL: "https://d1f8-115-66-172-125.ngrok.io/",
+          localhostAll: "true",
+          loginOnly,
+          webauthnTransports: "ble",
+          credTransports: "ble",
+        },
       });
     },
     onBack() {

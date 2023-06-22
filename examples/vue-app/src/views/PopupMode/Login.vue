@@ -19,11 +19,11 @@
         required
         class="login-input mt-4 w-[320px] border-app-gray-400 !border"
       />
-      <div class="my-5 flex gap-4 w-[400px]">
+      <div class="my-5 flex flex-col px-6 sm:px-0 sm:flex-row gap-4 w-full sm:w-[400px]">
         <button @click="login()" class="custom-btn">Login with Torus</button>
         <button @click="logout" class="custom-btn">Back</button>
       </div>
-      <ul class="text-sm text-app-gray-700 font-normal mt-4 mb-5">
+      <ul class="text-sm text-app-gray-700 font-normal mt-4 mb-5 px-6">
         <li>
           Please note that the verifiers listed in the example have
           <span class="font-semibold text-app-gray-900">http://localhost:3000/serviceworker/redirect</span>
@@ -33,7 +33,7 @@
         <li>The verifiers listed here only work with the client id's specified in example. Please don't edit them</li>
         <li>The verifiers listed here are for example reference only. Please don't use them for anything other than testing purposes.</li>
       </ul>
-      <div class="text-base text-app-gray-900 font-medium mt-4 mb-5">
+      <div class="text-base text-app-gray-900 font-medium mt-4 mb-5 px-6">
         Reach out to us at
         <a class="text-app-primary-600 underline" href="mailto:hello@tor.us">hello@tor.us</a>
         or
@@ -45,8 +45,8 @@
       <div class="loader-container" v-if="!getPrivatekey(loginResponse)">Loading...</div>
       <div v-else class="dashboard-container">
         <!-- Dashboard Header -->
-        <div class="dashboard-header">
-          <div>
+        <div class="dashboard-header w-full">
+          <div class="w-full">
             <h1 class="dashboard-heading">demo-customauth.web3auth.io</h1>
             <p class="dashboard-subheading">CustomAuth Private key : {{ getPrivatekey(loginResponse) }}</p>
           </div>
@@ -60,43 +60,49 @@
         <!-- Dashboard Action Container -->
         <div class="dashboard-details-container">
           <div class="dashboard-details-btn-container">
-            <p class="btn-label">Signing</p>
-            <div class="flex-row bottom-gutter">
-              <button class="custom-btn" @click="signMessage" :disabled="!provider">Sign Test Eth Message</button>
-              <button class="custom-btn" @click="latestBlock" :disabled="!provider">Fetch Latest block</button>
-            </div>
-            <div class="flex-row bottom-gutter">
-              <button class="custom-btn" @click="signV1Message" :disabled="!provider">Sign Typed data v1 test Message</button>
-            </div>
-            <p class="btn-label !mb-0">Stark key pair</p>
-            <p class="text-xs text-app-gray-500 mb-2">Enter HD account index to derive stark key pair from custom auth's private key</p>
-            <form class="flex-row bottom-gutter" @submit.prevent="starkHdAccount">
-              <input class="custom-input" type="number" placeholder="Index" :min="0" id="accountIndex" required />
-              <button type="submit" class="custom-btn">Get Stark Key Pair</button>
-            </form>
-            <p class="btn-label">Sign message</p>
-            <form @submit.prevent="signMessageWithStarkKey">
-              <div class="flex-row bottom-gutter">
-                <textarea class="custom-input w-full" rows="4" placeholder="Message to encrypt" />
+            <h1 class="details-heading flex justify-between items-center">
+              <span>CustomAuth Specific Info</span>
+              <span><img alt="down" class="cursor-pointer" src="../../assets/down.svg" @click="isExpanded = !isExpanded" /></span>
+            </h1>
+            <div v-show="isExpanded" class="mt-4 overflow-y-auto">
+              <p class="btn-label">Signing</p>
+              <div class="flex flex-col sm:flex-row gap-4 bottom-gutter">
+                <button class="custom-btn" @click="signMessage" :disabled="!provider">Sign Test Eth Message</button>
+                <button class="custom-btn" @click="latestBlock" :disabled="!provider">Fetch Latest block</button>
               </div>
-              <div class="flex-row bottom-gutter">
+              <div class="flex flex-col sm:flex-row gap-4 bottom-gutter">
+                <button class="custom-btn" @click="signV1Message" :disabled="!provider">Sign Typed data v1 test Msg</button>
+              </div>
+              <p class="btn-label !mb-0">Stark key pair</p>
+              <p class="text-xs text-app-gray-500 mb-2">Enter HD account index to derive stark key pair from custom auth's private key</p>
+              <form class="flex flex-col sm:flex-row gap-4 bottom-gutter" @submit.prevent="starkHdAccount">
                 <input class="custom-input" type="number" placeholder="Index" :min="0" id="accountIndex" required />
-                <button type="submit" class="custom-btn">Sign message with Stark key</button>
-              </div>
-            </form>
-            <p class="btn-label">Validate message</p>
-            <form class="flex-row bottom-gutter" @submit.prevent="validateStarkMessage">
-              <input
-                class="custom-input disabled:cursor-not-allowed"
-                :disabled="!signingMessage"
-                type="number"
-                placeholder="Index"
-                :min="0"
-                id="accountIndex"
-                required
-              />
-              <button type="submit" :disabled="!signingMessage" class="custom-btn disabled:cursor-not-allowed">Validate Stark Message</button>
-            </form>
+                <button type="submit" class="custom-btn">Get Stark Key Pair</button>
+              </form>
+              <p class="btn-label">Sign message</p>
+              <form @submit.prevent="signMessageWithStarkKey">
+                <div class="flex flex-col sm:flex-row gap-4 bottom-gutter">
+                  <textarea class="custom-input w-full" rows="2" placeholder="Message to encrypt" />
+                </div>
+                <div class="flex flex-col sm:flex-row gap-4 bottom-gutter">
+                  <input class="custom-input" type="number" placeholder="Index" :min="0" id="accountIndex" required />
+                  <button type="submit" class="custom-btn">Sign message with Stark key</button>
+                </div>
+              </form>
+              <p class="btn-label">Validate message</p>
+              <form class="flex flex-col sm:flex-row gap-4 bottom-gutter" @submit.prevent="validateStarkMessage">
+                <input
+                  class="custom-input disabled:cursor-not-allowed"
+                  :disabled="!signingMessage"
+                  type="number"
+                  placeholder="Index"
+                  :min="0"
+                  id="accountIndex"
+                  required
+                />
+                <button type="submit" :disabled="!signingMessage" class="custom-btn disabled:cursor-not-allowed">Validate Stark Message</button>
+              </form>
+            </div>
           </div>
           <!-- Dashboard Console Container -->
           <div class="flex flex-col flex-1 details-container">
@@ -177,6 +183,7 @@ export default defineComponent({
       loginResponse: null as TorusLoginResponse | null,
       provider: null as SafeEventEmitterProvider | null,
       login_hint: "",
+      isExpanded: true,
     };
   },
   computed: {
