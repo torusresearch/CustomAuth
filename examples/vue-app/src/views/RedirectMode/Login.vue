@@ -5,6 +5,11 @@
     <select v-model="selectedVerifier" class="w-full max-w-xs select select-bordered dark:border-app-gray-200">
       <option :key="login" v-for="login in Object.keys(verifierMap)" :value="login">{{ verifierMap[login].name }}</option>
     </select>
+    <select v-model="selectedNetwork" class="w-full max-w-xs select select-bordered dark:border-app-gray-200 mt-4 capitalize">
+      <option :key="network" v-for="network in networkList" :value="network">
+        {{ network.replace("_", " ") }}
+      </option>
+    </select>
     <input
       v-model="login_hint"
       v-if="selectedVerifier === 'torus_email_passwordless'"
@@ -46,6 +51,7 @@
 <script lang="ts">
 import TorusSdk, { UX_MODE } from "@toruslabs/customauth";
 import { defineComponent } from "vue";
+import { TORUS_SAPPHIRE_NETWORK, TORUS_LEGACY_NETWORK } from "@toruslabs/constants";
 
 import {
   APPLE,
@@ -74,6 +80,8 @@ export default defineComponent({
       selectedVerifier: "google",
       verifierMap,
       login_hint: "",
+      networkList: [...Object.values(TORUS_SAPPHIRE_NETWORK), ...Object.values(TORUS_LEGACY_NETWORK)],
+      selectedNetwork: TORUS_SAPPHIRE_NETWORK.SAPPHIRE_DEVNET,
     };
   },
   computed: {
@@ -113,7 +121,7 @@ export default defineComponent({
       redirectPathName: "auth",
       enableLogging: true,
       uxMode: UX_MODE.REDIRECT,
-      network: "testnet",
+      network: this.selectedNetwork,
       web3AuthClientId: WEB3AUTH_CLIENT_ID,
     });
     this.customAuthSdk = customAuthSdk;

@@ -5,6 +5,11 @@
       <select v-model="selectedVerifier" class="w-full max-w-xs select select-bordered dark:border-app-gray-200">
         <option :key="login" v-for="login in Object.keys(verifierMap)" :value="login">{{ verifierMap[login].name }}</option>
       </select>
+      <select v-model="selectedNetwork" class="w-full max-w-xs select select-bordered dark:border-app-gray-200 mt-4 capitalize">
+        <option :key="network" v-for="network in networkList" :value="network">
+          {{ network.replace("_", " ") }}
+        </option>
+      </select>
       <input
         v-model="login_hint"
         v-if="selectedVerifier === 'torus_email_passwordless'"
@@ -169,7 +174,7 @@ import {
   WEIBO,
 } from "../../constants";
 import { fetchLatestBlock, signEthMessage, signTypedData_v1 } from "../../services/chainHandlers";
-import { TORUS_SAPPHIRE_NETWORK } from "@toruslabs/constants";
+import { TORUS_SAPPHIRE_NETWORK, TORUS_LEGACY_NETWORK } from "@toruslabs/constants";
 
 export default defineComponent({
   name: "PopupLogin",
@@ -184,6 +189,8 @@ export default defineComponent({
       provider: null as SafeEventEmitterProvider | null,
       login_hint: "",
       isExpanded: true,
+      networkList: [...Object.values(TORUS_SAPPHIRE_NETWORK), ...Object.values(TORUS_LEGACY_NETWORK)],
+      selectedNetwork: TORUS_SAPPHIRE_NETWORK.SAPPHIRE_DEVNET,
     };
   },
   computed: {
@@ -435,7 +442,7 @@ export default defineComponent({
         uxMode: UX_MODE.POPUP,
         baseUrl: `${location.origin}/serviceworker`,
         enableLogging: true,
-        network: TORUS_SAPPHIRE_NETWORK.SAPPHIRE_DEVNET, // details for test net
+        network: this.selectedNetwork, // details for test net
         popupFeatures: `titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=500,width=500,top=100,left=100`,
         web3AuthClientId: WEB3AUTH_CLIENT_ID,
       });
