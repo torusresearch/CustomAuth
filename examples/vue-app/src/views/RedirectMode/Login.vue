@@ -9,7 +9,13 @@
         </select>
       </div>
       <input v-model="login_hint" v-if="selectedVerifier === 'torus_email_passwordless'" placeholder="Enter an email" required class="input-field" />
-      <input v-model="login_hint" v-if="selectedVerifier === 'torus_sms_passwordless'" placeholder="Eg: (+{cc}-{number})" required class="input-field" />
+      <input
+        v-model="login_hint"
+        v-if="selectedVerifier === 'torus_sms_passwordless'"
+        placeholder="Eg: (+{cc}-{number})"
+        required
+        class="input-field"
+      />
       <div :style="{ marginTop: '20px' }">
         <button @click="login" class="btn-login">Login with Torus</button>
       </div>
@@ -55,7 +61,7 @@ export default defineComponent({
   name: "RedirectLogin",
   data() {
     return {
-      torusdirectsdk: null as TorusSdk | null,
+      customAuthSdk: null as TorusSdk | null,
       selectedVerifier: "google",
       verifierMap,
       login_hint: "",
@@ -88,38 +94,45 @@ export default defineComponent({
           verifierIdField: "name",
           login_hint: this.login_hint,
           connection: "sms",
-        }
+        },
       };
     },
   },
   async mounted() {
-    const torusdirectsdk = new TorusSdk({
+    const customAuthSdk = new TorusSdk({
       baseUrl: location.origin,
       redirectPathName: "auth",
       enableLogging: true,
       uxMode: UX_MODE.REDIRECT,
-      network: "sapphire_mainnet",
+      network: "testnet",
       web3AuthClientId: WEB3AUTH_CLIENT_ID,
     });
-    this.torusdirectsdk = torusdirectsdk;
-    await torusdirectsdk.init({ skipSw: true });
+    this.customAuthSdk = customAuthSdk;
+    await customAuthSdk.init({ skipSw: true });
   },
   methods: {
     async login() {
-      if (!this.torusdirectsdk) return;
+      if (!this.customAuthSdk) return;
       const jwtParams = this.loginToConnectionMap[this.selectedVerifier] || {};
       const { typeOfLogin, clientId, verifier, name } = verifierMap[this.selectedVerifier];
-      const webauthnRegister = name === "WebAuthn Register"
+      const webauthnRegister = name === "WebAuthn Register";
       const registerOnly = webauthnRegister ? true : false;
       const loginOnly = webauthnRegister ? "false" : "true";
 
-      return this.torusdirectsdk.triggerLogin({
+      return this.customAuthSdk.triggerLogin({
         typeOfLogin,
         verifier,
         clientId,
         jwtParams,
         registerOnly,
-        customState: { client: "great-company", webauthnURL: "https://d1f8-115-66-172-125.ngrok.io/", localhostAll: "true", loginOnly, webauthnTransports: 'ble', credTransports: 'ble' },
+        customState: {
+          client: "great-company",
+          webauthnURL: "https://d1f8-115-66-172-125.ngrok.io/",
+          localhostAll: "true",
+          loginOnly,
+          webauthnTransports: "ble",
+          credTransports: "ble",
+        },
       });
     },
   },
