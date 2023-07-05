@@ -1,4 +1,5 @@
-import { TORUS_SAPPHIRE_NETWORK_TYPE } from "@toruslabs/constants";
+import { TORUS_NETWORK_TYPE } from "@toruslabs/constants";
+import { TorusKey } from "@toruslabs/torus.js";
 
 import { Sentry } from "../sentry";
 import { AGGREGATE_VERIFIER_TYPE, LOGIN_TYPE, TORUS_METHOD_TYPE, UX_MODE_TYPE } from "../utils/enums";
@@ -70,21 +71,6 @@ export interface ILoginHandler {
   handleLoginWindow(params: { locationReplaceOnRedirect?: boolean; popupFeatures?: string }): Promise<LoginWindowResponse>;
 }
 
-export interface TorusKeyPub {
-  pubKey?: {
-    pub_key_X: string;
-    pub_key_Y: string;
-  };
-}
-
-export interface TorusKey extends TorusKeyPub {
-  publicAddress: string;
-  privateKey: string;
-  signatures: string[];
-  sessionAuthKey: string;
-  metadataNonce: string;
-}
-
 export interface TorusAggregateVerifierResponse {
   userInfo: (TorusVerifierResponse & LoginWindowResponse)[];
 }
@@ -138,16 +124,15 @@ export interface CustomAuthArgs {
   baseUrl: string;
 
   /**
-   * Specify a custom metadata host
+   * Specify a custom metadata host for legacy networks
    * @defaultValue https://metadata.tor.us
    */
   metadataUrl?: string;
 
   /**
    * Torus Network to target options: mainnet | testnet | cyan | aqua
-   * @defaultValue mainnet
    */
-  network?: TORUS_SAPPHIRE_NETWORK_TYPE;
+  network: TORUS_NETWORK_TYPE;
 
   /**
    * This option is used to specify whether to enable logging

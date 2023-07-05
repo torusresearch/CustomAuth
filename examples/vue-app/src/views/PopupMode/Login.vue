@@ -67,11 +67,11 @@
         </form>
       </div>
     </div> -->
-    <div v-if="loginResponse && loginResponse.privateKey">
+    <div v-if="loginResponse && loginResponse.finalKeyData.privKey">
       <div class="flex m-6 text-left box md:rows-span-2">
         <div class="ml-6 overflow-hidden mt-7 text-ellipsis">
           <span class="text-2xl font-semibold">demo-customauth.web3auth.io</span>
-          <h6 class="pb-8 overflow-hidden text-left text-ellipsis">Customauth Private key : {{ getPrivatekey(loginResponse) }}</h6>
+          <h6 class="pb-8 overflow-hidden text-left text-ellipsis">Customauth Private key : {{ getPrivateKey(loginResponse) }}</h6>
         </div>
         <div class="ml-auto mt-7">
           <!-- <span class="pr-32">Connected ChainId : {{ ethereumPrivateKeyProvider.state.chainId }}</span> -->
@@ -313,6 +313,8 @@ export default defineComponent({
           queryParameters,
         });
 
+        const privateKey = loginDetails.finalKeyData.privKey || loginDetails.oAuthKeyData.privKey;
+
         const providerInstance = await EthereumPrivateKeyProvider.getProviderInstance({
           chainConfig: {
             rpcTarget: "https://polygon-rpc.com",
@@ -322,7 +324,7 @@ export default defineComponent({
             displayName: "Polygon Mainnet",
             blockExplorer: "https://polygonscan.com",
           },
-          privKey: loginDetails.privateKey,
+          privKey: privateKey,
         });
 
         this.provider = providerInstance.provider;
@@ -382,9 +384,9 @@ export default defineComponent({
         console.error(error, "caught");
       }
     },
-    getPrivatekey(loginDetails: any): unknown {
-      // console.log(loginDetails);
-      return loginDetails.privateKey;
+    getPrivateKey(loginDetails: TorusLoginResponse | null): string {
+      if (!loginDetails) return "";
+      return loginDetails.finalKeyData.privKey || loginDetails.oAuthKeyData.privKey;
     },
     clearUiconsole() {
       const el = document.querySelector("#console>p");
@@ -412,7 +414,7 @@ export default defineComponent({
     },
 
     getStarkAccount(index: number): ec.KeyPair {
-      const account = getStarkHDAccount((this.loginResponse?.privateKey as string).padStart(64, "0"), index, STARKNET_NETWORKS.testnet);
+      const account = getStarkHDAccount(this.getPrivateKey(this.loginResponse).padStart(64, "0"), index, STARKNET_NETWORKS.testnet);
       return account;
     },
 
