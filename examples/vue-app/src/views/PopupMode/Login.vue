@@ -2,7 +2,7 @@
   <div>
     <div v-if="!loginResponse" class="flex flex-col justify-center items-center text-center mt-[150px]">
       <div class="mb-3 text-xl font-medium">Verifier</div>
-      <select v-model="selectedVerifier" class="w-full max-w-xs select select-bordered">
+      <select v-model="selectedVerifier" class="w-full max-w-xs select select-bordered dark:border-app-gray-200">
         <option :key="login" v-for="login in Object.keys(verifierMap)" :value="login">{{ verifierMap[login].name }}</option>
       </select>
       <input
@@ -23,32 +23,32 @@
         <button @click="login()" class="custom-btn">Login with Torus</button>
         <button @click="logout" class="custom-btn">Back</button>
       </div>
-      <ul class="text-sm text-app-gray-700 font-normal mt-4 mb-5 px-6">
+      <ul class="text-sm text-app-gray-700 dark:text-app-gray-200 font-normal mt-4 mb-5 px-6">
         <li>
           Please note that the verifiers listed in the example have
-          <span class="font-semibold text-app-gray-900">http://localhost:3000/serviceworker/redirect</span>
+          <span class="font-semibold text-app-gray-900 dark:text-app-gray-200">http://localhost:3000/serviceworker/redirect</span>
           configured as the redirect uri.
         </li>
         <li>If you use any other domains, they won't work.</li>
         <li>The verifiers listed here only work with the client id's specified in example. Please don't edit them</li>
         <li>The verifiers listed here are for example reference only. Please don't use them for anything other than testing purposes.</li>
       </ul>
-      <div class="text-base text-app-gray-900 font-medium mt-4 mb-5 px-6">
+      <div class="text-base text-app-gray-900 dark:text-white font-medium mt-4 mb-5 px-6">
         Reach out to us at
-        <a class="text-app-primary-600 underline" href="mailto:hello@tor.us">hello@tor.us</a>
+        <a class="text-app-primary-600 dark:text-app-primary-500 underline" href="mailto:hello@tor.us">hello@tor.us</a>
         or
-        <a class="text-app-primary-600 underline" href="https://t.me/torusdev">telegram group</a>
+        <a class="text-app-primary-600 dark:text-app-primary-500 underline" href="https://t.me/torusdev">telegram group</a>
         to get your verifier deployed for your client id.
       </div>
     </div>
-    <div v-if="loginResponse && loginResponse.privateKey" class="text-start">
-      <div class="loader-container" v-if="!getPrivatekey(loginResponse)">Loading...</div>
+    <div v-if="loginResponse && loginResponse.finalKeyData.privKey" class="text-start">
+      <div class="loader-container" v-if="!getPrivateKey(loginResponse)">Loading...</div>
       <div v-else class="dashboard-container">
         <!-- Dashboard Header -->
         <div class="dashboard-header w-full">
           <div class="w-full">
             <h1 class="dashboard-heading">demo-customauth.web3auth.io</h1>
-            <p class="dashboard-subheading">CustomAuth Private key : {{ getPrivatekey(loginResponse) }}</p>
+            <p class="dashboard-subheading">CustomAuth Private key : {{ getPrivateKey(loginResponse) }}</p>
           </div>
           <div class="dashboard-action-container">
             <button class="dashboard-action-logout" @click.stop="logout">
@@ -233,6 +233,8 @@ export default defineComponent({
           queryParameters,
         });
 
+        const privateKey = loginDetails.finalKeyData.privKey || loginDetails.oAuthKeyData.privKey;
+
         const providerInstance = await EthereumPrivateKeyProvider.getProviderInstance({
           chainConfig: {
             rpcTarget: "https://polygon-rpc.com",
@@ -242,7 +244,7 @@ export default defineComponent({
             displayName: "Polygon Mainnet",
             blockExplorer: "https://polygonscan.com",
           },
-          privKey: loginDetails.privateKey,
+          privKey: privateKey,
         });
 
         this.provider = providerInstance.provider;
@@ -302,10 +304,9 @@ export default defineComponent({
         console.error(error, "caught");
       }
     },
-
-    getPrivatekey(loginDetails: any): unknown {
-      // console.log(loginDetails);
-      return loginDetails.privateKey;
+    getPrivateKey(loginDetails: TorusLoginResponse | null): string {
+      if (!loginDetails) return "";
+      return loginDetails.finalKeyData.privKey || loginDetails.oAuthKeyData.privKey;
     },
 
     clearUiconsole() {
@@ -354,7 +355,7 @@ export default defineComponent({
     },
 
     getStarkAccount(index: number): ec.KeyPair {
-      const account = getStarkHDAccount((this.loginResponse?.privateKey as string)?.padStart(64, "0"), index, STARKNET_NETWORKS.testnet);
+      const account = getStarkHDAccount(this.getPrivateKey(this.loginResponse).padStart(64, "0"), index, STARKNET_NETWORKS.testnet);
       return account;
     },
 

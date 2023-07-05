@@ -2,7 +2,7 @@
   <div class="flex flex-col justify-center items-center text-center mt-[150px]">
     <div class="mb-3 text-xl font-medium">Verifier</div>
     <!-- <span>verifier:</span> -->
-    <select v-model="selectedVerifier" class="w-full max-w-xs select select-bordered">
+    <select v-model="selectedVerifier" class="w-full max-w-xs select select-bordered dark:border-app-gray-200">
       <option :key="login" v-for="login in Object.keys(verifierMap)" :value="login">{{ verifierMap[login].name }}</option>
     </select>
     <input
@@ -23,21 +23,21 @@
       <button @click="login()" class="custom-btn">Login with Torus</button>
       <button @click="onBack" class="custom-btn">Back</button>
     </div>
-    <ul class="text-sm text-app-gray-700 font-normal mt-4 mb-5 px-6">
+    <ul class="text-sm text-app-gray-700 dark:text-app-gray-200 font-normal mt-4 mb-5 px-6">
       <li>
         Please note that the verifiers listed in the example have
-        <span class="font-semibold text-app-gray-900">http://localhost:3000/serviceworker/redirect</span>
+        <span class="font-semibold text-app-gray-900 dark:text-white">http://localhost:3000/serviceworker/redirect</span>
         configured as the redirect uri.
       </li>
       <li>If you use any other domains, they won't work.</li>
       <li>The verifiers listed here only work with the client id's specified in example. Please don't edit them</li>
       <li>The verifiers listed here are for example reference only. Please don't use them for anything other than testing purposes.</li>
     </ul>
-    <div class="text-base text-app-gray-900 font-medium mt-4 mb-5 px-6">
+    <div class="text-base text-app-gray-900 dark:text-app-gray-200 font-medium mt-4 mb-5 px-6">
       Reach out to us at
-      <a class="text-app-primary-600 underline" href="mailto:hello@tor.us">hello@tor.us</a>
+      <a class="text-app-primary-600 dark:text-app-primary-500 underline" href="mailto:hello@tor.us">hello@tor.us</a>
       or
-      <a class="text-app-primary-600 underline" href="https://t.me/torusdev">telegram group</a>
+      <a class="text-app-primary-600 dark:text-app-primary-500 underline" href="https://t.me/torusdev">telegram group</a>
       to get your verifier deployed for your client id.
     </div>
   </div>
@@ -70,7 +70,7 @@ export default defineComponent({
   name: "RedirectLogin",
   data() {
     return {
-      torusdirectsdk: null as TorusSdk | null,
+      customAuthSdk: null as TorusSdk | null,
       selectedVerifier: "google",
       verifierMap,
       login_hint: "",
@@ -108,27 +108,27 @@ export default defineComponent({
     },
   },
   async mounted() {
-    const torusdirectsdk = new TorusSdk({
+    const customAuthSdk = new TorusSdk({
       baseUrl: location.origin,
       redirectPathName: "auth",
       enableLogging: true,
       uxMode: UX_MODE.REDIRECT,
-      network: "sapphire_mainnet",
+      network: "testnet",
       web3AuthClientId: WEB3AUTH_CLIENT_ID,
     });
-    this.torusdirectsdk = torusdirectsdk;
-    await torusdirectsdk.init({ skipSw: true });
+    this.customAuthSdk = customAuthSdk;
+    await customAuthSdk.init({ skipSw: true });
   },
   methods: {
     async login() {
-      if (!this.torusdirectsdk) return;
+      if (!this.customAuthSdk) return;
       const jwtParams = this.loginToConnectionMap[this.selectedVerifier] || {};
       const { typeOfLogin, clientId, verifier, name } = verifierMap[this.selectedVerifier];
       const webauthnRegister = name === "WebAuthn Register";
       const registerOnly = webauthnRegister ? true : false;
       const loginOnly = webauthnRegister ? "false" : "true";
 
-      return this.torusdirectsdk.triggerLogin({
+      return this.customAuthSdk.triggerLogin({
         typeOfLogin,
         verifier,
         clientId,

@@ -21,22 +21,19 @@ module.exports = {
     config.resolve.alias = { ...config.resolve.alias, "bn.js": path.resolve(__dirname, "node_modules/bn.js") };
     config.plugins.push(
       new ProvidePlugin({
-        Buffer: ["buffer", "Buffer"],
-      })
-    );
-    config.plugins.push(
-      new ProvidePlugin({
         process: "process/browser",
+        Buffer: ["buffer", "Buffer"],
       })
     );
     config.resolve.fallback = {
       ...(config.resolve.fallback || {}),
-      http: require.resolve("stream-http"),
-      https: require.resolve("https-browserify"),
-      os: require.resolve("os-browserify/browser"),
-      crypto: require.resolve("crypto-browserify"),
-      assert: require.resolve("assert/"),
-      stream: require.resolve("stream-browserify"),
+      http: false,
+      https: false,
+      os: false,
+      crypto: false,
+      assert: false,
+      stream: false,
+      zlib: false,
     };
   },
 };

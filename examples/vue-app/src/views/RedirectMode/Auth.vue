@@ -1,11 +1,11 @@
 <template>
-  <div class="loader-container" v-if="!getPrivatekey(loginDetails)">Loading...</div>
+  <div class="loader-container" v-if="!getPrivateKey(loginDetails)">Loading...</div>
   <div v-else class="dashboard-container">
     <!-- Dashboard Header -->
     <div class="dashboard-header w-full">
       <div class="w-full">
         <h1 class="dashboard-heading">demo-customauth.web3auth.io</h1>
-        <p class="dashboard-subheading">CustomAuth Private key : {{ getPrivatekey(loginDetails) }}</p>
+        <p class="dashboard-subheading">CustomAuth Private key : {{ getPrivateKey(loginDetails) }}</p>
       </div>
       <div class="dashboard-action-container">
         <button class="dashboard-action-logout" @click.stop="logout">
@@ -95,7 +95,7 @@
 </template>
 
 <script lang="ts">
-import TorusSdk, { RedirectResult } from "@toruslabs/customauth";
+import TorusSdk, { RedirectResult, TorusLoginResponse } from "@toruslabs/customauth";
 import { getStarkHDAccount, pedersen, sign, STARKNET_NETWORKS, verify } from "@toruslabs/openlogin-starkkey";
 import { SafeEventEmitterProvider } from "@web3auth/base";
 import { EthereumPrivateKeyProvider } from "@web3auth/ethereum-provider";
@@ -133,9 +133,9 @@ export default defineComponent({
         consoleBtn.style.display = "block";
       }
     },
-
-    getPrivatekey(loginDetails: any): unknown {
-      return loginDetails?.result?.privateKey;
+    getPrivateKey(loginDetails: RedirectResult | null): string {
+      if (!loginDetails) return "";
+      return (loginDetails.result as TorusLoginResponse)?.finalKeyData.privKey || (loginDetails.result as TorusLoginResponse)?.oAuthKeyData.privKey;
     },
 
     async signMessage() {
@@ -154,11 +154,7 @@ export default defineComponent({
     },
 
     getStarkAccount(index: number): ec.KeyPair {
-      const account = getStarkHDAccount(
-        ((this.loginDetails as any)?.result?.privateKey as string)?.padStart(64, "0"),
-        index,
-        STARKNET_NETWORKS.testnet
-      );
+      const account = getStarkHDAccount(this.getPrivateKey(this.loginDetails).padStart(64, "0"), index, STARKNET_NETWORKS.testnet);
       return account;
     },
 
@@ -242,7 +238,7 @@ export default defineComponent({
     },
   },
   async mounted() {
-    const torusdirectsdk = new TorusSdk({
+    const customAuthSdk = new TorusSdk({
       baseUrl: location.origin,
       redirectPathName: "auth",
       enableLogging: true,
@@ -250,7 +246,8 @@ export default defineComponent({
       network: TORUS_SAPPHIRE_NETWORK.SAPPHIRE_DEVNET,
       web3AuthClientId: WEB3AUTH_CLIENT_ID,
     });
-    const loginDetails = await torusdirectsdk.getRedirectResult();
+    const loginDetails = await customAuthSdk.getRedirectResult();
+    const privKey = this.getPrivateKey(loginDetails);
     const providerInstance = await EthereumPrivateKeyProvider.getProviderInstance({
       chainConfig: {
         rpcTarget: "https://polygon-rpc.com",
@@ -260,7 +257,7 @@ export default defineComponent({
         displayName: "Polygon Mainnet",
         blockExplorer: "https://polygonscan.com",
       },
-      privKey: ((loginDetails as any)?.result?.privateKey as string)?.padStart(64, "0"),
+      privKey: privKey.padStart(64, "0"),
     });
     this.loginDetails = loginDetails;
     setTimeout(() => {

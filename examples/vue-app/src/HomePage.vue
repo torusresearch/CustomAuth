@@ -1,7 +1,7 @@
 <template>
   <div class="grid text-center justify-center mt-[15%] w-full p-4">
-    <h6 class="mb-2 text-xl sm:text-3xl font-bold">demo-customauth.web3auth.io</h6>
-    <h6 class="pb-10 text-base font-normal text-[#595857]">Note: Login with Redirect mode is recommended</h6>
+    <h6 class="mb-2 text-xl sm:text-3xl font-bold dark:text-white">demo-customauth.web3auth.io</h6>
+    <h6 class="pb-10 text-base font-normal text-[#595857] dark:text-gray-200">Note: Login with Redirect mode is recommended</h6>
     <div class="flex flex-col sm:flex-row gap-4">
       <router-link to="/redirectMode"><button class="custom-btn w-full">Login with Redirect Mode</button></router-link>
       <router-link to="/popupMode"><button class="custom-btn w-full">Login with Popup Mode</button></router-link>
