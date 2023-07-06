@@ -71,6 +71,7 @@ import {
   TWITTER,
   verifierMap,
   WEIBO,
+  LOCAL_NETWORK,
 } from "../../constants";
 export default defineComponent({
   name: "RedirectLogin",
@@ -115,21 +116,33 @@ export default defineComponent({
       };
     },
   },
-  async mounted() {
-    const customAuthSdk = new TorusSdk({
-      baseUrl: location.origin,
-      redirectPathName: "auth",
-      enableLogging: true,
-      uxMode: UX_MODE.REDIRECT,
-      network: this.selectedNetwork,
-      web3AuthClientId: WEB3AUTH_CLIENT_ID,
-    });
-    this.customAuthSdk = customAuthSdk;
-    await customAuthSdk.init({ skipSw: true });
-  },
+  // async mounted() {
+  //   const customAuthSdk = new TorusSdk({
+  //     baseUrl: location.origin,
+  //     redirectPathName: "auth",
+  //     enableLogging: true,
+  //     uxMode: UX_MODE.REDIRECT,
+  //     network: this.selectedNetwork,
+  //     web3AuthClientId: WEB3AUTH_CLIENT_ID,
+  //   });
+  //   this.customAuthSdk = customAuthSdk;
+  //   await customAuthSdk.init({ skipSw: true });
+  // },
   methods: {
     async login() {
+      const customAuthSdk = new TorusSdk({
+        baseUrl: location.origin,
+        redirectPathName: "auth",
+        enableLogging: true,
+        uxMode: UX_MODE.REDIRECT,
+        network: this.selectedNetwork,
+        web3AuthClientId: WEB3AUTH_CLIENT_ID,
+      });
+      this.customAuthSdk = customAuthSdk;
+      localStorage.setItem(LOCAL_NETWORK, this.selectedNetwork);
+      await customAuthSdk.init({ skipSw: true });
       if (!this.customAuthSdk) return;
+
       const jwtParams = this.loginToConnectionMap[this.selectedVerifier] || {};
       const { typeOfLogin, clientId, verifier, name } = verifierMap[this.selectedVerifier];
       const webauthnRegister = name === "WebAuthn Register";

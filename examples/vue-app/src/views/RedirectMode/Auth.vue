@@ -102,10 +102,10 @@ import { EthereumPrivateKeyProvider } from "@web3auth/ethereum-provider";
 import { ec } from "elliptic";
 import { binaryToHex, binaryToUtf8, bufferToBinary, bufferToHex, hexToBinary } from "enc-utils";
 import { defineComponent } from "vue";
-import { WEB3AUTH_CLIENT_ID } from "../../constants";
+import { LOCAL_NETWORK, WEB3AUTH_CLIENT_ID } from "../../constants";
 
 import { fetchLatestBlock, signEthMessage, signTypedData_v1 } from "../../services/chainHandlers";
-import { TORUS_SAPPHIRE_NETWORK } from "@toruslabs/constants";
+import { TORUS_LEGACY_NETWORK_TYPE, TORUS_NETWORK_TYPE, TORUS_SAPPHIRE_NETWORK } from "@toruslabs/constants";
 
 export default defineComponent({
   name: "Auth",
@@ -234,16 +234,18 @@ export default defineComponent({
     },
 
     logout() {
+      localStorage.removeItem(LOCAL_NETWORK);
       this.$router.push("/");
     },
   },
   async mounted() {
+    const network = localStorage.getItem(LOCAL_NETWORK) as TORUS_LEGACY_NETWORK_TYPE | TORUS_NETWORK_TYPE;
     const customAuthSdk = new TorusSdk({
       baseUrl: location.origin,
       redirectPathName: "auth",
       enableLogging: true,
       uxMode: "redirect",
-      network: TORUS_SAPPHIRE_NETWORK.SAPPHIRE_DEVNET,
+      network: network || TORUS_SAPPHIRE_NETWORK.SAPPHIRE_DEVNET,
       web3AuthClientId: WEB3AUTH_CLIENT_ID,
     });
     const loginDetails = await customAuthSdk.getRedirectResult();
