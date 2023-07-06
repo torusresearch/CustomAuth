@@ -1,6 +1,6 @@
 {
   "name": "@toruslabs/customauth",
-  "version": "15.0.0",
+  "version": "15.0.1",
   "description": "CustomAuth login with torus to get user private key",
   "main": "dist/customauth.cjs.js",
   "module": "dist/customauth.esm.js",
@@ -38,7 +38,7 @@
     "@toruslabs/fetch-node-details": "^11.0.1",
     "@toruslabs/http-helpers": "^4.0.0",
     "@toruslabs/metadata-helpers": "^4.0.0",
-    "@toruslabs/torus.js": "^10.0.1",
+    "@toruslabs/torus.js": "^10.0.2",
     "bowser": "^2.11.0",
     "events": "^3.3.0",
     "jwt-decode": "^3.1.2",
