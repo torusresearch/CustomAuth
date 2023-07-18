@@ -387,6 +387,16 @@ class CustomAuth {
     const nodeDetails = await this.nodeDetailManager.getNodeDetails({ verifier, verifierId });
     this.sentryHandler.finishTransaction(nodeTx);
 
+    if (this.torus.isLegacyNetwork) {
+      // Call getPublicAddress to do keyassign for legacy networks which are not migrated
+      const pubLookupTx = this.sentryHandler.startTransaction({
+        name: SENTRY_TXNS.PUB_ADDRESS_LOOKUP,
+      });
+      const address = await this.torus.getPublicAddress(nodeDetails.torusNodeEndpoints, nodeDetails.torusNodePub, { verifier, verifierId });
+      this.sentryHandler.finishTransaction(pubLookupTx);
+      log.debug("torus-direct/getTorusKey", { getPublicAddress: address });
+    }
+
     log.debug("torus-direct/getTorusKey", { torusNodeEndpoints: nodeDetails.torusNodeEndpoints });
 
     const sharesTx = this.sentryHandler.startTransaction({
