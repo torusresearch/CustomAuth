@@ -20,6 +20,7 @@ export const AUTH_DOMAIN = "https://torus-test.auth0.com";
 export const COGNITO_AUTH_DOMAIN = "https://torus-test.auth.ap-southeast-1.amazoncognito.com/oauth2/";
 export const TORUS_EMAIL_PASSWORDLESS = "torus_email_passwordless";
 export const TORUS_SMS_PASSWORDLESS = "torus_sms_passwordless";
+export const LOCAL_NETWORK = "network";
 
 export const WEB3AUTH_CLIENT_ID = "BJ6l3_kIQiy6YVL7zDlCcEAvGpGukwFgp-C_0WvNI_fAEeIaoVRLDrV5OjtbZr_zJxbyXFsXMT-yhQiUNYvZWpo";
 
