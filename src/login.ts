@@ -449,7 +449,7 @@ class CustomAuth {
 
     if (replaceUrl) {
       const cleanUrl = window.location.origin + window.location.pathname;
-      window.history.replaceState(null, "", cleanUrl);
+      window.history.replaceState({ ...window.history.state, as: cleanUrl, url: cleanUrl }, "", cleanUrl);
     }
 
     if (!hash && Object.keys(queryParams).length === 0) {
