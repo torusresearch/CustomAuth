@@ -200,3 +200,16 @@ export const validateAndConstructUrl = (domain: string): URL => {
     throw new Error(`${error?.message || ""}, Note: Your jwt domain: (i.e ${domain}) must have http:// or https:// prefix`);
   }
 };
+
+export function isMobileOrTablet(): boolean {
+  const browser = Bowser.getParser(navigator.userAgent);
+  const platform = browser.getPlatform();
+  return platform.type === Bowser.PLATFORMS_MAP.tablet || platform.type === Bowser.PLATFORMS_MAP.mobile;
+}
+
+export function getTimeout(typeOfLogin: LOGIN_TYPE) {
+  if ((typeOfLogin === LOGIN.FACEBOOK || typeOfLogin === LOGIN.LINE) && isMobileOrTablet()) {
+    return 1000 * 60; // 60 seconds to finish the login
+  }
+  return 1000 * 10; // 10 seconds
+}

@@ -1,7 +1,7 @@
 import { BroadcastChannel } from "@toruslabs/broadcast-channel";
 
 import { LOGIN_TYPE, UX_MODE, UX_MODE_TYPE } from "../utils/enums";
-import { broadcastChannelOptions, randomId } from "../utils/helpers";
+import { broadcastChannelOptions, getTimeout, randomId } from "../utils/helpers";
 import log from "../utils/loglevel";
 import PopupHandler from "../utils/PopupHandler";
 import { Auth0ClientOptions, ILoginHandler, LoginWindowResponse, PopupResponse, TorusGenericObject, TorusVerifierResponse } from "./interfaces";
@@ -39,7 +39,7 @@ abstract class AbstractLoginHandler implements ILoginHandler {
   }
 
   handleLoginWindow(params: { locationReplaceOnRedirect?: boolean; popupFeatures?: string }): Promise<LoginWindowResponse> {
-    const verifierWindow = new PopupHandler({ url: this.finalURL, features: params.popupFeatures });
+    const verifierWindow = new PopupHandler({ url: this.finalURL, features: params.popupFeatures, timeout: getTimeout(this.typeOfLogin) });
     if (this.uxMode === UX_MODE.REDIRECT) {
       verifierWindow.redirect(params.locationReplaceOnRedirect);
     } else {
