@@ -57,7 +57,7 @@ function caseSensitiveField(field: string, isCaseSensitive?: boolean): string {
 export const getVerifierId = (
   userInfo: Auth0UserInfo,
   typeOfLogin: LOGIN_TYPE,
-  verifierIdField?: string,
+  verifierIdField?: keyof Auth0UserInfo,
   isVerifierIdCaseSensitive = true
 ): string => {
   const { name, sub } = userInfo;
@@ -83,7 +83,7 @@ export const handleRedirectParameters = (
   hash: string,
   queryParameters: TorusGenericObject
 ): { error: string; instanceParameters: TorusGenericObject; hashParameters: TorusGenericObject } => {
-  const hashParameters: TorusGenericObject = hash.split("&").reduce((result, item) => {
+  const hashParameters: TorusGenericObject = hash.split("&").reduce((result: Record<string, string>, item) => {
     const [part0, part1] = item.split("=");
     result[part0] = part1;
     return result;
@@ -104,12 +104,13 @@ export const handleRedirectParameters = (
 export function storageAvailable(type: REDIRECT_PARAMS_STORAGE_METHOD_TYPE): boolean {
   let storage: Storage;
   try {
-    storage = window[type];
+    storage = window[type as "sessionStorage" | "localStorage"];
     const x = "__storage_test__";
     storage.setItem(x, x);
     storage.removeItem(x);
     return true;
-  } catch (e) {
+  } catch (error: unknown) {
+    const e = error as { code?: number; name?: string };
     return (
       e &&
       // everything except Firefox
@@ -196,8 +197,8 @@ export const validateAndConstructUrl = (domain: string): URL => {
   try {
     const url = new URL(decodeURIComponent(domain));
     return url;
-  } catch (error) {
-    throw new Error(`${error?.message || ""}, Note: Your jwt domain: (i.e ${domain}) must have http:// or https:// prefix`);
+  } catch (error: unknown) {
+    throw new Error(`${(error as Error)?.message || ""}, Note: Your jwt domain: (i.e ${domain}) must have http:// or https:// prefix`);
   }
 };
 
