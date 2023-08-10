@@ -25,7 +25,7 @@ export function eventToPromise<T>(emitter: EmitterType): Promise<T> {
   });
 }
 
-// These are the connection names used by auth0
+// These are the default connection names used by auth0
 export const loginToConnectionMap = {
   [LOGIN.APPLE]: "apple",
   [LOGIN.GITHUB]: "github",
