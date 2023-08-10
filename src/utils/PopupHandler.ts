@@ -30,8 +30,6 @@ class PopupHandler extends EventEmitter {
   }
 
   _setupTimer(): void {
-    if (!this.window) return;
-
     this.windowTimer = Number(
       setInterval(() => {
         if (this.window && this.window.closed) {
