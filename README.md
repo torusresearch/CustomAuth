@@ -247,6 +247,6 @@ For other verifiers,
 ## Requirements
 
 - This package requires a peer dependency of `@babel/runtime`
-- Node 16+
+- Node 18+
 
 > Note: If you are using the `redirectToOpener` option, you _must_ update your redirect.html to [allow whitelisted URIs](serviceworker/redirect.html#L222)

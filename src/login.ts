@@ -4,6 +4,7 @@ import Torus, { keccak256, TorusKey } from "@toruslabs/torus.js";
 import createHandler from "./handlers/HandlerFactory";
 import {
   AggregateLoginParams,
+  AggregateVerifierParams,
   CustomAuthArgs,
   ExtraParams,
   HybridAggregateLoginParams,
@@ -260,7 +261,7 @@ class CustomAuth {
     }
     const _userInfoArray = await Promise.all(userInfoPromises);
     const userInfoArray = _userInfoArray.map((userInfo) => ({ ...userInfo, aggregateVerifier: verifierIdentifier }));
-    const aggregateVerifierParams = { verify_params: [], sub_verifier_ids: [], verifier_id: "" };
+    const aggregateVerifierParams: AggregateVerifierParams = { verify_params: [], sub_verifier_ids: [], verifier_id: "" };
     const aggregateIdTokenSeeds = [];
     let aggregateVerifierId = "";
     let extraVerifierParams = {};
@@ -343,7 +344,7 @@ class CustomAuth {
     );
 
     const { verifierIdentifier, subVerifierDetailsArray } = aggregateLoginParams;
-    const aggregateVerifierParams = { verify_params: [], sub_verifier_ids: [], verifier_id: "" };
+    const aggregateVerifierParams: AggregateVerifierParams = { verify_params: [], sub_verifier_ids: [], verifier_id: "" };
     const aggregateIdTokenSeeds = [];
     let aggregateVerifierId = "";
     for (let index = 0; index < subVerifierDetailsArray.length; index += 1) {
@@ -422,7 +423,7 @@ class CustomAuth {
     verifierId: string, // unique identifier for user e.g. sub on jwt
     subVerifierInfoArray: TorusSubVerifierInfo[]
   ): Promise<TorusKey> {
-    const aggregateVerifierParams = { verify_params: [], sub_verifier_ids: [], verifier_id: "" };
+    const aggregateVerifierParams: AggregateVerifierParams = { verify_params: [], sub_verifier_ids: [], verifier_id: "" };
     const aggregateIdTokenSeeds = [];
     let extraVerifierParams = {};
     for (let index = 0; index < subVerifierInfoArray.length; index += 1) {
@@ -442,8 +443,8 @@ class CustomAuth {
     await this.init({ skipInit: true });
     const url = new URL(window.location.href);
     const hash = url.hash.substring(1);
-    const queryParams = {};
-    url.searchParams.forEach((value, key) => {
+    const queryParams: Record<string, string> = {};
+    url.searchParams.forEach((value: string, key: string) => {
       queryParams[key] = value;
     });
 
@@ -494,10 +495,10 @@ class CustomAuth {
         methodArgs.singleLogin.queryParameters = queryParams;
         result = await this.triggerHybridAggregateLogin(methodArgs);
       }
-    } catch (err) {
+    } catch (err: unknown) {
       log.error(err);
       return {
-        error: `Could not get result from torus nodes \n ${err?.message || ""}`,
+        error: `Could not get result from torus nodes \n ${(err as Error)?.message || ""}`,
         state: instanceParameters || {},
         method,
         result: {},

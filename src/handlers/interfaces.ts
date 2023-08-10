@@ -349,7 +349,7 @@ export interface Auth0ClientOptions extends BaseLoginOptions {
   /**
    * The field in jwt token which maps to verifier id
    */
-  verifierIdField?: string;
+  verifierIdField?: keyof Auth0UserInfo;
 
   /**
    * Whether the verifier id field is case sensitive
@@ -417,3 +417,14 @@ export interface RedirectResult {
   hashParameters?: Record<string, string>;
   args: SingleLoginParams | AggregateLoginParams | HybridAggregateLoginParams;
 }
+
+export type AUTH0_JWT_LOGIN_TYPE = "apple" | "github" | "linkedin" | "twitter" | "weibo" | "line" | "email_password" | "passwordless";
+
+export type AggregateVerifierParams = {
+  verify_params: {
+    verifier_id: string;
+    idtoken: string;
+  }[];
+  sub_verifier_ids: string[];
+  verifier_id: string;
+};

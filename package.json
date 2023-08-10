@@ -32,13 +32,13 @@
   },
   "dependencies": {
     "@chaitanyapotti/register-service-worker": "^1.7.3",
-    "@toruslabs/broadcast-channel": "^7.0.0",
-    "@toruslabs/constants": "^11.0.0",
-    "@toruslabs/eccrypto": "^3.0.0",
-    "@toruslabs/fetch-node-details": "^11.0.1",
-    "@toruslabs/http-helpers": "^4.0.0",
-    "@toruslabs/metadata-helpers": "^4.0.0",
-    "@toruslabs/torus.js": "^10.0.5",
+    "@toruslabs/broadcast-channel": "^8.0.0",
+    "@toruslabs/constants": "^13.0.0",
+    "@toruslabs/eccrypto": "^4.0.0",
+    "@toruslabs/fetch-node-details": "^13.0.0",
+    "@toruslabs/http-helpers": "^5.0.0",
+    "@toruslabs/metadata-helpers": "^5.0.0",
+    "@toruslabs/torus.js": "^11.0.0",
     "bowser": "^2.11.0",
     "events": "^3.3.0",
     "jwt-decode": "^3.1.2",
@@ -46,26 +46,17 @@
     "loglevel": "^1.8.1"
   },
   "devDependencies": {
-    "@sentry/types": "^7.59.1",
-    "@toruslabs/eslint-config-typescript": "^2.0.0",
-    "@toruslabs/torus-scripts": "^4.0.0",
+    "@sentry/types": "^7.62.0",
+    "@toruslabs/config": "^2.0.1",
+    "@toruslabs/eslint-config-typescript": "^3.0.0",
+    "@toruslabs/torus-scripts": "^5.0.2",
     "@types/lodash.merge": "^4.6.7",
-    "@typescript-eslint/eslint-plugin": "^5.61.0",
-    "@typescript-eslint/parser": "^5.61.0",
-    "eslint": "^8.45.0",
-    "eslint-plugin-import": "^2.27.5",
-    "eslint-plugin-mocha": "^10.1.0",
-    "eslint-plugin-n": "^15.7.0",
-    "eslint-plugin-prettier": "^4.2.1",
-    "eslint-plugin-promise": "^6.1.1",
-    "eslint-plugin-simple-import-sort": "^10.0.0",
-    "eslint-plugin-tsdoc": "^0.2.17",
-    "eslint-plugin-vue": "^9.15.1",
+    "eslint": "^8.46.0",
     "husky": "^8.0.3",
     "lint-staged": "^13.2.3",
-    "prettier": "^2.8.8",
+    "prettier": "^3.0.1",
     "rimraf": "^5.0.1",
-    "typescript": "^4.9.4"
+    "typescript": "^5.1.6"
   },
   "author": "Torus Labs",
   "license": "MIT",
@@ -95,7 +86,7 @@
     "direct auth"
   ],
   "engines": {
-    "node": ">=16.18.1",
-    "npm": ">=8.x"
+    "node": ">=18.x",
+    "npm": ">=9.x"
   }
 }
