@@ -101,14 +101,14 @@ export default defineComponent({
         [COGNITO]: { domain: COGNITO_AUTH_DOMAIN, identity_provider: "Google", response_type: "token", user_info_endpoint: "userInfo" },
         [REDDIT]: { domain: AUTH_DOMAIN, connection: "Reddit", verifierIdField: "name", isVerifierIdCaseSensitive: false },
         [TORUS_EMAIL_PASSWORDLESS]: {
-          domain: "https://lrc.auth.openlogin.com",
+          domain: "https://develop-passwordless.web3auth.io",
           verifierIdField: "name",
           isVerifierIdCaseSensitive: false,
           login_hint: this.login_hint,
           connection: "email",
         },
         [TORUS_SMS_PASSWORDLESS]: {
-          domain: "https://lrc.auth.openlogin.com",
+          domain: "https://develop-passwordless.web3auth.io",
           verifierIdField: "name",
           login_hint: this.login_hint,
           connection: "sms",

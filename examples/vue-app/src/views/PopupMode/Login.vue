@@ -190,7 +190,7 @@ export default defineComponent({
       login_hint: "",
       isExpanded: true,
       networkList: [...Object.values(TORUS_SAPPHIRE_NETWORK), ...Object.values(TORUS_LEGACY_NETWORK)],
-      selectedNetwork: TORUS_SAPPHIRE_NETWORK.SAPPHIRE_DEVNET,
+      selectedNetwork: TORUS_LEGACY_NETWORK.TESTNET,
     };
   },
   computed: {
@@ -209,14 +209,14 @@ export default defineComponent({
         [REDDIT]: { domain: AUTH_DOMAIN, connection: "Reddit", verifierIdField: "name", isVerifierIdCaseSensitive: false },
         [COGNITO]: { domain: COGNITO_AUTH_DOMAIN, identity_provider: "Google", response_type: "token", user_info_endpoint: "userInfo" },
         [TORUS_EMAIL_PASSWORDLESS]: {
-          domain: "https://lrc.auth.openlogin.com",
+          domain: "https://develop-passwordless.web3auth.io",
           verifierIdField: "name",
           isVerifierIdCaseSensitive: false,
           login_hint: this.login_hint,
           connection: "email",
         },
         [TORUS_SMS_PASSWORDLESS]: {
-          domain: "https://lrc.auth.openlogin.com",
+          domain: "https://develop-passwordless.web3auth.io",
           verifierIdField: "name",
           login_hint: this.login_hint,
           connection: "sms",
