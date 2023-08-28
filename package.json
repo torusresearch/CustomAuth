@@ -1,6 +1,6 @@
 {
   "name": "@toruslabs/customauth",
-  "version": "16.0.1",
+  "version": "16.0.2",
   "description": "CustomAuth login with torus to get user private key",
   "main": "dist/customauth.cjs.js",
   "module": "dist/customauth.esm.js",
