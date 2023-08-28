@@ -38,7 +38,7 @@
     "@toruslabs/fetch-node-details": "^13.0.1",
     "@toruslabs/http-helpers": "^5.0.0",
     "@toruslabs/metadata-helpers": "^5.0.0",
-    "@toruslabs/torus.js": "^11.0.2",
+    "@toruslabs/torus.js": "^11.0.3",
     "bowser": "^2.11.0",
     "events": "^3.3.0",
     "jwt-decode": "^3.1.2",
@@ -51,12 +51,12 @@
     "@toruslabs/eslint-config-typescript": "^3.0.0",
     "@toruslabs/torus-scripts": "^5.0.2",
     "@types/lodash.merge": "^4.6.7",
-    "eslint": "^8.47.0",
+    "eslint": "^8.48.0",
     "husky": "^8.0.3",
     "lint-staged": "^14.0.1",
     "prettier": "^3.0.2",
     "rimraf": "^5.0.1",
-    "typescript": "^5.1.6"
+    "typescript": "^5.2.2"
   },
   "author": "Torus Labs",
   "license": "MIT",
