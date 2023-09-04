@@ -69,7 +69,8 @@ class HomePage extends React.PureComponent<IProps, IState> {
         baseUrl: `${window.location.origin}/serviceworker`,
         enableLogging: true,
         network: "testnet", // details for test net
-      });
+        web3AuthClientId: "torus-default",
+      } as any);
 
       await torusdirectsdk.init({ skipSw: false });
 

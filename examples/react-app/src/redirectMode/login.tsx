@@ -45,7 +45,8 @@ class RedirectMode extends React.Component<IProps, IState> {
         enableLogging: true,
         uxMode: UX_MODE.REDIRECT,
         network: "testnet",
-      });
+        web3AuthClientId: "torus-default",
+      } as any);
       await torusdirectsdk.init({ skipSw: true });
 
       this.setState({ torusdirectsdk });
