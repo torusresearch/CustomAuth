@@ -1,4 +1,5 @@
 import { BroadcastChannel } from "@toruslabs/broadcast-channel";
+import base64url from "base64url";
 
 import { LOGIN_TYPE, UX_MODE, UX_MODE_TYPE } from "../utils/enums";
 import { broadcastChannelOptions, getTimeout, randomId } from "../utils/helpers";
@@ -26,7 +27,7 @@ abstract class AbstractLoginHandler implements ILoginHandler {
 
   get state(): string {
     return encodeURIComponent(
-      window.btoa(
+      base64url.encode(
         JSON.stringify({
           ...(this.customState || {}),
           instanceId: this.nonce,

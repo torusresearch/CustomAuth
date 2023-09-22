@@ -39,6 +39,7 @@
     "@toruslabs/http-helpers": "^5.0.0",
     "@toruslabs/metadata-helpers": "^5.0.0",
     "@toruslabs/torus.js": "^11.0.5",
+    "base64url": "^3.0.1",
     "bowser": "^2.11.0",
     "events": "^3.3.0",
     "jwt-decode": "^3.1.2",
