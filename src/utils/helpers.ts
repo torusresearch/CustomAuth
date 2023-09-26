@@ -1,3 +1,4 @@
+import base64url from "base64url";
 import Bowser from "bowser";
 
 import { Auth0UserInfo, TorusGenericObject } from "../handlers/interfaces";
@@ -92,10 +93,10 @@ export const handleRedirectParameters = (
   let instanceParameters: TorusGenericObject = {};
   let error = "";
   if (Object.keys(hashParameters).length > 0 && hashParameters.state) {
-    instanceParameters = JSON.parse(atob(decodeURIComponent(decodeURIComponent(hashParameters.state)))) || {};
+    instanceParameters = JSON.parse(base64url.decode(decodeURIComponent(decodeURIComponent(hashParameters.state)))) || {};
     error = hashParameters.error_description || hashParameters.error || error;
   } else if (Object.keys(queryParameters).length > 0 && queryParameters.state) {
-    instanceParameters = JSON.parse(atob(decodeURIComponent(decodeURIComponent(queryParameters.state)))) || {};
+    instanceParameters = JSON.parse(base64url.decode(decodeURIComponent(decodeURIComponent(queryParameters.state)))) || {};
     if (queryParameters.error) error = queryParameters.error;
   }
   return { error, instanceParameters, hashParameters };

@@ -1,4 +1,5 @@
 import { get } from "@toruslabs/http-helpers";
+import base64url from "base64url";
 import deepmerge from "lodash.merge";
 
 import { LOGIN_TYPE, UX_MODE_TYPE } from "../utils/enums";
@@ -68,7 +69,7 @@ export default class WebAuthnHandler extends AbstractLoginHandler {
           rpOrigin,
           credId,
           transports,
-        } = JSON.parse(atob(extraParams)));
+        } = JSON.parse(base64url.decode(extraParams)));
       } catch (error) {
         log.warn("unable to parse extraParams", error);
         ({
