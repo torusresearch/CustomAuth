@@ -49,6 +49,7 @@ class PopupHandler extends EventEmitter {
 
   open(): Promise<void> {
     this.window = window.open(this.url.href, this.target, this.features);
+    if (!this.window) throw new Error("popup window is blocked");
     if (this.window?.focus) this.window.focus();
     return Promise.resolve();
   }
