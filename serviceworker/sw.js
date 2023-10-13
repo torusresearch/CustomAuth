@@ -135,8 +135,8 @@ self.addEventListener("fetch", function (event) {
       <h1 class="title content" id="closeText" style="display: none;">You can close this window now</h1>
     </div>
     <script
-      src="https://scripts.toruswallet.io/broadcastChannel_8_0_1.js"
-      integrity="sha384-AgVJJZzZhk+edkFFI+WQ6OsQB11p8qB5eqCufUfHYfMvNLSwv5Bj6cz8WcWc31DH"
+      src="https://scripts.toruswallet.io/broadcastChannel_9_0_0.js"
+      integrity="sha384-nbxq0ciPTNmGeCrATAjgJtLS/hHp33KxBqDFvi9lsOK7eqDNDLiWdUrocSTxW7xp"
       crossorigin="anonymous"
     ></script>
     <script>

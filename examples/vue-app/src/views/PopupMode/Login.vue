@@ -230,7 +230,7 @@ export default defineComponent({
         if (!this.torusdirectsdk) return;
         const jwtParams = this.loginToConnectionMap[this.selectedVerifier] || {};
         const { typeOfLogin, clientId, verifier } = verifierMap[this.selectedVerifier];
-        console.log(hash, queryParameters, typeOfLogin, clientId, verifier, jwtParams);
+        console.log(hash, queryParameters, typeOfLogin, clientId, verifier, jwtParams, this.torusdirectsdk);
         const loginDetails: TorusLoginResponse = await this.torusdirectsdk.triggerLogin({
           typeOfLogin,
           verifier,

@@ -93,7 +93,13 @@ abstract class AbstractLoginHandler implements ILoginHandler {
           };
           window.addEventListener("message", postMessageEventHandler);
         }
-        verifierWindow.open();
+        try {
+          verifierWindow.open();
+        } catch (error) {
+          log.error(error);
+          reject(error);
+          return;
+        }
         verifierWindow.once("close", () => {
           if (bc) bc.close();
           reject(new Error("user closed popup"));
