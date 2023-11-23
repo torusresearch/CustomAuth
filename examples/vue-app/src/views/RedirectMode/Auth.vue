@@ -263,7 +263,7 @@ export default defineComponent({
     });
     this.loginDetails = loginDetails;
     setTimeout(() => {
-      this.provider = providerInstance.provider;
+      this.provider = providerInstance;
       this.console("Login Details", loginDetails);
     }, 1000);
   },

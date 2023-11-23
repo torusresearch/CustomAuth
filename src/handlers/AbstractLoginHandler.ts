@@ -1,4 +1,3 @@
-import { BroadcastChannel } from "@toruslabs/broadcast-channel";
 import base64url from "base64url";
 
 import { LOGIN_TYPE, UX_MODE, UX_MODE_TYPE } from "../utils/enums";
@@ -39,13 +38,15 @@ abstract class AbstractLoginHandler implements ILoginHandler {
     );
   }
 
-  handleLoginWindow(params: { locationReplaceOnRedirect?: boolean; popupFeatures?: string }): Promise<LoginWindowResponse> {
+  async handleLoginWindow(params: { locationReplaceOnRedirect?: boolean; popupFeatures?: string }): Promise<LoginWindowResponse> {
     const verifierWindow = new PopupHandler({ url: this.finalURL, features: params.popupFeatures, timeout: getTimeout(this.typeOfLogin) });
     if (this.uxMode === UX_MODE.REDIRECT) {
       verifierWindow.redirect(params.locationReplaceOnRedirect);
     } else {
+      const { BroadcastChannel } = await import("@toruslabs/broadcast-channel");
       return new Promise<LoginWindowResponse>((resolve, reject) => {
-        let bc: BroadcastChannel;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        let bc: any;
         const handleData = async (ev: { error: string; data: PopupResponse }) => {
           try {
             const { error, data } = ev;
@@ -76,8 +77,11 @@ abstract class AbstractLoginHandler implements ILoginHandler {
         };
 
         if (!this.redirectToOpener) {
-          bc = new BroadcastChannel(`redirect_channel_${this.nonce}`, broadcastChannelOptions);
-          bc.addEventListener("message", async (ev) => {
+          bc = new BroadcastChannel<{
+            error: string;
+            data: PopupResponse;
+          }>(`redirect_channel_${this.nonce}`, broadcastChannelOptions);
+          bc.addEventListener("message", async (ev: { error: string; data: PopupResponse }) => {
             await handleData(ev);
             bc.close();
             verifierWindow.close();

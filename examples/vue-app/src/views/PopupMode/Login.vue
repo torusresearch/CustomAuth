@@ -254,7 +254,7 @@ export default defineComponent({
           privKey: privateKey,
         });
 
-        this.provider = providerInstance.provider;
+        this.provider = providerInstance;
 
         this.loginResponse = loginDetails;
 
