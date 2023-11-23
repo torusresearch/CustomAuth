@@ -1,5 +1,5 @@
 import { get } from "@toruslabs/http-helpers";
-import jwtDecode from "jwt-decode";
+import { jwtDecode } from "jwt-decode";
 import deepmerge from "lodash.merge";
 import log from "loglevel";
 

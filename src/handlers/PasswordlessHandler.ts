@@ -1,6 +1,5 @@
-import { BroadcastChannel } from "@toruslabs/broadcast-channel";
 import { get, post } from "@toruslabs/http-helpers";
-import jwtDecode from "jwt-decode";
+import { jwtDecode } from "jwt-decode";
 import deepmerge from "lodash.merge";
 
 import { LOGIN_TYPE, UX_MODE_TYPE } from "../utils/enums";
@@ -72,7 +71,8 @@ export default class JwtHandler extends AbstractLoginHandler {
     }
   }
 
-  handleLoginWindow(): Promise<LoginWindowResponse> {
+  async handleLoginWindow(): Promise<LoginWindowResponse> {
+    const { BroadcastChannel } = await import("@toruslabs/broadcast-channel");
     return new Promise<LoginWindowResponse>((resolve, reject) => {
       if (this.redirectToOpener) {
         reject(new Error("Cannot use redirect to opener for passwordless"));
@@ -99,7 +99,10 @@ export default class JwtHandler extends AbstractLoginHandler {
           reject(error);
         }
       };
-      const bc = new BroadcastChannel(`redirect_channel_${this.nonce}`, broadcastChannelOptions);
+      const bc = new BroadcastChannel<{
+        error: string;
+        data: PopupResponse;
+      }>(`redirect_channel_${this.nonce}`, broadcastChannelOptions);
       bc.addEventListener("message", async (ev) => {
         handleData(ev);
         bc.close();
