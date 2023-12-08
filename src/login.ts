@@ -126,7 +126,7 @@ class CustomAuth {
   }
 
   async triggerLogin(args: SingleLoginParams): Promise<TorusLoginResponse> {
-    const { verifier, typeOfLogin, clientId, jwtParams, hash, queryParameters, customState, registerOnly } = args;
+    const { verifier, verifierID, idToken, accessToken, typeOfLogin, clientId, jwtParams, customState, registerOnly } = args;
     log.info("Verifier: ", verifier);
     if (!this.isInitialized) {
       throw new Error("Not initialized yet");
@@ -143,48 +143,27 @@ class CustomAuth {
       customState,
       registerOnly,
     });
-    let loginParams: LoginWindowResponse;
-    if (hash && queryParameters) {
-      const { error, hashParameters, instanceParameters } = handleRedirectParameters(hash, queryParameters);
-      if (error) throw new Error(error);
-      const { access_token: accessToken, id_token: idToken, ...rest } = hashParameters;
-      // State has to be last here otherwise it will be overwritten
-      loginParams = { accessToken, idToken, ...rest, state: instanceParameters };
-    } else {
-      this.storageHelper.clearOrphanedLoginDetails();
-      if (this.config.uxMode === UX_MODE.REDIRECT) {
-        await this.storageHelper.storeLoginDetails({ method: TORUS_METHOD.TRIGGER_LOGIN, args }, loginHandler.nonce);
-      }
-      loginParams = await loginHandler.handleLoginWindow({
-        locationReplaceOnRedirect: this.config.locationReplaceOnRedirect,
-        popupFeatures: this.config.popupFeatures,
-      });
-      if (this.config.uxMode === UX_MODE.REDIRECT) return null;
+    this.storageHelper.clearOrphanedLoginDetails();
+    if (this.config.uxMode === UX_MODE.REDIRECT) {
+      await this.storageHelper.storeLoginDetails({ method: TORUS_METHOD.TRIGGER_LOGIN, args }, loginHandler.nonce);
     }
-
-    const userInfo = await loginHandler.getUserInfo(loginParams);
+    if (this.config.uxMode === UX_MODE.REDIRECT) return null;
     if (registerOnly) {
       const nodeTx = this.sentryHandler.startTransaction({
         name: SENTRY_TXNS.FETCH_NODE_DETAILS,
       });
-      const nodeDetails = await this.nodeDetailManager.getNodeDetails({ verifier, verifierId: userInfo.verifierId });
+      const nodeDetails = await this.nodeDetailManager.getNodeDetails({ verifier, verifierId: verifierID });
+
       this.sentryHandler.finishTransaction(nodeTx);
       const lookupTx = this.sentryHandler.startTransaction({
         name: SENTRY_TXNS.PUB_ADDRESS_LOOKUP,
       });
       const torusPubKey = await this.torus.getPublicAddress(nodeDetails.torusNodeEndpoints, nodeDetails.torusNodePub, {
         verifier,
-        verifierId: userInfo.verifierId,
+        verifierId: verifierID,
       });
       this.sentryHandler.finishTransaction(lookupTx);
-      const res = {
-        userInfo: {
-          ...userInfo,
-          ...loginParams,
-        },
-      };
       return {
-        ...res,
         ...torusPubKey,
         finalKeyData: { ...torusPubKey.finalKeyData, privKey: undefined },
         oAuthKeyData: { ...torusPubKey.finalKeyData, privKey: undefined },
@@ -193,19 +172,9 @@ class CustomAuth {
       };
     }
 
-    const torusKey = await this.getTorusKey(
-      verifier,
-      userInfo.verifierId,
-      { verifier_id: userInfo.verifierId },
-      loginParams.idToken || loginParams.accessToken,
-      userInfo.extraVerifierParams
-    );
+    const torusKey = await this.getTorusKey(verifier, verifierID, { verifier_id: verifierID }, idToken || accessToken);
     return {
       ...torusKey,
-      userInfo: {
-        ...userInfo,
-        ...loginParams,
-      },
     };
   }
 
@@ -368,7 +337,6 @@ class CustomAuth {
     const [torusKey1, torusKey2] = await Promise.all([torusKey1Promise, torusKey2Promise]);
     return {
       singleLogin: {
-        userInfo: { ...userInfo, ...loginParams },
         ...torusKey1,
       },
       aggregateLogins: [torusKey2],

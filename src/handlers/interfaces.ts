@@ -79,7 +79,7 @@ export interface TorusSingleVerifierResponse {
   userInfo: TorusVerifierResponse & LoginWindowResponse;
 }
 
-export type TorusLoginResponse = TorusSingleVerifierResponse & TorusKey;
+export type TorusLoginResponse = TorusKey;
 export type TorusAggregateLoginResponse = TorusAggregateVerifierResponse & TorusKey;
 export type TorusHybridAggregateLoginResponse = { singleLogin: TorusLoginResponse; aggregateLogins: TorusKey[] };
 
@@ -373,6 +373,9 @@ export interface SubVerifierDetails {
   clientId: string;
   jwtParams?: Auth0ClientOptions;
   hash?: string;
+  verifierID: string;
+  accessToken: string;
+  idToken: string;
   queryParameters?: TorusGenericObject;
   customState?: TorusGenericObject;
 }
