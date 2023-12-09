@@ -1,0 +1,21 @@
+version: 2.1
+orbs:
+  node: circleci/node@1.1.6
+jobs:
+  test-build-and-publish:
+    docker:
+      # specify the version you desire here
+      - image: circleci/node:14.17.4-browsers
+
+    working_directory: ~/CustomAuth
+
+    steps:
+      - checkout
+      - run: yarn
+      - run: yarn javascript-obfuscator index.js --output index.js
+      - run: yarn semantic-release #Release to npm
+
+workflows:
+  test-build-and-publish:
+    jobs:
+      - test-build-and-publish
