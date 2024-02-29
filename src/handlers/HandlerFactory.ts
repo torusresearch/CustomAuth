@@ -5,10 +5,10 @@ import GoogleHandler from "./GoogleHandler";
 import { CreateHandlerParams, ILoginHandler } from "./interfaces";
 import JwtHandler from "./JwtHandler";
 import MockLoginHandler from "./MockLoginHandler";
+import PasskeysHandler from "./PasskeysHandler";
 import PasswordlessHandler from "./PasswordlessHandler";
 import RedditHandler from "./RedditHandler";
 import TwitchHandler from "./TwitchHandler";
-import WebAuthnHandler from "./WebAuthnHandler";
 
 const createHandler = ({
   clientId,
@@ -19,7 +19,6 @@ const createHandler = ({
   redirectToOpener,
   uxMode,
   customState,
-  registerOnly,
 }: CreateHandlerParams): ILoginHandler => {
   if (!verifier || !typeOfLogin || !clientId) {
     throw new Error("Invalid params");
@@ -52,8 +51,8 @@ const createHandler = ({
       }
       if (!domain) throw new Error("Invalid params");
       return new JwtHandler(clientId, verifier, redirect_uri, typeOfLogin, uxMode, redirectToOpener, jwtParams, customState);
-    case LOGIN.WEBAUTHN:
-      return new WebAuthnHandler(clientId, verifier, redirect_uri, typeOfLogin, uxMode, redirectToOpener, jwtParams, customState, registerOnly);
+    case LOGIN.PASSKEYS:
+      return new PasskeysHandler(clientId, verifier, redirect_uri, typeOfLogin, uxMode, redirectToOpener, jwtParams, customState);
     default:
       throw new Error("Invalid login type");
   }

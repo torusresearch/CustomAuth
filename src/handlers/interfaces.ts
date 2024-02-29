@@ -25,15 +25,17 @@ export interface ExtraParams {
   [key: string]: unknown;
 }
 
-export type WebAuthnExtraParams = {
+export type PasskeyExtraParams = {
   signature?: string;
   clientDataJSON?: string;
   authenticatorData?: string;
   publicKey?: string;
   challenge?: string;
   rpOrigin?: string;
+  rpId?: string;
   credId?: string;
   transports?: AuthenticatorTransport[];
+  username?: string;
 };
 export interface TorusVerifierResponse {
   email: string;
@@ -44,14 +46,13 @@ export interface TorusVerifierResponse {
   verifierId: string;
   typeOfLogin: LOGIN_TYPE;
   ref?: string;
-  registerOnly?: boolean;
-  extraVerifierParams?: WebAuthnExtraParams;
+  extraVerifierParams?: PasskeyExtraParams;
 }
 
 export interface TorusSubVerifierInfo {
   verifier: string;
   idToken: string;
-  extraVerifierParams?: WebAuthnExtraParams;
+  extraVerifierParams?: PasskeyExtraParams;
 }
 
 export interface LoginWindowResponse {
@@ -386,7 +387,6 @@ export interface CreateHandlerParams {
   redirectToOpener?: boolean;
   jwtParams?: Auth0ClientOptions;
   customState?: TorusGenericObject;
-  registerOnly?: boolean;
 }
 
 export interface RedirectResultParams {
@@ -394,7 +394,7 @@ export interface RedirectResultParams {
   clearLoginDetails?: boolean;
 }
 
-export type SingleLoginParams = SubVerifierDetails & { registerOnly?: boolean };
+export type SingleLoginParams = SubVerifierDetails;
 
 export interface AggregateLoginParams {
   aggregateVerifierType: AGGREGATE_VERIFIER_TYPE;
@@ -427,4 +427,18 @@ export type AggregateVerifierParams = {
   }[];
   sub_verifier_ids: string[];
   verifier_id: string;
+};
+
+export type PasskeySessionData = {
+  verifier_id: string;
+  signature: string;
+  clientDataJSON: string;
+  authenticatorData: string;
+  publicKey: string;
+  challenge: string;
+  rpOrigin: string;
+  rpId: string;
+  credId: string;
+  transports: AuthenticatorTransport[];
+  username: string;
 };
