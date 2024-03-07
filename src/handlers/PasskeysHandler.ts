@@ -6,7 +6,7 @@ import { fetchDataFromBroadcastServer } from "../utils/sessionHelper";
 import AbstractLoginHandler from "./AbstractLoginHandler";
 import { Auth0ClientOptions, LoginWindowResponse, PasskeySessionData, TorusGenericObject, TorusVerifierResponse } from "./interfaces";
 
-export default class WebAuthnHandler extends AbstractLoginHandler {
+export default class PasskeysHandler extends AbstractLoginHandler {
   constructor(
     readonly clientId: string,
     readonly verifier: string,
@@ -68,7 +68,7 @@ export default class WebAuthnHandler extends AbstractLoginHandler {
 
     return {
       email: "",
-      name: "WebAuthn Login",
+      name: "Passkeys Login",
       profileImage: "",
       verifier: this.verifier,
       verifierId,
