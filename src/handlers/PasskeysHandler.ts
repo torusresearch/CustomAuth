@@ -1,6 +1,5 @@
 import base64url from "base64url";
 import deepmerge from "lodash.merge";
-import log from "loglevel";
 
 import { LOGIN_TYPE, UX_MODE_TYPE } from "../utils/enums";
 import { fetchDataFromBroadcastServer } from "../utils/sessionHelper";
@@ -24,7 +23,8 @@ export default class WebAuthnHandler extends AbstractLoginHandler {
 
   setFinalUrl(): void {
     const { passkeysHostUrl } = this.customState || {};
-    const finalUrl = passkeysHostUrl ? new URL(passkeysHostUrl) : new URL("https://passkeys.web3auth.io");
+    if (!passkeysHostUrl) throw new Error("Invalid passkeys url.");
+    const finalUrl = new URL(passkeysHostUrl);
     const clonedParams = JSON.parse(JSON.stringify(this.jwtParams || {}));
     const finalJwtParams = deepmerge(
       {
@@ -37,15 +37,13 @@ export default class WebAuthnHandler extends AbstractLoginHandler {
     Object.keys(finalJwtParams).forEach((key) => {
       if (finalJwtParams[key]) finalUrl.searchParams.append(key, finalJwtParams[key]);
     });
-    log.info("final url", finalUrl);
     this.finalURL = finalUrl;
   }
 
-  async getUserInfo(parameters: LoginWindowResponse): Promise<TorusVerifierResponse> {
+  async getUserInfo(parameters: LoginWindowResponse, storageServerUrl?: string): Promise<TorusVerifierResponse> {
     const { idToken, extraParams } = parameters;
 
     const { sessionId } = JSON.parse(base64url.decode(extraParams)) || {};
-    log.info("sessionId", sessionId);
     if (!sessionId) {
       throw new Error("sessionId not found");
     }
@@ -62,7 +60,7 @@ export default class WebAuthnHandler extends AbstractLoginHandler {
       credId,
       transports,
       username,
-    } = await fetchDataFromBroadcastServer<PasskeySessionData>(sessionId);
+    } = await fetchDataFromBroadcastServer<PasskeySessionData>(sessionId, storageServerUrl);
 
     if (signature !== idToken) {
       throw new Error("idtoken should be equal to signature");

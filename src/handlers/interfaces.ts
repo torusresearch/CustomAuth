@@ -68,7 +68,7 @@ export interface ILoginHandler {
   clientId: string;
   nonce: string;
   finalURL: URL;
-  getUserInfo(params: LoginWindowResponse): Promise<TorusVerifierResponse>;
+  getUserInfo(params: LoginWindowResponse, storageServerUrl?: string): Promise<TorusVerifierResponse>;
   handleLoginWindow(params: { locationReplaceOnRedirect?: boolean; popupFeatures?: string }): Promise<LoginWindowResponse>;
 }
 

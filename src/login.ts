@@ -58,7 +58,7 @@ class CustomAuth {
     uxMode = UX_MODE.POPUP,
     locationReplaceOnRedirect = false,
     popupFeatures,
-    storageServerUrl = "https://broadcast-server.tor.us",
+    storageServerUrl = "https://session.web3auth.io",
     sentry,
     enableOneKey = false,
     web3AuthClientId,
