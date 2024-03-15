@@ -24,6 +24,7 @@ import {
 import { registerServiceWorker } from "./registerServiceWorker";
 import SentryHandler from "./sentry";
 import { AGGREGATE_VERIFIER, SENTRY_TXNS, TORUS_METHOD, UX_MODE, UX_MODE_TYPE } from "./utils/enums";
+import { serializeError } from "./utils/error";
 import { handleRedirectParameters, isFirefox, padUrlString } from "./utils/helpers";
 import log from "./utils/loglevel";
 import StorageHelper from "./utils/StorageHelper";
@@ -465,9 +466,10 @@ class CustomAuth {
         result = await this.triggerHybridAggregateLogin(methodArgs);
       }
     } catch (err: unknown) {
-      log.error(err);
+      const serializedError = await serializeError(err);
+      log.error(serializedError);
       return {
-        error: `Could not get result from torus nodes \n ${(err as Error)?.message || ""}`,
+        error: `Could not get result from torus nodes. \n ${serializedError.message || ""}`,
         state: instanceParameters || {},
         method,
         result: {},
