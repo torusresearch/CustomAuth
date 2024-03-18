@@ -83,12 +83,12 @@ export default defineComponent({
     console(...args: unknown[]): void {
       const el = document.querySelector("#console>p");
       if (el) {
-        el.innerHTML = JSON.stringify(args || {}, null, 2);
+        el.innerHTML = JSON.stringify(args || {}, (_, v) => (typeof v === "bigint" ? v.toString() : v), 2);
       }
     },
     _handleRedirectParameters(
       hash: string,
-      queryParameters: Record<string, string | null>
+      queryParameters: Record<string, string | null>,
     ): {
       error: string;
       instanceParameters: Record<string, any>;
