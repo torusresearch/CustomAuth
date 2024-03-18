@@ -448,7 +448,7 @@ class CustomAuth {
 
     try {
       if (method === TORUS_METHOD.TRIGGER_LOGIN) {
-        const methodArgs = args as SubVerifierDetails & { registerOnly?: boolean };
+        const methodArgs = args as SubVerifierDetails;
         methodArgs.hash = hash;
         methodArgs.queryParameters = queryParams;
         result = await this.triggerLogin(methodArgs);

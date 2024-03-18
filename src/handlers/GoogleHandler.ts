@@ -10,7 +10,7 @@ export default class GoogleHandler extends AbstractLoginHandler {
 
   private readonly SCOPE: string = "profile email openid";
 
-  private readonly PROMPT: string = "consent select_account";
+  private readonly PROMPT: string = "select_account";
 
   constructor(
     readonly clientId: string,
