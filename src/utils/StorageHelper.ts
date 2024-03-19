@@ -12,7 +12,7 @@ class StorageHelper {
 
   private isInitialized = false;
 
-  private storageServerUrl = "https://broadcast-server.tor.us";
+  private storageServerUrl = "https://session.web3auth.io";
 
   constructor(serverUrl: string) {
     this.storageServerUrl = serverUrl;

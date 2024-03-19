@@ -23,7 +23,7 @@ import {
 } from "./handlers/interfaces";
 import { registerServiceWorker } from "./registerServiceWorker";
 import SentryHandler from "./sentry";
-import { AGGREGATE_VERIFIER, LOGIN, SENTRY_TXNS, TORUS_METHOD, UX_MODE, UX_MODE_TYPE } from "./utils/enums";
+import { AGGREGATE_VERIFIER, SENTRY_TXNS, TORUS_METHOD, UX_MODE, UX_MODE_TYPE } from "./utils/enums";
 import { serializeError } from "./utils/error";
 import { handleRedirectParameters, isFirefox, padUrlString } from "./utils/helpers";
 import log from "./utils/loglevel";
@@ -59,7 +59,7 @@ class CustomAuth {
     uxMode = UX_MODE.POPUP,
     locationReplaceOnRedirect = false,
     popupFeatures,
-    storageServerUrl = "https://broadcast-server.tor.us",
+    storageServerUrl = "https://session.web3auth.io",
     sentry,
     enableOneKey = false,
     web3AuthClientId,
@@ -127,12 +127,11 @@ class CustomAuth {
   }
 
   async triggerLogin(args: SingleLoginParams): Promise<TorusLoginResponse> {
-    const { verifier, typeOfLogin, clientId, jwtParams, hash, queryParameters, customState, registerOnly } = args;
+    const { verifier, typeOfLogin, clientId, jwtParams, hash, queryParameters, customState } = args;
     log.info("Verifier: ", verifier);
     if (!this.isInitialized) {
       throw new Error("Not initialized yet");
     }
-    if (registerOnly && typeOfLogin !== LOGIN.WEBAUTHN) throw new Error("registerOnly flag can only be passed for webauthn");
     const loginHandler: ILoginHandler = createHandler({
       typeOfLogin,
       clientId,
@@ -142,7 +141,6 @@ class CustomAuth {
       jwtParams,
       uxMode: this.config.uxMode,
       customState,
-      registerOnly,
     });
     let loginParams: LoginWindowResponse;
     if (hash && queryParameters) {
@@ -164,35 +162,6 @@ class CustomAuth {
     }
 
     const userInfo = await loginHandler.getUserInfo(loginParams);
-    if (registerOnly) {
-      const nodeTx = this.sentryHandler.startTransaction({
-        name: SENTRY_TXNS.FETCH_NODE_DETAILS,
-      });
-      const nodeDetails = await this.nodeDetailManager.getNodeDetails({ verifier, verifierId: userInfo.verifierId });
-      this.sentryHandler.finishTransaction(nodeTx);
-      const lookupTx = this.sentryHandler.startTransaction({
-        name: SENTRY_TXNS.PUB_ADDRESS_LOOKUP,
-      });
-      const torusPubKey = await this.torus.getPublicAddress(nodeDetails.torusNodeEndpoints, nodeDetails.torusNodePub, {
-        verifier,
-        verifierId: userInfo.verifierId,
-      });
-      this.sentryHandler.finishTransaction(lookupTx);
-      const res = {
-        userInfo: {
-          ...userInfo,
-          ...loginParams,
-        },
-      };
-      return {
-        ...res,
-        ...torusPubKey,
-        finalKeyData: { ...torusPubKey.finalKeyData, privKey: undefined },
-        oAuthKeyData: { ...torusPubKey.finalKeyData, privKey: undefined },
-        metadata: { ...torusPubKey.metadata, nonce: undefined },
-        sessionData: undefined,
-      };
-    }
 
     const torusKey = await this.getTorusKey(
       verifier,
@@ -479,7 +448,7 @@ class CustomAuth {
 
     try {
       if (method === TORUS_METHOD.TRIGGER_LOGIN) {
-        const methodArgs = args as SubVerifierDetails & { registerOnly?: boolean };
+        const methodArgs = args as SubVerifierDetails;
         methodArgs.hash = hash;
         methodArgs.queryParameters = queryParams;
         result = await this.triggerLogin(methodArgs);

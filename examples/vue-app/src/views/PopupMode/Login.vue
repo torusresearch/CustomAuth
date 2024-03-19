@@ -249,7 +249,8 @@ export default defineComponent({
             ticker: "matic",
             tickerName: "matic",
             displayName: "Polygon Mainnet",
-            blockExplorer: "https://polygonscan.com",
+            blockExplorerUrl: "https://polygonscan.com",
+            chainNamespace: "eip155",
           },
           privKey: privateKey,
         });
@@ -354,7 +355,7 @@ export default defineComponent({
         h1.innerHTML = args[0] as string;
       }
       if (el) {
-        el.innerHTML = JSON.stringify(args[1] || {}, null, 2);
+        el.innerHTML = JSON.stringify(args[1] || {}, (_, v) => (typeof v === "bigint" ? v.toString() : v), 2);
       }
       if (consoleBtn) {
         consoleBtn.style.display = "block";
