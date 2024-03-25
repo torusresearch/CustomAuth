@@ -1,10 +1,10 @@
-import { TORUS_NETWORK } from "@toruslabs/fetch-node-details";
-import Torus from "@toruslabs/torus.js";
-import { keccak256 } from "web3-utils";
+import { NodeDetailManager } from "@toruslabs/fetch-node-details";
+import Torus, { keccak256, TorusKey } from "@toruslabs/torus.js";
 
 import createHandler from "./handlers/HandlerFactory";
 import {
   AggregateLoginParams,
+  AggregateVerifierParams,
   CustomAuthArgs,
   ExtraParams,
   HybridAggregateLoginParams,
@@ -17,27 +17,19 @@ import {
   SubVerifierDetails,
   TorusAggregateLoginResponse,
   TorusHybridAggregateLoginResponse,
-  TorusKey,
   TorusLoginResponse,
   TorusSubVerifierInfo,
   TorusVerifierResponse,
 } from "./handlers/interfaces";
 import { registerServiceWorker } from "./registerServiceWorker";
 import SentryHandler from "./sentry";
-import { AGGREGATE_VERIFIER, LOGIN, SENTRY_TXNS, TORUS_METHOD, UX_MODE, UX_MODE_TYPE } from "./utils/enums";
+import { AGGREGATE_VERIFIER, SENTRY_TXNS, TORUS_METHOD, UX_MODE, UX_MODE_TYPE } from "./utils/enums";
+import { serializeError } from "./utils/error";
 import { handleRedirectParameters, isFirefox, padUrlString } from "./utils/helpers";
 import log from "./utils/loglevel";
 import StorageHelper from "./utils/StorageHelper";
 
 class CustomAuth {
-  static torusNodeEndpoints = [
-    "https://lrc1.authnetwork.dev/sss/jrpc",
-    "https://lrc2.authnetwork.dev/sss/jrpc",
-    "https://lrc3.authnetwork.dev/sss/jrpc",
-    "https://lrc4.authnetwork.dev/sss/jrpc",
-    "https://lrc5.authnetwork.dev/sss/jrpc",
-  ];
-
   isInitialized: boolean;
 
   config: {
@@ -51,32 +43,31 @@ class CustomAuth {
 
   torus: Torus;
 
-  // nodeDetailManager: NodeDetailManager;
+  nodeDetailManager: NodeDetailManager;
 
   storageHelper: StorageHelper;
 
   sentryHandler: SentryHandler;
 
-  proxyRequestURL: string;
-
   constructor({
     baseUrl,
-    network = TORUS_NETWORK.MAINNET,
+    network,
     enableLogging = false,
-    enableOneKey = false,
     redirectToOpener = false,
     redirectPathName = "redirect",
     apiKey = "torus-default",
     uxMode = UX_MODE.POPUP,
     locationReplaceOnRedirect = false,
     popupFeatures,
-    metadataUrl = "https://metadata.tor.us",
-    storageServerUrl = "https://broadcast-server.tor.us",
-    networkUrl,
+    storageServerUrl = "https://session.web3auth.io",
     sentry,
-    proxyRequestURL,
+    enableOneKey = false,
+    web3AuthClientId,
+    metadataUrl = "https://metadata.tor.us",
+    keyType = "secp256k1",
   }: CustomAuthArgs) {
-    this.proxyRequestURL = proxyRequestURL;
+    if (!web3AuthClientId) throw new Error("Please provide a valid web3AuthClientId in constructor");
+    if (!network) throw new Error("Please provide a valid network in constructor");
     this.isInitialized = false;
     const baseUri = new URL(baseUrl);
     this.config = {
@@ -90,17 +81,19 @@ class CustomAuth {
       popupFeatures,
     };
     const torus = new Torus({
-      enableOneKey,
-      metadataHost: metadataUrl,
       network,
+      clientId: web3AuthClientId,
+      enableOneKey,
+      legacyMetadataHost: metadataUrl,
+      keyType: keyType,
     });
     Torus.setAPIKey(apiKey);
     this.torus = torus;
-    // this.nodeDetailManager = new NodeDetailManager({ network: networkUrl || network, proxyAddress: CONTRACT_MAP[network] });
+    this.nodeDetailManager = new NodeDetailManager({ network });
     if (enableLogging) log.enableAll();
     else log.disableAll();
     this.storageHelper = new StorageHelper(storageServerUrl);
-    this.sentryHandler = new SentryHandler(sentry, networkUrl);
+    this.sentryHandler = new SentryHandler(sentry);
   }
 
   async init({ skipSw = false, skipInit = false, skipPrefetch = false }: InitParams = {}): Promise<void> {
@@ -135,13 +128,12 @@ class CustomAuth {
     this.isInitialized = true;
   }
 
-  async triggerLogin(args: SingleLoginParams & { useTSS?: boolean }): Promise<TorusLoginResponse> {
-    const { verifier, typeOfLogin, clientId, jwtParams, hash, queryParameters, customState, registerOnly, useTSS } = args;
+  async triggerLogin(args: SingleLoginParams): Promise<TorusLoginResponse> {
+    const { verifier, typeOfLogin, clientId, jwtParams, hash, queryParameters, customState } = args;
     log.info("Verifier: ", verifier);
     if (!this.isInitialized) {
       throw new Error("Not initialized yet");
     }
-    if (registerOnly && typeOfLogin !== LOGIN.WEBAUTHN) throw new Error("registerOnly flag can only be passed for webauthn");
     const loginHandler: ILoginHandler = createHandler({
       typeOfLogin,
       clientId,
@@ -151,7 +143,6 @@ class CustomAuth {
       jwtParams,
       uxMode: this.config.uxMode,
       customState,
-      registerOnly,
     });
     let loginParams: LoginWindowResponse;
     if (hash && queryParameters) {
@@ -173,45 +164,13 @@ class CustomAuth {
     }
 
     const userInfo = await loginHandler.getUserInfo(loginParams);
-    if (registerOnly) {
-      const nodeTx = this.sentryHandler.startTransaction({
-        name: SENTRY_TXNS.FETCH_NODE_DETAILS,
-      });
-      this.sentryHandler.finishTransaction(nodeTx);
-      const lookupTx = this.sentryHandler.startTransaction({
-        name: SENTRY_TXNS.PUB_ADDRESS_LOOKUP,
-      });
-      const torusPubKey = await this.torus.getPublicAddress(CustomAuth.torusNodeEndpoints, { verifier, verifierId: userInfo.verifierId }, true);
-      this.sentryHandler.finishTransaction(lookupTx);
-      const res = {
-        userInfo: {
-          ...userInfo,
-          ...loginParams,
-        },
-      };
-      if (typeof torusPubKey === "string") {
-        throw new Error("should have returned extended pub key");
-      }
-      const torusKey: TorusKey = {
-        pubKey: {
-          pub_key_X: torusPubKey.X,
-          pub_key_Y: torusPubKey.Y,
-        },
-        publicAddress: torusPubKey.address,
-        privateKey: null,
-        metadataNonce: null,
-        signatures: [],
-      };
-      return { ...res, ...torusKey };
-    }
 
     const torusKey = await this.getTorusKey(
       verifier,
       userInfo.verifierId,
       { verifier_id: userInfo.verifierId },
       loginParams.idToken || loginParams.accessToken,
-      userInfo.extraVerifierParams,
-      !!useTSS
+      userInfo.extraVerifierParams
     );
     return {
       ...torusKey,
@@ -222,9 +181,9 @@ class CustomAuth {
     };
   }
 
-  async triggerAggregateLogin(args: AggregateLoginParams & { useTSS?: boolean }): Promise<TorusAggregateLoginResponse> {
+  async triggerAggregateLogin(args: AggregateLoginParams): Promise<TorusAggregateLoginResponse> {
     // This method shall break if any of the promises fail. This behaviour is intended
-    const { aggregateVerifierType, verifierIdentifier, subVerifierDetailsArray, useTSS } = args;
+    const { aggregateVerifierType, verifierIdentifier, subVerifierDetailsArray } = args;
     if (!this.isInitialized) {
       throw new Error("Not initialized yet");
     }
@@ -274,7 +233,7 @@ class CustomAuth {
     }
     const _userInfoArray = await Promise.all(userInfoPromises);
     const userInfoArray = _userInfoArray.map((userInfo) => ({ ...userInfo, aggregateVerifier: verifierIdentifier }));
-    const aggregateVerifierParams = { verify_params: [], sub_verifier_ids: [], verifier_id: "" };
+    const aggregateVerifierParams: AggregateVerifierParams = { verify_params: [], sub_verifier_ids: [], verifier_id: "" };
     const aggregateIdTokenSeeds = [];
     let aggregateVerifierId = "";
     let extraVerifierParams = {};
@@ -289,24 +248,17 @@ class CustomAuth {
       extraVerifierParams = userInfo.extraVerifierParams;
     }
     aggregateIdTokenSeeds.sort();
-    const aggregateIdToken = keccak256(aggregateIdTokenSeeds.join(String.fromCharCode(29))).slice(2);
+    const aggregateIdToken = keccak256(Buffer.from(aggregateIdTokenSeeds.join(String.fromCharCode(29)), "utf8")).slice(2);
     aggregateVerifierParams.verifier_id = aggregateVerifierId;
-    const torusKey = await this.getTorusKey(
-      verifierIdentifier,
-      aggregateVerifierId,
-      aggregateVerifierParams,
-      aggregateIdToken,
-      extraVerifierParams,
-      useTSS
-    );
+    const torusKey = await this.getTorusKey(verifierIdentifier, aggregateVerifierId, aggregateVerifierParams, aggregateIdToken, extraVerifierParams);
     return {
       ...torusKey,
       userInfo: userInfoArray.map((x, index) => ({ ...x, ...loginParamsArray[index] })),
     };
   }
 
-  async triggerHybridAggregateLogin(args: HybridAggregateLoginParams & { useTSS?: boolean }): Promise<TorusHybridAggregateLoginResponse> {
-    const { singleLogin, aggregateLoginParams, useTSS } = args;
+  async triggerHybridAggregateLogin(args: HybridAggregateLoginParams): Promise<TorusHybridAggregateLoginResponse> {
+    const { singleLogin, aggregateLoginParams } = args;
     // This method shall break if any of the promises fail. This behaviour is intended
     if (!this.isInitialized) {
       throw new Error("Not initialized yet");
@@ -360,12 +312,11 @@ class CustomAuth {
       userInfo.verifierId,
       { verifier_id: userInfo.verifierId },
       loginParams.idToken || loginParams.accessToken,
-      userInfo.extraVerifierParams,
-      useTSS
+      userInfo.extraVerifierParams
     );
 
     const { verifierIdentifier, subVerifierDetailsArray } = aggregateLoginParams;
-    const aggregateVerifierParams = { verify_params: [], sub_verifier_ids: [], verifier_id: "" };
+    const aggregateVerifierParams: AggregateVerifierParams = { verify_params: [], sub_verifier_ids: [], verifier_id: "" };
     const aggregateIdTokenSeeds = [];
     let aggregateVerifierId = "";
     for (let index = 0; index < subVerifierDetailsArray.length; index += 1) {
@@ -377,15 +328,14 @@ class CustomAuth {
       aggregateVerifierId = userInfo.verifierId; // using last because idk
     }
     aggregateIdTokenSeeds.sort();
-    const aggregateIdToken = keccak256(aggregateIdTokenSeeds.join(String.fromCharCode(29))).slice(2);
+    const aggregateIdToken = keccak256(Buffer.from(aggregateIdTokenSeeds.join(String.fromCharCode(29)), "utf8")).slice(2);
     aggregateVerifierParams.verifier_id = aggregateVerifierId;
     const torusKey2Promise = this.getTorusKey(
       verifierIdentifier,
       aggregateVerifierId,
       aggregateVerifierParams,
       aggregateIdToken,
-      userInfo.extraVerifierParams,
-      useTSS
+      userInfo.extraVerifierParams
     );
     const [torusKey1, torusKey2] = await Promise.all([torusKey1Promise, torusKey2Promise]);
     return {
@@ -402,57 +352,51 @@ class CustomAuth {
     verifierId: string,
     verifierParams: { verifier_id: string },
     idToken: string,
-    additionalParams?: ExtraParams,
-    useTSS?: boolean
+    additionalParams?: ExtraParams
   ): Promise<TorusKey> {
     const nodeTx = this.sentryHandler.startTransaction({
       name: SENTRY_TXNS.FETCH_NODE_DETAILS,
     });
-    // const { torusNodeEndpoints, torusNodePub, torusIndexes } = await this.nodeDetailManager.getNodeDetails({ verifier, verifierId });
+    const nodeDetails = await this.nodeDetailManager.getNodeDetails({ verifier, verifierId });
     this.sentryHandler.finishTransaction(nodeTx);
-    log.debug("torus-direct/getTorusKey", { torusNodeEndpoints: CustomAuth.torusNodeEndpoints });
 
-    const pubLookupTx = this.sentryHandler.startTransaction({
-      name: SENTRY_TXNS.PUB_ADDRESS_LOOKUP,
-    });
-    this.sentryHandler.finishTransaction(pubLookupTx);
+    if (this.torus.isLegacyNetwork) {
+      // Call getPublicAddress to do keyassign for legacy networks which are not migrated
+      const pubLookupTx = this.sentryHandler.startTransaction({
+        name: SENTRY_TXNS.PUB_ADDRESS_LOOKUP,
+      });
+      const address = await this.torus.getPublicAddress(nodeDetails.torusNodeEndpoints, nodeDetails.torusNodePub, { verifier, verifierId });
+      this.sentryHandler.finishTransaction(pubLookupTx);
+      log.debug("torus-direct/getTorusKey", { getPublicAddress: address });
+    }
+
+    log.debug("torus-direct/getTorusKey", { torusNodeEndpoints: nodeDetails.torusNodeEndpoints });
 
     const sharesTx = this.sentryHandler.startTransaction({
       name: SENTRY_TXNS.FETCH_SHARES,
     });
-    const shares = await this.torus.retrieveShares(CustomAuth.torusNodeEndpoints, verifier, verifierParams, idToken, {
-      ...additionalParams,
-      ...(useTSS && { proxyRequestURL: this.proxyRequestURL }),
-    });
+    const sharesResponse = await this.torus.retrieveShares(
+      nodeDetails.torusNodeEndpoints,
+      nodeDetails.torusIndexes,
+      verifier,
+      verifierParams,
+      idToken,
+      nodeDetails.torusNodePub,
+      {
+        ...additionalParams,
+      }
+    );
     this.sentryHandler.finishTransaction(sharesTx);
-    log.debug("torus-direct/getTorusKey", { retrieveShares: shares });
-
-    const signatures = (shares.sessionTokensData || []).map((x) => {
-      if (!x) return null;
-      return JSON.stringify({
-        data: x.token,
-        sig: x.signature,
-      });
-    });
-    return {
-      publicAddress: shares.ethAddress.toString(),
-      privateKey: shares.privKey.toString(),
-      metadataNonce: shares.metadataNonce.toString("hex"),
-      pubKey: {
-        pub_key_X: shares.X,
-        pub_key_Y: shares.Y,
-      },
-      signatures,
-    };
+    log.debug("torus-direct/getTorusKey", { retrieveShares: sharesResponse });
+    return sharesResponse;
   }
 
   async getAggregateTorusKey(
     verifier: string,
     verifierId: string, // unique identifier for user e.g. sub on jwt
-    subVerifierInfoArray: TorusSubVerifierInfo[],
-    useTSS?: boolean
+    subVerifierInfoArray: TorusSubVerifierInfo[]
   ): Promise<TorusKey> {
-    const aggregateVerifierParams = { verify_params: [], sub_verifier_ids: [], verifier_id: "" };
+    const aggregateVerifierParams: AggregateVerifierParams = { verify_params: [], sub_verifier_ids: [], verifier_id: "" };
     const aggregateIdTokenSeeds = [];
     let extraVerifierParams = {};
     for (let index = 0; index < subVerifierInfoArray.length; index += 1) {
@@ -463,27 +407,23 @@ class CustomAuth {
       extraVerifierParams = userInfo.extraVerifierParams;
     }
     aggregateIdTokenSeeds.sort();
-    const aggregateIdToken = keccak256(aggregateIdTokenSeeds.join(String.fromCharCode(29))).slice(2);
+    const aggregateIdToken = keccak256(Buffer.from(aggregateIdTokenSeeds.join(String.fromCharCode(29)), "utf8")).slice(2);
     aggregateVerifierParams.verifier_id = verifierId;
-    return this.getTorusKey(verifier, verifierId, aggregateVerifierParams, aggregateIdToken, extraVerifierParams, useTSS);
+    return this.getTorusKey(verifier, verifierId, aggregateVerifierParams, aggregateIdToken, extraVerifierParams);
   }
 
-  getPostboxKeyFrom1OutOf1(privKey: string, nonce: string): string {
-    return this.torus.getPostboxKeyFrom1OutOf1(privKey, nonce);
-  }
-
-  async getRedirectResult({ replaceUrl = true, clearLoginDetails = true, useTSS = false }: RedirectResultParams = {}): Promise<RedirectResult> {
+  async getRedirectResult({ replaceUrl = true, clearLoginDetails = true }: RedirectResultParams = {}): Promise<RedirectResult> {
     await this.init({ skipInit: true });
     const url = new URL(window.location.href);
     const hash = url.hash.substring(1);
-    const queryParams = {};
-    url.searchParams.forEach((value, key) => {
+    const queryParams: Record<string, string> = {};
+    url.searchParams.forEach((value: string, key: string) => {
       queryParams[key] = value;
     });
 
     if (replaceUrl) {
       const cleanUrl = window.location.origin + window.location.pathname;
-      window.history.replaceState(null, "", cleanUrl);
+      window.history.replaceState({ ...window.history.state, as: cleanUrl, url: cleanUrl }, "", cleanUrl);
     }
 
     if (!hash && Object.keys(queryParams).length === 0) {
@@ -511,30 +451,28 @@ class CustomAuth {
 
     try {
       if (method === TORUS_METHOD.TRIGGER_LOGIN) {
-        const methodArgs = args as SubVerifierDetails & { registerOnly?: boolean; useTSS?: boolean };
+        const methodArgs = args as SubVerifierDetails;
         methodArgs.hash = hash;
         methodArgs.queryParameters = queryParams;
-        methodArgs.useTSS = useTSS;
         result = await this.triggerLogin(methodArgs);
       } else if (method === TORUS_METHOD.TRIGGER_AGGREGATE_LOGIN) {
-        const methodArgs = args as AggregateLoginParams & { useTSS?: boolean };
+        const methodArgs = args as AggregateLoginParams;
         methodArgs.subVerifierDetailsArray.forEach((x) => {
           x.hash = hash;
           x.queryParameters = queryParams;
         });
-        methodArgs.useTSS = useTSS;
         result = await this.triggerAggregateLogin(methodArgs);
       } else if (method === TORUS_METHOD.TRIGGER_AGGREGATE_HYBRID_LOGIN) {
-        const methodArgs = args as HybridAggregateLoginParams & { useTSS?: boolean };
+        const methodArgs = args as HybridAggregateLoginParams;
         methodArgs.singleLogin.hash = hash;
         methodArgs.singleLogin.queryParameters = queryParams;
-        methodArgs.useTSS = useTSS;
         result = await this.triggerHybridAggregateLogin(methodArgs);
       }
-    } catch (err) {
-      log.error(err);
+    } catch (err: unknown) {
+      const serializedError = await serializeError(err);
+      log.error(serializedError);
       return {
-        error: `Could not get result from torus nodes \n ${err?.message || ""}`,
+        error: `Could not get result from torus nodes. \n ${serializedError.message || ""}`,
         state: instanceParameters || {},
         method,
         result: {},

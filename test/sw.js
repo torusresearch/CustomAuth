@@ -1,4 +1,24 @@
-<!doctype html>
+/* eslint-disable */
+function getScope() {
+  return self.registration.scope;
+}
+
+self.addEventListener("message", function (event) {
+  if (event.data && event.data.type === "SKIP_WAITING") {
+    self.skipWaiting();
+  }
+});
+
+self.addEventListener("fetch", function (event) {
+  try {
+    const url = new URL(event.request.url);
+    if (url.pathname.includes("redirect") && url.href.includes(getScope())) {
+      event.respondWith(
+        new Response(
+          new Blob(
+            [
+              `
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />
@@ -112,11 +132,11 @@
         <div class="beat beat-even"></div>
         <div class="beat beat-odd"></div>
       </div>
-      <h1 class="title content" id="closeText" style="display: none">You can close this window now</h1>
+      <h1 class="title content" id="closeText" style="display: none;">You can close this window now</h1>
     </div>
     <script
-      src="https://cdn.jsdelivr.net/npm/@toruslabs/broadcast-channel@10.0.2/dist/broadcastChannel.umd.min.js"
-      integrity="sha256-q78HZzZl8u46uVK0a+t5vzPyAevMwEWHi43ok+P7/O8="
+      src="https://scripts.toruswallet.io/broadcastChannel_8_0_1.js"
+      integrity="sha384-AgVJJZzZhk+edkFFI+WQ6OsQB11p8qB5eqCufUfHYfMvNLSwv5Bj6cz8WcWc31DH"
       crossorigin="anonymous"
     ></script>
     <script>
@@ -218,7 +238,7 @@
                 },
                 error: error,
               },
-              "http://localhost:3000",
+              "https://localhost:3000"
             );
           } else {
             // communicate via broadcast channel
@@ -280,3 +300,16 @@
     </script>
   </body>
 </html>
+                        
+${""}
+  `,
+            ],
+            { type: "text/html" }
+          )
+        )
+      );
+    }
+  } catch (error) {
+    console.error(error);
+  }
+});

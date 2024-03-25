@@ -1,4 +1,5 @@
-import { TORUS_NETWORK_TYPE } from "@toruslabs/fetch-node-details";
+import { TORUS_NETWORK_TYPE } from "@toruslabs/constants";
+import { KeyType, TorusKey } from "@toruslabs/torus.js";
 
 import { Sentry } from "../sentry";
 import { AGGREGATE_VERIFIER_TYPE, LOGIN_TYPE, TORUS_METHOD_TYPE, UX_MODE_TYPE } from "../utils/enums";
@@ -24,15 +25,17 @@ export interface ExtraParams {
   [key: string]: unknown;
 }
 
-export type WebAuthnExtraParams = {
+export type PasskeyExtraParams = {
   signature?: string;
   clientDataJSON?: string;
   authenticatorData?: string;
   publicKey?: string;
   challenge?: string;
   rpOrigin?: string;
+  rpId?: string;
   credId?: string;
   transports?: AuthenticatorTransport[];
+  username?: string;
 };
 export interface TorusVerifierResponse {
   email: string;
@@ -43,14 +46,13 @@ export interface TorusVerifierResponse {
   verifierId: string;
   typeOfLogin: LOGIN_TYPE;
   ref?: string;
-  registerOnly?: boolean;
-  extraVerifierParams?: WebAuthnExtraParams;
+  extraVerifierParams?: PasskeyExtraParams;
 }
 
 export interface TorusSubVerifierInfo {
   verifier: string;
   idToken: string;
-  extraVerifierParams?: WebAuthnExtraParams;
+  extraVerifierParams?: PasskeyExtraParams;
 }
 
 export interface LoginWindowResponse {
@@ -66,22 +68,8 @@ export interface ILoginHandler {
   clientId: string;
   nonce: string;
   finalURL: URL;
-  getUserInfo(params: LoginWindowResponse): Promise<TorusVerifierResponse>;
+  getUserInfo(params: LoginWindowResponse, storageServerUrl?: string): Promise<TorusVerifierResponse>;
   handleLoginWindow(params: { locationReplaceOnRedirect?: boolean; popupFeatures?: string }): Promise<LoginWindowResponse>;
-}
-
-export interface TorusKeyPub {
-  pubKey?: {
-    pub_key_X: string;
-    pub_key_Y: string;
-  };
-}
-
-export interface TorusKey extends TorusKeyPub {
-  publicAddress: string;
-  privateKey: string;
-  metadataNonce: string;
-  signatures: string[];
 }
 
 export interface TorusAggregateVerifierResponse {
@@ -137,21 +125,15 @@ export interface CustomAuthArgs {
   baseUrl: string;
 
   /**
-   * Specify a custom metadata host
+   * Specify a custom metadata host for legacy networks
    * @defaultValue https://metadata.tor.us
    */
   metadataUrl?: string;
 
   /**
    * Torus Network to target options: mainnet | testnet | cyan | aqua
-   * @defaultValue mainnet
    */
-  network?: TORUS_NETWORK_TYPE;
-
-  /**
-   * Network Url to read blockchain data from (eg: infura url)
-   */
-  networkUrl?: string;
+  network: TORUS_NETWORK_TYPE;
 
   /**
    * This option is used to specify whether to enable logging
@@ -243,13 +225,18 @@ export interface CustomAuthArgs {
   popupFeatures?: string;
   /**
    * Specify a custom storage server url
-   * @defaultValue https://broadcast-server.tor.us
+   * @defaultValue https://session.web3auth.io
    */
   storageServerUrl?: string;
 
+  /**
+   * Get your Client ID from Web3Auth Dashboard (https://dashboard.web3auth.io)
+   */
+  web3AuthClientId: string;
+
   sentry?: Sentry;
 
-  proxyRequestURL?: string;
+  keyType?: KeyType;
 }
 
 export interface InitParams {
@@ -365,7 +352,7 @@ export interface Auth0ClientOptions extends BaseLoginOptions {
   /**
    * The field in jwt token which maps to verifier id
    */
-  verifierIdField?: string;
+  verifierIdField?: keyof Auth0UserInfo;
 
   /**
    * Whether the verifier id field is case sensitive
@@ -402,16 +389,14 @@ export interface CreateHandlerParams {
   redirectToOpener?: boolean;
   jwtParams?: Auth0ClientOptions;
   customState?: TorusGenericObject;
-  registerOnly?: boolean;
 }
 
 export interface RedirectResultParams {
   replaceUrl?: boolean;
   clearLoginDetails?: boolean;
-  useTSS?: boolean;
 }
 
-export type SingleLoginParams = SubVerifierDetails & { registerOnly?: boolean };
+export type SingleLoginParams = SubVerifierDetails;
 
 export interface AggregateLoginParams {
   aggregateVerifierType: AGGREGATE_VERIFIER_TYPE;
@@ -434,3 +419,28 @@ export interface RedirectResult {
   hashParameters?: Record<string, string>;
   args: SingleLoginParams | AggregateLoginParams | HybridAggregateLoginParams;
 }
+
+export type AUTH0_JWT_LOGIN_TYPE = "apple" | "github" | "linkedin" | "twitter" | "weibo" | "line" | "email_password" | "passwordless";
+
+export type AggregateVerifierParams = {
+  verify_params: {
+    verifier_id: string;
+    idtoken: string;
+  }[];
+  sub_verifier_ids: string[];
+  verifier_id: string;
+};
+
+export type PasskeySessionData = {
+  verifier_id: string;
+  signature: string;
+  clientDataJSON: string;
+  authenticatorData: string;
+  publicKey: string;
+  challenge: string;
+  rpOrigin: string;
+  rpId: string;
+  credId: string;
+  transports: AuthenticatorTransport[];
+  username: string;
+};

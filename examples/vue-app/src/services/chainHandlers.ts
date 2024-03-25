@@ -7,7 +7,7 @@ export const signEthMessage = async (provider: SafeEventEmitterProvider): Promis
   // hex message
   const message = "0x47173285a8d7341e5e972fc677286384f802f8ef42a5ec5f03bbfa254cb01fad";
   const sign = await web3.eth.sign(message, accounts[0]);
-  return sign;
+  return sign as string;
 };
 
 export const signTypedData_v1 = async (provider: SafeEventEmitterProvider): Promise<any> => {
