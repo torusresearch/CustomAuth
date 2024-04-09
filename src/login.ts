@@ -64,6 +64,7 @@ class CustomAuth {
     enableOneKey = false,
     web3AuthClientId,
     metadataUrl = "https://metadata.tor.us",
+    serverTimeOffset = 0,
   }: CustomAuthArgs) {
     if (!web3AuthClientId) throw new Error("Please provide a valid web3AuthClientId in constructor");
     if (!network) throw new Error("Please provide a valid network in constructor");
@@ -81,8 +82,9 @@ class CustomAuth {
     };
     const torus = new Torus({
       network,
-      clientId: web3AuthClientId,
       enableOneKey,
+      serverTimeOffset,
+      clientId: web3AuthClientId,
       legacyMetadataHost: metadataUrl,
     });
     Torus.setAPIKey(apiKey);

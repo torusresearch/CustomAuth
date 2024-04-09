@@ -234,6 +234,12 @@ export interface CustomAuthArgs {
    */
   web3AuthClientId: string;
 
+  /**
+   * Time difference (in seconds) between server and client
+   * @defaultValue 0
+   */
+  serverTimeOffset?: number;
+
   sentry?: Sentry;
 }
 
