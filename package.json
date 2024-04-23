@@ -38,7 +38,7 @@
     "@toruslabs/http-helpers": "^6.1.0",
     "@toruslabs/metadata-helpers": "^5.1.0",
     "@toruslabs/openlogin-session-manager": "^3.1.1",
-    "@toruslabs/torus.js": "13.0.0-alpha.3",
+    "@toruslabs/torus.js": "13.0.0-alpha.4",
     "base64url": "^3.0.1",
     "bowser": "^2.11.0",
     "events": "^3.3.0",
