@@ -65,6 +65,7 @@ class CustomAuth {
     web3AuthClientId,
     metadataUrl = "https://metadata.tor.us",
     keyType = "secp256k1",
+    serverTimeOffset = 0,
   }: CustomAuthArgs) {
     if (!web3AuthClientId) throw new Error("Please provide a valid web3AuthClientId in constructor");
     if (!network) throw new Error("Please provide a valid network in constructor");
@@ -82,10 +83,11 @@ class CustomAuth {
     };
     const torus = new Torus({
       network,
-      clientId: web3AuthClientId,
       enableOneKey,
+      serverTimeOffset,
+      clientId: web3AuthClientId,
       legacyMetadataHost: metadataUrl,
-      keyType: keyType,
+      keyType,
     });
     Torus.setAPIKey(apiKey);
     this.torus = torus;
@@ -359,16 +361,6 @@ class CustomAuth {
     });
     const nodeDetails = await this.nodeDetailManager.getNodeDetails({ verifier, verifierId });
     this.sentryHandler.finishTransaction(nodeTx);
-
-    if (this.torus.isLegacyNetwork) {
-      // Call getPublicAddress to do keyassign for legacy networks which are not migrated
-      const pubLookupTx = this.sentryHandler.startTransaction({
-        name: SENTRY_TXNS.PUB_ADDRESS_LOOKUP,
-      });
-      const address = await this.torus.getPublicAddress(nodeDetails.torusNodeEndpoints, nodeDetails.torusNodePub, { verifier, verifierId });
-      this.sentryHandler.finishTransaction(pubLookupTx);
-      log.debug("torus-direct/getTorusKey", { getPublicAddress: address });
-    }
 
     log.debug("torus-direct/getTorusKey", { torusNodeEndpoints: nodeDetails.torusNodeEndpoints });
 
