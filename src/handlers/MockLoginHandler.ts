@@ -1,10 +1,9 @@
 import { get } from "@toruslabs/http-helpers";
-import { jwtDecode } from "jwt-decode";
-import deepmerge from "lodash.merge";
+import deepmerge from "deepmerge";
 import log from "loglevel";
 
 import { LOGIN_TYPE, UX_MODE, UX_MODE_TYPE } from "../utils/enums";
-import { constructURL, getVerifierId, padUrlString } from "../utils/helpers";
+import { constructURL, decodeToken, getVerifierId, padUrlString } from "../utils/helpers";
 import PopupHandler from "../utils/PopupHandler";
 import AbstractLoginHandler from "./AbstractLoginHandler";
 import { Auth0ClientOptions, Auth0UserInfo, LoginWindowResponse, TorusGenericObject, TorusVerifierResponse } from "./interfaces";
@@ -65,7 +64,7 @@ export default class MockLoginHandler extends AbstractLoginHandler {
       }
     }
     if (idToken) {
-      const decodedToken = jwtDecode<Auth0UserInfo>(idToken);
+      const decodedToken = decodeToken<Auth0UserInfo>(idToken).payload;
       const { name, email, picture } = decodedToken;
       return {
         profileImage: picture,

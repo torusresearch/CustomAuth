@@ -1,5 +1,5 @@
 import base64url from "base64url";
-import deepmerge from "lodash.merge";
+import deepmerge from "deepmerge";
 
 import { LOGIN_TYPE, UX_MODE_TYPE } from "../utils/enums";
 import { fetchDataFromBroadcastServer } from "../utils/sessionHelper";
@@ -34,8 +34,9 @@ export default class PasskeysHandler extends AbstractLoginHandler {
       },
       clonedParams
     );
-    Object.keys(finalJwtParams).forEach((key) => {
-      if (finalJwtParams[key]) finalUrl.searchParams.append(key, finalJwtParams[key]);
+    Object.keys(finalJwtParams).forEach((key: string) => {
+      const localKey = key as keyof typeof finalJwtParams;
+      if (finalJwtParams[localKey]) finalUrl.searchParams.append(localKey, finalJwtParams[localKey]);
     });
     this.finalURL = finalUrl;
   }

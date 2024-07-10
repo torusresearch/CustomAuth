@@ -1,8 +1,12 @@
-import { EventEmitter } from "events";
+import { EventEmitter } from "eventemitter3";
 
 import { getPopupFeatures } from "./helpers";
 
-class PopupHandler extends EventEmitter {
+export interface PopupHandlerEvents {
+  close: void;
+}
+
+class PopupHandler extends EventEmitter<PopupHandlerEvents> {
   url: URL;
 
   target: string;
