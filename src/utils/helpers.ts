@@ -76,7 +76,7 @@ export const getVerifierId = (
     case LOGIN.JWT:
       return caseSensitiveField(sub, isVerifierIdCaseSensitive);
     default:
-      throw new Error("Invalid login type");
+      throw new Error("Invalid login type to get verifier id");
   }
 };
 
