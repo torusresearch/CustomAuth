@@ -12,6 +12,10 @@ module.exports = {
         { from: /./, to: "/index.html" },
       ],
     },
+    static: {
+      directory: path.join(__dirname, "node_modules/@toruslabs/customauth/serviceworker"),
+      publicPath: "/serviceworker",
+    },
   },
   configureWebpack: (config) => {
     if (process.env.NODE_ENV !== "production") {
@@ -23,7 +27,7 @@ module.exports = {
       new ProvidePlugin({
         process: "process/browser",
         Buffer: ["buffer", "Buffer"],
-      })
+      }),
     );
     config.resolve.fallback = {
       ...(config.resolve.fallback || {}),

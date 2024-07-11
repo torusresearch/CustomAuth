@@ -188,7 +188,7 @@ class CustomAuth {
       throw new Error("Not initialized yet");
     }
     if (!aggregateVerifierType || !verifierIdentifier || !Array.isArray(subVerifierDetailsArray)) {
-      throw new Error("Invalid params");
+      throw new Error("Invalid params. Missing aggregateVerifierType, verifierIdentifier or subVerifierDetailsArray");
     }
     if (aggregateVerifierType === AGGREGATE_VERIFIER.SINGLE_VERIFIER_ID && subVerifierDetailsArray.length !== 1) {
       throw new Error("Single id verifier can only have one sub verifier");
@@ -268,7 +268,7 @@ class CustomAuth {
       !aggregateLoginParams.verifierIdentifier ||
       !Array.isArray(aggregateLoginParams.subVerifierDetailsArray)
     ) {
-      throw new Error("Invalid params");
+      throw new Error("Invalid params. Missing aggregateVerifierType, verifierIdentifier or subVerifierDetailsArray");
     }
     if (
       aggregateLoginParams.aggregateVerifierType === AGGREGATE_VERIFIER.SINGLE_VERIFIER_ID &&
@@ -354,38 +354,28 @@ class CustomAuth {
     idToken: string,
     additionalParams?: ExtraParams
   ): Promise<TorusKey> {
-    const nodeTx = this.sentryHandler.startTransaction({
-      name: SENTRY_TXNS.FETCH_NODE_DETAILS,
-    });
-    const nodeDetails = await this.nodeDetailManager.getNodeDetails({ verifier, verifierId });
-    this.sentryHandler.finishTransaction(nodeTx);
-
-    if (this.torus.isLegacyNetwork) {
-      // Call getPublicAddress to do keyassign for legacy networks which are not migrated
-      const pubLookupTx = this.sentryHandler.startTransaction({
-        name: SENTRY_TXNS.PUB_ADDRESS_LOOKUP,
-      });
-      const address = await this.torus.getPublicAddress(nodeDetails.torusNodeEndpoints, nodeDetails.torusNodePub, { verifier, verifierId });
-      this.sentryHandler.finishTransaction(pubLookupTx);
-      log.debug("torus-direct/getTorusKey", { getPublicAddress: address });
-    }
+    const nodeDetails = await this.sentryHandler.startSpan(
+      {
+        name: SENTRY_TXNS.FETCH_NODE_DETAILS,
+      },
+      async () => {
+        return this.nodeDetailManager.getNodeDetails({ verifier, verifierId });
+      }
+    );
 
     log.debug("torus-direct/getTorusKey", { torusNodeEndpoints: nodeDetails.torusNodeEndpoints });
 
-    const sharesTx = this.sentryHandler.startTransaction({
-      name: SENTRY_TXNS.FETCH_SHARES,
-    });
-    const sharesResponse = await this.torus.retrieveShares(
-      nodeDetails.torusNodeEndpoints,
-      nodeDetails.torusIndexes,
-      verifier,
-      verifierParams,
-      idToken,
+    const sharesResponse = await this.sentryHandler.startSpan(
       {
-        ...additionalParams,
+        name: SENTRY_TXNS.FETCH_SHARES,
+      },
+      async () => {
+        return this.torus.retrieveShares(nodeDetails.torusNodeEndpoints, nodeDetails.torusIndexes, verifier, verifierParams, idToken, {
+          ...additionalParams,
+        });
       }
     );
-    this.sentryHandler.finishTransaction(sharesTx);
+
     log.debug("torus-direct/getTorusKey", { retrieveShares: sharesResponse });
     return sharesResponse;
   }
@@ -420,13 +410,8 @@ class CustomAuth {
       queryParams[key] = value;
     });
 
-    if (replaceUrl) {
-      const cleanUrl = window.location.origin + window.location.pathname;
-      window.history.replaceState({ ...window.history.state, as: cleanUrl, url: cleanUrl }, "", cleanUrl);
-    }
-
     if (!hash && Object.keys(queryParams).length === 0) {
-      throw new Error("Unable to fetch result from OAuth login");
+      throw new Error("Found Empty hash and query parameters. This can happen if user reloads the page");
     }
 
     const { error, instanceParameters, hashParameters } = handleRedirectParameters(hash, queryParams);
@@ -437,10 +422,6 @@ class CustomAuth {
 
     const { args, method, ...rest } = await this.storageHelper.retrieveLoginDetails(instanceId);
     log.info(args, method);
-
-    if (clearLoginDetails) {
-      this.storageHelper.clearLoginDetailsStorage(instanceId);
-    }
 
     if (error) {
       return { error, state: instanceParameters || {}, method, result: {}, hashParameters, args };
@@ -470,8 +451,11 @@ class CustomAuth {
     } catch (err: unknown) {
       const serializedError = await serializeError(err);
       log.error(serializedError);
+      if (clearLoginDetails) {
+        this.storageHelper.clearLoginDetailsStorage(instanceId);
+      }
       return {
-        error: `Could not get result from torus nodes. \n ${serializedError.message || ""}`,
+        error: `${serializedError.message || ""}`,
         state: instanceParameters || {},
         method,
         result: {},
@@ -483,7 +467,7 @@ class CustomAuth {
 
     if (!result)
       return {
-        error: "Unsupported method type",
+        error: "Init parameters not found. It might be because storage is not available. Please retry the login in a different browser",
         state: instanceParameters || {},
         method,
         result: {},
@@ -491,6 +475,15 @@ class CustomAuth {
         args,
         ...rest,
       };
+
+    if (replaceUrl) {
+      const cleanUrl = window.location.origin + window.location.pathname;
+      window.history.replaceState({ ...window.history.state, as: cleanUrl, url: cleanUrl }, "", cleanUrl);
+    }
+
+    if (clearLoginDetails) {
+      this.storageHelper.clearLoginDetailsStorage(instanceId);
+    }
 
     return { method, result, state: instanceParameters || {}, hashParameters, args, ...rest };
   }

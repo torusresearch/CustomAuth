@@ -22,7 +22,7 @@
   ],
   "peerDependencies": {
     "@babel/runtime": "^7.x",
-    "@sentry/types": "^7.x"
+    "@sentry/types": "^8.x"
   },
   "peerDependenciesMeta": {
     "@sentry/types": {
@@ -31,33 +31,31 @@
   },
   "dependencies": {
     "@chaitanyapotti/register-service-worker": "^1.7.4",
-    "@toruslabs/broadcast-channel": "^10.0.2",
-    "@toruslabs/constants": "^13.2.0",
-    "@toruslabs/eccrypto": "^4.0.0",
-    "@toruslabs/fetch-node-details": "^13.2.0",
-    "@toruslabs/http-helpers": "^6.1.0",
-    "@toruslabs/metadata-helpers": "^5.1.0",
-    "@toruslabs/openlogin-session-manager": "^3.1.1",
-    "@toruslabs/torus.js": "^12.2.0",
+    "@toruslabs/broadcast-channel": "^11.0.0",
+    "@toruslabs/constants": "^14.0.0",
+    "@toruslabs/eccrypto": "^5.0.4",
+    "@toruslabs/fetch-node-details": "^14.0.0",
+    "@toruslabs/http-helpers": "^7.0.0",
+    "@toruslabs/metadata-helpers": "^6.0.0",
+    "@toruslabs/session-manager": "^1.0.0",
+    "@toruslabs/torus.js": "^14.0.0",
     "base64url": "^3.0.1",
     "bowser": "^2.11.0",
-    "events": "^3.3.0",
-    "jwt-decode": "^4.0.0",
-    "lodash.merge": "^4.6.2",
+    "eventemitter3": "^5.0.1",
+    "deepmerge": "^4.3.1",
     "loglevel": "^1.9.1"
   },
   "devDependencies": {
-    "@sentry/types": "^7.107.0",
-    "@toruslabs/config": "^2.0.2",
-    "@toruslabs/eslint-config-typescript": "^3.2.0",
-    "@toruslabs/torus-scripts": "^5.3.0",
-    "@types/lodash.merge": "^4.6.9",
+    "@sentry/types": "^8.16.0",
+    "@toruslabs/config": "^2.1.0",
+    "@toruslabs/eslint-config-typescript": "^3.3.1",
+    "@toruslabs/torus-scripts": "^6.0.1",
     "eslint": "^8.57.0",
     "husky": "^9.0.11",
-    "lint-staged": "^15.2.2",
-    "prettier": "^3.2.5",
-    "rimraf": "^5.0.5",
-    "typescript": "^5.4.2"
+    "lint-staged": "^15.2.7",
+    "prettier": "^3.3.2",
+    "rimraf": "^6.0.0",
+    "typescript": "^5.5.3"
   },
   "author": "Torus Labs",
   "license": "MIT",

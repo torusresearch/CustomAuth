@@ -1,8 +1,9 @@
-import type { Transaction, TransactionContext } from "@sentry/types";
+import type { Span, StartSpanOptions } from "@sentry/types";
 
 export interface Sentry {
-  startTransaction(_: TransactionContext): Transaction;
+  startSpan<T>(context: StartSpanOptions, callback: (span: Span) => T): T;
 }
+
 export default class SentryHandler {
   sentry: Sentry | null = null;
 
@@ -10,15 +11,10 @@ export default class SentryHandler {
     this.sentry = sentry;
   }
 
-  startTransaction(context: TransactionContext): Transaction | void {
+  startSpan<T>(context: StartSpanOptions, callback: (span: Span) => T): T {
     if (this.sentry) {
-      return this.sentry.startTransaction(context);
+      return this.sentry.startSpan(context, callback);
     }
-  }
-
-  finishTransaction(tx: void | Transaction): void {
-    if (tx) {
-      tx.finish();
-    }
+    return callback(null);
   }
 }
