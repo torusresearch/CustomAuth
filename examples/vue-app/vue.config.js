@@ -23,7 +23,7 @@ module.exports = {
       new ProvidePlugin({
         process: "process/browser",
         Buffer: ["buffer", "Buffer"],
-      })
+      }),
     );
     config.resolve.fallback = {
       ...(config.resolve.fallback || {}),
@@ -34,6 +34,12 @@ module.exports = {
       assert: false,
       stream: false,
       zlib: false,
+    };
+    config.devServer = {
+      static: {
+        directory: path.join(__dirname, "node_modules/@toruslabs/customauth/serviceworker"),
+        publicPath: "/serviceworker",
+      },
     };
   },
 };
