@@ -1,5 +1,5 @@
 import React from "react";
-import TorusSdk, { TorusLoginResponse } from "@toruslabs/customauth";
+import { CustomAuth, TorusLoginResponse } from "@toruslabs/customauth";
 import dynamic from "next/dynamic";
 import {
   verifierMap,
@@ -26,7 +26,7 @@ if (typeof window === "object") {
 
 interface IState {
   selectedVerifier: string;
-  torusdirectsdk: TorusSdk | null;
+  torusdirectsdk: CustomAuth | null;
   loginHint: string;
   loginDetails?: TorusLoginResponse | null;
 }
@@ -37,7 +37,7 @@ class MyApp extends React.Component<IProps, IState> {
     super(props);
     this.state = {
       selectedVerifier: GOOGLE,
-      torusdirectsdk: null as TorusSdk | null,
+      torusdirectsdk: null as CustomAuth | null,
       loginHint: "",
       loginDetails: null,
     };
@@ -45,7 +45,7 @@ class MyApp extends React.Component<IProps, IState> {
 
   componentDidMount = async () => {
     try {
-      const torusdirectsdk = new TorusSdk({
+      const torusdirectsdk = new CustomAuth({
         baseUrl: `${window.location.origin}/serviceworker`,
         enableLogging: true,
         network: "testnet", // details for test net

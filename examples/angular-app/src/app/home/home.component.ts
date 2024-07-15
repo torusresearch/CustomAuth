@@ -1,5 +1,5 @@
 import { Component, OnInit } from "@angular/core";
-import TorusSdk from "@toruslabs/customauth";
+import { CustomAuth } from "@toruslabs/customauth";
 
 import {
   verifierMap,
@@ -57,7 +57,7 @@ export class HomeComponent implements OnInit {
         queryParams[key] = url.searchParams.get(key);
       }
       const { error, instanceParameters } = this.handleRedirectParameters(hash, queryParams);
-      const torusdirectsdk = new TorusSdk({
+      const torusdirectsdk = new CustomAuth({
         baseUrl: `${window.location.origin}/serviceworker`,
         enableLogging: true,
         network: "testnet", // details for test net

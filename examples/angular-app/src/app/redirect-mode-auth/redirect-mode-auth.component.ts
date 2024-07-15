@@ -1,5 +1,5 @@
 import { Component, OnInit } from "@angular/core";
-import TorusSdk from "@toruslabs/customauth";
+import { CustomAuth } from "@toruslabs/customauth";
 
 @Component({
   selector: "app-redirect-mode-auth",
@@ -10,7 +10,7 @@ export class RedirectModeAuthComponent implements OnInit {
   consoleText = "";
 
   async ngOnInit(): Promise<void> {
-    const torusdirectsdk = new TorusSdk({
+    const torusdirectsdk = new CustomAuth({
       baseUrl: window.location.origin,
       redirectPathName: "auth",
       enableLogging: true,
