@@ -22,7 +22,7 @@
 
 <script setup lang="ts">
 import TorusSdk from "@toruslabs/customauth";
-import { defineComponent, ref, onMounted, computed } from "vue";
+import { ref, onMounted, computed } from "vue";
 
 import {
   APPLE,
