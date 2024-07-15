@@ -9,7 +9,7 @@
       </div>
       <div class="dashboard-action-container">
         <button class="dashboard-action-logout" @click.stop="logout">
-          <img :src="require('@/assets/logout.svg')" alt="logout" height="18" width="18" />
+          <img :src="`/assets/logout.svg`" alt="logout" height="18" width="18" />
           Logout
         </button>
       </div>
@@ -135,7 +135,7 @@ export default defineComponent({
     },
     getPrivateKey(loginDetails: RedirectResult | null): string {
       if (!loginDetails) return "";
-      return (loginDetails.result as TorusLoginResponse)?.finalKeyData.privKey || (loginDetails.result as TorusLoginResponse)?.oAuthKeyData.privKey;
+      return (loginDetails.result as TorusLoginResponse)?.finalKeyData?.privKey || (loginDetails.result as TorusLoginResponse)?.oAuthKeyData?.privKey;
     },
 
     async signMessage() {
@@ -260,7 +260,7 @@ export default defineComponent({
         blockExplorerUrl: "https://polygonscan.com",
         chainNamespace: "eip155",
       },
-      privKey: privKey.padStart(64, "0"),
+      privKey: privKey?.padStart(64, "0"),
     });
     this.loginDetails = loginDetails;
     setTimeout(() => {

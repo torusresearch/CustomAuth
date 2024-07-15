@@ -57,7 +57,7 @@
           </div>
           <div class="dashboard-action-container">
             <button class="dashboard-action-logout" @click.stop="logout">
-              <img :src="require('@/assets/logout.svg')" alt="logout" height="18" width="18" />
+              <img :src="`/assets/logout.svg`" alt="logout" height="18" width="18" />
               Logout
             </button>
           </div>
