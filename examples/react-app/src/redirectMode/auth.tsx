@@ -1,6 +1,6 @@
 import React from "react";
 import "../App.css";
-import TorusSdk, { RedirectResult } from "@toruslabs/customauth";
+import { CustomAuth, RedirectResult } from "@toruslabs/customauth";
 import ReactJsonView from "react-json-view";
 
 interface IState {
@@ -18,7 +18,7 @@ class RedirectAuth extends React.Component<IProps, IState> {
   }
 
   async componentDidMount() {
-    const torusdirectsdk = new TorusSdk({
+    const torusdirectsdk = new CustomAuth({
       baseUrl: window.location.origin,
       redirectPathName: "auth",
       enableLogging: true,

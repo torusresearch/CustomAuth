@@ -1,5 +1,5 @@
 import { Component, OnInit } from "@angular/core";
-import TorusSdk from "@toruslabs/customauth";
+import { CustomAuth } from "@toruslabs/customauth";
 
 import {
   verifierMap,
@@ -35,7 +35,7 @@ export class PopupModeLoginComponent implements OnInit {
 
   async ngOnInit() {
     try {
-      const torusdirectsdk = new TorusSdk({
+      const torusdirectsdk = new CustomAuth({
         baseUrl: `${location.origin}/serviceworker`,
         enableLogging: true,
         network: "testnet", // details for test net

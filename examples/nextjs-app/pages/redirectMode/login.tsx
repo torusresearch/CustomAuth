@@ -1,5 +1,5 @@
 import React from "react";
-import TorusSdk, { UX_MODE } from "@toruslabs/customauth";
+import { CustomAuth, UX_MODE } from "@toruslabs/customauth";
 
 import {
   verifierMap,
@@ -21,7 +21,7 @@ import {
 
 interface IState {
   selectedVerifier: string;
-  torusdirectsdk: TorusSdk | null;
+  torusdirectsdk: CustomAuth | null;
   loginHint: string;
   consoleText?: string;
 }
@@ -40,7 +40,7 @@ class RedirectMode extends React.Component<IProps, IState> {
 
   componentDidMount = async () => {
     try {
-      const torusdirectsdk = new TorusSdk({
+      const torusdirectsdk = new CustomAuth({
         baseUrl: window.location.origin,
         // user will be redirect to auth page after login
         redirectPathName: "auth",
