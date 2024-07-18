@@ -5,19 +5,19 @@
       <div class="w-full bg-white rounded-lg shadow sm:max-w-md">
         <Card class=" px-4 py-4 gird col-span-1">
           <div>
-            <h6 class="text-2xl font-semibold pb-4 text-center">Login in popup mode</h6>
+            <h6 class="text-2xl font-semibold pb-4 text-center">Login in redirect mode</h6>
           </div>
           <div>
-            <Select v-model="store.selectedVerifier"
+            <Select v-model="selectedVerifier"
               :options="Object.keys(verifierMap).map((x) => ({ name: x, value: x }))"
               :class="['w-full !h-auto group pb-2']" label="Select Verifier" />
           </div>
           <div>
-            <TextField v-model="login_hint" v-if="store.selectedVerifier === 'torus_email_passwordless'"
+            <TextField v-model="login_hint" v-if="selectedVerifier === 'torus_email_passwordless'"
               placeholder="Enter an email" required :class="['w-full !h-auto group pb-2']" />
           </div>
           <div>
-            <TextField v-model="login_hint" v-if="store.selectedVerifier === 'torus_sms_passwordless'"
+            <TextField v-model="login_hint" v-if="selectedVerifier === 'torus_sms_passwordless'"
               placeholder="Eg: +{cc}-{number}" required :class="['w-full !h-auto group pb-2']" />
           </div>
           <div>
@@ -66,7 +66,6 @@ import TorusSdk, { Auth0ClientOptions, UX_MODE } from "@toruslabs/customauth";
 import { ref } from "vue";
 import { TORUS_SAPPHIRE_NETWORK, TORUS_LEGACY_NETWORK } from "@toruslabs/constants";
 import { Select, TextField, Button, Card } from "@toruslabs/vue-components";
-import { store } from "@/store";
 
 import { useRouter } from "vue-router";
 import {

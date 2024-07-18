@@ -1,95 +1,85 @@
 <template>
-  <div>
-    <div v-if="!loginResponse" class="flex flex-col justify-center items-center text-center mt-[150px]">
-      <div class="mb-3 text-xl font-medium">Verifier</div>
-      <div>
-        <Select v-model="selectedVerifier" class="mt-3" label="Select Vetifier" aria-label="Select Build Env*"
-          placeholder="Select Build Env" :options="Object.keys(verifierMap).map((x) => ({ name: x, value: x }))"
-          :helper-text="`Selected Build Env: ${selectedVerifier}`" :error="!selectedVerifier" />
-      </div>
-      <div>
-        <Select v-model="selectedNetwork" class="mt-3" label="Select Network" aria-label="Select Network*"
-          placeholder="Select Network" :options="networkList.map((x) => ({ name: x, value: x }))"
-          :helper-text="`Selected Network: ${selectedNetwork}`" :error="!selectedNetwork" />
-      </div>
-      <div>
-        <TextField v-model="login_hint" v-if="selectedVerifier === 'torus_email_passwordless'" placeholder="Enter an email"
-        required class="w-[320px]" />
-      </div>
-      <div>
-        <TextField v-model="login_hint" v-if="selectedVerifier === 'torus_sms_passwordless'" placeholder="Eg: +{cc}-{number}"
-        required class="w-[320px]" />
-      </div>
-      
-      <div class="my-5 flex flex-col px-6 sm:px-0 sm:flex-row gap-4 w-full sm:w-[400px]">
-        <Button @click="login" class="w-full" type="button" block size="xl" pill>
-          Login with Torus
-        </Button>
-        <Button @click="logout" class="w-full" type="button" block size="xl" pill>
-          Back 
-        </Button>
-      </div>
-      <ul class="text-sm text-app-gray-700 dark:text-app-gray-200 font-normal mt-4 mb-5 px-6">
-        <li>
-          Please note that the verifiers listed in the example have
-          <span
-            class="font-semibold text-app-gray-900 dark:text-app-gray-200">http://localhost:3000/serviceworker/redirect</span>
-          configured as the redirect uri.
-        </li>
-        <li>If you use any other domains, they won't work.</li>
-        <li>The verifiers listed here only work with the client id's specified in example. Please don't edit them</li>
-        <li>The verifiers listed here are for example reference only. Please don't use them for anything other than
-          testing purposes.</li>
-      </ul>
-      <div class="text-base text-app-gray-900 dark:text-white font-medium mt-4 mb-5 px-6">
-        Reach out to us at
-        <a class="text-app-primary-600 dark:text-app-primary-500 underline" href="mailto:hello@tor.us">hello@tor.us</a>
-        or
-        <a class="text-app-primary-600 dark:text-app-primary-500 underline" href="https://t.me/torusdev">telegram
-          group</a>
-        to get your verifier deployed for your client id.
+  <section class="">
+    <div v-if="!privKey" class="flex flex-col items-center">
+      <div class="w-full bg-white rounded-lg shadow sm:max-w-md">
+        <Card class=" px-4 py-4 gird col-span-1">
+          <div>
+            <h6 class="text-2xl font-semibold pb-4 text-center">Login in popup mode</h6>
+          </div>
+          <div>
+            <Select v-model="selectedVerifier" :options="Object.keys(verifierMap).map((x) => ({ name: x, value: x }))"
+              :class="['w-full !h-auto group p-2']" label="Select Verifier" />
+          </div>
+          <div>
+            <TextField v-model="login_hint" v-if="selectedVerifier === 'torus_email_passwordless'"
+              placeholder="Enter an email" required :class="['w-full !h-auto group pb-2']" />
+          </div>
+          <div>
+            <TextField v-model="login_hint" v-if="selectedVerifier === 'torus_sms_passwordless'"
+              placeholder="Eg: +{cc}-{number}" required :class="['w-full !h-auto group pb-2']" />
+          </div>
+          <div>
+            <Select v-model="selectedNetwork" :options="networkList.map((x) => ({ name: x, value: x }))"
+              :class="['w-full !h-auto group p-2']" label="Select Network" />
+          </div>
+          <div class="my-5 flex px-6 gap-4">
+            <Button @click="() => login()" class="" type="button" block size="md" pill>
+              Login with Torus
+            </Button>
+            <Button @click="() => { }" class="" type="button" block size="md" pill variant="secondary">
+              Back
+            </Button>
+          </div>
+          <ul class="text-sm text-app-gray-700 dark:text-app-gray-200 font-normal mt-4 mb-5 px-6 text-center">
+            <li>
+              Please note that the verifiers listed in the example have
+              <span
+                class="font-semibold text-app-gray-900 dark:text-white">http://localhost:3000/serviceworker/redirect</span>
+              configured as the redirect uri.
+            </li>
+            <li>If you use any other domains, they won't work.</li>
+            <li>The verifiers listed here only work with the client id's specified in example. Please don't edit them
+            </li>
+            <li>The verifiers listed here are for example reference only. Please don't use them for anything other than
+              testing purposes.</li>
+          </ul>
+          <div class="text-base text-app-gray-900 dark:text-app-gray-200 font-medium mt-4 mb-5 px-6 text-center">
+            Reach out to us at
+            <a class="text-app-primary-600 dark:text-app-primary-500 underline"
+              href="mailto:hello@tor.us">hello@tor.us</a>
+            or
+            <a class="text-app-primary-600 dark:text-app-primary-500 underline" href="https://t.me/torusdev">telegram
+              group</a>
+            to get your verifier deployed for your client id.
+          </div>
+
+        </Card>
       </div>
     </div>
-    <div v-if="loginResponse && loginResponse.finalKeyData.privKey" class="text-start">
-      <div class="loader-container" v-if="!getPrivateKey(loginResponse)">Loading...</div>
-      <div v-else class="dashboard-container">
-        <!-- Dashboard Header -->
-        <div class="dashboard-header w-full">
-          <div class="w-full">
-            <h1 class="dashboard-heading">demo-customauth.web3auth.io</h1>
-            <p class="dashboard-subheading">CustomAuth Private key : {{ getPrivateKey(loginResponse) }}</p>
-          </div>
-          <div class="dashboard-action-container">
-            <button class="dashboard-action-logout" @click.stop="logout">
-              <img :src="`/assets/logout.svg`" alt="logout" height="18" width="18" />
-              Logout
-            </button>
-          </div>
-        </div>
+    <div v-if="privKey" class="text-start">
+      <div class="dashboard-container">
         <!-- Dashboard Action Container -->
         <div class="dashboard-details-container">
           <div class="dashboard-details-btn-container">
             <h1 class="details-heading flex justify-between items-center">
               <span>CustomAuth Specific Info</span>
-              <span><img alt="down" class="cursor-pointer" src="../../assets/down.svg"
-                  @click="isExpanded = !isExpanded" /></span>
             </h1>
             <div v-show="isExpanded" class="mt-4 overflow-y-auto">
               <p class="btn-label">Signing</p>
               <div class="flex flex-col sm:flex-row gap-4 bottom-gutter">
-                <button class="custom-btn" @click="signMessage" :disabled="!provider">Sign Test Eth Message</button>
-                <button class="custom-btn" @click="latestBlock" :disabled="!provider">Fetch Latest block</button>
+                <Button @click="signMessage" :disabled="!provider" pill size="sm">Sign Test Eth Message</Button>
+                <Button @click="latestBlock" :disabled="!provider" pill size="sm">Fetch Latest block</Button>
               </div>
               <div class="flex flex-col sm:flex-row gap-4 bottom-gutter">
-                <button class="custom-btn" @click="signV1Message" :disabled="!provider">Sign Typed data v1 test
-                  Msg</button>
+                <Button @click="signV1Message" :disabled="!provider" pill size="sm">Sign Typed data v1 test Msg</Button>
+          
               </div>
               <p class="btn-label !mb-0">Stark key pair</p>
               <p class="text-xs text-app-gray-500 mb-2">Enter HD account index to derive stark key pair from custom
                 auth's private key</p>
               <form class="flex flex-col sm:flex-row gap-4 bottom-gutter" @submit.prevent="starkHdAccount">
                 <input class="custom-input" type="number" placeholder="Index" :min="0" id="accountIndex" required />
-                <button type="submit" class="custom-btn">Get Stark Key Pair</button>
+                <Button type="submit" pill size="sm">Get Stark Key Pair</Button>
               </form>
               <p class="btn-label">Sign message</p>
               <form @submit.prevent="signMessageWithStarkKey">
@@ -98,15 +88,15 @@
                 </div>
                 <div class="flex flex-col sm:flex-row gap-4 bottom-gutter">
                   <input class="custom-input" type="number" placeholder="Index" :min="0" id="accountIndex" required />
-                  <button type="submit" class="custom-btn">Sign message with Stark key</button>
+                  <Button type="submit" pill size="sm">Sign message with Stark key</Button>
                 </div>
               </form>
               <p class="btn-label">Validate message</p>
               <form class="flex flex-col sm:flex-row gap-4 bottom-gutter" @submit.prevent="validateStarkMessage">
                 <input class="custom-input disabled:cursor-not-allowed" :disabled="!signingMessage" type="number"
                   placeholder="Index" :min="0" id="accountIndex" required />
-                <button type="submit" :disabled="!signingMessage"
-                  class="custom-btn disabled:cursor-not-allowed">Validate Stark Message</button>
+                  <Button type="submit" :disabled="!signingMessage" class="disabled:cursor-not-allowed" pill size="sm">Validate
+                    Stark Message</Button>
               </form>
             </div>
           </div>
@@ -145,7 +135,7 @@
         </div>
       </div>
     </div>
-  </div>
+  </section>
 </template>
 
 <script setup lang="ts">
@@ -156,7 +146,7 @@ import { EthereumPrivateKeyProvider } from "@web3auth/ethereum-provider";
 import { ec } from "elliptic";
 import { binaryToHex, binaryToUtf8, bufferToBinary, bufferToHex, hexToBinary } from "enc-utils";
 import { ref, computed, watch, onMounted } from "vue";
-import { Select, TextField, Button } from "@toruslabs/vue-components";
+import { Select, TextField, Button, Card } from "@toruslabs/vue-components";
 import router from "../../router";
 
 import {
@@ -180,6 +170,7 @@ import {
 } from "../../constants";
 import { fetchLatestBlock, signEthMessage, signTypedData_v1 } from "../../services/chainHandlers";
 import { TORUS_SAPPHIRE_NETWORK, TORUS_LEGACY_NETWORK } from "@toruslabs/constants";
+import { setPrivKey, privKey } from "@/store";
 
 const torusdirectsdk = ref(null as TorusSdk | null);
 const selectedVerifier = ref("google");
@@ -237,18 +228,30 @@ const _console = (args: unknown[]): void => {
 const login = async (hash?: string, queryParameters?: Record<string, any>) => {
   try {
     if (!torusdirectsdk.value) return;
-    const jwtParams = loginToConnectionMap.value[selectedVerifier.value] || {};
-    const { typeOfLogin, clientId, verifier } = verifierMap[selectedVerifier.value];
-    console.log(hash, queryParameters, typeOfLogin, clientId, verifier, jwtParams);
-    const loginDetails = await torusdirectsdk.value.triggerLogin({
-      typeOfLogin,
-      verifier,
-      clientId,
-      jwtParams,
-      hash,
-      queryParameters,
-    });
-    const privateKey = loginDetails.finalKeyData.privKey || loginDetails.oAuthKeyData.privKey;
+    const privKeyInStorage = localStorage.getItem("privateKey");
+    if (privKeyInStorage) {
+      setPrivKey(privKeyInStorage);
+    } else {
+      const jwtParams = loginToConnectionMap.value[selectedVerifier.value] || {};
+      const { typeOfLogin, clientId, verifier } = verifierMap[selectedVerifier.value];
+      console.log(hash, queryParameters, typeOfLogin, clientId, verifier, jwtParams);
+      const loginDetails = await torusdirectsdk.value.triggerLogin({
+        typeOfLogin,
+        verifier,
+        clientId,
+        jwtParams,
+        hash,
+        queryParameters,
+      });
+      const privateKey = loginDetails.finalKeyData.privKey || loginDetails.oAuthKeyData.privKey;
+      if (privateKey) {
+        setPrivKey(privateKey);
+        localStorage.setItem("privateKey", privateKey);
+      }
+      loginResponse.value = loginDetails;
+      console.log(loginDetails);
+    }
+
     const providerInstance = await EthereumPrivateKeyProvider.getProviderInstance({
       chainConfig: {
         rpcTarget: "https://polygon-rpc.com",
@@ -259,10 +262,10 @@ const login = async (hash?: string, queryParameters?: Record<string, any>) => {
         blockExplorerUrl: "https://polygonscan.com",
         chainNamespace: "eip155",
       },
-      privKey: privateKey,
+      privKey: privKey.value || "",
     });
     provider.value = providerInstance;
-    loginResponse.value = loginDetails;
+
     // const loginDetails = await this.torusdirectsdk.triggerHybridAggregateLogin({
     //   singleLogin: {
     //     typeOfLogin,
@@ -311,7 +314,6 @@ const login = async (hash?: string, queryParameters?: Record<string, any>) => {
     //     },
     //   ],
     // });
-    console.log(loginDetails);
   } catch (error) {
     console.error(error, "caught");
   }
@@ -339,17 +341,17 @@ const clearUiconsole = () => {
 
 const signMessage = async () => {
   const signedMessage = await signEthMessage(provider.value as SafeEventEmitterProvider);
-  _console("Signed Message", signedMessage);
+  _console(["Signed Message", signedMessage]);
 };
 
 const signV1Message = async () => {
   const signedMessage = await signTypedData_v1(provider.value as SafeEventEmitterProvider);
-  _console("Signed V1 Message", signedMessage);
+  _console(["Signed V1 Message", signedMessage]);
 };
 
 const latestBlock = async () => {
   const block = await fetchLatestBlock(provider.value as SafeEventEmitterProvider);
-  _console("Latest block", block);
+  _console(["Latest block", block]);
 };
 
 const getStarkAccount = (index: number): ec.KeyPair => {
@@ -360,9 +362,9 @@ const getStarkAccount = (index: number): ec.KeyPair => {
 const starkHdAccount = (e: any) => {
   const accIndex = e.target[0].value;
   const account = getStarkAccount(accIndex);
-  _console("Stark Key Pair", {
+  _console(["Stark Key Pair", {
     ...account,
-  });
+  }]);
   return account;
 };
 
@@ -402,11 +404,11 @@ const signMessageWithStarkKey = (e: any) => {
   const hash = getPedersenHashRecursively(message);
   signedMessage.value = sign(keyPair, hash);
   signingMessage.value = message;
-  _console("Signed Message With Stark Key", {
+  _console(["Signed Message With Stark Key", {
     pedersenHash: hash,
     info: `Message signed successfully: TORUS STARKWARE- ${message}`,
     signedMesssage: signedMessage.value,
-  });
+  }]);
 };
 
 const validateStarkMessage = (e: any) => {
@@ -415,16 +417,16 @@ const validateStarkMessage = (e: any) => {
   const keyPair = getStarkAccount(signingAccountIndex);
   const hash = getPedersenHashRecursively(signingMessage.value as string);
   const isVerified = verify(keyPair, hash, signedMessage.value as unknown as ec.Signature);
-  _console("Validate Stark Message", { verified: isVerified });
+  _console(["Validate Stark Message", { verified: isVerified }]);
 };
 
 const logout = () => {
   router.push("/");
 };
 
-watch( selectedNetwork, (oldValue, newValue) => {
+watch(selectedNetwork, (oldValue, newValue) => {
   if (oldValue === newValue) return;
-  const torusdirectsdk = new TorusSdk({
+  const sdk = new TorusSdk({
     uxMode: UX_MODE.POPUP,
     baseUrl: `${import.meta.env.BASE_URL}/serviceworker`,
     enableLogging: true,
@@ -439,10 +441,10 @@ watch( selectedNetwork, (oldValue, newValue) => {
   // so don't use torusdirectsdk.init and torusdirectsdk.triggerLogin (or other login methods)
   // in a single function call.
   // torusdirectsdk.init();
-  torusdirectsdk.value = torusdirectsdk;
+  torusdirectsdk.value = sdk;
 });
 
-onMounted(async () => { 
+onMounted(async () => {
   /**
    * Important Note:
    * After user completes the oauth login process, user will be redirected to redirectPathName
@@ -461,20 +463,20 @@ onMounted(async () => {
    */
   try {
     const url = new URL(location.href);
-    const hash = url.hash.substr(1);
+    // const hash = url.hash.substr(1);
     const queryParams = {} as Record<string, string | null>;
     for (const key of url.searchParams.keys()) {
       queryParams[key] = url.searchParams.get(key);
     }
-    const { error, instanceParameters } = _handleRedirectParameters(hash, queryParams);
-    const torusdirectsdk = new TorusSdk({
+    // const { error, instanceParameters } = _handleRedirectParameters(hash, queryParams);
+    const sdk = new TorusSdk({
       baseUrl: `${location.origin}/serviceworker`,
       enableLogging: true,
       network: TORUS_SAPPHIRE_NETWORK.SAPPHIRE_DEVNET, // details for test net
       web3AuthClientId: WEB3AUTH_CLIENT_ID,
     });
-    await torusdirectsdk.init({ skipSw: true });
-    torusdirectsdk.value = torusdirectsdk;
+    await sdk.init({ skipSw: true });
+    torusdirectsdk.value = sdk;
   } catch (error) {
     console.error(error, "caught");
   }

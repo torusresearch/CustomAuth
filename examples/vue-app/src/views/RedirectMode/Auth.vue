@@ -231,7 +231,6 @@ const init = async () => {
     console.log("Login Details", loginDetails.value);
     setPrivateKey();
   }
-  console.log('zsdsdf')
   const providerInstance = await EthereumPrivateKeyProvider.getProviderInstance({
     chainConfig: {
       rpcTarget: "https://polygon-rpc.com",
