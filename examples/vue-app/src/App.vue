@@ -1,5 +1,6 @@
 <template>
   <div>
+    <Navbar />
     <router-view />
   </div>
 </template>
@@ -13,3 +14,7 @@ body,
   font-family: "Poppins", sans-serif !important;
 }
 </style>
+
+<script setup lang="ts">
+import Navbar from '@/components/Navbar';
+</script>

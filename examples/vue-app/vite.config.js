@@ -1,3 +1,4 @@
+import { fileURLToPath, URL } from "url";
 import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
 
@@ -9,5 +10,21 @@ export default defineConfig({
   },
   define: {
     global: "globalThis",
+  },
+  resolve: {
+    alias: {
+      "@": fileURLToPath(new URL("./src", import.meta.url)),
+    },
+  },
+  build: {
+    rollupOptions: {
+      // https://rollupjs.org/guide/en/#outputmanualchunks
+      output: {
+        manualChunks: {
+          popupMode: ["./src/PopupMode"],
+          redirectMode: ["./src/RedirectMode"],
+        },
+      },
+    },
   },
 });

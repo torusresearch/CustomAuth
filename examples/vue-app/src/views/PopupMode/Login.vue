@@ -219,6 +219,20 @@ const loginToConnectionMap = computed((): Record<string, any> => ({
     connection: "sms",
   },
 }));
+const _console = (args: unknown[]): void => {
+  const el = document.querySelector("#console>pre");
+  const h1 = document.querySelector("#console>h1");
+  const consoleBtn = document.querySelector<HTMLElement>("#console>div.clear-console-btn");
+  if (h1) {
+    h1.innerHTML = args[0] as string;
+  }
+  if (el) {
+    el.innerHTML = JSON.stringify(args[1] || {}, (_, v) => (typeof v === "bigint" ? v.toString() : v), 2);
+  }
+  if (consoleBtn) {
+    consoleBtn.style.display = "block";
+  }
+};
 
 const login = async (hash?: string, queryParameters?: Record<string, any>) => {
   try {
