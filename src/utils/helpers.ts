@@ -76,7 +76,7 @@ export const getVerifierId = (
     case LOGIN.JWT:
       return caseSensitiveField(sub, isVerifierIdCaseSensitive);
     default:
-      throw new Error("Invalid login type");
+      throw new Error("Invalid login type to get verifier id");
   }
 };
 
@@ -180,16 +180,16 @@ export function are3PCSupported(): boolean {
   const browserInfo = Bowser.parse(navigator.userAgent);
   log.info(JSON.stringify(browserInfo), "current browser info");
 
-  const thirdPartyCookieSupport = true;
+  let thirdPartyCookieSupport = true;
   // brave
-  // if ((navigator as unknown as { brave: boolean })?.brave) {
-  //   thirdPartyCookieSupport = false;
-  // }
-  // // All webkit & gecko engine instances use itp (intelligent tracking prevention -
-  // // https://webkit.org/tracking-prevention/#intelligent-tracking-prevention-itp)
-  // if (browserInfo.engine.name === Bowser.ENGINE_MAP.WebKit || browserInfo.engine.name === Bowser.ENGINE_MAP.Gecko) {
-  //   thirdPartyCookieSupport = false;
-  // }
+  if ((navigator as unknown as { brave: boolean })?.brave) {
+    thirdPartyCookieSupport = false;
+  }
+  // All webkit & gecko engine instances use itp (intelligent tracking prevention -
+  // https://webkit.org/tracking-prevention/#intelligent-tracking-prevention-itp)
+  if (browserInfo.engine.name === Bowser.ENGINE_MAP.WebKit || browserInfo.engine.name === Bowser.ENGINE_MAP.Gecko) {
+    thirdPartyCookieSupport = false;
+  }
 
   return thirdPartyCookieSupport;
 }
@@ -214,4 +214,12 @@ export function getTimeout(typeOfLogin: LOGIN_TYPE) {
     return 1000 * 60; // 60 seconds to finish the login
   }
   return 1000 * 10; // 10 seconds
+}
+
+export function decodeToken<T>(token: string): { header: { alg: string; typ: string; kid?: string }; payload: T } {
+  const [header, payload] = token.split(".");
+  return {
+    header: JSON.parse(base64url.decode(header)),
+    payload: JSON.parse(base64url.decode(payload)) as T,
+  };
 }

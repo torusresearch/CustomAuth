@@ -1,6 +1,6 @@
 import React from "react";
 import "../App.css";
-import TorusSdk, { RedirectResult } from "@toruslabs/customauth";
+import { CustomAuth, RedirectResult } from "@toruslabs/customauth";
 import { getStarkHDAccount, starkEc, sign, verify, pedersen, STARKNET_NETWORKS } from "@toruslabs/openlogin-starkkey";
 import { binaryToHex, binaryToUtf8, bufferToBinary, bufferToHex, hexToBinary } from "enc-utils";
 import type { ec } from "elliptic";
@@ -24,7 +24,7 @@ class RedirectAuth extends React.Component<IProps, IState> {
   }
 
   async componentDidMount() {
-    const torusdirectsdk = new TorusSdk({
+    const torusdirectsdk = new CustomAuth({
       baseUrl: window.location.origin,
       redirectPathName: "auth",
       enableLogging: true,
@@ -50,7 +50,7 @@ class RedirectAuth extends React.Component<IProps, IState> {
     const account = getStarkHDAccount(
       ((this.state.loginDetails?.result as any)?.privateKey as string).padStart(64, "0"),
       index,
-      STARKNET_NETWORKS.testnet
+      STARKNET_NETWORKS.testnet,
     );
     return account;
   };

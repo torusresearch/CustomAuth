@@ -146,7 +146,7 @@
 </template>
 
 <script lang="ts">
-import TorusSdk, { TorusLoginResponse, UX_MODE } from "@toruslabs/customauth";
+import { CustomAuth, TorusLoginResponse, UX_MODE } from "@toruslabs/customauth";
 import { getStarkHDAccount, pedersen, sign, STARKNET_NETWORKS, verify } from "@toruslabs/openlogin-starkkey";
 import { SafeEventEmitterProvider } from "@web3auth/base";
 import { EthereumPrivateKeyProvider } from "@web3auth/ethereum-provider";
@@ -180,7 +180,7 @@ export default defineComponent({
   name: "PopupLogin",
   data() {
     return {
-      torusdirectsdk: null as TorusSdk | null,
+      torusdirectsdk: null as CustomAuth | null,
       selectedVerifier: "google",
       verifierMap,
       signedMessage: null as ec.Signature | null,
@@ -434,7 +434,7 @@ export default defineComponent({
   watch: {
     selectedNetwork(oldValue, newValue) {
       if (oldValue === newValue) return;
-      const torusdirectsdk = new TorusSdk({
+      const torusdirectsdk = new CustomAuth({
         uxMode: UX_MODE.POPUP,
         baseUrl: `${location.origin}/serviceworker`,
         enableLogging: true,
@@ -459,7 +459,7 @@ export default defineComponent({
       for (const key of url.searchParams.keys()) {
         queryParams[key] = url.searchParams.get(key);
       }
-      const torusdirectsdk = new TorusSdk({
+      const torusdirectsdk = new CustomAuth({
         uxMode: UX_MODE.POPUP,
         baseUrl: `${location.origin}/serviceworker`,
         enableLogging: true,

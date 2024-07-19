@@ -49,7 +49,7 @@
 </template>
 
 <script lang="ts">
-import TorusSdk, { UX_MODE } from "@toruslabs/customauth";
+import { CustomAuth, UX_MODE } from "@toruslabs/customauth";
 import { defineComponent } from "vue";
 import { TORUS_SAPPHIRE_NETWORK, TORUS_LEGACY_NETWORK } from "@toruslabs/constants";
 
@@ -77,7 +77,7 @@ export default defineComponent({
   name: "RedirectLogin",
   data() {
     return {
-      customAuthSdk: null as TorusSdk | null,
+      customAuthSdk: null as CustomAuth | null,
       selectedVerifier: "google",
       verifierMap,
       login_hint: "",
@@ -117,7 +117,7 @@ export default defineComponent({
     },
   },
   // async mounted() {
-  //   const customAuthSdk = new TorusSdk({
+  //   const customAuthSdk = new CustomAuth({
   //     baseUrl: location.origin,
   //     redirectPathName: "auth",
   //     enableLogging: true,
@@ -130,7 +130,7 @@ export default defineComponent({
   // },
   methods: {
     async login() {
-      const customAuthSdk = new TorusSdk({
+      const customAuthSdk = new CustomAuth({
         baseUrl: location.origin,
         redirectPathName: "auth",
         enableLogging: true,

@@ -1,6 +1,6 @@
 import React from "react";
 import "../App.css";
-import TorusSdk, { TorusLoginResponse } from "@toruslabs/customauth";
+import { CustomAuth, TorusLoginResponse } from "@toruslabs/customauth";
 import ReactJsonView from "react-json-view";
 import {
   verifierMap,
@@ -22,7 +22,7 @@ import {
 
 interface IState {
   selectedVerifier: string;
-  torusdirectsdk: TorusSdk | null;
+  torusdirectsdk: CustomAuth | null;
   loginResponse?: TorusLoginResponse | null;
 }
 
@@ -40,7 +40,7 @@ class PopupMode extends React.Component<IProps, IState> {
 
   componentDidMount = async () => {
     try {
-      const torusdirectsdk = new TorusSdk({
+      const torusdirectsdk = new CustomAuth({
         baseUrl: `${window.location.origin}/serviceworker`,
         enableLogging: true,
         network: "testnet", // details for test net

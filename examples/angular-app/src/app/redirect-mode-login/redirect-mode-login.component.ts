@@ -1,5 +1,5 @@
 import { Component, OnInit } from "@angular/core";
-import TorusSdk, { Auth0ClientOptions } from "@toruslabs/customauth";
+import { CustomAuth, Auth0ClientOptions } from "@toruslabs/customauth";
 
 import {
   verifierMap,
@@ -25,7 +25,7 @@ import {
   styleUrls: ["./redirect-mode-login.component.css"],
 })
 export class RedirectModeLoginComponent implements OnInit {
-  torusdirectsdk: TorusSdk | null = null;
+  torusdirectsdk: CustomAuth | null = null;
   selectedVerifier = GOOGLE;
 
   verifierMap = verifierMap;
@@ -34,7 +34,7 @@ export class RedirectModeLoginComponent implements OnInit {
 
   async ngOnInit() {
     try {
-      const torusdirectsdk = new TorusSdk({
+      const torusdirectsdk = new CustomAuth({
         baseUrl: location.origin,
         redirectPathName: "auth",
         enableLogging: true,

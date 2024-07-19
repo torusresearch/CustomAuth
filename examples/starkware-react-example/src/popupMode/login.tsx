@@ -1,6 +1,6 @@
 import React from "react";
 import "../App.css";
-import TorusSdk, { TorusLoginResponse } from "@toruslabs/customauth";
+import { CustomAuth, TorusLoginResponse } from "@toruslabs/customauth";
 
 import { getStarkHDAccount, starkEc, sign, verify, pedersen, STARKNET_NETWORKS } from "@toruslabs/openlogin-starkkey";
 import { binaryToHex, binaryToUtf8, bufferToBinary, bufferToHex, hexToBinary } from "enc-utils";
@@ -26,7 +26,7 @@ import {
 
 interface IState {
   selectedVerifier: string;
-  torusdirectsdk: TorusSdk | null;
+  torusdirectsdk: CustomAuth | null;
   loginResponse?: TorusLoginResponse | null;
   signingMessage?: string | null;
   signedMessage?: ec.Signature | null;
@@ -48,7 +48,7 @@ class PopupMode extends React.Component<IProps, IState> {
 
   componentDidMount = async () => {
     try {
-      const torusdirectsdk = new TorusSdk({
+      const torusdirectsdk = new CustomAuth({
         baseUrl: `${window.location.origin}/serviceworker`,
         enableLogging: true,
         network: "testnet", // details for test net

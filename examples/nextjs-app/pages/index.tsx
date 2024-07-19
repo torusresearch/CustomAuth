@@ -1,7 +1,7 @@
 /* eslint-disable class-methods-use-this */
 import React from "react";
 import Link from "next/link";
-import TorusSdk, { TorusLoginResponse } from "@toruslabs/customauth";
+import { CustomAuth, TorusLoginResponse } from "@toruslabs/customauth";
 import dynamic from "next/dynamic";
 
 import {
@@ -27,7 +27,7 @@ if (typeof window === "object") {
 
 interface IState {
   selectedVerifier: string;
-  torusdirectsdk: TorusSdk | null;
+  torusdirectsdk: CustomAuth | null;
   loginHint: string;
   loginResponse?: TorusLoginResponse | null;
 }
@@ -69,7 +69,7 @@ class HomePage extends React.PureComponent<IProps, IState> {
         queryParams[key] = url.searchParams.get(key);
       }
       const { error, instanceParameters } = this.handleRedirectParameters(hash, queryParams);
-      const torusdirectsdk = new TorusSdk({
+      const torusdirectsdk = new CustomAuth({
         baseUrl: `${window.location.origin}/serviceworker`,
         enableLogging: true,
         network: "testnet", // details for test net

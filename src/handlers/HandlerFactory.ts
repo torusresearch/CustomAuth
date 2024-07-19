@@ -21,7 +21,7 @@ const createHandler = ({
   customState,
 }: CreateHandlerParams): ILoginHandler => {
   if (!verifier || !typeOfLogin || !clientId) {
-    throw new Error("Invalid params");
+    throw new Error("Invalid params. Missing verifier, typeOfLogin or clientId");
   }
   const { domain, login_hint, id_token, access_token } = jwtParams || {};
   switch (typeOfLogin) {
@@ -36,7 +36,7 @@ const createHandler = ({
     case LOGIN.DISCORD:
       return new DiscordHandler(clientId, verifier, redirect_uri, typeOfLogin, uxMode, redirectToOpener, jwtParams, customState);
     case LOGIN.PASSWORDLESS:
-      if (!domain || !login_hint) throw new Error("Invalid params");
+      if (!domain || !login_hint) throw new Error("Invalid params. Missing domain or login_hint for passwordless login");
       return new PasswordlessHandler(clientId, verifier, redirect_uri, typeOfLogin, uxMode, redirectToOpener, jwtParams, customState);
     case LOGIN.APPLE:
     case LOGIN.GITHUB:
@@ -49,12 +49,12 @@ const createHandler = ({
       if (id_token || access_token) {
         return new MockLoginHandler(clientId, verifier, redirect_uri, typeOfLogin, uxMode, redirectToOpener, jwtParams, customState);
       }
-      if (!domain) throw new Error("Invalid params");
+      if (!domain) throw new Error("Invalid params for jwt login. Missing domain");
       return new JwtHandler(clientId, verifier, redirect_uri, typeOfLogin, uxMode, redirectToOpener, jwtParams, customState);
     case LOGIN.PASSKEYS:
       return new PasskeysHandler(clientId, verifier, redirect_uri, typeOfLogin, uxMode, redirectToOpener, jwtParams, customState);
     default:
-      throw new Error("Invalid login type");
+      throw new Error("Unsupported login type");
   }
 };
 
