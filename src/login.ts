@@ -1,5 +1,5 @@
 import { NodeDetailManager } from "@toruslabs/fetch-node-details";
-import { keccak256, Torus, TorusKey } from "@toruslabs/torus.js";
+import Torus, { keccak256, TorusKey } from "@toruslabs/torus.js";
 
 import createHandler from "./handlers/HandlerFactory";
 import {
@@ -372,9 +372,17 @@ class CustomAuth {
         name: SENTRY_TXNS.FETCH_SHARES,
       },
       async () => {
-        return this.torus.retrieveShares(nodeDetails.torusNodeEndpoints, nodeDetails.torusIndexes, verifier, verifierParams, idToken, {
-          ...additionalParams,
-        });
+        return this.torus.retrieveShares(
+          nodeDetails.torusNodeEndpoints,
+          nodeDetails.torusIndexes,
+          verifier,
+          verifierParams,
+          idToken,
+          nodeDetails.torusNodePub,
+          {
+            ...additionalParams,
+          }
+        );
       }
     );
 
