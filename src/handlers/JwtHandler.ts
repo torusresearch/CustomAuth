@@ -1,10 +1,9 @@
 import { get } from "@toruslabs/http-helpers";
-import { jwtDecode } from "jwt-decode";
-import deepmerge from "lodash.merge";
+import deepmerge from "deepmerge";
 import log from "loglevel";
 
 import { LOGIN_TYPE, UX_MODE_TYPE } from "../utils/enums";
-import { getVerifierId, loginToConnectionMap, padUrlString, validateAndConstructUrl } from "../utils/helpers";
+import { decodeToken, getVerifierId, loginToConnectionMap, padUrlString, validateAndConstructUrl } from "../utils/helpers";
 import AbstractLoginHandler from "./AbstractLoginHandler";
 import {
   AUTH0_JWT_LOGIN_TYPE,
@@ -55,8 +54,9 @@ export default class JwtHandler extends AbstractLoginHandler {
       },
       clonedParams
     );
-    Object.keys(finalJwtParams).forEach((key) => {
-      if (finalJwtParams[key]) finalUrl.searchParams.append(key, finalJwtParams[key]);
+    Object.keys(finalJwtParams).forEach((key: string) => {
+      const localKey = key as keyof typeof finalJwtParams;
+      if (finalJwtParams[localKey]) finalUrl.searchParams.append(localKey, finalJwtParams[localKey]);
     });
     this.finalURL = finalUrl;
   }
@@ -87,7 +87,7 @@ export default class JwtHandler extends AbstractLoginHandler {
       }
     }
     if (idToken) {
-      const decodedToken = jwtDecode<Auth0UserInfo>(idToken);
+      const decodedToken = decodeToken<Auth0UserInfo>(idToken).payload;
       const { name, email, picture } = decodedToken;
       return {
         profileImage: picture,

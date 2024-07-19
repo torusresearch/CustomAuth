@@ -95,7 +95,7 @@
 </template>
 
 <script lang="ts">
-import TorusSdk, { RedirectResult, TorusLoginResponse } from "@toruslabs/customauth";
+import { CustomAuth, RedirectResult, TorusLoginResponse } from "@toruslabs/customauth";
 import { getStarkHDAccount, pedersen, sign, STARKNET_NETWORKS, verify } from "@toruslabs/openlogin-starkkey";
 import { SafeEventEmitterProvider } from "@web3auth/base";
 import { EthereumPrivateKeyProvider } from "@web3auth/ethereum-provider";
@@ -240,7 +240,7 @@ export default defineComponent({
   },
   async mounted() {
     const network = localStorage.getItem(LOCAL_NETWORK) as TORUS_LEGACY_NETWORK_TYPE | TORUS_NETWORK_TYPE;
-    const customAuthSdk = new TorusSdk({
+    const customAuthSdk = new CustomAuth({
       baseUrl: location.origin,
       redirectPathName: "auth",
       enableLogging: true,

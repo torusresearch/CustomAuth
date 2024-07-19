@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <head>
   <title>torus.js</title>
   <button onclick="loadTorus()">Login</button>
@@ -7,7 +7,7 @@
   <script src="../dist/customauth.umd.min.js"></script>
   <script>
     async function loadTorus() {
-      const torus = new Customauth.default({
+      const torus = new Customauth.CustomAuth({
         baseUrl: "http://localhost:3000/serviceworker/",
         network: "testnet", // details for test net
         web3AuthClientId: "YOUR_CLIENT_ID", // get Client ID from Web3Auth Dashboard

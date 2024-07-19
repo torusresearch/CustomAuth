@@ -1,5 +1,5 @@
 import { get } from "@toruslabs/http-helpers";
-import deepmerge from "lodash.merge";
+import deepmerge from "deepmerge";
 
 import { LOGIN_TYPE, UX_MODE_TYPE } from "../utils/enums";
 import AbstractLoginHandler from "./AbstractLoginHandler";
@@ -34,12 +34,13 @@ export default class TwitchHandler extends AbstractLoginHandler {
         client_id: this.clientId,
         redirect_uri: this.redirect_uri,
         scope: this.SCOPE,
-        force_verify: true,
+        force_verify: "true",
       },
       clonedParams
     );
-    Object.keys(finalJwtParams).forEach((key) => {
-      if (finalJwtParams[key]) finalUrl.searchParams.append(key, finalJwtParams[key]);
+    Object.keys(finalJwtParams).forEach((key: string) => {
+      const localKey = key as keyof typeof finalJwtParams;
+      if (finalJwtParams[localKey]) finalUrl.searchParams.append(localKey, finalJwtParams[localKey]);
     });
     this.finalURL = finalUrl;
   }

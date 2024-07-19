@@ -1,4 +1,4 @@
-import { OpenloginSessionManager } from "@toruslabs/openlogin-session-manager";
+import { OpenloginSessionManager } from "@toruslabs/session-manager";
 import log from "loglevel";
 
 export async function fetchDataFromBroadcastServer<T>(identifier: string, storageServerUrl?: string) {

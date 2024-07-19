@@ -2,7 +2,7 @@
  * User will be redirected to this page in redirect uxMode
  */
 import React from "react";
-import TorusSdk, { RedirectResult } from "@toruslabs/customauth";
+import { CustomAuth, RedirectResult } from "@toruslabs/customauth";
 import dynamic from "next/dynamic";
 
 let ReactJsonView;
@@ -25,7 +25,7 @@ class RedirectAuth extends React.Component<IProps, IState> {
   }
 
   async componentDidMount() {
-    const torusdirectsdk = new TorusSdk({
+    const torusdirectsdk = new CustomAuth({
       baseUrl: window.location.origin,
       redirectPathName: "auth",
       enableLogging: true,

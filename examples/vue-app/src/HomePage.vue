@@ -13,7 +13,7 @@
 </template>
 
 <script lang="ts">
-import TorusSdk from "@toruslabs/customauth";
+import { CustomAuth } from "@toruslabs/customauth";
 import { defineComponent } from "vue";
 
 import {
@@ -38,7 +38,7 @@ export default defineComponent({
   name: "HomePage",
   data() {
     return {
-      torusdirectsdk: null as TorusSdk | null,
+      torusdirectsdk: null as CustomAuth | null,
       selectedVerifier: "google",
       verifierMap,
     };
@@ -139,7 +139,7 @@ export default defineComponent({
         queryParams[key] = url.searchParams.get(key);
       }
       const { error, instanceParameters } = this._handleRedirectParameters(hash, queryParams);
-      const torusdirectsdk = new TorusSdk({
+      const torusdirectsdk = new CustomAuth({
         baseUrl: `${location.origin}/serviceworker`,
         enableLogging: true,
         network: TORUS_SAPPHIRE_NETWORK.SAPPHIRE_DEVNET, // details for test net
