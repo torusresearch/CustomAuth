@@ -1,5 +1,5 @@
 import { NodeDetailManager } from "@toruslabs/fetch-node-details";
-import Torus, { keccak256, TorusKey } from "@toruslabs/torus.js";
+import { keccak256, Torus, TorusKey } from "@toruslabs/torus.js";
 
 import createHandler from "./handlers/HandlerFactory";
 import {
