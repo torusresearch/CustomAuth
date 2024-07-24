@@ -36,7 +36,8 @@
           <form class="flex flex-col sm:flex-row gap-4 bottom-gutter" @submit.prevent="validateStarkMessage">
             <input class="custom-input disabled:cursor-not-allowed" :disabled="!signingMessage" type="number"
               placeholder="Index" :min="0" id="accountIndex" required />
-            <Button type="submit" :disabled="!signingMessage" class="disabled:cursor-not-allowed" pill size="sm">Validate
+            <Button type="submit" :disabled="!signingMessage" class="disabled:cursor-not-allowed" pill
+              size="sm">Validate
               Stark Message</Button>
           </form>
         </div>

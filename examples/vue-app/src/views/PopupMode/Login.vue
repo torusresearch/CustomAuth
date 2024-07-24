@@ -147,7 +147,6 @@ import { ec } from "elliptic";
 import { binaryToHex, binaryToUtf8, bufferToBinary, bufferToHex, hexToBinary } from "enc-utils";
 import { ref, computed, watch, onMounted } from "vue";
 import { Select, TextField, Button, Card } from "@toruslabs/vue-components";
-import router from "../../router";
 
 import {
   APPLE,
@@ -172,19 +171,19 @@ import { fetchLatestBlock, signEthMessage, signTypedData_v1 } from "../../servic
 import { TORUS_SAPPHIRE_NETWORK, TORUS_LEGACY_NETWORK } from "@toruslabs/constants";
 import { setPrivKey, privKey } from "@/store";
 
-const torusdirectsdk = ref(null as TorusSdk | null);
+const torusdirectsdk = ref<TorusSdk | null>(null);
 const selectedVerifier = ref("google");
 const login_hint = ref("");
 const isExpanded = ref(true);
 const networkList = [...Object.values(TORUS_SAPPHIRE_NETWORK), ...Object.values(TORUS_LEGACY_NETWORK)];
 const selectedNetwork = ref(TORUS_LEGACY_NETWORK.TESTNET);
-const loginResponse = ref(null as TorusLoginResponse | null);
-const provider = ref(null as SafeEventEmitterProvider | null);
-const signingMessage = ref(null as string | null);
-const signedMessage = ref(null as ec.Signature | null);
+const loginResponse = ref<TorusLoginResponse | null>(null);
+const provider = ref<SafeEventEmitterProvider | null>(null);
+const signingMessage = ref<string | null>(null);
+const signedMessage = ref<ec.Signature | null>(null);
 
 const loginToConnectionMap = computed((): Record<string, any> => ({
-  // [GOOGLE]: { login_hint: '  
+  // [GOOGLE]: { login_hint: 'hello@tor.us', prompt: 'none' },
   [EMAIL_PASSWORD]: { domain: AUTH_DOMAIN },
   [HOSTED_EMAIL_PASSWORDLESS]: { domain: AUTH_DOMAIN, verifierIdField: "name", connection: "", isVerifierIdCaseSensitive: false },
   [HOSTED_SMS_PASSWORDLESS]: { domain: AUTH_DOMAIN, verifierIdField: "name", connection: "" },
@@ -266,7 +265,7 @@ const login = async (hash?: string, queryParameters?: Record<string, any>) => {
     });
     provider.value = providerInstance;
 
-    // const loginDetails = await this.torusdirectsdk.triggerHybridAggregateLogin({
+    // const loginDetails = await torusdirectsdk.value.triggerHybridAggregateLogin({
     //   singleLogin: {
     //     typeOfLogin,
     //     verifier,
@@ -289,7 +288,7 @@ const login = async (hash?: string, queryParameters?: Record<string, any>) => {
     // });
 
     // AGGREGATE LOGIN
-    // const loginDetails = await this.torusdirectsdk.triggerAggregateLogin({
+    // const loginDetails = await torusdirectsdk.value.triggerAggregateLogin({
     //   aggregateVerifierType: "single_id_verifier",
     //   verifierIdentifier: "tkey-google",
     //   subVerifierDetailsArray: [
@@ -420,15 +419,11 @@ const validateStarkMessage = (e: any) => {
   _console(["Validate Stark Message", { verified: isVerified }]);
 };
 
-const logout = () => {
-  router.push("/");
-};
-
 watch(selectedNetwork, (oldValue, newValue) => {
   if (oldValue === newValue) return;
   const sdk = new TorusSdk({
     uxMode: UX_MODE.POPUP,
-    baseUrl: `${import.meta.env.BASE_URL}/serviceworker`,
+    baseUrl: `${import.meta.env.VITE_BASE_URL}/serviceworker`,
     enableLogging: true,
     network: newValue, // details for test net
     popupFeatures: `titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=500,width=500,top=100,left=100`,
