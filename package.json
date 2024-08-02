@@ -1,6 +1,6 @@
 {
   "name": "@toruslabs/customauth",
-  "version": "19.0.3",
+  "version": "20.0.0-alpha.1",
   "description": "CustomAuth login with torus to get user private key",
   "main": "dist/lib.cjs/index.js",
   "module": "dist/lib.esm/index.js",
@@ -38,8 +38,8 @@
     "@toruslabs/fetch-node-details": "^14.0.1",
     "@toruslabs/http-helpers": "^7.0.0",
     "@toruslabs/metadata-helpers": "^6.0.0",
-    "@toruslabs/session-manager": "^1.0.0",
-    "@toruslabs/torus.js": "^14.0.1",
+    "@toruslabs/session-manager": "^2.0.0",
+    "@toruslabs/torus.js": "^15.0.0",
     "base64url": "^3.0.1",
     "bowser": "^2.11.0",
     "eventemitter3": "^5.0.1",
@@ -47,16 +47,16 @@
     "loglevel": "^1.9.1"
   },
   "devDependencies": {
-    "@sentry/types": "^8.17.0",
-    "@toruslabs/config": "^2.1.0",
-    "@toruslabs/eslint-config-typescript": "^3.3.1",
-    "@toruslabs/torus-scripts": "^6.0.1",
+    "@sentry/types": "^8.22.0",
+    "@toruslabs/config": "^2.1.1",
+    "@toruslabs/eslint-config-typescript": "^3.3.3",
+    "@toruslabs/torus-scripts": "^6.0.3",
     "eslint": "^8.57.0",
-    "husky": "^9.0.11",
+    "husky": "^9.1.4",
     "lint-staged": "^15.2.7",
     "prettier": "^3.3.3",
     "rimraf": "^6.0.1",
-    "typescript": "^5.5.3"
+    "typescript": "^5.5.4"
   },
   "author": "Torus Labs",
   "license": "MIT",

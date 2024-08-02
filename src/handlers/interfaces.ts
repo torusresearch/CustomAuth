@@ -1,5 +1,5 @@
 import { TORUS_NETWORK_TYPE } from "@toruslabs/constants";
-import { TorusKey } from "@toruslabs/torus.js";
+import { KeyType, TorusKey } from "@toruslabs/torus.js";
 
 import { Sentry } from "../sentry";
 import { AGGREGATE_VERIFIER_TYPE, LOGIN_TYPE, TORUS_METHOD_TYPE, UX_MODE_TYPE } from "../utils/enums";
@@ -241,6 +241,8 @@ export interface CustomAuthArgs {
   serverTimeOffset?: number;
 
   sentry?: Sentry;
+
+  keyType?: KeyType;
 }
 
 export interface InitParams {
