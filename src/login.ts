@@ -372,17 +372,17 @@ class CustomAuth {
         name: SENTRY_TXNS.FETCH_SHARES,
       },
       async () => {
-        return this.torus.retrieveShares(
-          nodeDetails.torusNodeEndpoints,
-          nodeDetails.torusIndexes,
+        return this.torus.retrieveShares({
+          endpoints: nodeDetails.torusNodeEndpoints,
+          indexes: nodeDetails.torusIndexes,
           verifier,
           verifierParams,
           idToken,
-          nodeDetails.torusNodePub,
-          {
+          nodePubkeys: nodeDetails.torusNodePub,
+          extraParams: {
             ...additionalParams,
-          }
-        );
+          },
+        });
       }
     );
 

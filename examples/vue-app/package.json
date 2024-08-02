@@ -9,10 +9,10 @@
     "install:local": "npm i ../../toruslabs-customauth-*.tgz"
   },
   "dependencies": {
-    "@toruslabs/customauth": "file:../..",
+    "@toruslabs/broadcast-channel": "10.0.1",
+    "@toruslabs/customauth": "file:../../toruslabs-customauth-19.0.0-alpha.8.tgz",
     "@toruslabs/openlogin-starkkey": "^3.2.0",
     "@web3auth/ethereum-provider": "^8.0.1",
-    "@toruslabs/broadcast-channel": "10.0.1",
     "core-js": "^3.36.0",
     "daisyui": "^4.7.3",
     "enc-utils": "^3.0.0",
