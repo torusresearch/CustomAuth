@@ -467,7 +467,7 @@ class CustomAuth {
 
     if (!result)
       return {
-        error: "Init parameters not found. It might be because storage is not available. Please retry the login in a different browser",
+        error: `Init parameters not found. It might be because storage is not available. Please retry the login in a different browser. Used storage method: ${this.storageHelper.storageMethodUsed}`,
         state: instanceParameters || {},
         method,
         result: {},
