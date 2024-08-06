@@ -139,7 +139,7 @@
 </template>
 
 <script setup lang="ts">
-import TorusSdk, { TorusLoginResponse, UX_MODE } from "@toruslabs/customauth";
+import { CustomAuth, TorusLoginResponse, UX_MODE } from "@toruslabs/customauth";
 import { getStarkHDAccount, pedersen, sign, STARKNET_NETWORKS, verify } from "@toruslabs/openlogin-starkkey";
 import { SafeEventEmitterProvider } from "@web3auth/base";
 import { EthereumPrivateKeyProvider } from "@web3auth/ethereum-provider";
@@ -425,7 +425,7 @@ const onBack = () => {
 
 watch(selectedNetwork, (oldValue, newValue) => {
   if (oldValue === newValue) return;
-  const sdk = new TorusSdk({
+  const sdk = new CustomAuth({
     uxMode: UX_MODE.POPUP,
     baseUrl: `${import.meta.env.VITE_BASE_URL}/serviceworker`,
     enableLogging: true,
@@ -468,7 +468,7 @@ onMounted(async () => {
       queryParams[key] = url.searchParams.get(key);
     }
     // const { error, instanceParameters } = _handleRedirectParameters(hash, queryParams);
-    const sdk = new TorusSdk({
+    const sdk = new CustomAuth({
       baseUrl: `${location.origin}/serviceworker`,
       enableLogging: true,
       network: TORUS_SAPPHIRE_NETWORK.SAPPHIRE_DEVNET, // details for test net

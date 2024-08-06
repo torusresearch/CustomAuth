@@ -62,7 +62,7 @@
 </template>
 
 <script setup lang="ts">
-import TorusSdk, { Auth0ClientOptions, UX_MODE } from "@toruslabs/customauth";
+import { CustomAuth, Auth0ClientOptions, UX_MODE } from "@toruslabs/customauth";
 import { ref } from "vue";
 import { TORUS_SAPPHIRE_NETWORK, TORUS_LEGACY_NETWORK } from "@toruslabs/constants";
 import { Select, TextField, Button, Card } from "@toruslabs/vue-components";
@@ -124,7 +124,7 @@ const loginToConnectionMap: Record<string, Object> = {
 };
 
 const login = async () => {
-  customAuthSdk.value = new TorusSdk({
+  customAuthSdk.value = new CustomAuth({
     baseUrl: location.origin,
     redirectPathName: "auth",
     enableLogging: true,

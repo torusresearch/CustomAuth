@@ -78,7 +78,7 @@
 </template>
 
 <script setup lang="ts">
-import CustomAuth, { RedirectResult, TorusLoginResponse } from "@toruslabs/customauth";
+import { CustomAuth, RedirectResult, TorusLoginResponse } from "@toruslabs/customauth";
 import { getStarkHDAccount, pedersen, sign, STARKNET_NETWORKS, verify } from "@toruslabs/openlogin-starkkey";
 import { SafeEventEmitterProvider } from "@web3auth/base";
 import { EthereumPrivateKeyProvider } from "@web3auth/ethereum-provider";
