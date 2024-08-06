@@ -26,7 +26,7 @@
             <Button @click="() => login()" class="" type="button" block size="md" pill>
               Login with Torus
             </Button>
-            <Button @click="() => { }" class="" type="button" block size="md" pill variant="secondary">
+            <Button @click="onBack" class="" type="button" block size="md" pill variant="secondary">
               Back
             </Button>
           </div>
@@ -170,7 +170,8 @@ import {
 import { fetchLatestBlock, signEthMessage, signTypedData_v1 } from "../../services/chainHandlers";
 import { TORUS_SAPPHIRE_NETWORK, TORUS_LEGACY_NETWORK } from "@toruslabs/constants";
 import { setPrivKey, privKey } from "@/store";
-
+import { useRouter } from "vue-router";
+const router = useRouter();
 const torusdirectsdk = ref<TorusSdk | null>(null);
 const selectedVerifier = ref("google");
 const login_hint = ref("");
@@ -417,6 +418,9 @@ const validateStarkMessage = (e: any) => {
   const hash = getPedersenHashRecursively(signingMessage.value as string);
   const isVerified = verify(keyPair, hash, signedMessage.value as unknown as ec.Signature);
   _console(["Validate Stark Message", { verified: isVerified }]);
+};
+const onBack = () => {
+  router.push("/");
 };
 
 watch(selectedNetwork, (oldValue, newValue) => {
