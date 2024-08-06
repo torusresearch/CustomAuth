@@ -39,5 +39,11 @@ module.exports = {
       stream: false,
       zlib: false,
     };
+    config.devServer = {
+      static: {
+        directory: path.join(__dirname, "node_modules/@toruslabs/customauth/serviceworker"),
+        publicPath: "/serviceworker",
+      },
+    };
   },
 };

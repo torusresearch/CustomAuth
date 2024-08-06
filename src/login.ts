@@ -64,6 +64,7 @@ class CustomAuth {
     enableOneKey = false,
     web3AuthClientId,
     metadataUrl = "https://metadata.tor.us",
+    keyType = "secp256k1",
     serverTimeOffset = 0,
   }: CustomAuthArgs) {
     if (!web3AuthClientId) throw new Error("Please provide a valid web3AuthClientId in constructor");
@@ -86,6 +87,7 @@ class CustomAuth {
       serverTimeOffset,
       clientId: web3AuthClientId,
       legacyMetadataHost: metadataUrl,
+      keyType,
     });
     Torus.setAPIKey(apiKey);
     this.torus = torus;
@@ -370,8 +372,16 @@ class CustomAuth {
         name: SENTRY_TXNS.FETCH_SHARES,
       },
       async () => {
-        return this.torus.retrieveShares(nodeDetails.torusNodeEndpoints, nodeDetails.torusIndexes, verifier, verifierParams, idToken, {
-          ...additionalParams,
+        return this.torus.retrieveShares({
+          endpoints: nodeDetails.torusNodeEndpoints,
+          indexes: nodeDetails.torusIndexes,
+          verifier,
+          verifierParams,
+          idToken,
+          nodePubkeys: nodeDetails.torusNodePub,
+          extraParams: {
+            ...additionalParams,
+          },
         });
       }
     );
@@ -467,7 +477,7 @@ class CustomAuth {
 
     if (!result)
       return {
-        error: "Init parameters not found. It might be because storage is not available. Please retry the login in a different browser",
+        error: `Init parameters not found. It might be because storage is not available. Please retry the login in a different browser. Used storage method: ${this.storageHelper.storageMethodUsed}`,
         state: instanceParameters || {},
         method,
         result: {},

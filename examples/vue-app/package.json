@@ -11,11 +11,12 @@
   },
   "dependencies": {
     "@toruslabs/broadcast-channel": "10.0.1",
-    "@toruslabs/customauth": "file:../../toruslabs-customauth-19.0.1.tgz",
+    "@toruslabs/customauth": "file:../../",
     "@toruslabs/openlogin-starkkey": "^3.2.0",
     "@toruslabs/vue-components": "^7.8.3",
     "@toruslabs/vue-icons": "^7.6.2",
     "@web3auth/ethereum-provider": "^8.0.1",
+    "core-js": "^3.36.0",
     "daisyui": "^4.7.3",
     "enc-utils": "^3.0.0",
     "vue": "^3.4.21",
