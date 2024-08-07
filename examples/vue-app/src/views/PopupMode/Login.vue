@@ -2,57 +2,65 @@
   <section class="">
     <div v-if="!privKey" class="flex flex-col items-center">
       <div class="w-full bg-white rounded-lg shadow sm:max-w-md">
-        <Card class=" px-4 py-4 gird col-span-1">
+        <Card class="px-4 py-4 gird col-span-1">
           <div>
             <h6 class="text-2xl font-semibold pb-4 text-center">Login in popup mode</h6>
           </div>
           <div>
-            <Select v-model="selectedVerifier" :options="Object.keys(verifierMap).map((x) => ({ name: x, value: x }))"
-              :class="['w-full !h-auto group p-2']" label="Select Verifier" />
+            <Select
+              v-model="selectedVerifier"
+              :options="Object.keys(verifierMap).map((x) => ({ name: x, value: x }))"
+              :class="['w-full !h-auto group p-2']"
+              label="Select Verifier"
+            />
           </div>
           <div>
-            <TextField v-model="login_hint" v-if="selectedVerifier === 'torus_email_passwordless'"
-              placeholder="Enter an email" required :class="['w-full !h-auto group pb-2']" />
+            <TextField
+              v-if="selectedVerifier === 'torus_email_passwordless'"
+              v-model="login_hint"
+              placeholder="Enter an email"
+              required
+              :class="['w-full !h-auto group pb-2']"
+            />
           </div>
           <div>
-            <TextField v-model="login_hint" v-if="selectedVerifier === 'torus_sms_passwordless'"
-              placeholder="Eg: +{cc}-{number}" required :class="['w-full !h-auto group pb-2']" />
+            <TextField
+              v-if="selectedVerifier === 'torus_sms_passwordless'"
+              v-model="login_hint"
+              placeholder="Eg: +{cc}-{number}"
+              required
+              :class="['w-full !h-auto group pb-2']"
+            />
           </div>
           <div>
-            <Select v-model="selectedNetwork" :options="networkList.map((x) => ({ name: x, value: x }))"
-              :class="['w-full !h-auto group p-2']" label="Select Network" />
+            <Select
+              v-model="selectedNetwork"
+              :options="networkList.map((x) => ({ name: x, value: x }))"
+              :class="['w-full !h-auto group p-2']"
+              label="Select Network"
+            />
           </div>
           <div class="my-5 flex px-6 gap-4">
-            <Button @click="() => login()" class="" type="button" block size="md" pill>
-              Login with Torus
-            </Button>
-            <Button @click="onBack" class="" type="button" block size="md" pill variant="secondary">
-              Back
-            </Button>
+            <Button class="" type="button" block size="md" pill @click="() => login()">Login with Torus</Button>
+            <Button class="" type="button" block size="md" pill variant="secondary" @click="onBack">Back</Button>
           </div>
           <ul class="text-sm text-app-gray-700 dark:text-app-gray-200 font-normal mt-4 mb-5 px-6 text-center">
             <li>
               Please note that the verifiers listed in the example have
-              <span
-                class="font-semibold text-app-gray-900 dark:text-white">http://localhost:3000/serviceworker/redirect</span>
+              <span class="font-semibold text-app-gray-900 dark:text-white">http://localhost:3000/serviceworker/redirect</span>
               configured as the redirect uri.
             </li>
             <li>If you use any other domains, they won't work.</li>
-            <li>The verifiers listed here only work with the client id's specified in example. Please don't edit them
-            </li>
-            <li>The verifiers listed here are for example reference only. Please don't use them for anything other than
-              testing purposes.</li>
+            <li>The verifiers listed here only work with the client id's specified in example. Please don't edit them</li>
+            <li>The verifiers listed here are for example reference only. Please don't use them for anything other than testing purposes.</li>
           </ul>
           <div class="text-base text-app-gray-900 dark:text-app-gray-200 font-medium mt-4 mb-5 px-6 text-center">
             Reach out to us at
-            <a class="text-app-primary-600 dark:text-app-primary-500 underline"
-              href="mailto:hello@tor.us">hello@tor.us</a>
+            <a class="text-app-primary-600 dark:text-app-primary-500 underline" href="mailto:hello@tor.us">hello@tor.us</a>
             or
-            <a class="text-app-primary-600 dark:text-app-primary-500 underline" href="https://t.me/torusdev">telegram
-              group</a>
+            <a class="text-app-primary-600 dark:text-app-primary-500 underline" href="https://t.me/torusdev">telegram group</a>
             to get your verifier deployed for your client id.
           </div>
-
         </Card>
       </div>
     </div>
@@ -67,18 +75,16 @@
             <div v-show="isExpanded" class="mt-4 overflow-y-auto">
               <p class="btn-label">Signing</p>
               <div class="flex flex-col sm:flex-row gap-4 bottom-gutter">
-                <Button @click="signMessage" :disabled="!provider" pill size="sm">Sign Test Eth Message</Button>
-                <Button @click="latestBlock" :disabled="!provider" pill size="sm">Fetch Latest block</Button>
+                <Button :disabled="!provider" pill size="sm" @click="signMessage">Sign Test Eth Message</Button>
+                <Button :disabled="!provider" pill size="sm" @click="latestBlock">Fetch Latest block</Button>
               </div>
               <div class="flex flex-col sm:flex-row gap-4 bottom-gutter">
-                <Button @click="signV1Message" :disabled="!provider" pill size="sm">Sign Typed data v1 test Msg</Button>
-          
+                <Button :disabled="!provider" pill size="sm" @click="signV1Message">Sign Typed data v1 test Msg</Button>
               </div>
               <p class="btn-label !mb-0">Stark key pair</p>
-              <p class="text-xs text-app-gray-500 mb-2">Enter HD account index to derive stark key pair from custom
-                auth's private key</p>
+              <p class="text-xs text-app-gray-500 mb-2">Enter HD account index to derive stark key pair from custom auth's private key</p>
               <form class="flex flex-col sm:flex-row gap-4 bottom-gutter" @submit.prevent="starkHdAccount">
-                <input class="custom-input" type="number" placeholder="Index" :min="0" id="accountIndex" required />
+                <input id="accountIndex" class="custom-input" type="number" placeholder="Index" :min="0" required />
                 <Button type="submit" pill size="sm">Get Stark Key Pair</Button>
               </form>
               <p class="btn-label">Sign message</p>
@@ -87,16 +93,22 @@
                   <textarea class="custom-input w-full" rows="2" placeholder="Message to encrypt" />
                 </div>
                 <div class="flex flex-col sm:flex-row gap-4 bottom-gutter">
-                  <input class="custom-input" type="number" placeholder="Index" :min="0" id="accountIndex" required />
+                  <input id="accountIndex" class="custom-input" type="number" placeholder="Index" :min="0" required />
                   <Button type="submit" pill size="sm">Sign message with Stark key</Button>
                 </div>
               </form>
               <p class="btn-label">Validate message</p>
               <form class="flex flex-col sm:flex-row gap-4 bottom-gutter" @submit.prevent="validateStarkMessage">
-                <input class="custom-input disabled:cursor-not-allowed" :disabled="!signingMessage" type="number"
-                  placeholder="Index" :min="0" id="accountIndex" required />
-                  <Button type="submit" :disabled="!signingMessage" class="disabled:cursor-not-allowed" pill size="sm">Validate
-                    Stark Message</Button>
+                <input
+                  id="accountIndex"
+                  class="custom-input disabled:cursor-not-allowed"
+                  :disabled="!signingMessage"
+                  type="number"
+                  placeholder="Index"
+                  :min="0"
+                  required
+                />
+                <Button type="submit" :disabled="!signingMessage" class="disabled:cursor-not-allowed" pill size="sm">Validate Stark Message</Button>
               </form>
             </div>
           </div>
@@ -110,10 +122,8 @@
                 configured as the redirect uri.
               </p>
               <p class="mb-2">
-                If you use any other domains, they won't work. The verifiers listed here only work with the client id's
-                specified in example. Please
-                don't edit them. The verifiers listed here are for example reference only. Please don't use them for
-                anything other than testing
+                If you use any other domains, they won't work. The verifiers listed here only work with the client id's specified in example. Please
+                don't edit them. The verifiers listed here are for example reference only. Please don't use them for anything other than testing
                 purposes.
               </p>
               <p class="mb-2">
@@ -124,7 +134,7 @@
                 to get your verifier deployed for your client id.
               </p>
             </div>
-            <div class="dashboard-details-console-container" id="console">
+            <div id="console" class="dashboard-details-console-container">
               <h1 class="console-heading"></h1>
               <pre class="console-container"></pre>
               <div class="clear-console-btn">
@@ -139,19 +149,22 @@
 </template>
 
 <script setup lang="ts">
+import { TORUS_LEGACY_NETWORK, TORUS_SAPPHIRE_NETWORK } from "@toruslabs/constants";
 import { CustomAuth, TorusLoginResponse, UX_MODE } from "@toruslabs/customauth";
 import { getStarkHDAccount, pedersen, sign, STARKNET_NETWORKS, verify } from "@toruslabs/openlogin-starkkey";
+import { Button, Card, Select, TextField } from "@toruslabs/vue-components";
 import { SafeEventEmitterProvider } from "@web3auth/base";
 import { EthereumPrivateKeyProvider } from "@web3auth/ethereum-provider";
 import { ec } from "elliptic";
 import { binaryToHex, binaryToUtf8, bufferToBinary, bufferToHex, hexToBinary } from "enc-utils";
-import { ref, computed, watch, onMounted } from "vue";
-import { Select, TextField, Button, Card } from "@toruslabs/vue-components";
+import { computed, onMounted, ref, watch } from "vue";
+import { useRouter } from "vue-router";
+
+import { privKey, setPrivKey } from "@/store";
 
 import {
   APPLE,
   AUTH_DOMAIN,
-  WEB3AUTH_CLIENT_ID,
   COGNITO,
   COGNITO_AUTH_DOMAIN,
   EMAIL_PASSWORD,
@@ -165,14 +178,13 @@ import {
   TORUS_SMS_PASSWORDLESS,
   TWITTER,
   verifierMap,
+  WEB3AUTH_CLIENT_ID,
   WEIBO,
 } from "../../constants";
 import { fetchLatestBlock, signEthMessage, signTypedData_v1 } from "../../services/chainHandlers";
-import { TORUS_SAPPHIRE_NETWORK, TORUS_LEGACY_NETWORK } from "@toruslabs/constants";
-import { setPrivKey, privKey } from "@/store";
-import { useRouter } from "vue-router";
+
 const router = useRouter();
-const torusdirectsdk = ref<TorusSdk | null>(null);
+const torusdirectsdk = ref<CustomAuth | null>(null);
 const selectedVerifier = ref("google");
 const login_hint = ref("");
 const isExpanded = ref(true);
@@ -183,33 +195,35 @@ const provider = ref<SafeEventEmitterProvider | null>(null);
 const signingMessage = ref<string | null>(null);
 const signedMessage = ref<ec.Signature | null>(null);
 
-const loginToConnectionMap = computed((): Record<string, any> => ({
-  // [GOOGLE]: { login_hint: 'hello@tor.us', prompt: 'none' },
-  [EMAIL_PASSWORD]: { domain: AUTH_DOMAIN },
-  [HOSTED_EMAIL_PASSWORDLESS]: { domain: AUTH_DOMAIN, verifierIdField: "name", connection: "", isVerifierIdCaseSensitive: false },
-  [HOSTED_SMS_PASSWORDLESS]: { domain: AUTH_DOMAIN, verifierIdField: "name", connection: "" },
-  [APPLE]: { domain: AUTH_DOMAIN },
-  [GITHUB]: { domain: AUTH_DOMAIN },
-  [LINKEDIN]: { domain: AUTH_DOMAIN },
-  [TWITTER]: { domain: AUTH_DOMAIN },
-  [WEIBO]: { domain: AUTH_DOMAIN },
-  [LINE]: { domain: AUTH_DOMAIN },
-  [REDDIT]: { domain: AUTH_DOMAIN, connection: "Reddit", verifierIdField: "name", isVerifierIdCaseSensitive: false },
-  [COGNITO]: { domain: COGNITO_AUTH_DOMAIN, identity_provider: "Google", response_type: "token", user_info_endpoint: "userInfo" },
-  [TORUS_EMAIL_PASSWORDLESS]: {
-    domain: "https://develop-passwordless.web3auth.io",
-    verifierIdField: "name",
-    isVerifierIdCaseSensitive: false,
-    login_hint: login_hint.value,
-    connection: "email",
-  },
-  [TORUS_SMS_PASSWORDLESS]: {
-    domain: "https://develop-passwordless.web3auth.io",
-    verifierIdField: "name",
-    login_hint: login_hint.value,
-    connection: "sms",
-  },
-}));
+const loginToConnectionMap = computed(
+  (): Record<string, any> => ({
+    // [GOOGLE]: { login_hint: 'hello@tor.us', prompt: 'none' },
+    [EMAIL_PASSWORD]: { domain: AUTH_DOMAIN },
+    [HOSTED_EMAIL_PASSWORDLESS]: { domain: AUTH_DOMAIN, verifierIdField: "name", connection: "", isVerifierIdCaseSensitive: false },
+    [HOSTED_SMS_PASSWORDLESS]: { domain: AUTH_DOMAIN, verifierIdField: "name", connection: "" },
+    [APPLE]: { domain: AUTH_DOMAIN },
+    [GITHUB]: { domain: AUTH_DOMAIN },
+    [LINKEDIN]: { domain: AUTH_DOMAIN },
+    [TWITTER]: { domain: AUTH_DOMAIN },
+    [WEIBO]: { domain: AUTH_DOMAIN },
+    [LINE]: { domain: AUTH_DOMAIN },
+    [REDDIT]: { domain: AUTH_DOMAIN, connection: "Reddit", verifierIdField: "name", isVerifierIdCaseSensitive: false },
+    [COGNITO]: { domain: COGNITO_AUTH_DOMAIN, identity_provider: "Google", response_type: "token", user_info_endpoint: "userInfo" },
+    [TORUS_EMAIL_PASSWORDLESS]: {
+      domain: "https://develop-passwordless.web3auth.io",
+      verifierIdField: "name",
+      isVerifierIdCaseSensitive: false,
+      login_hint: login_hint.value,
+      connection: "email",
+    },
+    [TORUS_SMS_PASSWORDLESS]: {
+      domain: "https://develop-passwordless.web3auth.io",
+      verifierIdField: "name",
+      login_hint: login_hint.value,
+      connection: "sms",
+    },
+  }),
+);
 const _console = (args: unknown[]): void => {
   const el = document.querySelector("#console>pre");
   const h1 = document.querySelector("#console>h1");
@@ -362,9 +376,12 @@ const getStarkAccount = (index: number): ec.KeyPair => {
 const starkHdAccount = (e: any) => {
   const accIndex = e.target[0].value;
   const account = getStarkAccount(accIndex);
-  _console(["Stark Key Pair", {
-    ...account,
-  }]);
+  _console([
+    "Stark Key Pair",
+    {
+      ...account,
+    },
+  ]);
   return account;
 };
 
@@ -393,7 +410,6 @@ const getPedersenHashRecursively = (str: string, prefix?: string): string => {
   }
   const currentChunkHex = binaryToHex(binaryStr.padEnd(252, "0"));
   return pedersen([prefix || "", currentChunkHex]);
-
 };
 
 const signMessageWithStarkKey = (e: any) => {
@@ -404,11 +420,14 @@ const signMessageWithStarkKey = (e: any) => {
   const hash = getPedersenHashRecursively(message);
   signedMessage.value = sign(keyPair, hash);
   signingMessage.value = message;
-  _console(["Signed Message With Stark Key", {
-    pedersenHash: hash,
-    info: `Message signed successfully: TORUS STARKWARE- ${message}`,
-    signedMesssage: signedMessage.value,
-  }]);
+  _console([
+    "Signed Message With Stark Key",
+    {
+      pedersenHash: hash,
+      info: `Message signed successfully: TORUS STARKWARE- ${message}`,
+      signedMesssage: signedMessage.value,
+    },
+  ]);
 };
 
 const validateStarkMessage = (e: any) => {
@@ -501,7 +520,6 @@ const _handleRedirectParameters = (hash: string, queryParameters: Record<string,
   }
   return { error, instanceParameters, hashParameters };
 };
-
 </script>
 
 <style scoped>
