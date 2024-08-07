@@ -1,3 +1,8 @@
+export const ROUTES = {
+  HOME: "Home",
+  LOGIN: "Login",
+};
+
 export const GOOGLE = "google";
 export const FACEBOOK = "facebook";
 export const REDDIT = "reddit";

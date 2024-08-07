@@ -2,5 +2,14 @@
   "editor.tabSize": 2,
   "editor.codeActionsOnSave": {
     "source.fixAll": "explicit"
-  }
+  },
+  "eslint.workingDirectories": [
+    { "directory": "examples/vue-app/", "changeProcessCWD": true },
+    { "directory": "examples/angular-app/", "changeProcessCWD": true },
+    { "directory": "examples/firebase-example/", "changeProcessCWD": true },
+    { "directory": "examples/nextjs-app/", "changeProcessCWD": true },
+    { "directory": "examples/react-app/", "changeProcessCWD": true },
+    { "directory": "examples/starkware-react-example/", "changeProcessCWD": true },
+    { "directory": ".", "changeProcessCWD": true }
+  ]
 }

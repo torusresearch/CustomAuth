@@ -1,16 +1,32 @@
+require("@rushstack/eslint-patch/modern-module-resolution");
+
 module.exports = {
   root: true,
-  env: {
-    node: true,
-  },
-  extends: ["plugin:vue/vue3-essential", "eslint:recommended", "@vue/typescript/recommended"],
+  extends: ["@toruslabs/vue"],
+  parser: "vue-eslint-parser",
+  ignorePatterns: ["*.config.js", ".eslintrc.js"],
   parserOptions: {
-    ecmaVersion: 2020,
+    parser: "@typescript-eslint/parser",
+    sourceType: "module",
+    ecmaVersion: 2022,
+    project: "./tsconfig.json",
+  },
+  env: {
+    browser: true,
+    node: true,
+    mocha: true,
   },
   rules: {
-    "@typescript-eslint/no-explicit-any": 0,
-    "vue/multi-word-component-names": 0,
-    "no-console": process.env.NODE_ENV === "production" ? "warn" : "off",
-    "no-debugger": process.env.NODE_ENV === "production" ? "warn" : "off",
+    camelcase: 0,
+    "import/extensions": [
+      "error",
+      "ignorePackages",
+      {
+        js: "never",
+        jsx: "never",
+        ts: "never",
+        tsx: "never",
+      },
+    ],
   },
 };
