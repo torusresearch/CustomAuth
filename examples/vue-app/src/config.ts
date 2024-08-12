@@ -1,7 +1,6 @@
-export const ROUTES = {
-  HOME: "Home",
-  LOGIN: "Login",
-};
+import { TORUS_LEGACY_NETWORK, TORUS_NETWORK_TYPE, TORUS_SAPPHIRE_NETWORK } from "@toruslabs/constants";
+import { UX_MODE, UX_MODE_TYPE } from "@toruslabs/customauth";
+import { SafeEventEmitterProvider } from "@web3auth/base";
 
 export const GOOGLE = "google";
 export const FACEBOOK = "facebook";
@@ -26,7 +25,7 @@ export const COGNITO_AUTH_DOMAIN = "https://torus-test.auth.ap-southeast-1.amazo
 export const TORUS_EMAIL_PASSWORDLESS = "torus_email_passwordless";
 export const TORUS_SMS_PASSWORDLESS = "torus_sms_passwordless";
 export const LOCAL_NETWORK = "network";
-
+export const uxModeOptions = Object.values(UX_MODE).map((x) => ({ name: x, value: x }));
 export const WEB3AUTH_CLIENT_ID = "BJ6l3_kIQiy6YVL7zDlCcEAvGpGukwFgp-C_0WvNI_fAEeIaoVRLDrV5OjtbZr_zJxbyXFsXMT-yhQiUNYvZWpo";
 
 export const verifierMap = {
@@ -84,4 +83,17 @@ export const verifierMap = {
     clientId: "P7PJuBCXIHP41lcyty0NEb7Lgf7Zme8Q",
     verifier: "torus-sms-passwordless-lrc",
   },
-} as Record<string, any>;
+} as Record<string, Record<string, string>>;
+
+export const verifierOptions = Object.entries(verifierMap).map(([key]) => ({ name: key, value: key }));
+
+export type FormData = {
+  uxMode: UX_MODE_TYPE;
+  verifier: string;
+  loginHint: string;
+  network: TORUS_NETWORK_TYPE;
+  provider: SafeEventEmitterProvider | null;
+};
+
+export const networkList = [...Object.values(TORUS_SAPPHIRE_NETWORK), ...Object.values(TORUS_LEGACY_NETWORK)];
+export const networkOptions = networkList.map((x) => ({ name: x, value: x }));
