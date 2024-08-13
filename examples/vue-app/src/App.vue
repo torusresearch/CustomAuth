@@ -350,6 +350,7 @@ const onLogin = async () => {
     },
   });
   log(loginDetails);
+  // TODO: handle loginDetails for popup mode
 };
 
 const onLogout = async () => {
