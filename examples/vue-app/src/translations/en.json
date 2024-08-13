@@ -1,3 +1,22 @@
 {
-  "app": {}
+  "app": {
+    "documentation": "Documentation",
+    "greeting": "Welcome to CustomAuth SDK",
+    "uxMode": "UX Mode",
+    "verifier": "Verifier",
+    "network": "Network",
+    "email": "Email",
+    "phone": "Phone",
+    "title": "CustomAuth SDK",
+    "description": "Demonstration for CustomAuth SDK",
+    "btnConnect": "Connect",
+    "btnLogout": "Logout",
+    "btnClearConsole": "Clear Console",
+    "btnSignMessage": "Sign Message",
+    "btnSignV1Message": "Sign V1 Message",
+    "btnFetchLatestBlock": "Fetch Latest Block",
+    "btnGetStarkKey": "Get Stark Key Pair",
+    "btnSignMessageStarkey": "Sign message with Stark Key",
+    "btnValidateStarkMessage": "Validate Stark Message"
+  }
 }

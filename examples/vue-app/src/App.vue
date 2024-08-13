@@ -6,7 +6,7 @@
       </a>
       <div class="flex md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse">
         <Button v-if="isDisplay('btnLogout')" v-bind="{ block: true, size: 'xs', pill: true, variant: 'secondary' }" @click="onLogout">
-          {{ $t("app.logout") }}
+          {{ $t("app.btnLogout") }}
         </Button>
         <Button v-else v-bind="{ block: true, size: 'xs', pill: true, variant: 'secondary' }" @click="() => {}">
           {{ $t("app.documentation") }}
@@ -101,7 +101,7 @@
             </div>
             <div class="mb-2">
               <Button block size="xs" pill data-testid="btnSignMessage" @click="signMessage">
-                {{ $t("app.signMessage") }}
+                {{ $t("app.btnSignMessage") }}
               </Button>
             </div>
             <div class="mb-2">
@@ -119,7 +119,7 @@
               <p class="text-xs text-app-gray-500 mb-2">Enter HD account index to derive stark key pair from custom auth's private key</p>
               <form class="flex flex-col sm:flex-row gap-4 bottom-gutter" @submit.prevent="starkHdAccount">
                 <TextField id="accountIndex" v-model="accountIndex" class="custom-input" type="number" placeholder="Index" :min="0" required />
-                <Button type="submit" pill size="xs" @click="starkHdAccount">Get Stark Key Pair</Button>
+                <Button type="submit" pill size="xs" @click="starkHdAccount">{{ $t("app.btnGetStarkKey") }}</Button>
               </form>
               <p class="btn-label">Sign message</p>
               <form @submit.prevent="signMessageWithStarkKey">
@@ -128,7 +128,7 @@
                 </div>
                 <div class="flex flex-col sm:flex-row gap-4 bottom-gutter">
                   <TextField id="accountIndex" v-model="starkAccountIndex" class="custom-input" type="number" :min="0" />
-                  <Button type="submit" pill size="xs">Sign message with Stark key</Button>
+                  <Button type="submit" pill size="sm">{{ $t("app.btnSignMessageStarkey") }}</Button>
                 </div>
               </form>
               <p class="btn-label">Validate message</p>
@@ -143,7 +143,7 @@
                   :min="0"
                   required
                 />
-                <Button type="submit" :disabled="!signingMessage" pill size="xs">Validate Stark Message</Button>
+                <Button type="submit" :disabled="!signingMessage" pill size="xs">{{ $t("app.btnValidateStarkMessage") }}</Button>
               </form>
             </div>
           </Card>
