@@ -176,7 +176,7 @@
 </template>
 
 <script setup lang="ts">
-import { CustomAuth, LOGIN_TYPE, TorusLoginResponse, UX_MODE } from "@toruslabs/customauth";
+import { CustomAuth, LOGIN_TYPE, RedirectResult, TorusLoginResponse, UX_MODE } from "@toruslabs/customauth";
 import { getStarkHDAccount, pedersen, sign, STARKNET_NETWORKS, verify } from "@toruslabs/openlogin-starkkey";
 import { Button, Card, Select, TextArea, TextField } from "@toruslabs/vue-components";
 import { SafeEventEmitterProvider } from "@web3auth/base";
@@ -281,7 +281,9 @@ const loginToConnectionMap = computed((): Record<string, Record<string, string |
     },
   };
 });
-
+const loadPrivKey = (loginResponse: TorusLoginResponse) => {
+  privKey.value = loginResponse.finalKeyData.privKey;
+};
 const initCustomAuth = async () => {
   const { network, uxMode } = formData.value;
   switch (uxMode) {
@@ -349,8 +351,9 @@ const onLogin = async () => {
       credTransports: "ble",
     },
   });
-  log(loginDetails);
-  // TODO: handle loginDetails for popup mode
+  if (loginDetails) {
+    loadPrivKey(loginDetails);
+  }
 };
 
 const onLogout = async () => {
@@ -379,7 +382,7 @@ const init = async () => {
   try {
     if (uxMode === UX_MODE.REDIRECT) {
       const loginDetails = await customAuthSdk.value?.getRedirectResult();
-      privKey.value = (loginDetails?.result as TorusLoginResponse).finalKeyData.privKey;
+      loadPrivKey(loginDetails?.result as TorusLoginResponse);
     }
   } catch (error) {
     log(error);
