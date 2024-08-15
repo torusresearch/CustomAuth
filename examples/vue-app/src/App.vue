@@ -148,9 +148,6 @@
             </div>
           </Card>
           <Card id="console" class="px-4 py-4 col-span-4 overflow-y-auto">
-            <pre
-              class="whitespace-pre-line overflow-x-auto font-normal text-base leading-6 text-black break-words overflow-y-auto max-h-screen"
-            ></pre>
             <ul class="text-sm text-app-gray-700 dark:text-app-gray-200 font-normal mt-4 mb-5 px-0">
               <li>
                 Please note that the verifiers listed in the example have
@@ -160,14 +157,18 @@
               <li>If you use any other domains, they won't work.</li>
               <li>The verifiers listed here only work with the client id's specified in example. Please don't edit them</li>
               <li>The verifiers listed here are for example reference only. Please don't use them for anything other than testing purposes.</li>
+              <li class="font-semibold">
+                Reach out to us at
+                <a class="text-app-primary-600 dark:text-app-primary-500 underline" href="mailto:hello@tor.us">hello@tor.us</a>
+                or
+                <a class="text-app-primary-600 dark:text-app-primary-500 underline" href="https://t.me/torusdev">telegram group</a>
+                to get your verifier deployed for your client id.
+              </li>
             </ul>
-            <div class="text-base text-app-gray-900 dark:text-app-gray-200 font-medium mt-4 mb-5 px-0">
-              Reach out to us at
-              <a class="text-app-primary-600 dark:text-app-primary-500 underline" href="mailto:hello@tor.us">hello@tor.us</a>
-              or
-              <a class="text-app-primary-600 dark:text-app-primary-500 underline" href="https://t.me/torusdev">telegram group</a>
-              to get your verifier deployed for your client id.
-            </div>
+            <div class="text-base text-app-gray-900 dark:text-app-gray-200 font-medium mb-5 px-0"></div>
+            <pre
+              class="whitespace-pre-line overflow-x-auto font-normal text-base leading-6 text-black break-words overflow-y-auto max-h-screen"
+            ></pre>
           </Card>
         </div>
       </div>
@@ -176,14 +177,14 @@
 </template>
 
 <script setup lang="ts">
-import { CustomAuth, LOGIN_TYPE, RedirectResult, TorusLoginResponse, UX_MODE } from "@toruslabs/customauth";
+import { CustomAuth, LOGIN_TYPE, TorusLoginResponse, UX_MODE } from "@toruslabs/customauth";
 import { getStarkHDAccount, pedersen, sign, STARKNET_NETWORKS, verify } from "@toruslabs/openlogin-starkkey";
 import { Button, Card, Select, TextArea, TextField } from "@toruslabs/vue-components";
 import { SafeEventEmitterProvider } from "@web3auth/base";
 import { EthereumPrivateKeyProvider } from "@web3auth/ethereum-provider";
 import { ec } from "elliptic";
 import { binaryToHex, binaryToUtf8, bufferToBinary, bufferToHex, hexToBinary } from "enc-utils";
-import { computed, ref, watch } from "vue";
+import { computed, ref, watch, watchEffect } from "vue";
 
 import {
   APPLE,
@@ -283,13 +284,15 @@ const loginToConnectionMap = computed((): Record<string, Record<string, string |
 });
 const loadPrivKey = (loginResponse: TorusLoginResponse) => {
   privKey.value = loginResponse.finalKeyData.privKey;
+  localStorage.setItem("privKey", privKey.value as string);
 };
 const initCustomAuth = async () => {
   const { network, uxMode } = formData.value;
   switch (uxMode) {
     case UX_MODE.REDIRECT:
       customAuthSdk.value = new CustomAuth({
-        baseUrl: `${window.location.origin}/serviceworker`,
+        baseUrl: `${window.location.origin}`,
+        redirectPathName: "auth",
         enableLogging: true,
         network,
         uxMode,
@@ -351,6 +354,7 @@ const onLogin = async () => {
       credTransports: "ble",
     },
   });
+
   if (loginDetails) {
     loadPrivKey(loginDetails);
   }
@@ -358,6 +362,7 @@ const onLogin = async () => {
 
 const onLogout = async () => {
   privKey.value = undefined;
+  localStorage.removeItem("privKey");
 };
 
 watch(
@@ -378,6 +383,10 @@ watch(
 
 const init = async () => {
   await initCustomAuth();
+  if (localStorage.getItem("privKey")) {
+    privKey.value = localStorage.getItem("privKey") as string;
+    return;
+  }
   const { uxMode } = formData.value;
   try {
     if (uxMode === UX_MODE.REDIRECT) {
