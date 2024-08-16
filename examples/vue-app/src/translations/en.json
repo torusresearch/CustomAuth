@@ -13,6 +13,7 @@
     "btnLogout": "Logout",
     "btnClearConsole": "Clear Console",
     "btnSignMessage": "Sign Message",
+    "btnUserInfo": "Print User Info",
     "btnSignV1Message": "Sign V1 Message",
     "btnFetchLatestBlock": "Fetch Latest Block",
     "btnGetStarkKey": "Get Stark Key Pair",

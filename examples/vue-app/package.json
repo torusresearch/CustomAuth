@@ -11,8 +11,10 @@
   },
   "dependencies": {
     "@toruslabs/broadcast-channel": "10.0.1",
+    "@toruslabs/constants": "^14.0.0",
     "@toruslabs/customauth": "file:../../",
     "@toruslabs/openlogin-starkkey": "^3.2.0",
+    "@toruslabs/torus.js": "^15.0.2",
     "@toruslabs/vue-components": "^7.8.3",
     "@toruslabs/vue-icons": "^7.6.2",
     "@web3auth/base": "^8.12.0",

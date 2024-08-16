@@ -36,12 +36,12 @@
               :options="uxModeOptions"
             />
             <Select
-              v-model="formData.verifier"
+              v-model="formData.loginProvider"
               data-testid="selectUxMode"
               :label="$t('app.verifier')"
               :aria-label="$t('app.verifier')"
               :placeholder="$t('app.verifier')"
-              :options="verifierOptions"
+              :options="formData.network === TORUS_SAPPHIRE_NETWORK.SAPPHIRE_DEVNET ? sapphireDevnetVerifierOptions : testnetVerifierOptions"
             />
             <TextField
               v-if="isDisplay('loginHintEmail')"
@@ -97,6 +97,11 @@
             <div class="mb-2">
               <Button block size="xs" pill data-testid="btnClearConsole" @click="clearUiconsole">
                 {{ $t("app.btnClearConsole") }}
+              </Button>
+            </div>
+            <div class="mb-2">
+              <Button block size="xs" pill data-testid="btnUserInfo" @click="printUserInfo">
+                {{ $t("app.btnUserInfo") }}
               </Button>
             </div>
             <div class="mb-2">
@@ -177,8 +182,10 @@
 </template>
 
 <script setup lang="ts">
-import { CustomAuth, LOGIN_TYPE, TorusLoginResponse, UX_MODE } from "@toruslabs/customauth";
+import { TORUS_LEGACY_NETWORK, TORUS_SAPPHIRE_NETWORK } from "@toruslabs/constants";
+import { CustomAuth, LoginWindowResponse, TorusLoginResponse, TorusVerifierResponse, UX_MODE } from "@toruslabs/customauth";
 import { getStarkHDAccount, pedersen, sign, STARKNET_NETWORKS, verify } from "@toruslabs/openlogin-starkkey";
+import { TorusKey } from "@toruslabs/torus.js";
 import { Button, Card, Select, TextArea, TextField } from "@toruslabs/vue-components";
 import { SafeEventEmitterProvider } from "@web3auth/base";
 import { EthereumPrivateKeyProvider } from "@web3auth/ethereum-provider";
@@ -202,12 +209,14 @@ import {
   LOCAL_NETWORK,
   networkOptions,
   REDDIT,
+  sapphireDevnetVerifierMap,
+  sapphireDevnetVerifierOptions,
+  testnetVerifierMap,
+  testnetVerifierOptions,
   TORUS_EMAIL_PASSWORDLESS,
   TORUS_SMS_PASSWORDLESS,
   TWITTER,
   uxModeOptions,
-  verifierMap,
-  verifierOptions,
   WEB3AUTH_CLIENT_ID,
   WEIBO,
 } from "./config";
@@ -217,14 +226,15 @@ const { log } = console;
 
 const formData = ref<FormData>({
   uxMode: UX_MODE.REDIRECT,
-  verifier: GOOGLE,
+  loginProvider: GOOGLE,
   loginHint: "",
-  network: "sapphire_devnet",
+  network: TORUS_SAPPHIRE_NETWORK.SAPPHIRE_DEVNET,
   provider: null,
 });
 
 const customAuthSdk = ref<CustomAuth | null>(null);
 const privKey = ref<string | undefined>("");
+const userInfo = ref<(TorusVerifierResponse & LoginWindowResponse) | null>(null);
 const provider = ref<SafeEventEmitterProvider | null>(null);
 const signedMessage = ref<ec.Signature | null>(null);
 const signingMessage = ref<string | null>(null);
@@ -234,7 +244,6 @@ const starkAccountIndex = ref<number | undefined>(0);
 const validateAccountIndex = ref<number | undefined>(0);
 
 const isDisplay = (name: string): boolean => {
-  log(formData.value.verifier, "name");
   switch (name) {
     case "loginForm":
       return !privKey.value;
@@ -242,15 +251,27 @@ const isDisplay = (name: string): boolean => {
     case "appHeading":
       return !!privKey.value;
     case "loginHintEmail":
-      return formData.value.verifier === TORUS_EMAIL_PASSWORDLESS;
+      return formData.value.loginProvider === TORUS_EMAIL_PASSWORDLESS;
     case "loginHintPhone":
-      return formData.value.verifier === TORUS_SMS_PASSWORDLESS;
+      return formData.value.loginProvider === TORUS_SMS_PASSWORDLESS;
 
     default: {
       return true;
     }
   }
 };
+
+const verifierMap = computed(() => {
+  const { network } = formData.value;
+  switch (network) {
+    case TORUS_SAPPHIRE_NETWORK.SAPPHIRE_DEVNET:
+      return sapphireDevnetVerifierMap;
+    case TORUS_LEGACY_NETWORK.TESTNET:
+      return testnetVerifierMap;
+    default:
+      return sapphireDevnetVerifierMap;
+  }
+});
 
 const loginToConnectionMap = computed((): Record<string, Record<string, string | boolean>> => {
   const login_hint = formData.value.loginHint;
@@ -282,9 +303,11 @@ const loginToConnectionMap = computed((): Record<string, Record<string, string |
     },
   };
 });
-const loadPrivKey = (loginResponse: TorusLoginResponse) => {
-  privKey.value = loginResponse.finalKeyData.privKey;
-  localStorage.setItem("privKey", privKey.value as string);
+const loadResponse = (privKeyInfo: TorusKey["finalKeyData"], localUserInfo: TorusVerifierResponse & LoginWindowResponse) => {
+  privKey.value = privKeyInfo?.privKey;
+  userInfo.value = localUserInfo;
+  if (privKey.value) localStorage.setItem("privKey", privKey.value as string);
+  if (userInfo.value) localStorage.setItem("userInfo", JSON.stringify(userInfo.value));
 };
 const initCustomAuth = async () => {
   const { network, uxMode } = formData.value;
@@ -334,29 +357,43 @@ const setProvider = async () => {
 };
 
 const onLogin = async () => {
-  const { verifier: selectedVerifier } = formData.value;
+  const { loginProvider: selectedLoginProvider } = formData.value;
 
   if (!customAuthSdk.value) return;
 
-  const jwtParams = loginToConnectionMap.value[selectedVerifier] || {};
-  const { typeOfLogin, clientId, verifier } = verifierMap[selectedVerifier] as { typeOfLogin: LOGIN_TYPE; clientId: string; verifier: string };
+  const jwtParams = loginToConnectionMap.value[selectedLoginProvider] || {};
+  const { typeOfLogin, clientId, verifier } = verifierMap.value[selectedLoginProvider];
+  let privKeyInfo: TorusKey["finalKeyData"];
+  let localUserInfo: TorusVerifierResponse & LoginWindowResponse;
 
-  const loginDetails = await customAuthSdk.value.triggerLogin({
-    typeOfLogin,
-    verifier,
-    clientId,
-    jwtParams,
-    customState: {
-      client: "great-company",
-      webauthnURL: "https://d1f8-115-66-172-125.ngrok.io/",
-      localhostAll: "true",
-      webauthnTransports: "ble",
-      credTransports: "ble",
-    },
-  });
+  if (formData.value.network === TORUS_LEGACY_NETWORK.TESTNET) {
+    const data = await customAuthSdk.value.triggerLogin({
+      typeOfLogin,
+      verifier,
+      clientId,
+      jwtParams,
+    });
+    privKeyInfo = data?.finalKeyData;
+    localUserInfo = data?.userInfo;
+  } else {
+    const data = await customAuthSdk.value.triggerAggregateLogin({
+      aggregateVerifierType: "single_id_verifier",
+      subVerifierDetailsArray: [
+        {
+          clientId,
+          typeOfLogin,
+          verifier: "web3auth",
+          jwtParams,
+        },
+      ],
+      verifierIdentifier: verifier,
+    });
+    privKeyInfo = data?.finalKeyData;
+    localUserInfo = data?.userInfo[0];
+  }
 
-  if (loginDetails) {
-    loadPrivKey(loginDetails);
+  if (privKeyInfo) {
+    loadResponse(privKeyInfo, localUserInfo);
   }
 };
 
@@ -385,13 +422,15 @@ const init = async () => {
   await initCustomAuth();
   if (localStorage.getItem("privKey")) {
     privKey.value = localStorage.getItem("privKey") as string;
+    userInfo.value = JSON.parse(localStorage.getItem("userInfo") as string);
     return;
   }
   const { uxMode } = formData.value;
   try {
     if (uxMode === UX_MODE.REDIRECT) {
       const loginDetails = await customAuthSdk.value?.getRedirectResult();
-      loadPrivKey(loginDetails?.result as TorusLoginResponse);
+      const response = loginDetails?.result as TorusLoginResponse;
+      if (response) loadResponse(response.finalKeyData, response.userInfo);
     }
   } catch (error) {
     log(error);
@@ -427,6 +466,10 @@ const printConsole = (...args: unknown[]): void => {
   if (consoleBtn) {
     consoleBtn.style.display = "block";
   }
+};
+
+const printUserInfo = () => {
+  printConsole("User Info", { userInfo: userInfo.value, privKey: privKey.value });
 };
 
 const signMessage = async () => {
