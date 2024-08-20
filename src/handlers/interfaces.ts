@@ -243,6 +243,13 @@ export interface CustomAuthArgs {
   sentry?: Sentry;
 
   keyType?: KeyType;
+
+  /**
+   * Set this flag to false to generate keys on client side
+   * by default keys are generated on using dkg protocol on a distributed network
+   * @defaultValue undefined
+   */
+  useDkg?: boolean;
 }
 
 export interface InitParams {

@@ -39,6 +39,7 @@ class CustomAuth {
     uxMode: UX_MODE_TYPE;
     locationReplaceOnRedirect: boolean;
     popupFeatures: string;
+    useDkg?: boolean;
   };
 
   torus: Torus;
@@ -63,6 +64,7 @@ class CustomAuth {
     sentry,
     enableOneKey = false,
     web3AuthClientId,
+    useDkg,
     metadataUrl = "https://metadata.tor.us",
     keyType = "secp256k1",
     serverTimeOffset = 0,
@@ -80,6 +82,7 @@ class CustomAuth {
       uxMode,
       locationReplaceOnRedirect,
       popupFeatures,
+      useDkg,
     };
     const torus = new Torus({
       network,
@@ -382,6 +385,7 @@ class CustomAuth {
           extraParams: {
             ...additionalParams,
           },
+          useDkg: this.config.useDkg,
         });
       }
     );
