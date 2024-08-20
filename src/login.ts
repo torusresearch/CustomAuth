@@ -420,7 +420,8 @@ class CustomAuth {
 
     log.info(instanceId, "instanceId");
 
-    const { args, method, ...rest } = await this.storageHelper.retrieveLoginDetails(instanceId);
+    const loginDetails = await this.storageHelper.retrieveLoginDetails(instanceId);
+    const { args, method, ...rest } = loginDetails || {};
     log.info(args, method);
 
     if (error) {
