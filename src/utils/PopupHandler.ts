@@ -1,12 +1,13 @@
-import { EventEmitter } from "eventemitter3";
+import { EventEmitter } from "events";
+import type { default as TypedEmitter } from "typed-emitter";
 
 import { getPopupFeatures } from "./helpers";
 
-export interface PopupHandlerEvents {
-  close: void;
-}
+export type PopupHandlerEvents = {
+  close: () => void;
+};
 
-class PopupHandler extends EventEmitter<PopupHandlerEvents> {
+class PopupHandler extends (EventEmitter as new () => TypedEmitter<PopupHandlerEvents>) {
   url: URL;
 
   target: string;
@@ -22,6 +23,7 @@ class PopupHandler extends EventEmitter<PopupHandlerEvents> {
   timeout: number;
 
   constructor({ url, target, features, timeout = 30000 }: { url: URL; target?: string; features?: string; timeout?: number }) {
+    // eslint-disable-next-line constructor-super
     super();
     this.url = url;
     this.target = target || "_blank";
