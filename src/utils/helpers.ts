@@ -27,7 +27,7 @@ export function eventToPromise<T>(emitter: EmitterType): Promise<T> {
 }
 
 // These are the default connection names used by auth0
-export const loginToConnectionMap = {
+export const loginToConnectionMap: Record<string, string> = {
   [LOGIN.APPLE]: "apple",
   [LOGIN.GITHUB]: "github",
   [LOGIN.LINKEDIN]: "linkedin",
@@ -36,6 +36,8 @@ export const loginToConnectionMap = {
   [LOGIN.LINE]: "line",
   [LOGIN.EMAIL_PASSWORD]: "Username-Password-Authentication",
   [LOGIN.PASSWORDLESS]: "email",
+  [LOGIN.EMAIL_PASSWORDLESS]: "email",
+  [LOGIN.SMS_PASSWORDLESS]: "sms",
 };
 
 export const padUrlString = (url: URL): string => (url.href.endsWith("/") ? url.href : `${url.href}/`);
@@ -66,6 +68,8 @@ export const getVerifierId = (
   switch (typeOfLogin) {
     case LOGIN.PASSWORDLESS:
     case LOGIN.EMAIL_PASSWORD:
+    case LOGIN.EMAIL_PASSWORDLESS:
+    case LOGIN.SMS_PASSWORDLESS:
       return caseSensitiveField(name, isVerifierIdCaseSensitive);
     case LOGIN.WEIBO:
     case LOGIN.GITHUB:

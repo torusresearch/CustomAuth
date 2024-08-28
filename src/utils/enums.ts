@@ -12,6 +12,8 @@ export const LOGIN = {
   LINE: "line",
   EMAIL_PASSWORD: "email_password",
   PASSWORDLESS: "passwordless",
+  EMAIL_PASSWORDLESS: "email_passwordless",
+  SMS_PASSWORDLESS: "sms_passwordless",
   JWT: "jwt",
   PASSKEYS: "passkeys",
 } as const;

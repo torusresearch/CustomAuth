@@ -213,11 +213,11 @@ import {
   sapphireDevnetVerifierOptions,
   testnetVerifierMap,
   testnetVerifierOptions,
-  TORUS_EMAIL_PASSWORDLESS,
-  TORUS_SMS_PASSWORDLESS,
   TWITTER,
   uxModeOptions,
   WEB3AUTH_CLIENT_ID,
+  WEB3AUTH_EMAIL_PASSWORDLESS,
+  WEB3AUTH_SMS_PASSWORDLESS,
   WEIBO,
 } from "./config";
 import { fetchLatestBlock, signEthMessage, signTypedData_v1 } from "./services/chainHandlers";
@@ -251,9 +251,9 @@ const isDisplay = (name: string): boolean => {
     case "appHeading":
       return !!privKey.value;
     case "loginHintEmail":
-      return formData.value.loginProvider === TORUS_EMAIL_PASSWORDLESS;
+      return formData.value.loginProvider === WEB3AUTH_EMAIL_PASSWORDLESS;
     case "loginHintPhone":
-      return formData.value.loginProvider === TORUS_SMS_PASSWORDLESS;
+      return formData.value.loginProvider === WEB3AUTH_SMS_PASSWORDLESS;
 
     default: {
       return true;
@@ -288,18 +288,11 @@ const loginToConnectionMap = computed((): Record<string, Record<string, string |
     [LINE]: { domain: AUTH_DOMAIN },
     [COGNITO]: { domain: COGNITO_AUTH_DOMAIN, identity_provider: "Google", response_type: "token", user_info_endpoint: "userInfo" },
     [REDDIT]: { domain: AUTH_DOMAIN, connection: "Reddit", verifierIdField: "name", isVerifierIdCaseSensitive: false },
-    [TORUS_EMAIL_PASSWORDLESS]: {
-      domain: "https://develop-passwordless.web3auth.io",
-      verifierIdField: "name",
-      isVerifierIdCaseSensitive: false,
+    [WEB3AUTH_EMAIL_PASSWORDLESS]: {
       login_hint,
-      connection: "email",
     },
-    [TORUS_SMS_PASSWORDLESS]: {
-      domain: "https://develop-passwordless.web3auth.io",
-      verifierIdField: "name",
+    [WEB3AUTH_SMS_PASSWORDLESS]: {
       login_hint,
-      connection: "sms",
     },
   };
 });
