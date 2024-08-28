@@ -2,17 +2,9 @@ import { get } from "@toruslabs/http-helpers";
 import deepmerge from "deepmerge";
 import log from "loglevel";
 
-import { LOGIN_TYPE, UX_MODE_TYPE } from "../utils/enums";
 import { decodeToken, getVerifierId, loginToConnectionMap, padUrlString, validateAndConstructUrl } from "../utils/helpers";
 import AbstractLoginHandler from "./AbstractLoginHandler";
-import {
-  AUTH0_JWT_LOGIN_TYPE,
-  Auth0ClientOptions,
-  Auth0UserInfo,
-  LoginWindowResponse,
-  TorusGenericObject,
-  TorusVerifierResponse,
-} from "./interfaces";
+import { AUTH0_JWT_LOGIN_TYPE, Auth0UserInfo, CreateHandlerParams, LoginWindowResponse, TorusVerifierResponse } from "./interfaces";
 
 export default class JwtHandler extends AbstractLoginHandler {
   private readonly SCOPE: string = "openid profile email";
@@ -21,35 +13,26 @@ export default class JwtHandler extends AbstractLoginHandler {
 
   private readonly PROMPT: string = "login";
 
-  constructor(
-    readonly clientId: string,
-    readonly verifier: string,
-    readonly redirect_uri: string,
-    readonly typeOfLogin: LOGIN_TYPE,
-    readonly uxMode: UX_MODE_TYPE,
-    readonly redirectToOpener?: boolean,
-    readonly jwtParams?: Auth0ClientOptions,
-    readonly customState?: TorusGenericObject
-  ) {
-    super(clientId, verifier, redirect_uri, typeOfLogin, uxMode, redirectToOpener, jwtParams, customState);
+  constructor(params: CreateHandlerParams) {
+    super(params);
     this.setFinalUrl();
   }
 
   setFinalUrl(): void {
-    const { domain } = this.jwtParams;
+    const { domain } = this.params.jwtParams;
     const finalUrl = validateAndConstructUrl(domain);
     finalUrl.pathname += finalUrl.pathname.endsWith("/") ? "authorize" : "/authorize";
-    const clonedParams = JSON.parse(JSON.stringify(this.jwtParams));
+    const clonedParams = JSON.parse(JSON.stringify(this.params.jwtParams));
     delete clonedParams.domain;
     const finalJwtParams = deepmerge(
       {
         state: this.state,
         response_type: this.RESPONSE_TYPE,
-        client_id: this.clientId,
+        client_id: this.params.clientId,
         prompt: this.PROMPT,
-        redirect_uri: this.redirect_uri,
+        redirect_uri: this.params.redirect_uri,
         scope: this.SCOPE,
-        connection: loginToConnectionMap[this.typeOfLogin as AUTH0_JWT_LOGIN_TYPE],
+        connection: loginToConnectionMap[this.params.typeOfLogin as AUTH0_JWT_LOGIN_TYPE],
         nonce: this.nonce,
       },
       clonedParams
@@ -63,7 +46,7 @@ export default class JwtHandler extends AbstractLoginHandler {
 
   async getUserInfo(params: LoginWindowResponse): Promise<TorusVerifierResponse> {
     const { idToken, accessToken } = params;
-    const { domain, verifierIdField, isVerifierIdCaseSensitive, user_info_route = "userinfo" } = this.jwtParams;
+    const { domain, verifierIdField, isVerifierIdCaseSensitive, user_info_route = "userinfo" } = this.params.jwtParams;
     if (accessToken) {
       try {
         const domainUrl = new URL(domain);
@@ -77,9 +60,9 @@ export default class JwtHandler extends AbstractLoginHandler {
           email,
           name,
           profileImage: picture,
-          verifierId: getVerifierId(userInfo, this.typeOfLogin, verifierIdField, isVerifierIdCaseSensitive),
-          verifier: this.verifier,
-          typeOfLogin: this.typeOfLogin,
+          verifierId: getVerifierId(userInfo, this.params.typeOfLogin, verifierIdField, isVerifierIdCaseSensitive),
+          verifier: this.params.verifier,
+          typeOfLogin: this.params.typeOfLogin,
         };
       } catch (error) {
         // ignore
@@ -93,9 +76,9 @@ export default class JwtHandler extends AbstractLoginHandler {
         profileImage: picture,
         name,
         email,
-        verifierId: getVerifierId(decodedToken, this.typeOfLogin, verifierIdField, isVerifierIdCaseSensitive),
-        verifier: this.verifier,
-        typeOfLogin: this.typeOfLogin,
+        verifierId: getVerifierId(decodedToken, this.params.typeOfLogin, verifierIdField, isVerifierIdCaseSensitive),
+        verifier: this.params.verifier,
+        typeOfLogin: this.params.typeOfLogin,
       };
     }
     throw new Error("Access/id token not available");
