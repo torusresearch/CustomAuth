@@ -1,3 +1,4 @@
+import { TORUS_NETWORK_TYPE } from "@toruslabs/constants";
 import { NodeDetailManager } from "@toruslabs/fetch-node-details";
 import { keccak256, Torus, TorusKey } from "@toruslabs/torus.js";
 
@@ -37,6 +38,8 @@ class CustomAuth {
     uxMode: UX_MODE_TYPE;
     locationReplaceOnRedirect: boolean;
     popupFeatures: string;
+    web3AuthClientId: string;
+    web3AuthNetwork: TORUS_NETWORK_TYPE;
   };
 
   torus: Torus;
@@ -77,6 +80,8 @@ class CustomAuth {
       uxMode,
       locationReplaceOnRedirect,
       popupFeatures,
+      web3AuthClientId,
+      web3AuthNetwork: network,
     };
     const torus = new Torus({
       network,
@@ -141,6 +146,8 @@ class CustomAuth {
       jwtParams,
       uxMode: this.config.uxMode,
       customState,
+      web3AuthClientId: this.config.web3AuthClientId,
+      web3AuthNetwork: this.config.web3AuthNetwork,
     });
     let loginParams: LoginWindowResponse;
     if (hash && queryParameters) {
@@ -204,6 +211,8 @@ class CustomAuth {
         jwtParams,
         uxMode: this.config.uxMode,
         customState,
+        web3AuthClientId: this.config.web3AuthClientId,
+        web3AuthNetwork: this.config.web3AuthNetwork,
       });
       // We let the user login to each verifier in a loop. Don't wait for key derivation here.!
       let loginParams: LoginWindowResponse;

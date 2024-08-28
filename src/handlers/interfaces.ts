@@ -318,6 +318,13 @@ export interface BaseLoginOptions {
   connection?: string;
 }
 
+export const EMAIL_FLOW = {
+  link: "link",
+  code: "code",
+} as const;
+
+export type EMAIL_FLOW_TYPE = (typeof EMAIL_FLOW)[keyof typeof EMAIL_FLOW];
+
 export interface Auth0ClientOptions extends BaseLoginOptions {
   /**
    * Your Auth0 account domain such as `'example.auth0.com'`,
@@ -363,6 +370,11 @@ export interface Auth0ClientOptions extends BaseLoginOptions {
    * @defaultValue userinfo
    * */
   user_info_route?: string;
+
+  /**
+   * The flow type for email_passwordless login
+   */
+  flow_type?: EMAIL_FLOW_TYPE;
 }
 
 export interface SubVerifierDetails {
@@ -384,6 +396,8 @@ export interface CreateHandlerParams {
   redirectToOpener?: boolean;
   jwtParams?: Auth0ClientOptions;
   customState?: TorusGenericObject;
+  web3AuthClientId: string;
+  web3AuthNetwork: TORUS_NETWORK_TYPE;
 }
 
 export interface RedirectResultParams {
