@@ -1,46 +1,41 @@
 import base64url from "base64url";
 
-import { LOGIN_TYPE, UX_MODE, UX_MODE_TYPE } from "../utils/enums";
+import { UX_MODE } from "../utils/enums";
 import { broadcastChannelOptions, getTimeout, randomId } from "../utils/helpers";
 import log from "../utils/loglevel";
 import PopupHandler from "../utils/PopupHandler";
-import { Auth0ClientOptions, ILoginHandler, LoginWindowResponse, PopupResponse, TorusGenericObject, TorusVerifierResponse } from "./interfaces";
+import { CreateHandlerParams, ILoginHandler, LoginWindowResponse, PopupResponse, TorusVerifierResponse } from "./interfaces";
 
 abstract class AbstractLoginHandler implements ILoginHandler {
   public nonce: string = randomId();
 
   public finalURL: URL;
 
+  public params: CreateHandlerParams;
+
   // Not using object constructor because of this issue
   // https://github.com/microsoft/TypeScript/issues/5326
-  constructor(
-    readonly clientId: string,
-    readonly verifier: string,
-    readonly redirect_uri: string,
-    readonly typeOfLogin: LOGIN_TYPE,
-    readonly uxMode: UX_MODE_TYPE,
-    readonly redirectToOpener?: boolean,
-    readonly jwtParams?: Auth0ClientOptions,
-    readonly customState?: TorusGenericObject
-  ) {}
+  constructor(params: CreateHandlerParams) {
+    this.params = params;
+  }
 
   get state(): string {
     return encodeURIComponent(
       base64url.encode(
         JSON.stringify({
-          ...(this.customState || {}),
+          ...(this.params.customState || {}),
           instanceId: this.nonce,
-          verifier: this.verifier,
-          typeOfLogin: this.typeOfLogin,
-          redirectToOpener: this.redirectToOpener || false,
+          verifier: this.params.verifier,
+          typeOfLogin: this.params.typeOfLogin,
+          redirectToOpener: this.params.redirectToOpener || false,
         })
       )
     );
   }
 
   async handleLoginWindow(params: { locationReplaceOnRedirect?: boolean; popupFeatures?: string }): Promise<LoginWindowResponse> {
-    const verifierWindow = new PopupHandler({ url: this.finalURL, features: params.popupFeatures, timeout: getTimeout(this.typeOfLogin) });
-    if (this.uxMode === UX_MODE.REDIRECT) {
+    const verifierWindow = new PopupHandler({ url: this.finalURL, features: params.popupFeatures, timeout: getTimeout(this.params.typeOfLogin) });
+    if (this.params.uxMode === UX_MODE.REDIRECT) {
       verifierWindow.redirect(params.locationReplaceOnRedirect);
     } else {
       const { BroadcastChannel } = await import("@toruslabs/broadcast-channel");
@@ -59,9 +54,9 @@ abstract class AbstractLoginHandler implements ILoginHandler {
               reject(new Error(`Error: ${error}. Info: ${JSON.stringify(ev.data || {})}`));
               return;
             }
-            if (ev.data && instanceParams.verifier === this.verifier) {
+            if (ev.data && instanceParams.verifier === this.params.verifier) {
               log.info(ev.data);
-              if (!this.redirectToOpener && bc) await bc.postMessage({ success: true });
+              if (!this.params.redirectToOpener && bc) await bc.postMessage({ success: true });
               resolve({
                 accessToken,
                 idToken: idToken || "",
@@ -76,7 +71,7 @@ abstract class AbstractLoginHandler implements ILoginHandler {
           }
         };
 
-        if (!this.redirectToOpener) {
+        if (!this.params.redirectToOpener) {
           bc = new BroadcastChannel<{
             error: string;
             data: PopupResponse;

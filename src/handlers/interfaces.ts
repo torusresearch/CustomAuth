@@ -64,14 +64,6 @@ export interface LoginWindowResponse {
   state: TorusGenericObject;
 }
 
-export interface ILoginHandler {
-  clientId: string;
-  nonce: string;
-  finalURL: URL;
-  getUserInfo(params: LoginWindowResponse, storageServerUrl?: string): Promise<TorusVerifierResponse>;
-  handleLoginWindow(params: { locationReplaceOnRedirect?: boolean; popupFeatures?: string }): Promise<LoginWindowResponse>;
-}
-
 export interface TorusAggregateVerifierResponse {
   userInfo: (TorusVerifierResponse & LoginWindowResponse)[];
 }
@@ -82,7 +74,6 @@ export interface TorusSingleVerifierResponse {
 
 export type TorusLoginResponse = TorusSingleVerifierResponse & TorusKey;
 export type TorusAggregateLoginResponse = TorusAggregateVerifierResponse & TorusKey;
-export type TorusHybridAggregateLoginResponse = { singleLogin: TorusLoginResponse; aggregateLogins: TorusKey[] };
 
 export interface CustomAuthArgs {
   /**
@@ -408,20 +399,15 @@ export interface AggregateLoginParams {
   subVerifierDetailsArray: SubVerifierDetails[];
 }
 
-export interface HybridAggregateLoginParams {
-  singleLogin: SubVerifierDetails;
-  aggregateLoginParams: AggregateLoginParams;
-}
-
-export type LoginDetails = { method: TORUS_METHOD_TYPE; args: SingleLoginParams | AggregateLoginParams | HybridAggregateLoginParams };
+export type LoginDetails = { method: TORUS_METHOD_TYPE; args: SingleLoginParams | AggregateLoginParams };
 
 export interface RedirectResult {
   method: TORUS_METHOD_TYPE;
-  result?: TorusLoginResponse | TorusAggregateLoginResponse | TorusHybridAggregateLoginResponse | unknown;
+  result?: TorusLoginResponse | TorusAggregateLoginResponse | unknown;
   error?: string;
   state: Record<string, unknown>;
   hashParameters?: Record<string, string>;
-  args: SingleLoginParams | AggregateLoginParams | HybridAggregateLoginParams;
+  args: SingleLoginParams | AggregateLoginParams;
 }
 
 export type AUTH0_JWT_LOGIN_TYPE = "apple" | "github" | "linkedin" | "twitter" | "weibo" | "line" | "email_password" | "passwordless";
@@ -448,3 +434,11 @@ export type PasskeySessionData = {
   transports: AuthenticatorTransport[];
   username: string;
 };
+
+export interface ILoginHandler {
+  params: CreateHandlerParams;
+  nonce: string;
+  finalURL: URL;
+  getUserInfo(params: LoginWindowResponse, storageServerUrl?: string): Promise<TorusVerifierResponse>;
+  handleLoginWindow(params: { locationReplaceOnRedirect?: boolean; popupFeatures?: string }): Promise<LoginWindowResponse>;
+}
