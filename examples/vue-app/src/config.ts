@@ -22,8 +22,8 @@ export const PASSKEYS_REGISTER = "passkeys_register";
 export const COGNITO = "cognito";
 export const AUTH_DOMAIN = "https://torus-test.auth0.com";
 export const COGNITO_AUTH_DOMAIN = "https://torus-test.auth.ap-southeast-1.amazoncognito.com/oauth2/";
-export const TORUS_EMAIL_PASSWORDLESS = "torus_email_passwordless";
-export const TORUS_SMS_PASSWORDLESS = "torus_sms_passwordless";
+export const WEB3AUTH_EMAIL_PASSWORDLESS = "email_passwordless";
+export const WEB3AUTH_SMS_PASSWORDLESS = "sms_passwordless";
 export const LOCAL_NETWORK = "network";
 export const uxModeOptions = Object.values(UX_MODE).map((x) => ({ name: x, value: x }));
 export const WEB3AUTH_CLIENT_ID = "BJ6l3_kIQiy6YVL7zDlCcEAvGpGukwFgp-C_0WvNI_fAEeIaoVRLDrV5OjtbZr_zJxbyXFsXMT-yhQiUNYvZWpo";
@@ -72,15 +72,15 @@ export const testnetVerifierMap = {
     clientId: "78i338ev9lkgjst3mfeuih9tsh",
     verifier: "demo-cognito-example",
   },
-  [TORUS_EMAIL_PASSWORDLESS]: {
-    name: "Torus Email Passwordless",
-    typeOfLogin: "jwt",
+  [WEB3AUTH_EMAIL_PASSWORDLESS]: {
+    name: "Web3Auth Email Passwordless",
+    typeOfLogin: "email_passwordless",
     clientId: "P7PJuBCXIHP41lcyty0NEb7Lgf7Zme8Q",
     verifier: "torus-auth0-email-passwordless-lrc",
   },
-  [TORUS_SMS_PASSWORDLESS]: {
-    name: "Torus Sms Passwordless",
-    typeOfLogin: "jwt",
+  [WEB3AUTH_SMS_PASSWORDLESS]: {
+    name: "Web3Auth Sms Passwordless",
+    typeOfLogin: "sms_passwordless",
     clientId: "P7PJuBCXIHP41lcyty0NEb7Lgf7Zme8Q",
     verifier: "torus-sms-passwordless-lrc",
   },
@@ -130,15 +130,15 @@ export const sapphireDevnetVerifierMap = {
     clientId: "4jK24VpfepWRSe5EMdd2if0RBD55pAuA",
     verifier: "web3auth-auth0-sms-passwordless-sapphire-devnet",
   },
-  [TORUS_EMAIL_PASSWORDLESS]: {
-    name: "Torus Email Passwordless",
-    typeOfLogin: "jwt",
+  [WEB3AUTH_EMAIL_PASSWORDLESS]: {
+    name: "Web3Auth Email Passwordless",
+    typeOfLogin: "email_passwordless",
     clientId: "d84f6xvbdV75VTGmHiMWfZLeSPk8M07C",
     verifier: "web3auth-auth0-email-passwordless-sapphire-devnet",
   },
-  [TORUS_SMS_PASSWORDLESS]: {
-    name: "Torus Sms Passwordless",
-    typeOfLogin: "jwt",
+  [WEB3AUTH_SMS_PASSWORDLESS]: {
+    name: "Web3Auth Sms Passwordless",
+    typeOfLogin: "sms_passwordless",
     clientId: "4jK24VpfepWRSe5EMdd2if0RBD55pAuA",
     verifier: "web3auth-auth0-sms-passwordless-sapphire-devnet",
   },

@@ -6,7 +6,7 @@ import log from "../utils/loglevel";
 import AbstractLoginHandler from "./AbstractLoginHandler";
 import { Auth0UserInfo, CreateHandlerParams, LoginWindowResponse, PopupResponse, TorusVerifierResponse } from "./interfaces";
 
-export default class JwtHandler extends AbstractLoginHandler {
+export default class PasswordlessHandler extends AbstractLoginHandler {
   private readonly SCOPE: string = "openid profile email";
 
   private readonly RESPONSE_TYPE: string = "token id_token";

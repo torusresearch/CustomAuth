@@ -8,6 +8,7 @@ import MockLoginHandler from "./MockLoginHandler";
 import PasskeysHandler from "./PasskeysHandler";
 import PasswordlessHandler from "./PasswordlessHandler";
 import TwitchHandler from "./TwitchHandler";
+import Web3AuthPasswordlessHandler from "./Web3AuthPasswordlessHandler";
 
 const createHandler = (params: CreateHandlerParams): ILoginHandler => {
   const { verifier, typeOfLogin, clientId, jwtParams } = params;
@@ -24,6 +25,10 @@ const createHandler = (params: CreateHandlerParams): ILoginHandler => {
       return new TwitchHandler(params);
     case LOGIN.DISCORD:
       return new DiscordHandler(params);
+    case LOGIN.EMAIL_PASSWORDLESS:
+    case LOGIN.SMS_PASSWORDLESS:
+      if (!login_hint) throw new Error("Invalid params. Missing login_hint for web3auth passwordless login");
+      return new Web3AuthPasswordlessHandler(params);
     case LOGIN.PASSWORDLESS:
       if (!domain || !login_hint) throw new Error("Invalid params. Missing domain or login_hint for passwordless login");
       return new PasswordlessHandler(params);
