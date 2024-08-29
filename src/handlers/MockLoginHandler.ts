@@ -2,45 +2,36 @@ import { get } from "@toruslabs/http-helpers";
 import deepmerge from "deepmerge";
 import log from "loglevel";
 
-import { LOGIN_TYPE, UX_MODE, UX_MODE_TYPE } from "../utils/enums";
+import { UX_MODE } from "../utils/enums";
 import { constructURL, decodeToken, getVerifierId, padUrlString } from "../utils/helpers";
 import PopupHandler from "../utils/PopupHandler";
 import AbstractLoginHandler from "./AbstractLoginHandler";
-import { Auth0ClientOptions, Auth0UserInfo, LoginWindowResponse, TorusGenericObject, TorusVerifierResponse } from "./interfaces";
+import { Auth0UserInfo, CreateHandlerParams, LoginWindowResponse, TorusVerifierResponse } from "./interfaces";
 
 export default class MockLoginHandler extends AbstractLoginHandler {
-  constructor(
-    readonly clientId: string,
-    readonly verifier: string,
-    readonly redirect_uri: string,
-    readonly typeOfLogin: LOGIN_TYPE,
-    readonly uxMode: UX_MODE_TYPE,
-    readonly redirectToOpener?: boolean,
-    readonly jwtParams?: Auth0ClientOptions,
-    readonly customState?: TorusGenericObject
-  ) {
-    super(clientId, verifier, redirect_uri, typeOfLogin, uxMode, redirectToOpener, jwtParams, customState);
+  constructor(params: CreateHandlerParams) {
+    super(params);
     this.setFinalUrl();
   }
 
   setFinalUrl(): void {
-    const clonedParams = JSON.parse(JSON.stringify(this.jwtParams));
+    const clonedParams = JSON.parse(JSON.stringify(this.params.jwtParams));
     delete clonedParams.domain;
     const finalJwtParams = deepmerge(
       {
         state: this.state,
-        client_id: this.clientId,
+        client_id: this.params.clientId,
         nonce: this.nonce,
       },
       clonedParams
     );
 
-    this.finalURL = new URL(constructURL({ baseURL: this.redirect_uri, query: null, hash: finalJwtParams }));
+    this.finalURL = new URL(constructURL({ baseURL: this.params.redirect_uri, query: null, hash: finalJwtParams }));
   }
 
   async getUserInfo(params: LoginWindowResponse): Promise<TorusVerifierResponse> {
     const { idToken, accessToken } = params;
-    const { domain, verifierIdField, isVerifierIdCaseSensitive, user_info_route = "userinfo" } = this.jwtParams;
+    const { domain, verifierIdField, isVerifierIdCaseSensitive, user_info_route = "userinfo" } = this.params.jwtParams;
     if (accessToken) {
       try {
         const domainUrl = new URL(domain);
@@ -54,9 +45,9 @@ export default class MockLoginHandler extends AbstractLoginHandler {
           email,
           name,
           profileImage: picture,
-          verifierId: getVerifierId(userInfo, this.typeOfLogin, verifierIdField, isVerifierIdCaseSensitive),
-          verifier: this.verifier,
-          typeOfLogin: this.typeOfLogin,
+          verifierId: getVerifierId(userInfo, this.params.typeOfLogin, verifierIdField, isVerifierIdCaseSensitive),
+          verifier: this.params.verifier,
+          typeOfLogin: this.params.typeOfLogin,
         };
       } catch (error) {
         // ignore
@@ -70,18 +61,18 @@ export default class MockLoginHandler extends AbstractLoginHandler {
         profileImage: picture,
         name,
         email,
-        verifierId: getVerifierId(decodedToken, this.typeOfLogin, verifierIdField, isVerifierIdCaseSensitive),
-        verifier: this.verifier,
-        typeOfLogin: this.typeOfLogin,
+        verifierId: getVerifierId(decodedToken, this.params.typeOfLogin, verifierIdField, isVerifierIdCaseSensitive),
+        verifier: this.params.verifier,
+        typeOfLogin: this.params.typeOfLogin,
       };
     }
     throw new Error("Access/id token not available");
   }
 
   handleLoginWindow(params: { locationReplaceOnRedirect?: boolean; popupFeatures?: string }): Promise<LoginWindowResponse> {
-    const { id_token: idToken, access_token: accessToken } = this.jwtParams;
+    const { id_token: idToken, access_token: accessToken } = this.params.jwtParams;
     const verifierWindow = new PopupHandler({ url: this.finalURL, features: params.popupFeatures });
-    if (this.uxMode === UX_MODE.REDIRECT) {
+    if (this.params.uxMode === UX_MODE.REDIRECT) {
       verifierWindow.redirect(params.locationReplaceOnRedirect);
     } else {
       return Promise.resolve({

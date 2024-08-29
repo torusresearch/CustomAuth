@@ -1,11 +1,10 @@
 import { get, post } from "@toruslabs/http-helpers";
 import deepmerge from "deepmerge";
 
-import { LOGIN_TYPE, UX_MODE_TYPE } from "../utils/enums";
 import { broadcastChannelOptions, decodeToken, getVerifierId, padUrlString, validateAndConstructUrl } from "../utils/helpers";
 import log from "../utils/loglevel";
 import AbstractLoginHandler from "./AbstractLoginHandler";
-import { Auth0ClientOptions, Auth0UserInfo, LoginWindowResponse, PopupResponse, TorusGenericObject, TorusVerifierResponse } from "./interfaces";
+import { Auth0UserInfo, CreateHandlerParams, LoginWindowResponse, PopupResponse, TorusVerifierResponse } from "./interfaces";
 
 export default class JwtHandler extends AbstractLoginHandler {
   private readonly SCOPE: string = "openid profile email";
@@ -14,22 +13,13 @@ export default class JwtHandler extends AbstractLoginHandler {
 
   private readonly PROMPT: string = "login";
 
-  constructor(
-    readonly clientId: string,
-    readonly verifier: string,
-    readonly redirect_uri: string,
-    readonly typeOfLogin: LOGIN_TYPE,
-    readonly uxMode: UX_MODE_TYPE,
-    readonly redirectToOpener?: boolean,
-    readonly jwtParams?: Auth0ClientOptions,
-    readonly customState?: TorusGenericObject
-  ) {
-    super(clientId, verifier, redirect_uri, typeOfLogin, uxMode, redirectToOpener, jwtParams, customState);
+  constructor(params: CreateHandlerParams) {
+    super(params);
     this.setFinalUrl();
   }
 
   setFinalUrl(): void {
-    const { domain } = this.jwtParams;
+    const { domain } = this.params.jwtParams;
     const domainUrl = validateAndConstructUrl(domain);
 
     domainUrl.pathname = "/passwordless/start";
@@ -38,7 +28,7 @@ export default class JwtHandler extends AbstractLoginHandler {
 
   async getUserInfo(params: LoginWindowResponse): Promise<TorusVerifierResponse> {
     const { idToken, accessToken } = params;
-    const { domain, verifierIdField, isVerifierIdCaseSensitive } = this.jwtParams;
+    const { domain, verifierIdField, isVerifierIdCaseSensitive } = this.params.jwtParams;
     try {
       const domainUrl = new URL(domain);
       const userInfo = await get<Auth0UserInfo>(`${padUrlString(domainUrl)}userinfo`, {
@@ -51,9 +41,9 @@ export default class JwtHandler extends AbstractLoginHandler {
         email,
         name,
         profileImage: picture,
-        verifierId: getVerifierId(userInfo, this.typeOfLogin, verifierIdField, isVerifierIdCaseSensitive),
-        verifier: this.verifier,
-        typeOfLogin: this.typeOfLogin,
+        verifierId: getVerifierId(userInfo, this.params.typeOfLogin, verifierIdField, isVerifierIdCaseSensitive),
+        verifier: this.params.verifier,
+        typeOfLogin: this.params.typeOfLogin,
       };
     } catch (error) {
       log.error(error);
@@ -63,9 +53,9 @@ export default class JwtHandler extends AbstractLoginHandler {
         profileImage: picture,
         name,
         email,
-        verifierId: getVerifierId(decodedToken, this.typeOfLogin, verifierIdField, isVerifierIdCaseSensitive),
-        verifier: this.verifier,
-        typeOfLogin: this.typeOfLogin,
+        verifierId: getVerifierId(decodedToken, this.params.typeOfLogin, verifierIdField, isVerifierIdCaseSensitive),
+        verifier: this.params.verifier,
+        typeOfLogin: this.params.typeOfLogin,
       };
     }
   }
@@ -73,7 +63,7 @@ export default class JwtHandler extends AbstractLoginHandler {
   async handleLoginWindow(): Promise<LoginWindowResponse> {
     const { BroadcastChannel } = await import("@toruslabs/broadcast-channel");
     return new Promise<LoginWindowResponse>((resolve, reject) => {
-      if (this.redirectToOpener) {
+      if (this.params.redirectToOpener) {
         reject(new Error("Cannot use redirect to opener for passwordless"));
         return;
       }
@@ -89,7 +79,7 @@ export default class JwtHandler extends AbstractLoginHandler {
             reject(new Error(error));
             return;
           }
-          if (ev.data && instanceParams.verifier === this.verifier) {
+          if (ev.data && instanceParams.verifier === this.params.verifier) {
             log.info(ev.data);
             resolve({ accessToken, idToken: idToken || "", ...rest, state: instanceParams });
           }
@@ -107,10 +97,10 @@ export default class JwtHandler extends AbstractLoginHandler {
         bc.close();
       });
       try {
-        const { connection = "email", login_hint } = this.jwtParams;
+        const { connection = "email", login_hint } = this.params.jwtParams;
         const finalJwtParams = deepmerge(
           {
-            client_id: this.clientId,
+            client_id: this.params.clientId,
             connection,
             email: connection === "email" ? login_hint : undefined,
             phone_number: connection === "sms" ? login_hint : undefined,
@@ -119,13 +109,13 @@ export default class JwtHandler extends AbstractLoginHandler {
               scope: this.SCOPE,
               state: this.state,
               response_type: this.RESPONSE_TYPE,
-              redirect_uri: this.redirect_uri,
+              redirect_uri: this.params.redirect_uri,
               nonce: this.nonce,
               prompt: this.PROMPT,
             },
           },
           {
-            authParams: this.jwtParams,
+            authParams: this.params.jwtParams,
           }
         );
         // using stringify and parse to remove undefined params

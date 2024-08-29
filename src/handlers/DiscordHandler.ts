@@ -1,38 +1,28 @@
 import { get } from "@toruslabs/http-helpers";
 import deepmerge from "deepmerge";
 
-import { LOGIN_TYPE, UX_MODE_TYPE } from "../utils/enums";
 import AbstractLoginHandler from "./AbstractLoginHandler";
-import { Auth0ClientOptions, LoginWindowResponse, TorusGenericObject, TorusVerifierResponse } from "./interfaces";
+import { CreateHandlerParams, LoginWindowResponse, TorusVerifierResponse } from "./interfaces";
 
 export default class DiscordHandler extends AbstractLoginHandler {
   private readonly RESPONSE_TYPE: string = "token";
 
   private readonly SCOPE: string = "identify email";
 
-  constructor(
-    readonly clientId: string,
-    readonly verifier: string,
-    readonly redirect_uri: string,
-    readonly typeOfLogin: LOGIN_TYPE,
-    readonly uxMode: UX_MODE_TYPE,
-    readonly redirectToOpener?: boolean,
-    readonly jwtParams?: Auth0ClientOptions,
-    readonly customState?: TorusGenericObject
-  ) {
-    super(clientId, verifier, redirect_uri, typeOfLogin, uxMode, redirectToOpener, jwtParams, customState);
+  constructor(params: CreateHandlerParams) {
+    super(params);
     this.setFinalUrl();
   }
 
   setFinalUrl(): void {
     const finalUrl = new URL("https://discord.com/api/oauth2/authorize");
-    const clonedParams = JSON.parse(JSON.stringify(this.jwtParams || {}));
+    const clonedParams = JSON.parse(JSON.stringify(this.params.jwtParams || {}));
     const finalJwtParams = deepmerge(
       {
         state: this.state,
         response_type: this.RESPONSE_TYPE,
-        client_id: this.clientId,
-        redirect_uri: this.redirect_uri,
+        client_id: this.params.clientId,
+        redirect_uri: this.params.redirect_uri,
         scope: this.SCOPE,
       },
       clonedParams
@@ -64,8 +54,8 @@ export default class DiscordHandler extends AbstractLoginHandler {
       name: `${name}#${discriminator}`,
       email,
       verifierId: id,
-      verifier: this.verifier,
-      typeOfLogin: this.typeOfLogin,
+      verifier: this.params.verifier,
+      typeOfLogin: this.params.typeOfLogin,
     };
   }
 }

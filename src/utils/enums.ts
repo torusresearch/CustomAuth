@@ -36,7 +36,6 @@ export const REDIRECT_PARAMS_STORAGE_METHOD = {
 export const TORUS_METHOD = {
   TRIGGER_LOGIN: "triggerLogin",
   TRIGGER_AGGREGATE_LOGIN: "triggerAggregateLogin",
-  TRIGGER_AGGREGATE_HYBRID_LOGIN: "triggerHybridAggregateLogin",
 } as const;
 
 export type LOGIN_TYPE = (typeof LOGIN)[keyof typeof LOGIN];

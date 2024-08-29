@@ -1,36 +1,26 @@
 import base64url from "base64url";
 import deepmerge from "deepmerge";
 
-import { LOGIN_TYPE, UX_MODE_TYPE } from "../utils/enums";
 import { fetchDataFromBroadcastServer } from "../utils/sessionHelper";
 import AbstractLoginHandler from "./AbstractLoginHandler";
-import { Auth0ClientOptions, LoginWindowResponse, PasskeySessionData, TorusGenericObject, TorusVerifierResponse } from "./interfaces";
+import { CreateHandlerParams, LoginWindowResponse, PasskeySessionData, TorusVerifierResponse } from "./interfaces";
 
 export default class PasskeysHandler extends AbstractLoginHandler {
-  constructor(
-    readonly clientId: string,
-    readonly verifier: string,
-    readonly redirect_uri: string,
-    readonly typeOfLogin: LOGIN_TYPE,
-    readonly uxMode: UX_MODE_TYPE,
-    readonly redirectToOpener?: boolean,
-    readonly jwtParams?: Auth0ClientOptions,
-    readonly customState?: TorusGenericObject
-  ) {
-    super(clientId, verifier, redirect_uri, typeOfLogin, uxMode, redirectToOpener, jwtParams, customState);
+  constructor(params: CreateHandlerParams) {
+    super(params);
     this.setFinalUrl();
   }
 
   setFinalUrl(): void {
-    const { passkeysHostUrl } = this.customState || {};
+    const { passkeysHostUrl } = this.params.customState || {};
     if (!passkeysHostUrl) throw new Error("Invalid passkeys url.");
     const finalUrl = new URL(passkeysHostUrl);
-    const clonedParams = JSON.parse(JSON.stringify(this.jwtParams || {}));
+    const clonedParams = JSON.parse(JSON.stringify(this.params.jwtParams || {}));
     const finalJwtParams = deepmerge(
       {
         state: this.state,
-        client_id: this.clientId,
-        redirect_uri: this.redirect_uri,
+        client_id: this.params.clientId,
+        redirect_uri: this.params.redirect_uri,
       },
       clonedParams
     );
@@ -71,9 +61,9 @@ export default class PasskeysHandler extends AbstractLoginHandler {
       email: "",
       name: "Passkeys Login",
       profileImage: "",
-      verifier: this.verifier,
+      verifier: this.params.verifier,
       verifierId,
-      typeOfLogin: this.typeOfLogin,
+      typeOfLogin: this.params.typeOfLogin,
       extraVerifierParams: {
         signature,
         clientDataJSON,
