@@ -31,7 +31,6 @@ export default class Web3AuthPasswordlessHandler extends AbstractLoginHandler {
         nonce: this.nonce,
         network: this.params.web3AuthNetwork,
         connection: loginToConnectionMap[this.params.typeOfLogin],
-        web3auth_client_id: this.params.web3AuthClientId,
         scope: this.SCOPE,
         response_type: this.RESPONSE_TYPE,
         prompt: this.PROMPT,
