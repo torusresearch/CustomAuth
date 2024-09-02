@@ -1,6 +1,6 @@
 import deepmerge from "deepmerge";
 
-import { decodeToken, loginToConnectionMap } from "../utils/helpers";
+import { decodeToken, loginToConnectionMap, validateAndConstructUrl } from "../utils/helpers";
 import AbstractLoginHandler from "./AbstractLoginHandler";
 import { Auth0UserInfo, CreateHandlerParams, EMAIL_FLOW, LoginWindowResponse, TorusVerifierResponse } from "./interfaces";
 
@@ -17,8 +17,11 @@ export default class Web3AuthPasswordlessHandler extends AbstractLoginHandler {
   }
 
   setFinalUrl(): void {
-    const finalUrl = new URL("https://passwordless.web3auth.io/v6/authorize");
+    const { domain } = this.params.jwtParams || {};
+    const finalUrl = validateAndConstructUrl(domain || "https://passwordless.web3auth.io/v6");
+    finalUrl.pathname += finalUrl.pathname.endsWith("/") ? "authorize" : "/authorize";
     const clonedParams = JSON.parse(JSON.stringify(this.params.jwtParams || {}));
+    delete clonedParams.domain;
     this.params.customState = { ...(this.params.customState || {}), client: this.params.web3AuthClientId };
     const finalJwtParams = deepmerge(
       {
