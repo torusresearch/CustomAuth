@@ -6,6 +6,7 @@ export async function fetchDataFromBroadcastServer<T>(identifier: string, storag
     const configManager = new SessionManager<T>({
       sessionId: identifier,
       sessionServerBaseUrl: storageServerUrl,
+      allowedOrigin: true,
     });
 
     const data = await configManager.authorizeSession();
