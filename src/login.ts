@@ -344,7 +344,11 @@ class CustomAuth {
     return this.getTorusKey(verifier, verifierId, aggregateVerifierParams, aggregateIdToken, extraVerifierParams);
   }
 
-  async getRedirectResult({ replaceUrl = true, clearLoginDetails = true }: RedirectResultParams = {}): Promise<RedirectResult> {
+  async getRedirectResult({
+    replaceUrl = true,
+    clearLoginDetails = true,
+    storageData = undefined,
+  }: RedirectResultParams = {}): Promise<RedirectResult> {
     await this.init({ skipInit: true });
     const url = new URL(window.location.href);
     const hash = url.hash.substring(1);
@@ -363,7 +367,7 @@ class CustomAuth {
 
     log.info(instanceId, "instanceId");
 
-    const loginDetails = await this.storageHelper.retrieveLoginDetails(instanceId);
+    const loginDetails = storageData || (await this.storageHelper.retrieveLoginDetails(instanceId));
     const { args, method, ...rest } = loginDetails || {};
     log.info(args, method);
 
