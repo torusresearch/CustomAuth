@@ -35,7 +35,7 @@
     "@toruslabs/broadcast-channel": "^11.0.0",
     "@toruslabs/constants": "^14.0.0",
     "@toruslabs/eccrypto": "^5.0.4",
-    "@toruslabs/fetch-node-details": "^14.0.1",
+    "@toruslabs/fnd-base": "^14.0.0",
     "@toruslabs/http-helpers": "^7.0.0",
     "@toruslabs/metadata-helpers": "^6.0.0",
     "@toruslabs/session-manager": "^3.1.0",
