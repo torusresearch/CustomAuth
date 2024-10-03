@@ -1,5 +1,5 @@
-import { TORUS_NETWORK_TYPE } from "@toruslabs/constants";
-import { fetchLocalConfig } from "@toruslabs/fnd-base";
+import { type INodeDetails, TORUS_NETWORK_TYPE } from "@toruslabs/constants";
+import { NodeDetailManager } from "@toruslabs/fetch-node-details";
 import { keccak256, type KeyType, Torus, TorusKey } from "@toruslabs/torus.js";
 
 import createHandler from "./handlers/HandlerFactory";
@@ -42,9 +42,12 @@ class CustomAuth {
     web3AuthClientId: string;
     web3AuthNetwork: TORUS_NETWORK_TYPE;
     keyType: KeyType;
+    nodeDetails: INodeDetails;
   };
 
   torus: Torus;
+
+  nodeDetailManager: NodeDetailManager;
 
   storageHelper: StorageHelper;
 
@@ -68,6 +71,7 @@ class CustomAuth {
     metadataUrl = "https://metadata.tor.us",
     keyType = "secp256k1",
     serverTimeOffset = 0,
+    nodeDetails,
   }: CustomAuthArgs) {
     if (!web3AuthClientId) throw new Error("Please provide a valid web3AuthClientId in constructor");
     if (!network) throw new Error("Please provide a valid network in constructor");
@@ -86,6 +90,7 @@ class CustomAuth {
       web3AuthClientId,
       web3AuthNetwork: network,
       keyType,
+      nodeDetails,
     };
     const torus = new Torus({
       network,
@@ -97,6 +102,7 @@ class CustomAuth {
     });
     Torus.setAPIKey(apiKey);
     this.torus = torus;
+    this.nodeDetailManager = new NodeDetailManager({ network });
     if (enableLogging) log.enableAll();
     else log.disableAll();
     this.storageHelper = new StorageHelper(storageServerUrl);
@@ -176,6 +182,7 @@ class CustomAuth {
 
     const torusKey = await this.getTorusKey(
       verifier,
+      userInfo.verifierId,
       { verifier_id: userInfo.verifierId },
       loginParams.idToken || loginParams.accessToken,
       userInfo.extraVerifierParams
@@ -260,15 +267,31 @@ class CustomAuth {
     aggregateIdTokenSeeds.sort();
     const aggregateIdToken = keccak256(Buffer.from(aggregateIdTokenSeeds.join(String.fromCharCode(29)), "utf8")).slice(2);
     aggregateVerifierParams.verifier_id = aggregateVerifierId;
-    const torusKey = await this.getTorusKey(verifierIdentifier, aggregateVerifierParams, aggregateIdToken, extraVerifierParams);
+    const torusKey = await this.getTorusKey(verifierIdentifier, aggregateVerifierId, aggregateVerifierParams, aggregateIdToken, extraVerifierParams);
     return {
       ...torusKey,
       userInfo: userInfoArray.map((x, index) => ({ ...x, ...loginParamsArray[index] })),
     };
   }
 
-  async getTorusKey(verifier: string, verifierParams: { verifier_id: string }, idToken: string, additionalParams?: ExtraParams): Promise<TorusKey> {
-    const nodeDetails = fetchLocalConfig(this.config.web3AuthNetwork, this.config.keyType);
+  async getTorusKey(
+    verifier: string,
+    verifierId: string,
+    verifierParams: { verifier_id: string },
+    idToken: string,
+    additionalParams?: ExtraParams
+  ): Promise<TorusKey> {
+    const nodeDetails = await this.sentryHandler.startSpan(
+      {
+        name: SENTRY_TXNS.FETCH_NODE_DETAILS,
+      },
+      async () => {
+        if (this.config.nodeDetails) {
+          return this.config.nodeDetails;
+        }
+        return this.nodeDetailManager.getNodeDetails({ verifier, verifierId });
+      }
+    );
 
     log.debug("torus-direct/getTorusKey", { torusNodeEndpoints: nodeDetails.torusNodeEndpoints });
 
@@ -314,7 +337,7 @@ class CustomAuth {
     aggregateIdTokenSeeds.sort();
     const aggregateIdToken = keccak256(Buffer.from(aggregateIdTokenSeeds.join(String.fromCharCode(29)), "utf8")).slice(2);
     aggregateVerifierParams.verifier_id = verifierId;
-    return this.getTorusKey(verifier, aggregateVerifierParams, aggregateIdToken, extraVerifierParams);
+    return this.getTorusKey(verifier, verifierId, aggregateVerifierParams, aggregateIdToken, extraVerifierParams);
   }
 
   async getRedirectResult({ replaceUrl = true, clearLoginDetails = true }: RedirectResultParams = {}): Promise<RedirectResult> {

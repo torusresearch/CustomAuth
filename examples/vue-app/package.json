@@ -13,6 +13,7 @@
     "@toruslabs/broadcast-channel": "10.0.1",
     "@toruslabs/constants": "^14.0.0",
     "@toruslabs/customauth": "file:../../",
+    "@toruslabs/fnd-base": "^14.0.0",
     "@toruslabs/openlogin-starkkey": "^3.2.0",
     "@toruslabs/torus.js": "^15.0.2",
     "@toruslabs/vue-components": "^7.8.3",

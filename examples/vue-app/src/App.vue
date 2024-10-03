@@ -182,8 +182,9 @@
 </template>
 
 <script setup lang="ts">
-import { TORUS_LEGACY_NETWORK, TORUS_SAPPHIRE_NETWORK } from "@toruslabs/constants";
+import { KEY_TYPE, TORUS_LEGACY_NETWORK, TORUS_SAPPHIRE_NETWORK } from "@toruslabs/constants";
 import { CustomAuth, LoginWindowResponse, TorusLoginResponse, TorusVerifierResponse, UX_MODE } from "@toruslabs/customauth";
+import { fetchLocalConfig } from "@toruslabs/fnd-base";
 import { getStarkHDAccount, pedersen, sign, STARKNET_NETWORKS, verify } from "@toruslabs/openlogin-starkkey";
 import { TorusKey } from "@toruslabs/torus.js";
 import { Button, Card, Select, TextArea, TextField } from "@toruslabs/vue-components";
@@ -305,7 +306,8 @@ const loadResponse = (privKeyInfo: TorusKey["finalKeyData"], localUserInfo: Toru
 const initCustomAuth = async () => {
   const { network, uxMode } = formData.value;
   switch (uxMode) {
-    case UX_MODE.REDIRECT:
+    case UX_MODE.REDIRECT: {
+      const nodeDetails = fetchLocalConfig(network, KEY_TYPE.SECP256K1);
       customAuthSdk.value = new CustomAuth({
         baseUrl: `${window.location.origin}`,
         redirectPathName: "auth",
@@ -313,10 +315,13 @@ const initCustomAuth = async () => {
         network,
         uxMode,
         web3AuthClientId: WEB3AUTH_CLIENT_ID,
+        nodeDetails,
       });
       await customAuthSdk.value.init({ skipSw: true });
       break;
-    case UX_MODE.POPUP:
+    }
+    case UX_MODE.POPUP: {
+      const nodeDetails = fetchLocalConfig(network, KEY_TYPE.SECP256K1);
       customAuthSdk.value = new CustomAuth({
         uxMode,
         baseUrl: `${window.location.origin}/serviceworker`,
@@ -324,9 +329,11 @@ const initCustomAuth = async () => {
         network,
         popupFeatures: `titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=500,width=500,top=100,left=100`,
         web3AuthClientId: WEB3AUTH_CLIENT_ID,
+        nodeDetails,
       });
       await customAuthSdk.value.init();
       break;
+    }
     default:
       break;
   }
