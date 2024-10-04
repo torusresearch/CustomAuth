@@ -316,6 +316,7 @@ const initCustomAuth = async () => {
         uxMode,
         web3AuthClientId: WEB3AUTH_CLIENT_ID,
         nodeDetails,
+        checkCommitment: false,
       });
       await customAuthSdk.value.init({ skipSw: true });
       break;
@@ -330,6 +331,7 @@ const initCustomAuth = async () => {
         popupFeatures: `titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=500,width=500,top=100,left=100`,
         web3AuthClientId: WEB3AUTH_CLIENT_ID,
         nodeDetails,
+        checkCommitment: false,
       });
       await customAuthSdk.value.init();
       break;

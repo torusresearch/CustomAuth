@@ -243,6 +243,13 @@ export interface CustomAuthArgs {
   useDkg?: boolean;
 
   nodeDetails?: INodeDetails;
+
+  /**
+   * Set this flag to false to remove check for commitment calls.
+   *
+   * @defaultValue true
+   */
+  checkCommitment?: boolean;
 }
 
 export interface InitParams {

@@ -43,6 +43,7 @@ class CustomAuth {
     web3AuthNetwork: TORUS_NETWORK_TYPE;
     keyType: KeyType;
     nodeDetails: INodeDetails;
+    checkCommitment: boolean;
   };
 
   torus: Torus;
@@ -72,6 +73,7 @@ class CustomAuth {
     keyType = "secp256k1",
     serverTimeOffset = 0,
     nodeDetails,
+    checkCommitment = true,
   }: CustomAuthArgs) {
     if (!web3AuthClientId) throw new Error("Please provide a valid web3AuthClientId in constructor");
     if (!network) throw new Error("Please provide a valid network in constructor");
@@ -91,6 +93,7 @@ class CustomAuth {
       web3AuthNetwork: network,
       keyType,
       nodeDetails,
+      checkCommitment,
     };
     const torus = new Torus({
       network,
@@ -311,6 +314,7 @@ class CustomAuth {
             ...additionalParams,
           },
           useDkg: this.config.useDkg,
+          checkCommitment: this.config.checkCommitment,
         });
       }
     );

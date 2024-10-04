@@ -15,7 +15,7 @@
     "@toruslabs/customauth": "file:../../",
     "@toruslabs/fnd-base": "^14.0.0",
     "@toruslabs/openlogin-starkkey": "^3.2.0",
-    "@toruslabs/torus.js": "^15.0.2",
+    "@toruslabs/torus.js": "^15.1.0-0",
     "@toruslabs/vue-components": "^7.8.3",
     "@toruslabs/vue-icons": "^7.6.2",
     "@web3auth/base": "^8.12.0",
