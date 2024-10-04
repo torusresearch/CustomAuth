@@ -1,4 +1,4 @@
-import { TORUS_NETWORK_TYPE } from "@toruslabs/constants";
+import { INodeDetails, TORUS_NETWORK_TYPE } from "@toruslabs/constants";
 import { KeyType, TorusKey } from "@toruslabs/torus.js";
 
 import { Sentry } from "../sentry";
@@ -241,6 +241,15 @@ export interface CustomAuthArgs {
    * @defaultValue undefined
    */
   useDkg?: boolean;
+
+  nodeDetails?: INodeDetails;
+
+  /**
+   * Set this flag to false to remove check for commitment calls.
+   *
+   * @defaultValue true
+   */
+  checkCommitment?: boolean;
 }
 
 export interface InitParams {
