@@ -39,7 +39,7 @@
     "@toruslabs/http-helpers": "^7.0.0",
     "@toruslabs/metadata-helpers": "^6.0.0",
     "@toruslabs/session-manager": "^3.1.0",
-    "@toruslabs/torus.js": "^15.1.0-0",
+    "@toruslabs/torus.js": "^15.1.0",
     "base64url": "^3.0.1",
     "bowser": "^2.11.0",
     "deepmerge": "^4.3.1",
