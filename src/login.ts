@@ -1,6 +1,6 @@
-import { TORUS_NETWORK_TYPE } from "@toruslabs/constants";
+import { type INodeDetails, TORUS_NETWORK_TYPE } from "@toruslabs/constants";
 import { NodeDetailManager } from "@toruslabs/fetch-node-details";
-import { keccak256, Torus, TorusKey } from "@toruslabs/torus.js";
+import { keccak256, type KeyType, Torus, TorusKey } from "@toruslabs/torus.js";
 
 import createHandler from "./handlers/HandlerFactory";
 import {
@@ -38,8 +38,12 @@ class CustomAuth {
     uxMode: UX_MODE_TYPE;
     locationReplaceOnRedirect: boolean;
     popupFeatures: string;
+    useDkg?: boolean;
     web3AuthClientId: string;
     web3AuthNetwork: TORUS_NETWORK_TYPE;
+    keyType: KeyType;
+    nodeDetails: INodeDetails;
+    checkCommitment: boolean;
   };
 
   torus: Torus;
@@ -64,8 +68,12 @@ class CustomAuth {
     sentry,
     enableOneKey = false,
     web3AuthClientId,
+    useDkg,
     metadataUrl = "https://metadata.tor.us",
+    keyType = "secp256k1",
     serverTimeOffset = 0,
+    nodeDetails,
+    checkCommitment = true,
   }: CustomAuthArgs) {
     if (!web3AuthClientId) throw new Error("Please provide a valid web3AuthClientId in constructor");
     if (!network) throw new Error("Please provide a valid network in constructor");
@@ -80,8 +88,12 @@ class CustomAuth {
       uxMode,
       locationReplaceOnRedirect,
       popupFeatures,
+      useDkg,
       web3AuthClientId,
       web3AuthNetwork: network,
+      keyType,
+      nodeDetails,
+      checkCommitment,
     };
     const torus = new Torus({
       network,
@@ -89,6 +101,7 @@ class CustomAuth {
       serverTimeOffset,
       clientId: web3AuthClientId,
       legacyMetadataHost: metadataUrl,
+      keyType,
     });
     Torus.setAPIKey(apiKey);
     this.torus = torus;
@@ -276,6 +289,9 @@ class CustomAuth {
         name: SENTRY_TXNS.FETCH_NODE_DETAILS,
       },
       async () => {
+        if (this.config.nodeDetails) {
+          return this.config.nodeDetails;
+        }
         return this.nodeDetailManager.getNodeDetails({ verifier, verifierId });
       }
     );
@@ -287,8 +303,18 @@ class CustomAuth {
         name: SENTRY_TXNS.FETCH_SHARES,
       },
       async () => {
-        return this.torus.retrieveShares(nodeDetails.torusNodeEndpoints, nodeDetails.torusIndexes, verifier, verifierParams, idToken, {
-          ...additionalParams,
+        return this.torus.retrieveShares({
+          endpoints: nodeDetails.torusNodeEndpoints,
+          indexes: nodeDetails.torusIndexes,
+          verifier,
+          verifierParams,
+          idToken,
+          nodePubkeys: nodeDetails.torusNodePub,
+          extraParams: {
+            ...additionalParams,
+          },
+          useDkg: this.config.useDkg,
+          checkCommitment: this.config.checkCommitment,
         });
       }
     );

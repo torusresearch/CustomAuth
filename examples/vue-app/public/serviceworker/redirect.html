@@ -1,24 +1,4 @@
-/* eslint-disable */
-function getScope() {
-  return self.registration.scope;
-}
-
-self.addEventListener("message", function (event) {
-  if (event.data && event.data.type === "SKIP_WAITING") {
-    self.skipWaiting();
-  }
-});
-
-self.addEventListener("fetch", function (event) {
-  try {
-    const url = new URL(event.request.url);
-    if (url.pathname.includes("redirect") && url.href.includes(getScope())) {
-      event.respondWith(
-        new Response(
-          new Blob(
-            [
-              `
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />
@@ -132,7 +112,7 @@ self.addEventListener("fetch", function (event) {
         <div class="beat beat-even"></div>
         <div class="beat beat-odd"></div>
       </div>
-      <h1 class="title content" id="closeText" style="display: none;">You can close this window now</h1>
+      <h1 class="title content" id="closeText" style="display: none">You can close this window now</h1>
     </div>
     <script
       src="https://cdn.jsdelivr.net/npm/@toruslabs/broadcast-channel@11.0.0/dist/broadcastChannel.umd.min.js"
@@ -299,14 +279,4 @@ self.addEventListener("fetch", function (event) {
       }
     </script>
   </body>
-</html>`,
-            ],
-            { type: "text/html" }
-          )
-        )
-      );
-    }
-  } catch (error) {
-    console.error(error);
-  }
-});
+</html>

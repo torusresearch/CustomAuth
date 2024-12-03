@@ -8,7 +8,7 @@
     "start": "next start"
   },
   "dependencies": {
-    "@toruslabs/customauth": "file:../../toruslabs-customauth-5.0.3.tgz",
+    "@toruslabs/customauth": "file:../..",
     "error": "10.4.0",
     "next": "12.1.0",
     "react": "17.0.2",

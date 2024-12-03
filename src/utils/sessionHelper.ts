@@ -1,11 +1,12 @@
-import { OpenloginSessionManager } from "@toruslabs/session-manager";
+import { SessionManager } from "@toruslabs/session-manager";
 import log from "loglevel";
 
 export async function fetchDataFromBroadcastServer<T>(identifier: string, storageServerUrl?: string) {
   try {
-    const configManager = new OpenloginSessionManager<T>({
+    const configManager = new SessionManager<T>({
       sessionId: identifier,
       sessionServerBaseUrl: storageServerUrl,
+      allowedOrigin: true,
     });
 
     const data = await configManager.authorizeSession();

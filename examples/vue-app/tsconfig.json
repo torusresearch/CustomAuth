@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "types": ["node", "vite/client"],
     "target": "esnext",
     "module": "esnext",
     "noImplicitAny": true,
@@ -33,6 +34,6 @@
     },
     "lib": ["esnext", "dom", "dom.iterable", "scripthost"]
   },
-  "include": ["src/*.vue", "src/*.ts", "src/*.tsx"],
+  "include": ["src"],
   "exclude": ["node_modules"]
 }
