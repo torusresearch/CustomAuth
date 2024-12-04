@@ -418,11 +418,6 @@ export interface CreateHandlerParams {
   web3AuthNetwork: TORUS_NETWORK_TYPE;
 }
 
-export interface RedirectResultParams {
-  replaceUrl?: boolean;
-  clearLoginDetails?: boolean;
-}
-
 export type SingleLoginParams = SubVerifierDetails;
 
 export interface AggregateLoginParams {
@@ -432,6 +427,12 @@ export interface AggregateLoginParams {
 }
 
 export type LoginDetails = { method: TORUS_METHOD_TYPE; args: SingleLoginParams | AggregateLoginParams };
+
+export interface RedirectResultParams {
+  replaceUrl?: boolean;
+  clearLoginDetails?: boolean;
+  storageData?: LoginDetails;
+}
 
 export interface RedirectResult {
   method: TORUS_METHOD_TYPE;
