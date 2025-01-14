@@ -459,7 +459,7 @@ class CustomAuth {
           // Link prefetch is not detectable. pass through
           resolveFn();
         }
-      } catch (err) {
+      } catch {
         resolveFn();
       }
     });
