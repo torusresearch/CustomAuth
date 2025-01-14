@@ -23,7 +23,6 @@ class PopupHandler extends (EventEmitter as new () => TypedEmitter<PopupHandlerE
   timeout: number;
 
   constructor({ url, target, features, timeout = 30000 }: { url: URL; target?: string; features?: string; timeout?: number }) {
-    // eslint-disable-next-line constructor-super
     super();
     this.url = url;
     this.target = target || "_blank";
