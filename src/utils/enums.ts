@@ -1,5 +1,6 @@
 export const LOGIN = {
   GOOGLE: "google",
+  TELEGRAM: "telegram",
   FACEBOOK: "facebook",
   REDDIT: "reddit",
   DISCORD: "discord",

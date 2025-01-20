@@ -187,7 +187,7 @@ class CustomAuth {
       verifier,
       userInfo.verifierId,
       { verifier_id: userInfo.verifierId },
-      loginParams.idToken || loginParams.accessToken,
+      loginParams.idToken || loginParams.accessToken || loginParams.tgAuthResult,
       userInfo.extraVerifierParams
     );
     return {
