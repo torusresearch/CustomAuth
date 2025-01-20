@@ -72,7 +72,8 @@ class HomePage extends React.PureComponent<IProps, IState> {
       const torusdirectsdk = new CustomAuth({
         baseUrl: `${window.location.origin}/serviceworker`,
         enableLogging: true,
-        network: "testnet", // details for test net
+        network: "sapphire_devnet", // details for test net
+        web3AuthClientId: "BPi5PB_UiIZ-cPz1GtV5i1I2iOSOHuimiXBI0e-Oe_u6X3oVAbCiAZOTEBtTXw4tsluTITPqA8zMsfxIKMjiqNQ",
       });
 
       await torusdirectsdk.init({ skipSw: false });

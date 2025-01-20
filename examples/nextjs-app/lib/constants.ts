@@ -9,6 +9,7 @@ export const LINKEDIN = "linkedin";
 export const TWITTER = "twitter";
 export const WEIBO = "weibo";
 export const LINE = "line";
+export const TELEGRAM = "telegram";
 export const EMAIL_PASSWORD = "email_password";
 export const PASSWORDLESS = "passwordless";
 export const HOSTED_EMAIL_PASSWORDLESS = "hosted_email_passwordless";
@@ -49,6 +50,12 @@ export const verifierMap = {
     typeOfLogin: "discord",
     clientId: "682533837464666198",
     verifier: "discord-lrc",
+  },
+  [TELEGRAM]: {
+    name: "Telegram",
+    typeOfLogin: "telegram",
+    clientId: "7974448012:AAGLN8ee4WnJhJt6Jc7_Sb275smMs-8K00I",
+    verifier: "test-telegram-2",
   },
   [EMAIL_PASSWORD]: {
     name: "Email Password",
