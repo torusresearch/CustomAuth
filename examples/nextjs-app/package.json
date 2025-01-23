@@ -6,9 +6,11 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "prepare": "husky"
+    "prepare": "husky",
+    "lint": "eslint --fix ."
   },
   "dependencies": {
+    "@guru_test/customauth": "20.4.0",
     "@toruslabs/customauth": "file:../..",
     "@uiw/react-json-view": "^2.0.0-alpha.30",
     "error": "10.4.0",
@@ -23,6 +25,7 @@
     "eslint": "^9.18.0",
     "eslint-config-airbnb-typescript": "^18.0.0",
     "eslint-config-prettier": "^10.0.1",
+    "eslint-plugin-import": "^2.31.0",
     "eslint-plugin-prettier": "^5.2.3",
     "eslint-plugin-react": "^7.37.4",
     "husky": "^9.1.6",

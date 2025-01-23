@@ -25,7 +25,6 @@ if (typeof window === "object") {
   ReactJsonView = dynamic(() => import("@uiw/react-json-view"));
 }
 
-
 interface IState {
   selectedVerifier: string;
   torusdirectsdk: any | null;

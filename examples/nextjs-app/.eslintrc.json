@@ -13,7 +13,7 @@
     "sourceType": "module",
     "project": ["./tsconfig.json"]
   },
-  "plugins": ["prettier", "react", "@typescript-eslint"],
+  "plugins": ["prettier", "react", "@typescript-eslint", "import"],
   "settings": {
     "import/resolver": {
       "node": {
@@ -39,6 +39,7 @@
     "no-console": 0,
     "import/prefer-default-export": 0,
     "react/prop-types": 0,
+    "import/no-extraneous-dependencies": "error",
     "no-use-before-define": 0,
     "promise/always-return": 0,
     "react/forbid-prop-types": 0,

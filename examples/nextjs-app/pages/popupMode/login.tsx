@@ -1,5 +1,5 @@
 import React from "react";
-import { CustomAuth } from "@toruslabs/customauth";
+import { CustomAuth, TorusLoginResponse } from "@toruslabs/customauth";
 import dynamic from "next/dynamic";
 import {
   verifierMap,
@@ -25,12 +25,11 @@ if (typeof window === "object") {
   ReactJsonView = dynamic(() => import("@uiw/react-json-view"));
 }
 
-
 interface IState {
   selectedVerifier: string;
-  torusdirectsdk: any;
+  torusdirectsdk: CustomAuth | null;
   loginHint: string;
-  loginDetails?: any;
+  loginDetails?: TorusLoginResponse | null;
 }
 
 interface IProps {}
@@ -39,7 +38,7 @@ class MyApp extends React.Component<IProps, IState> {
     super(props);
     this.state = {
       selectedVerifier: GOOGLE,
-      torusdirectsdk: null ,
+      torusdirectsdk: null as CustomAuth | null,
       loginHint: "",
       loginDetails: null,
     };
