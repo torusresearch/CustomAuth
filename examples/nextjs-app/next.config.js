@@ -8,6 +8,6 @@ module.exports = {
         },
       ]
     },
-    distDir: 'build', // Change 'build' to your desired output directory
+    distDir: '.next', // Use the default output directory for Vercel
     productionBrowserSourceMaps: true,
   }
