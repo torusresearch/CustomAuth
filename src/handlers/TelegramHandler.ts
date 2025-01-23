@@ -62,8 +62,8 @@ export default class TelegramHandler extends AbstractLoginHandler {
   }
 
   async getUserInfo(params: LoginWindowResponse): Promise<TorusVerifierResponse> {
-    const { tgAuthResult } = params;
-    const userInfo = this.objectToAuthDataMap(tgAuthResult);
+    const { idToken } = params;
+    const userInfo = this.objectToAuthDataMap(idToken);
     const { photo_url: profileImage = "", username = "", first_name = "", last_name = "" } = userInfo;
     return {
       email: "", // Telegram does not provide email
@@ -97,7 +97,7 @@ export default class TelegramHandler extends AbstractLoginHandler {
               // properly resolve the data
               resolve({
                 accessToken: "",
-                tgAuthResult: btoa(JSON.stringify(result)) || "",
+                idToken: btoa(JSON.stringify(result)) || "",
                 ...rest,
                 // State has to be last here otherwise it will be overwritten
                 state: atob(stateParam) as unknown as { [key: string]: string },

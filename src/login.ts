@@ -166,9 +166,9 @@ class CustomAuth {
     if (hash && queryParameters) {
       const { error, hashParameters, instanceParameters } = handleRedirectParameters(hash, queryParameters);
       if (error) throw new Error(error);
-      const { access_token: accessToken, id_token: idToken, ...rest } = hashParameters;
+      const { access_token: accessToken, id_token: idToken, tgAuthResult, ...rest } = hashParameters;
       // State has to be last here otherwise it will be overwritten
-      loginParams = { accessToken, idToken, ...rest, state: instanceParameters };
+      loginParams = { accessToken, idToken: idToken || tgAuthResult || "", ...rest, state: instanceParameters };
     } else {
       this.storageHelper.clearOrphanedLoginDetails();
       if (this.config.uxMode === UX_MODE.REDIRECT) {
@@ -187,7 +187,7 @@ class CustomAuth {
       verifier,
       userInfo.verifierId,
       { verifier_id: userInfo.verifierId },
-      loginParams.idToken || loginParams.accessToken || loginParams.tgAuthResult,
+      loginParams.idToken || loginParams.accessToken,
       userInfo.extraVerifierParams
     );
     return {

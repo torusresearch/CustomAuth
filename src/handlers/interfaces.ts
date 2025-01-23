@@ -58,7 +58,6 @@ export interface TorusSubVerifierInfo {
 export interface LoginWindowResponse {
   accessToken: string;
   idToken?: string;
-  tgAuthResult?: string;
   ref?: string;
   extraParams?: string;
   extraParamsPassed?: string;
