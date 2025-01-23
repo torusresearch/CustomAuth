@@ -1,5 +1,5 @@
 import React from "react";
-import { CustomAuth, UX_MODE } from "@toruslabs/customauth";
+import { UX_MODE } from "@toruslabs/customauth";
 
 import {
   verifierMap,
@@ -22,7 +22,7 @@ import {
 
 interface IState {
   selectedVerifier: string;
-  torusdirectsdk: CustomAuth | null;
+  torusdirectsdk: any | null;
   loginHint: string;
   consoleText?: string;
 }

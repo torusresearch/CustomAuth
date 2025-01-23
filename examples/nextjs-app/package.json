@@ -22,6 +22,7 @@
     "@types/react-dom": "^18",
     "eslint": "^9.18.0",
     "eslint-config-airbnb-typescript": "^18.0.0",
+    "eslint-config-prettier": "^10.0.1",
     "eslint-plugin-prettier": "^5.2.3",
     "eslint-plugin-react": "^7.37.4",
     "husky": "^9.1.6",

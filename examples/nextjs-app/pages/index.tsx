@@ -1,7 +1,7 @@
 /* eslint-disable class-methods-use-this */
 import React from "react";
 import Link from "next/link";
-import { CustomAuth, TorusLoginResponse } from "@toruslabs/customauth";
+import { CustomAuth } from "@toruslabs/customauth";
 import dynamic from "next/dynamic";
 
 import {
@@ -28,9 +28,9 @@ if (typeof window === "object") {
 
 interface IState {
   selectedVerifier: string;
-  torusdirectsdk: CustomAuth | null;
+  torusdirectsdk: any | null;
   loginHint: string;
-  loginResponse?: TorusLoginResponse | null;
+  loginResponse?: any | null;
 }
 
 interface IProps {}
