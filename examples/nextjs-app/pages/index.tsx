@@ -22,8 +22,9 @@ import {
 
 let ReactJsonView;
 if (typeof window === "object") {
-  ReactJsonView = dynamic(() => import("react-json-view"));
+  ReactJsonView = dynamic(() => import("@uiw/react-json-view"));
 }
+
 
 interface IState {
   selectedVerifier: string;
@@ -178,7 +179,7 @@ class HomePage extends React.PureComponent<IProps, IState> {
         {loginResponse && (
           <div>
             <h2>Login Response</h2>
-            <ReactJsonView src={loginResponse} style={{ marginTop: 20 }} />
+            <ReactJsonView value={loginResponse} style={{ marginTop: 20 }} />
           </div>
         )}
       </div>
