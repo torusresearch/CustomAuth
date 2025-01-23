@@ -104,7 +104,7 @@ class MyApp extends React.Component<IProps, IState> {
       [WEIBO]: { domain: AUTH_DOMAIN },
       [LINE]: { domain: AUTH_DOMAIN },
       [COGNITO]: { domain: COGNITO_AUTH_DOMAIN, identity_provider: "Google", response_type: "token", user_info_endpoint: "userInfo" },
-      [TELEGRAM]: { domain: AUTH_DOMAIN, bot_token: "7974448012:AAGLN8ee4WnJhJt6Jc7_Sb275smMs-8K00I", identity_provider: "Telegram", origin: "https://wildcat-endless-basically.ngrok-free.app/serviceworker/redirect", },
+      [TELEGRAM]: { domain: AUTH_DOMAIN, identity_provider: "Telegram", origin: "https://wildcat-endless-basically.ngrok-free.app/serviceworker/redirect", },
       [REDDIT]: { domain: AUTH_DOMAIN, connection: "Reddit", verifierIdField: "name", isVerifierIdCaseSensitive: false },
     };
   };
