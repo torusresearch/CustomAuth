@@ -8,5 +8,6 @@ module.exports = {
         },
       ]
     },
+    distDir: 'build', // Change 'build' to your desired output directory
     productionBrowserSourceMaps: true,
   }
