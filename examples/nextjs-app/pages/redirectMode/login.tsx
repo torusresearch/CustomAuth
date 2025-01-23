@@ -1,5 +1,5 @@
 import React from "react";
-import { CustomAuth, UX_MODE } from "@toruslabs/customauth";
+import { CustomAuth, UX_MODE } from "@guru_test/customauth";
 
 import {
   verifierMap,
