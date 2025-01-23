@@ -95,7 +95,7 @@ class RedirectMode extends React.Component<IProps, IState> {
       [WEIBO]: { domain: AUTH_DOMAIN },
       [LINE]: { domain: AUTH_DOMAIN },
       [COGNITO]: { domain: COGNITO_AUTH_DOMAIN, identity_provider: "Google", response_type: "token", user_info_endpoint: "userInfo" },
-      [TELEGRAM]: { domain: AUTH_DOMAIN, identity_provider: "Telegram", origin: "https://wildcat-endless-basically.ngrok-free.app/auth" },
+      [TELEGRAM]: { domain: AUTH_DOMAIN, identity_provider: "Telegram", origin: "https://custom-auth-beta.vercel.app/auth" },
       [REDDIT]: { domain: AUTH_DOMAIN, connection: "Reddit", verifierIdField: "name", isVerifierIdCaseSensitive: false },
     };
   };

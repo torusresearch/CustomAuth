@@ -107,7 +107,7 @@ class MyApp extends React.Component<IProps, IState> {
       [TELEGRAM]: {
         domain: AUTH_DOMAIN,
         identity_provider: "Telegram",
-        origin: "https://wildcat-endless-basically.ngrok-free.app/serviceworker/redirect",
+        origin: "https://custom-auth-beta.vercel.app/serviceworker/redirect",
       },
       [REDDIT]: { domain: AUTH_DOMAIN, connection: "Reddit", verifierIdField: "name", isVerifierIdCaseSensitive: false },
     };
