@@ -6,7 +6,6 @@
 /coverage
 
 # next.js
-/.next/  # Remove this line if present
 /out/
 
 # production
