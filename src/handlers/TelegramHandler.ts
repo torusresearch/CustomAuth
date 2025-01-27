@@ -1,3 +1,4 @@
+import base64url from "base64url";
 import deepmerge from "deepmerge";
 
 import { UX_MODE } from "../utils/enums";
@@ -6,7 +7,6 @@ import log from "../utils/loglevel";
 import PopupHandler from "../utils/PopupHandler";
 import AbstractLoginHandler from "./AbstractLoginHandler";
 import { CreateHandlerParams, LoginWindowResponse, TorusVerifierResponse } from "./interfaces";
-import base64url from "base64url";
 
 type PopupResponse = {
   result: {
