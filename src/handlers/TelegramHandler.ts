@@ -6,6 +6,7 @@ import log from "../utils/loglevel";
 import PopupHandler from "../utils/PopupHandler";
 import AbstractLoginHandler from "./AbstractLoginHandler";
 import { CreateHandlerParams, LoginWindowResponse, TorusVerifierResponse } from "./interfaces";
+import base64url from "base64url";
 
 type PopupResponse = {
   result: {
@@ -97,9 +98,8 @@ export default class TelegramHandler extends AbstractLoginHandler {
               // properly resolve the data
               resolve({
                 accessToken: "",
-                idToken: btoa(JSON.stringify(result)) || "",
                 ...rest,
-                // State has to be last here otherwise it will be overwritten
+                idToken: base64url.encode(JSON.stringify(result)) || "",
                 state: atob(stateParam) as unknown as { [key: string]: string },
               });
             }
@@ -122,7 +122,15 @@ export default class TelegramHandler extends AbstractLoginHandler {
         }
         const postMessageEventHandler = async (postMessageEvent: MessageEvent) => {
           if (!postMessageEvent.data) return;
+          // make sure event is auth_result from telegram
           const ev = postMessageEvent.data;
+          if (typeof ev != "string") {
+            return;
+          }
+          const { event } = (JSON.parse(ev) as PopupResponse) || {};
+          if (event && event !== "auth_result") {
+            return;
+          }
           window.removeEventListener("message", postMessageEventHandler);
           handleData(ev);
           verifierWindow.close();
