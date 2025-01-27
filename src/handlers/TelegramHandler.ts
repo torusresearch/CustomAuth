@@ -57,20 +57,20 @@ export default class TelegramHandler extends AbstractLoginHandler {
     this.finalURL = finalUrl;
   }
 
-  objectToAuthDataMap(tgAuthenticationResulr: string) {
-    return JSON.parse(atob(tgAuthenticationResulr)) as { first_name: string; last_name: string; photo_url: string; username: string };
+  objectToAuthDataMap(tgAuthenticationResult: string) {
+    return JSON.parse(atob(tgAuthenticationResult)) as { first_name: string; last_name: string; photo_url: string; username: string; id: number };
   }
 
   async getUserInfo(params: LoginWindowResponse): Promise<TorusVerifierResponse> {
     const { idToken } = params;
     const userInfo = this.objectToAuthDataMap(idToken);
-    const { photo_url: profileImage = "", username = "", first_name = "", last_name = "" } = userInfo;
+    const { photo_url: profileImage = "", first_name = "", last_name = "", id } = userInfo;
     return {
       email: "", // Telegram does not provide email
       name: `${first_name} ${last_name}`,
       profileImage,
       verifier: this.params.verifier,
-      verifierId: username.toLowerCase(),
+      verifierId: id.toString(),
       typeOfLogin: this.params.typeOfLogin,
     };
   }
