@@ -22,7 +22,7 @@ import {
 
 interface IState {
   selectedVerifier: string;
-  torusdirectsdk: any | null;
+  torusdirectsdk: CustomAuth | null;
   loginHint: string;
   consoleText?: string;
 }

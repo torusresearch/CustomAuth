@@ -2,7 +2,7 @@
  * User will be redirected to this page in redirect uxMode
  */
 import React from "react";
-import { CustomAuth } from "@toruslabs/customauth";
+import { CustomAuth, RedirectResult } from "@toruslabs/customauth";
 import dynamic from "next/dynamic";
 
 let ReactJsonView;
@@ -11,7 +11,7 @@ if (typeof window === "object") {
 }
 
 interface IState {
-  loginDetails?: any | null;
+  loginDetails?: RedirectResult | null;
 }
 
 interface IProps {}

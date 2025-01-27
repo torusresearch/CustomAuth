@@ -1,5 +1,5 @@
 import React from "react";
-import { CustomAuth } from "@toruslabs/customauth";
+import { CustomAuth, TorusLoginResponse} from "@toruslabs/customauth";
 import dynamic from "next/dynamic";
 import {
   verifierMap,
@@ -27,9 +27,9 @@ if (typeof window === "object") {
 
 interface IState {
   selectedVerifier: string;
-  torusdirectsdk: any | null;
+  torusdirectsdk: CustomAuth | null;
   loginHint: string;
-  loginDetails?: any | null;
+  loginDetails?: TorusLoginResponse | null;
 }
 
 interface IProps {}
