@@ -54,7 +54,7 @@ export const verifierMap = {
   [TELEGRAM]: {
     name: "Telegram",
     typeOfLogin: "telegram",
-    clientId: "7974448012:AAGLN8ee4WnJhJt6Jc7_Sb275smMs-8K00I",
+    clientId: "7974448012",
     verifier: "test-telegram-2",
   },
   [EMAIL_PASSWORD]: {
