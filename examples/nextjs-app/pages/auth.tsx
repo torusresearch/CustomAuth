@@ -2,7 +2,7 @@
  * User will be redirected to this page in redirect uxMode
  */
 import React from "react";
-import { CustomAuth } from "@guru_test/customauth";
+import { CustomAuth } from "@toruslabs/customauth";
 import dynamic from "next/dynamic";
 
 let ReactJsonView;

@@ -10,7 +10,6 @@
     "lint": "eslint --fix ."
   },
   "dependencies": {
-    "@guru_test/customauth": "20.4.0",
     "@toruslabs/customauth": "file:../..",
     "@uiw/react-json-view": "^2.0.0-alpha.30",
     "error": "10.4.0",

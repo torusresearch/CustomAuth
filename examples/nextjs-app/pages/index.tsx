@@ -1,7 +1,7 @@
 /* eslint-disable class-methods-use-this */
 import React from "react";
 import Link from "next/link";
-import { CustomAuth } from "@guru_test/customauth";
+import { CustomAuth } from "@toruslabs/customauth";
 import dynamic from "next/dynamic";
 
 import {
