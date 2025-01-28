@@ -2,7 +2,7 @@ import base64url from "base64url";
 import deepmerge from "deepmerge";
 
 import { UX_MODE } from "../utils/enums";
-import { broadcastChannelOptions, getTimeout } from "../utils/helpers";
+import { broadcastChannelOptions, getTimeout, validateAndConstructUrl } from "../utils/helpers";
 import log from "../utils/loglevel";
 import PopupHandler from "../utils/PopupHandler";
 import AbstractLoginHandler from "./AbstractLoginHandler";
@@ -35,7 +35,9 @@ export default class TelegramHandler extends AbstractLoginHandler {
   }
 
   setFinalUrl(): void {
-    const finalUrl = new URL("https://oauth.telegram.org/auth");
+    const { domain } = this.params.jwtParams;
+    const finalUrl = validateAndConstructUrl(domain || "https://oauth.telegram.org/auth");
+
     const clonedParams = JSON.parse(JSON.stringify(this.params.jwtParams || {}));
     clonedParams.origin = `${this.params.redirect_uri}?state=${this.state}&nonce=${this.nonce}`;
 

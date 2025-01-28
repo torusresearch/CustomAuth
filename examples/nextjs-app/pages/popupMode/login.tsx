@@ -105,8 +105,8 @@ class MyApp extends React.Component<IProps, IState> {
       [LINE]: { domain: AUTH_DOMAIN },
       [COGNITO]: { domain: COGNITO_AUTH_DOMAIN, identity_provider: "Google", response_type: "token", user_info_endpoint: "userInfo" },
       [TELEGRAM]: {
-        domain: AUTH_DOMAIN,
         identity_provider: "Telegram",
+        domain: "https://oauth.tg.dev/auth",
         origin: "https://custom-auth-beta.vercel.app/serviceworker/redirect",
       },
       [REDDIT]: { domain: AUTH_DOMAIN, connection: "Reddit", verifierIdField: "name", isVerifierIdCaseSensitive: false },
