@@ -5,6 +5,7 @@ import { SafeEventEmitterProvider } from "@web3auth/base";
 export const GOOGLE = "google";
 export const FACEBOOK = "facebook";
 export const REDDIT = "reddit";
+export const TELEGRAM = "telegram";
 export const DISCORD = "discord";
 export const TWITCH = "twitch";
 export const GITHUB = "github";
@@ -26,7 +27,7 @@ export const WEB3AUTH_EMAIL_PASSWORDLESS = "email_passwordless";
 export const WEB3AUTH_SMS_PASSWORDLESS = "sms_passwordless";
 export const LOCAL_NETWORK = "network";
 export const uxModeOptions = Object.values(UX_MODE).map((x) => ({ name: x, value: x }));
-export const WEB3AUTH_CLIENT_ID = "BJ6l3_kIQiy6YVL7zDlCcEAvGpGukwFgp-C_0WvNI_fAEeIaoVRLDrV5OjtbZr_zJxbyXFsXMT-yhQiUNYvZWpo";
+export const WEB3AUTH_CLIENT_ID = "BPi5PB_UiIZ-cPz1GtV5i1I2iOSOHuimiXBI0e-Oe_u6X3oVAbCiAZOTEBtTXw4tsluTITPqA8zMsfxIKMjiqNQ";
 
 export interface LoginProviderItem {
   name: string;
@@ -41,6 +42,12 @@ export const testnetVerifierMap = {
     typeOfLogin: "google",
     clientId: "221898609709-obfn3p63741l5333093430j3qeiinaa8.apps.googleusercontent.com",
     verifier: "google-lrc",
+  },
+  [TELEGRAM]: {
+    name: "Telegram",
+    typeOfLogin: "telegram",
+    clientId: "7696397063",
+    verifier: "test-telegram-4",
   },
   [FACEBOOK]: { name: "Facebook", typeOfLogin: "facebook", clientId: "617201755556395", verifier: "facebook-lrc" },
   [REDDIT]: { name: "Reddit", typeOfLogin: "jwt", clientId: "RKlRuuRoDKOItbJSoOZabDLzizvd1uKn", verifier: "torus-reddit-test" },
@@ -92,6 +99,12 @@ export const sapphireDevnetVerifierMap = {
     typeOfLogin: "google",
     clientId: "221898609709-qnfklddleh1m1m7bq6g8d8dakffp0n86.apps.googleusercontent.com",
     verifier: "web3auth-google-sapphire-devnet",
+  },
+  [TELEGRAM]: {
+    name: "Telegram",
+    typeOfLogin: "telegram",
+    clientId: "7696397063",
+    verifier: "test-telegram-4",
   },
   [FACEBOOK]: { name: "Facebook", typeOfLogin: "facebook", clientId: "226597929760394", verifier: "web3auth-facebook-sapphire-devnet" },
   [REDDIT]: { name: "Reddit", typeOfLogin: "jwt", clientId: "XfiFWQbsZ9t5WQ4TfzHWZOpEghkNskko", verifier: "web3auth-auth0-reddit-sapphire-devnet" },

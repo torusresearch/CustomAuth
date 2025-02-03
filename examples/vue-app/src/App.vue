@@ -212,6 +212,7 @@ import {
   REDDIT,
   sapphireDevnetVerifierMap,
   sapphireDevnetVerifierOptions,
+  TELEGRAM,
   testnetVerifierMap,
   testnetVerifierOptions,
   TWITTER,
@@ -289,6 +290,11 @@ const loginToConnectionMap = computed((): Record<string, Record<string, string |
     [LINE]: { domain: AUTH_DOMAIN },
     [COGNITO]: { domain: COGNITO_AUTH_DOMAIN, identity_provider: "Google", response_type: "token", user_info_endpoint: "userInfo" },
     [REDDIT]: { domain: AUTH_DOMAIN, connection: "Reddit", verifierIdField: "name", isVerifierIdCaseSensitive: false },
+    [TELEGRAM]: {
+        identity_provider: "Telegram",
+        domain: "https://oauth.tg.dev/auth",
+        origin: "https://custom-auth-beta.vercel.app/serviceworker/redirect",
+    },
     [WEB3AUTH_EMAIL_PASSWORDLESS]: {
       login_hint,
     },
@@ -378,20 +384,14 @@ const onLogin = async () => {
     privKeyInfo = data?.finalKeyData;
     localUserInfo = data?.userInfo;
   } else {
-    const data = await customAuthSdk.value.triggerAggregateLogin({
-      aggregateVerifierType: "single_id_verifier",
-      subVerifierDetailsArray: [
-        {
-          clientId,
-          typeOfLogin,
-          verifier: "web3auth",
-          jwtParams,
-        },
-      ],
-      verifierIdentifier: verifier,
+    const data = await customAuthSdk.value?.triggerLogin({
+        typeOfLogin,
+        verifier,
+        clientId,
+        jwtParams,
     });
     privKeyInfo = data?.finalKeyData;
-    localUserInfo = data?.userInfo[0];
+    localUserInfo = data?.userInfo;
   }
 
   if (privKeyInfo) {
