@@ -2,7 +2,7 @@ import base64url from "base64url";
 import deepmerge from "deepmerge";
 
 import { UX_MODE } from "../utils/enums";
-import { broadcastChannelOptions, getTimeout, validateAndConstructUrl } from "../utils/helpers";
+import { broadcastChannelOptions, getTimeout, objectToAuthDataMap, validateAndConstructUrl } from "../utils/helpers";
 import log from "../utils/loglevel";
 import PopupHandler from "../utils/PopupHandler";
 import AbstractLoginHandler from "./AbstractLoginHandler";
@@ -60,13 +60,9 @@ export default class TelegramHandler extends AbstractLoginHandler {
     this.finalURL = finalUrl;
   }
 
-  objectToAuthDataMap(tgAuthenticationResult: string) {
-    return JSON.parse(atob(tgAuthenticationResult)) as { first_name: string; last_name: string; photo_url: string; username: string; id: number };
-  }
-
   async getUserInfo(params: LoginWindowResponse): Promise<TorusVerifierResponse> {
     const { idToken } = params;
-    const userInfo = this.objectToAuthDataMap(idToken);
+    const userInfo = objectToAuthDataMap(idToken);
     const { photo_url: profileImage = "", first_name = "", last_name = "", id } = userInfo;
     return {
       email: "", // Telegram does not provide email
