@@ -384,14 +384,20 @@ const onLogin = async () => {
     privKeyInfo = data?.finalKeyData;
     localUserInfo = data?.userInfo;
   } else {
-    const data = await customAuthSdk.value?.triggerLogin({
-        typeOfLogin,
-        verifier,
-        clientId,
-        jwtParams,
+    const data = await customAuthSdk.value.triggerAggregateLogin({
+      aggregateVerifierType: "single_id_verifier",
+      subVerifierDetailsArray: [
+        {
+          clientId,
+          typeOfLogin,
+          verifier: "web3auth",
+          jwtParams,
+        },
+      ],
+      verifierIdentifier: verifier,
     });
     privKeyInfo = data?.finalKeyData;
-    localUserInfo = data?.userInfo;
+    localUserInfo = data?.userInfo[0];
   }
 
   if (privKeyInfo) {

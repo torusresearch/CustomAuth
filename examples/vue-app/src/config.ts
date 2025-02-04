@@ -27,7 +27,7 @@ export const WEB3AUTH_EMAIL_PASSWORDLESS = "email_passwordless";
 export const WEB3AUTH_SMS_PASSWORDLESS = "sms_passwordless";
 export const LOCAL_NETWORK = "network";
 export const uxModeOptions = Object.values(UX_MODE).map((x) => ({ name: x, value: x }));
-export const WEB3AUTH_CLIENT_ID = "BPi5PB_UiIZ-cPz1GtV5i1I2iOSOHuimiXBI0e-Oe_u6X3oVAbCiAZOTEBtTXw4tsluTITPqA8zMsfxIKMjiqNQ";
+export const WEB3AUTH_CLIENT_ID = "BJ6l3_kIQiy6YVL7zDlCcEAvGpGukwFgp-C_0WvNI_fAEeIaoVRLDrV5OjtbZr_zJxbyXFsXMT-yhQiUNYvZWpo";
 
 export interface LoginProviderItem {
   name: string;
