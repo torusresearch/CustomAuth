@@ -2,7 +2,7 @@ import base64url from "base64url";
 import deepmerge from "deepmerge";
 
 import { UX_MODE } from "../utils/enums";
-import { broadcastChannelOptions, getTimeout, objectToAuthDataMap, validateAndConstructUrl } from "../utils/helpers";
+import { getTimeout, objectToAuthDataMap, validateAndConstructUrl } from "../utils/helpers";
 import log from "../utils/loglevel";
 import PopupHandler from "../utils/PopupHandler";
 import AbstractLoginHandler from "./AbstractLoginHandler";
@@ -79,7 +79,6 @@ export default class TelegramHandler extends AbstractLoginHandler {
     if (this.params.uxMode === UX_MODE.REDIRECT) {
       verifierWindow.redirect(params.locationReplaceOnRedirect);
     } else {
-      const { BroadcastChannel } = await import("@toruslabs/broadcast-channel");
       return new Promise<LoginWindowResponse>((resolve, reject) => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         let bc: any;
@@ -107,27 +106,21 @@ export default class TelegramHandler extends AbstractLoginHandler {
           }
         };
 
-        if (!this.params.redirectToOpener) {
-          bc = new BroadcastChannel<{
-            error: string;
-            data: PopupResponse;
-          }>(`redirect_channel_${this.nonce}`, broadcastChannelOptions);
-          bc.addEventListener("message", async (ev: string) => {
-            await handleData(ev);
-            bc.close();
-            verifierWindow.close();
-          });
-        }
         const postMessageEventHandler = async (postMessageEvent: MessageEvent) => {
-          if (!postMessageEvent.data) return;
+          if (!postMessageEvent.data) {
+            throw new Error("Invalid data received");
+          }
+          if (this.finalURL.origin !== postMessageEvent.origin) {
+            throw new Error("Invalid origin received");
+          }
           // make sure event is auth_result from telegram
           const ev = postMessageEvent.data;
           if (typeof ev != "string") {
-            return;
+            throw new Error("Invalid data type received");
           }
           const { event } = (JSON.parse(ev) as PopupResponse) || {};
           if (event && event !== "auth_result") {
-            return;
+            throw new Error("Invalid event received");
           }
           window.removeEventListener("message", postMessageEventHandler);
           handleData(ev);

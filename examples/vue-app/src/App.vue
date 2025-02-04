@@ -292,7 +292,6 @@ const loginToConnectionMap = computed((): Record<string, Record<string, string |
     [REDDIT]: { domain: AUTH_DOMAIN, connection: "Reddit", verifierIdField: "name", isVerifierIdCaseSensitive: false },
     [TELEGRAM]: {
         identity_provider: "Telegram",
-        domain: "https://oauth.tg.dev/auth",
         origin: "https://custom-auth-beta.vercel.app/serviceworker/redirect",
     },
     [WEB3AUTH_EMAIL_PASSWORDLESS]: {
