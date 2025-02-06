@@ -80,8 +80,6 @@ export default class TelegramHandler extends AbstractLoginHandler {
       verifierWindow.redirect(params.locationReplaceOnRedirect);
     } else {
       return new Promise<LoginWindowResponse>((resolve, reject) => {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        let bc: any;
         const handleData = async (ev: string) => {
           try {
             const { event, origin, result, ...rest } = (JSON.parse(ev) as PopupResponse) || {};
@@ -91,13 +89,12 @@ export default class TelegramHandler extends AbstractLoginHandler {
             const stateParam = parsedUrl.searchParams.get("state");
 
             if (event && event === "auth_result") {
-              if (!this.params.redirectToOpener && bc) await bc.postMessage({ success: true });
               // properly resolve the data
               resolve({
                 accessToken: "",
                 ...rest,
                 idToken: base64url.encode(JSON.stringify(result)) || "",
-                state: atob(stateParam) as unknown as { [key: string]: string },
+                state: base64url.decode(stateParam) as unknown as { [key: string]: string },
               });
             }
           } catch (error) {
@@ -120,7 +117,7 @@ export default class TelegramHandler extends AbstractLoginHandler {
           }
           const { event } = (JSON.parse(ev) as PopupResponse) || {};
           if (event && event !== "auth_result") {
-            throw new Error("Invalid event received");
+            log.info("Invalid event received");
           }
           window.removeEventListener("message", postMessageEventHandler);
           handleData(ev);
@@ -135,7 +132,6 @@ export default class TelegramHandler extends AbstractLoginHandler {
           return;
         }
         verifierWindow.once("close", () => {
-          if (bc) bc.close();
           reject(new Error("user closed popup"));
         });
       });
