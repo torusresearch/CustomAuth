@@ -208,7 +208,7 @@ export const validateAndConstructUrl = (domain: string): URL => {
 };
 
 export const objectToAuthDataMap = (tgAuthenticationResult: string) => {
-  return JSON.parse(atob(tgAuthenticationResult)) as { first_name: string; last_name: string; photo_url: string; username: string; id: number };
+  return JSON.parse(base64url.decode(tgAuthenticationResult)) as { first_name: string; last_name: string; photo_url: string; username: string; id: number };
 };
 
 export function isMobileOrTablet(): boolean {
