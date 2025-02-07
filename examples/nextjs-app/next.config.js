@@ -8,5 +8,6 @@ module.exports = {
         },
       ]
     },
+    distDir: '.next', // Use the default output directory for Vercel
     productionBrowserSourceMaps: true,
   }

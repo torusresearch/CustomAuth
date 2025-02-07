@@ -7,6 +7,7 @@ import JwtHandler from "./JwtHandler";
 import MockLoginHandler from "./MockLoginHandler";
 import PasskeysHandler from "./PasskeysHandler";
 import PasswordlessHandler from "./PasswordlessHandler";
+import TelegramHandler from "./TelegramHandler";
 import TwitchHandler from "./TwitchHandler";
 import Web3AuthPasswordlessHandler from "./Web3AuthPasswordlessHandler";
 
@@ -19,6 +20,8 @@ const createHandler = (params: CreateHandlerParams): ILoginHandler => {
   switch (typeOfLogin) {
     case LOGIN.GOOGLE:
       return new GoogleHandler(params);
+    case LOGIN.TELEGRAM:
+      return new TelegramHandler(params);
     case LOGIN.FACEBOOK:
       return new FacebookHandler(params);
     case LOGIN.TWITCH:

@@ -7,7 +7,7 @@ import dynamic from "next/dynamic";
 
 let ReactJsonView;
 if (typeof window === "object") {
-  ReactJsonView = dynamic(() => import("react-json-view"));
+  ReactJsonView = dynamic(() => import("@uiw/react-json-view"));
 }
 
 interface IState {
@@ -30,7 +30,8 @@ class RedirectAuth extends React.Component<IProps, IState> {
       redirectPathName: "auth",
       enableLogging: true,
       uxMode: "redirect",
-      network: "testnet",
+      network: "sapphire_devnet",
+      web3AuthClientId: "BPi5PB_UiIZ-cPz1GtV5i1I2iOSOHuimiXBI0e-Oe_u6X3oVAbCiAZOTEBtTXw4tsluTITPqA8zMsfxIKMjiqNQ",
     });
     const loginDetails = await torusdirectsdk.getRedirectResult();
     this.setState({
@@ -44,7 +45,7 @@ class RedirectAuth extends React.Component<IProps, IState> {
       <div className="App">
         <div className="about">
           <h1>This is the redirected page</h1>
-          {loginDetails && <ReactJsonView src={loginDetails} style={{ textAlign: "left" }} />}
+          {loginDetails && <ReactJsonView value={loginDetails} style={{ textAlign: "left" }} />}
         </div>
       </div>
     );
