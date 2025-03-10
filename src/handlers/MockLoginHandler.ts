@@ -4,7 +4,7 @@ import log from "loglevel";
 
 import { UX_MODE } from "../utils/enums";
 import { constructURL, decodeToken, getVerifierId, padUrlString } from "../utils/helpers";
-import PopupHandler from "../utils/PopupHandler";
+import { PopupHandler } from "../utils/PopupHandler";
 import AbstractLoginHandler from "./AbstractLoginHandler";
 import { Auth0UserInfo, CreateHandlerParams, LoginWindowResponse, TorusVerifierResponse } from "./interfaces";
 

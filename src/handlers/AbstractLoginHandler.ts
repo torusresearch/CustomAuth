@@ -3,7 +3,7 @@ import base64url from "base64url";
 import { UX_MODE } from "../utils/enums";
 import { broadcastChannelOptions, getTimeout, randomId } from "../utils/helpers";
 import log from "../utils/loglevel";
-import PopupHandler from "../utils/PopupHandler";
+import { PopupHandler } from "../utils/PopupHandler";
 import { CreateHandlerParams, ILoginHandler, LoginWindowResponse, PopupResponse, TorusVerifierResponse } from "./interfaces";
 
 abstract class AbstractLoginHandler implements ILoginHandler {

@@ -33,7 +33,7 @@
   "dependencies": {
     "@chaitanyapotti/register-service-worker": "^1.7.4",
     "@toruslabs/broadcast-channel": "^11.0.0",
-    "@toruslabs/constants": "^14.0.0",
+    "@toruslabs/constants": "^14.2.0",
     "@toruslabs/eccrypto": "^5.0.4",
     "@toruslabs/fetch-node-details": "^14.0.1",
     "@toruslabs/http-helpers": "^7.0.0",
