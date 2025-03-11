@@ -30,8 +30,8 @@ Checkout the example of `CustomAuth` in our [examples directory.](https://github
 
 This module is distributed in 3 formats
 
-- `esm` build `dist/customauth.esm.js` in es6 format
-- `commonjs` build `dist/customauth.cjs.js` in es5 format
+- `esm` build `dist/lib.esm/index.js` in es6 format
+- `commonjs` build `dist/lib.cjs/index.js` in es5 format
 - `umd` build `dist/customauth.umd.min.js` in es5 format without polyfilling corejs minified
 
 By default, the appropriate format is used for your specified usecase
@@ -247,6 +247,6 @@ For other verifiers,
 ## Requirements
 
 - This package requires a peer dependency of `@babel/runtime`
-- Node 18+
+- Node 20+
 
 > Note: If you are using the `redirectToOpener` option, you _must_ update your redirect.html to [allow whitelisted URIs](serviceworker/redirect.html#L222)
