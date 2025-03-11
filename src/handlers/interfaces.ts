@@ -355,24 +355,9 @@ export interface Auth0ClientOptions extends BaseLoginOptions {
    */
   client_id?: string;
   /**
-   * The default URL where Auth0 will redirect your browser to with
-   * the authentication result. It must be whitelisted in
-   * the "Allowed Callback URLs" field in your Auth0 Application's
-   * settings. If not provided here, it should be provided in the other
-   * methods that provide authentication.
-   */
-  redirect_uri?: string;
-  /**
-   * The value in seconds used to account for clock skew in JWT expirations.
-   * Typically, this value is no more than a minute or two at maximum.
-   * Defaults to 60s.
-   */
-  leeway?: number;
-
-  /**
    * The field in jwt token which maps to verifier id
    */
-  verifierIdField?: keyof Auth0UserInfo;
+  verifierIdField?: string;
 
   /**
    * Whether the verifier id field is case sensitive

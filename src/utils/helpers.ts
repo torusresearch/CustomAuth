@@ -60,11 +60,11 @@ function caseSensitiveField(field: string, isCaseSensitive?: boolean): string {
 export const getVerifierId = (
   userInfo: Auth0UserInfo,
   typeOfLogin: LOGIN_TYPE,
-  verifierIdField?: keyof Auth0UserInfo,
+  verifierIdField?: string,
   isVerifierIdCaseSensitive = true
 ): string => {
   const { name, sub } = userInfo;
-  if (verifierIdField) return caseSensitiveField(userInfo[verifierIdField], isVerifierIdCaseSensitive);
+  if (verifierIdField) return caseSensitiveField(userInfo[verifierIdField as keyof Auth0UserInfo], isVerifierIdCaseSensitive);
   switch (typeOfLogin) {
     case LOGIN.PASSWORDLESS:
     case LOGIN.EMAIL_PASSWORD:
