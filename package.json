@@ -6,7 +6,7 @@
   "module": "dist/lib.esm/index.js",
   "unpkg": "dist/customauth.umd.min.js",
   "jsdelivr": "dist/customauth.umd.min.js",
-  "types": "dist/types/index.d.ts",
+  "types": "dist/lib.cjs/types/index.d.ts",
   "sideEffects": false,
   "scripts": {
     "build": "torus-scripts build",
@@ -23,23 +23,23 @@
   ],
   "peerDependencies": {
     "@babel/runtime": "^7.x",
-    "@sentry/types": "^8.x"
+    "@sentry/core": "^9.5.0"
   },
   "peerDependenciesMeta": {
-    "@sentry/types": {
+    "@sentry/core": {
       "optional": true
     }
   },
   "dependencies": {
     "@chaitanyapotti/register-service-worker": "^1.7.4",
     "@toruslabs/broadcast-channel": "^12.0.0",
-    "@toruslabs/constants": "^14.2.0",
+    "@toruslabs/constants": "^15.0.0",
     "@toruslabs/eccrypto": "^6.0.2",
-    "@toruslabs/fetch-node-details": "^14.2.0",
-    "@toruslabs/http-helpers": "^8.0.2",
-    "@toruslabs/metadata-helpers": "^7.0.1",
-    "@toruslabs/session-manager": "^4.0.1",
-    "@toruslabs/torus.js": "^15.1.1",
+    "@toruslabs/fetch-node-details": "^15.0.0",
+    "@toruslabs/http-helpers": "^8.1.1",
+    "@toruslabs/metadata-helpers": "^7.0.2",
+    "@toruslabs/session-manager": "^4.0.2",
+    "@toruslabs/torus.js": "^16.0.0",
     "base64url": "^3.0.1",
     "bowser": "^2.11.0",
     "deepmerge": "^4.3.1",
@@ -47,7 +47,7 @@
     "loglevel": "^1.9.2"
   },
   "devDependencies": {
-    "@sentry/types": "^8.50.0",
+    "@sentry/core": "^9.5.0",
     "@toruslabs/config": "^3.1.0",
     "@toruslabs/eslint-config-typescript": "^4.1.0",
     "@toruslabs/torus-scripts": "^7.1.2",

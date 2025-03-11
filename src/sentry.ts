@@ -1,4 +1,4 @@
-import type { Span, StartSpanOptions } from "@sentry/types";
+import type { Span, StartSpanOptions } from "@sentry/core";
 
 export interface Sentry {
   startSpan<T>(context: StartSpanOptions, callback: (span: Span) => T): T;
