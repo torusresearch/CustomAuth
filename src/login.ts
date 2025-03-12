@@ -1,5 +1,6 @@
 import { type INodeDetails, TORUS_NETWORK_TYPE } from "@toruslabs/constants";
 import { NodeDetailManager } from "@toruslabs/fetch-node-details";
+import { Sentry } from "@toruslabs/http-helpers";
 import { keccak256, type KeyType, Torus, TorusKey } from "@toruslabs/torus.js";
 
 import createHandler from "./handlers/HandlerFactory";
@@ -21,7 +22,6 @@ import {
   TorusVerifierResponse,
 } from "./handlers/interfaces";
 import { registerServiceWorker } from "./registerServiceWorker";
-import SentryHandler from "./sentry";
 import { AGGREGATE_VERIFIER, SENTRY_TXNS, TORUS_METHOD, UX_MODE, UX_MODE_TYPE } from "./utils/enums";
 import { serializeError } from "./utils/error";
 import { handleRedirectParameters, isFirefox, padUrlString } from "./utils/helpers";
@@ -52,7 +52,7 @@ class CustomAuth {
 
   storageHelper: StorageHelper;
 
-  sentryHandler: SentryHandler;
+  sentryHandler: Sentry;
 
   constructor({
     baseUrl,
@@ -109,7 +109,7 @@ class CustomAuth {
     if (enableLogging) log.enableAll();
     else log.disableAll();
     this.storageHelper = new StorageHelper(storageServerUrl);
-    this.sentryHandler = new SentryHandler(sentry);
+    this.sentryHandler = sentry;
   }
 
   async init({ skipSw = false, skipInit = false, skipPrefetch = false }: InitParams = {}): Promise<void> {
@@ -459,7 +459,7 @@ class CustomAuth {
           // Link prefetch is not detectable. pass through
           resolveFn();
         }
-      } catch (err) {
+      } catch {
         resolveFn();
       }
     });

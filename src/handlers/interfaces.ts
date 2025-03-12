@@ -1,7 +1,7 @@
 import { INodeDetails, TORUS_NETWORK_TYPE } from "@toruslabs/constants";
+import { Sentry } from "@toruslabs/http-helpers";
 import { KeyType, TorusKey } from "@toruslabs/torus.js";
 
-import { Sentry } from "../sentry";
 import { AGGREGATE_VERIFIER_TYPE, LOGIN_TYPE, TORUS_METHOD_TYPE, UX_MODE_TYPE } from "../utils/enums";
 
 export type TorusGenericObject = {

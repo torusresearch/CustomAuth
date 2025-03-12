@@ -121,7 +121,7 @@ export default class PasswordlessHandler extends AbstractLoginHandler {
         // using stringify and parse to remove undefined params
         // This method is only resolved when the user clicks the email link
         post(this.finalURL.href, JSON.parse(JSON.stringify(finalJwtParams)))
-          .then((response) => {
+          .then((response): Response => {
             log.info("posted", response);
             return undefined;
           })
