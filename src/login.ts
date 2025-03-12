@@ -1,10 +1,10 @@
 import { type INodeDetails, TORUS_NETWORK_TYPE } from "@toruslabs/constants";
 import { NodeDetailManager } from "@toruslabs/fetch-node-details";
-import { Sentry } from "@toruslabs/http-helpers";
 import { keccak256, type KeyType, Torus, TorusKey } from "@toruslabs/torus.js";
 
 import createHandler from "./handlers/HandlerFactory";
 import { registerServiceWorker } from "./registerServiceWorker";
+import SentryHandler from "./sentry";
 import { SENTRY_TXNS, UX_MODE, UX_MODE_TYPE } from "./utils/enums";
 import { serializeError } from "./utils/error";
 import { handleRedirectParameters, isFirefox, padUrlString } from "./utils/helpers";
@@ -47,7 +47,7 @@ class CustomAuth {
 
   storageHelper: StorageHelper;
 
-  sentryHandler: Sentry;
+  sentryHandler: SentryHandler;
 
   constructor({
     baseUrl,
@@ -104,7 +104,7 @@ class CustomAuth {
     if (enableLogging) log.enableAll();
     else log.disableAll();
     this.storageHelper = new StorageHelper(storageServerUrl);
-    this.sentryHandler = sentry;
+    this.sentryHandler = new SentryHandler(sentry);
   }
 
   async init({ skipSw = false, skipInit = false, skipPrefetch = false }: InitParams = {}): Promise<void> {
