@@ -428,7 +428,7 @@ export interface RedirectResult {
   args: SingleLoginParams | AggregateLoginParams;
 }
 
-export type AUTH0_JWT_LOGIN_TYPE = "apple" | "github" | "linkedin" | "twitter" | "weibo" | "line" | "email_password" | "passwordless";
+export type AUTH0_JWT_LOGIN_TYPE = "apple" | "github" | "linkedin" | "twitter" | "weibo" | "line";
 
 export type AggregateVerifierParams = {
   verify_params: {
