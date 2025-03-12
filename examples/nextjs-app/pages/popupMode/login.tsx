@@ -1,5 +1,5 @@
 import React from "react";
-import { CustomAuth, TorusLoginResponse } from "@toruslabs/customauth";
+import { CustomAuth, TorusLoginResponse} from "@toruslabs/customauth";
 import dynamic from "next/dynamic";
 import {
   verifierMap,
@@ -17,11 +17,12 @@ import {
   COGNITO_AUTH_DOMAIN,
   COGNITO,
   REDDIT,
+  TELEGRAM,
 } from "../../lib/constants";
 
 let ReactJsonView;
 if (typeof window === "object") {
-  ReactJsonView = dynamic(() => import("react-json-view"));
+  ReactJsonView = dynamic(() => import("@uiw/react-json-view"));
 }
 
 interface IState {
@@ -37,7 +38,7 @@ class MyApp extends React.Component<IProps, IState> {
     super(props);
     this.state = {
       selectedVerifier: GOOGLE,
-      torusdirectsdk: null as CustomAuth | null,
+      torusdirectsdk: null as any | null,
       loginHint: "",
       loginDetails: null,
     };
@@ -48,7 +49,8 @@ class MyApp extends React.Component<IProps, IState> {
       const torusdirectsdk = new CustomAuth({
         baseUrl: `${window.location.origin}/serviceworker`,
         enableLogging: true,
-        network: "testnet", // details for test net
+        network: "sapphire_devnet",
+        web3AuthClientId: "BPi5PB_UiIZ-cPz1GtV5i1I2iOSOHuimiXBI0e-Oe_u6X3oVAbCiAZOTEBtTXw4tsluTITPqA8zMsfxIKMjiqNQ",
       });
 
       await torusdirectsdk.init({ skipSw: false });
@@ -102,6 +104,11 @@ class MyApp extends React.Component<IProps, IState> {
       [WEIBO]: { domain: AUTH_DOMAIN },
       [LINE]: { domain: AUTH_DOMAIN },
       [COGNITO]: { domain: COGNITO_AUTH_DOMAIN, identity_provider: "Google", response_type: "token", user_info_endpoint: "userInfo" },
+      [TELEGRAM]: {
+        identity_provider: "Telegram",
+        domain: "https://oauth.tg.dev/auth",
+        origin: "https://custom-auth-beta.vercel.app/serviceworker/redirect",
+      },
       [REDDIT]: { domain: AUTH_DOMAIN, connection: "Reddit", verifierIdField: "name", isVerifierIdCaseSensitive: false },
     };
   };
@@ -141,7 +148,7 @@ class MyApp extends React.Component<IProps, IState> {
         {loginDetails && (
           <div>
             <h2>Login Response</h2>
-            <ReactJsonView src={loginDetails} style={{ marginTop: 20, textAlign: "left" }} />
+            <ReactJsonView value={loginDetails} style={{ marginTop: 20, textAlign: "left" }} />
           </div>
         )}
       </div>

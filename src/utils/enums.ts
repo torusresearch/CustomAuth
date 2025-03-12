@@ -1,6 +1,7 @@
 export const LOGIN = {
   // start - byoa
   GOOGLE: "google",
+  TELEGRAM: "telegram",
   FACEBOOK: "facebook",
   REDDIT: "reddit",
   DISCORD: "discord",

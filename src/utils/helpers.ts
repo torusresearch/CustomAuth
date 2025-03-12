@@ -34,8 +34,6 @@ export const loginToConnectionMap: Record<string, string> = {
   [LOGIN.TWITTER]: "twitter",
   [LOGIN.WEIBO]: "weibo",
   [LOGIN.LINE]: "line",
-  [LOGIN.EMAIL_PASSWORD]: "Username-Password-Authentication",
-  [LOGIN.PASSWORDLESS]: "email",
   [LOGIN.EMAIL_PASSWORDLESS]: "email",
   [LOGIN.SMS_PASSWORDLESS]: "sms",
 };
@@ -66,8 +64,6 @@ export const getVerifierId = (
   const { name, sub } = userInfo;
   if (verifierIdField) return caseSensitiveField(userInfo[verifierIdField as keyof Auth0UserInfo], isVerifierIdCaseSensitive);
   switch (typeOfLogin) {
-    case LOGIN.PASSWORDLESS:
-    case LOGIN.EMAIL_PASSWORD:
     case LOGIN.EMAIL_PASSWORDLESS:
     case LOGIN.SMS_PASSWORDLESS:
       return caseSensitiveField(name, isVerifierIdCaseSensitive);
@@ -205,6 +201,16 @@ export const validateAndConstructUrl = (domain: string): URL => {
   } catch (error: unknown) {
     throw new Error(`${(error as Error)?.message || ""}, Note: Your jwt domain: (i.e ${domain}) must have http:// or https:// prefix`);
   }
+};
+
+export const objectToAuthDataMap = (tgAuthenticationResult: string) => {
+  return JSON.parse(base64url.decode(tgAuthenticationResult)) as {
+    first_name: string;
+    last_name: string;
+    photo_url: string;
+    username: string;
+    id: number;
+  };
 };
 
 export function isMobileOrTablet(): boolean {
