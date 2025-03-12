@@ -1,8 +1,8 @@
 import base64url from "base64url";
 import Bowser from "bowser";
 
-import { Auth0UserInfo, TorusGenericObject } from "../handlers/interfaces";
 import { LOGIN, LOGIN_TYPE, REDIRECT_PARAMS_STORAGE_METHOD_TYPE } from "./enums";
+import { Auth0UserInfo, TorusGenericObject } from "./interfaces";
 import log from "./loglevel";
 interface CustomMessageEvent extends MessageEvent {
   error: string;

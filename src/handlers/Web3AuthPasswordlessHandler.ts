@@ -1,8 +1,8 @@
 import deepmerge from "deepmerge";
 
 import { decodeToken, loginToConnectionMap, validateAndConstructUrl } from "../utils/helpers";
+import { Auth0UserInfo, CreateHandlerParams, EMAIL_FLOW, LoginWindowResponse, TorusVerifierResponse } from "../utils/interfaces";
 import AbstractLoginHandler from "./AbstractLoginHandler";
-import { Auth0UserInfo, CreateHandlerParams, EMAIL_FLOW, LoginWindowResponse, TorusVerifierResponse } from "./interfaces";
 
 export default class Web3AuthPasswordlessHandler extends AbstractLoginHandler {
   private readonly SCOPE: string = "openid profile email";

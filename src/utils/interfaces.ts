@@ -2,7 +2,7 @@ import { INodeDetails, TORUS_NETWORK_TYPE } from "@toruslabs/constants";
 import { KeyType, TorusKey } from "@toruslabs/torus.js";
 
 import { Sentry } from "../sentry";
-import { AGGREGATE_VERIFIER_TYPE, LOGIN_TYPE, TORUS_METHOD_TYPE, UX_MODE_TYPE } from "../utils/enums";
+import { AGGREGATE_VERIFIER_TYPE, LOGIN_TYPE, TORUS_METHOD_TYPE, UX_MODE_TYPE } from "./enums";
 
 export type TorusGenericObject = {
   [key: string]: string;

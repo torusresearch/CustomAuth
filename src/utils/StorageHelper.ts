@@ -2,9 +2,9 @@ import { getPublic, sign } from "@toruslabs/eccrypto";
 import { get, post } from "@toruslabs/http-helpers";
 import { decryptData, encryptData, keccak256 } from "@toruslabs/metadata-helpers";
 
-import { LoginDetails } from "../handlers/interfaces";
 import { REDIRECT_PARAMS_STORAGE_METHOD, REDIRECT_PARAMS_STORAGE_METHOD_TYPE } from "./enums";
 import { are3PCSupported, storageAvailable } from "./helpers";
+import { LoginDetails } from "./interfaces";
 import log from "./loglevel";
 
 class StorageHelper {

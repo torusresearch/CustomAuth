@@ -1,12 +1,11 @@
 import { LOGIN } from "../utils/enums";
+import { CreateHandlerParams, ILoginHandler } from "../utils/interfaces";
 import DiscordHandler from "./DiscordHandler";
 import FacebookHandler from "./FacebookHandler";
 import GoogleHandler from "./GoogleHandler";
-import { CreateHandlerParams, ILoginHandler } from "./interfaces";
 import JwtHandler from "./JwtHandler";
 import MockLoginHandler from "./MockLoginHandler";
 import PasskeysHandler from "./PasskeysHandler";
-import PasswordlessHandler from "./PasswordlessHandler";
 import TwitchHandler from "./TwitchHandler";
 import Web3AuthPasswordlessHandler from "./Web3AuthPasswordlessHandler";
 
@@ -29,16 +28,12 @@ const createHandler = (params: CreateHandlerParams): ILoginHandler => {
     case LOGIN.SMS_PASSWORDLESS:
       if (!login_hint) throw new Error("Invalid params. Missing login_hint for web3auth passwordless login");
       return new Web3AuthPasswordlessHandler(params);
-    case LOGIN.PASSWORDLESS:
-      if (!domain || !login_hint) throw new Error("Invalid params. Missing domain or login_hint for passwordless login");
-      return new PasswordlessHandler(params);
     case LOGIN.APPLE:
     case LOGIN.GITHUB:
     case LOGIN.LINKEDIN:
     case LOGIN.TWITTER:
     case LOGIN.WEIBO:
     case LOGIN.LINE:
-    case LOGIN.EMAIL_PASSWORD:
     case LOGIN.JWT:
     case LOGIN.REDDIT:
       if (id_token || access_token) {

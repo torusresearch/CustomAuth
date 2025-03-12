@@ -3,6 +3,11 @@ import { NodeDetailManager } from "@toruslabs/fetch-node-details";
 import { keccak256, type KeyType, Torus, TorusKey } from "@toruslabs/torus.js";
 
 import createHandler from "./handlers/HandlerFactory";
+import { registerServiceWorker } from "./registerServiceWorker";
+import SentryHandler from "./sentry";
+import { AGGREGATE_VERIFIER, SENTRY_TXNS, TORUS_METHOD, UX_MODE, UX_MODE_TYPE } from "./utils/enums";
+import { serializeError } from "./utils/error";
+import { handleRedirectParameters, isFirefox, padUrlString } from "./utils/helpers";
 import {
   AggregateLoginParams,
   AggregateVerifierParams,
@@ -19,12 +24,7 @@ import {
   TorusLoginResponse,
   TorusSubVerifierInfo,
   TorusVerifierResponse,
-} from "./handlers/interfaces";
-import { registerServiceWorker } from "./registerServiceWorker";
-import SentryHandler from "./sentry";
-import { AGGREGATE_VERIFIER, SENTRY_TXNS, TORUS_METHOD, UX_MODE, UX_MODE_TYPE } from "./utils/enums";
-import { serializeError } from "./utils/error";
-import { handleRedirectParameters, isFirefox, padUrlString } from "./utils/helpers";
+} from "./utils/interfaces";
 import log from "./utils/loglevel";
 import StorageHelper from "./utils/StorageHelper";
 

@@ -1,9 +1,9 @@
 import base64url from "base64url";
 import deepmerge from "deepmerge";
 
+import { CreateHandlerParams, LoginWindowResponse, PasskeySessionData, TorusVerifierResponse } from "../utils/interfaces";
 import { fetchDataFromBroadcastServer } from "../utils/sessionHelper";
 import AbstractLoginHandler from "./AbstractLoginHandler";
-import { CreateHandlerParams, LoginWindowResponse, PasskeySessionData, TorusVerifierResponse } from "./interfaces";
 
 export default class PasskeysHandler extends AbstractLoginHandler {
   constructor(params: CreateHandlerParams) {

@@ -1,8 +1,8 @@
 import { get } from "@toruslabs/http-helpers";
 import deepmerge from "deepmerge";
 
+import { CreateHandlerParams, LoginWindowResponse, TorusVerifierResponse } from "../utils/interfaces";
 import AbstractLoginHandler from "./AbstractLoginHandler";
-import { CreateHandlerParams, LoginWindowResponse, TorusVerifierResponse } from "./interfaces";
 
 export default class FacebookHandler extends AbstractLoginHandler {
   private readonly RESPONSE_TYPE: string = "token";

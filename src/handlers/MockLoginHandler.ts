@@ -4,9 +4,9 @@ import log from "loglevel";
 
 import { UX_MODE } from "../utils/enums";
 import { constructURL, decodeToken, getVerifierId, padUrlString } from "../utils/helpers";
+import { Auth0UserInfo, CreateHandlerParams, LoginWindowResponse, TorusVerifierResponse } from "../utils/interfaces";
 import { PopupHandler } from "../utils/PopupHandler";
 import AbstractLoginHandler from "./AbstractLoginHandler";
-import { Auth0UserInfo, CreateHandlerParams, LoginWindowResponse, TorusVerifierResponse } from "./interfaces";
 
 export default class MockLoginHandler extends AbstractLoginHandler {
   constructor(params: CreateHandlerParams) {

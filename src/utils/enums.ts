@@ -1,4 +1,5 @@
 export const LOGIN = {
+  // start - byoa
   GOOGLE: "google",
   FACEBOOK: "facebook",
   REDDIT: "reddit",
@@ -10,10 +11,9 @@ export const LOGIN = {
   TWITTER: "twitter",
   WEIBO: "weibo",
   LINE: "line",
-  EMAIL_PASSWORD: "email_password",
-  PASSWORDLESS: "passwordless",
   EMAIL_PASSWORDLESS: "email_passwordless",
   SMS_PASSWORDLESS: "sms_passwordless",
+  // end - byoa
   JWT: "jwt",
   PASSKEYS: "passkeys",
 } as const;

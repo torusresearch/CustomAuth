@@ -3,8 +3,8 @@ import deepmerge from "deepmerge";
 import log from "loglevel";
 
 import { decodeToken, getVerifierId, loginToConnectionMap, padUrlString, validateAndConstructUrl } from "../utils/helpers";
+import { AUTH0_JWT_LOGIN_TYPE, Auth0UserInfo, CreateHandlerParams, LoginWindowResponse, TorusVerifierResponse } from "../utils/interfaces";
 import AbstractLoginHandler from "./AbstractLoginHandler";
-import { AUTH0_JWT_LOGIN_TYPE, Auth0UserInfo, CreateHandlerParams, LoginWindowResponse, TorusVerifierResponse } from "./interfaces";
 
 export default class JwtHandler extends AbstractLoginHandler {
   private readonly SCOPE: string = "openid profile email";
