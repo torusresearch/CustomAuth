@@ -30,7 +30,7 @@ export default class Web3AuthPasswordlessHandler extends AbstractLoginHandler {
         redirect_uri: this.params.redirect_uri,
         nonce: this.nonce,
         network: this.params.web3AuthNetwork,
-        connection: loginToConnectionMap[this.params.typeOfLogin],
+        connection: loginToConnectionMap[this.params.authConnection],
         scope: this.SCOPE,
         response_type: this.RESPONSE_TYPE,
         prompt: this.PROMPT,
@@ -54,9 +54,9 @@ export default class Web3AuthPasswordlessHandler extends AbstractLoginHandler {
       profileImage: picture,
       name,
       email,
-      verifierId: name.toLowerCase(),
-      verifier: this.params.verifier,
-      typeOfLogin: this.params.typeOfLogin,
+      userId: name.toLowerCase(),
+      authConnectionId: this.params.authConnectionId,
+      authConnection: this.params.authConnection,
     };
   }
 }

@@ -53,9 +53,9 @@ export default class DiscordHandler extends AbstractLoginHandler {
       profileImage,
       name: `${name}#${discriminator}`,
       email,
-      verifierId: id,
-      verifier: this.params.verifier,
-      typeOfLogin: this.params.typeOfLogin,
+      userId: id,
+      authConnectionId: this.params.authConnectionId,
+      authConnection: this.params.authConnection,
     };
   }
 }

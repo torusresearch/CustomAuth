@@ -1,7 +1,7 @@
 import base64url from "base64url";
 import Bowser from "bowser";
 
-import { LOGIN, LOGIN_TYPE, REDIRECT_PARAMS_STORAGE_METHOD_TYPE } from "./enums";
+import { AUTH_CONNECTION, AUTH_CONNECTION_TYPE, REDIRECT_PARAMS_STORAGE_METHOD_TYPE } from "./enums";
 import { Auth0UserInfo, TorusGenericObject } from "./interfaces";
 import log from "./loglevel";
 interface CustomMessageEvent extends MessageEvent {
@@ -28,14 +28,14 @@ export function eventToPromise<T>(emitter: EmitterType): Promise<T> {
 
 // These are the default connection names used by auth0
 export const loginToConnectionMap: Record<string, string> = {
-  [LOGIN.APPLE]: "apple",
-  [LOGIN.GITHUB]: "github",
-  [LOGIN.LINKEDIN]: "linkedin",
-  [LOGIN.TWITTER]: "twitter",
-  [LOGIN.WEIBO]: "weibo",
-  [LOGIN.LINE]: "line",
-  [LOGIN.EMAIL_PASSWORDLESS]: "email",
-  [LOGIN.SMS_PASSWORDLESS]: "sms",
+  [AUTH_CONNECTION.APPLE]: "apple",
+  [AUTH_CONNECTION.GITHUB]: "github",
+  [AUTH_CONNECTION.LINKEDIN]: "linkedin",
+  [AUTH_CONNECTION.TWITTER]: "twitter",
+  [AUTH_CONNECTION.WEIBO]: "weibo",
+  [AUTH_CONNECTION.LINE]: "line",
+  [AUTH_CONNECTION.EMAIL_PASSWORDLESS]: "email",
+  [AUTH_CONNECTION.SMS_PASSWORDLESS]: "sms",
 };
 
 export const padUrlString = (url: URL): string => (url.href.endsWith("/") ? url.href : `${url.href}/`);
@@ -57,23 +57,23 @@ function caseSensitiveField(field: string, isCaseSensitive?: boolean): string {
 
 export const getVerifierId = (
   userInfo: Auth0UserInfo,
-  typeOfLogin: LOGIN_TYPE,
+  authConnection: AUTH_CONNECTION_TYPE,
   verifierIdField?: string,
   isVerifierIdCaseSensitive = true
 ): string => {
   const { name, sub } = userInfo;
   if (verifierIdField) return caseSensitiveField(userInfo[verifierIdField as keyof Auth0UserInfo], isVerifierIdCaseSensitive);
-  switch (typeOfLogin) {
-    case LOGIN.EMAIL_PASSWORDLESS:
-    case LOGIN.SMS_PASSWORDLESS:
+  switch (authConnection) {
+    case AUTH_CONNECTION.EMAIL_PASSWORDLESS:
+    case AUTH_CONNECTION.SMS_PASSWORDLESS:
       return caseSensitiveField(name, isVerifierIdCaseSensitive);
-    case LOGIN.WEIBO:
-    case LOGIN.GITHUB:
-    case LOGIN.TWITTER:
-    case LOGIN.APPLE:
-    case LOGIN.LINKEDIN:
-    case LOGIN.LINE:
-    case LOGIN.JWT:
+    case AUTH_CONNECTION.WEIBO:
+    case AUTH_CONNECTION.GITHUB:
+    case AUTH_CONNECTION.TWITTER:
+    case AUTH_CONNECTION.APPLE:
+    case AUTH_CONNECTION.LINKEDIN:
+    case AUTH_CONNECTION.LINE:
+    case AUTH_CONNECTION.CUSTOM:
       return caseSensitiveField(sub, isVerifierIdCaseSensitive);
     default:
       throw new Error("Invalid login type to get verifier id");
@@ -219,8 +219,8 @@ export function isMobileOrTablet(): boolean {
   return platform.type === Bowser.PLATFORMS_MAP.tablet || platform.type === Bowser.PLATFORMS_MAP.mobile;
 }
 
-export function getTimeout(typeOfLogin: LOGIN_TYPE) {
-  if ((typeOfLogin === LOGIN.FACEBOOK || typeOfLogin === LOGIN.LINE) && isMobileOrTablet()) {
+export function getTimeout(authConnection: AUTH_CONNECTION_TYPE) {
+  if ((authConnection === AUTH_CONNECTION.FACEBOOK || authConnection === AUTH_CONNECTION.LINE) && isMobileOrTablet()) {
     return 1000 * 60; // 60 seconds to finish the login
   }
   return 1000 * 10; // 10 seconds

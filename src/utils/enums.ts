@@ -1,4 +1,4 @@
-export const LOGIN = {
+export const AUTH_CONNECTION = {
   // start - byoa
   GOOGLE: "google",
   TELEGRAM: "telegram",
@@ -15,14 +15,8 @@ export const LOGIN = {
   EMAIL_PASSWORDLESS: "email_passwordless",
   SMS_PASSWORDLESS: "sms_passwordless",
   // end - byoa
-  JWT: "jwt",
+  CUSTOM: "custom",
   PASSKEYS: "passkeys",
-} as const;
-
-export const AGGREGATE_VERIFIER = {
-  SINGLE_VERIFIER_ID: "single_id_verifier",
-  // AND_AGGREGATE_VERIFIER : "and_aggregate_verifier",
-  // OR_AGGREGATE_VERIFIER : "or_aggregate_verifier",
 } as const;
 
 export const UX_MODE = {
@@ -36,15 +30,8 @@ export const REDIRECT_PARAMS_STORAGE_METHOD = {
   SERVER: "server",
 };
 
-export const TORUS_METHOD = {
-  TRIGGER_LOGIN: "triggerLogin",
-  TRIGGER_AGGREGATE_LOGIN: "triggerAggregateLogin",
-} as const;
-
-export type LOGIN_TYPE = (typeof LOGIN)[keyof typeof LOGIN];
-export type AGGREGATE_VERIFIER_TYPE = (typeof AGGREGATE_VERIFIER)[keyof typeof AGGREGATE_VERIFIER];
+export type AUTH_CONNECTION_TYPE = (typeof AUTH_CONNECTION)[keyof typeof AUTH_CONNECTION];
 export type UX_MODE_TYPE = (typeof UX_MODE)[keyof typeof UX_MODE];
-export type TORUS_METHOD_TYPE = (typeof TORUS_METHOD)[keyof typeof TORUS_METHOD];
 export type REDIRECT_PARAMS_STORAGE_METHOD_TYPE = (typeof REDIRECT_PARAMS_STORAGE_METHOD)[keyof typeof REDIRECT_PARAMS_STORAGE_METHOD];
 
 export const SENTRY_TXNS = {

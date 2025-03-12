@@ -25,8 +25,8 @@ abstract class AbstractLoginHandler implements ILoginHandler {
         JSON.stringify({
           ...(this.params.customState || {}),
           instanceId: this.nonce,
-          verifier: this.params.verifier,
-          typeOfLogin: this.params.typeOfLogin,
+          authConnectionId: this.params.authConnectionId,
+          authConnection: this.params.authConnection,
           redirectToOpener: this.params.redirectToOpener || false,
         })
       )
@@ -34,7 +34,7 @@ abstract class AbstractLoginHandler implements ILoginHandler {
   }
 
   async handleLoginWindow(params: { locationReplaceOnRedirect?: boolean; popupFeatures?: string }): Promise<LoginWindowResponse> {
-    const verifierWindow = new PopupHandler({ url: this.finalURL, features: params.popupFeatures, timeout: getTimeout(this.params.typeOfLogin) });
+    const verifierWindow = new PopupHandler({ url: this.finalURL, features: params.popupFeatures, timeout: getTimeout(this.params.authConnection) });
     if (this.params.uxMode === UX_MODE.REDIRECT) {
       verifierWindow.redirect(params.locationReplaceOnRedirect);
     } else {
@@ -54,7 +54,7 @@ abstract class AbstractLoginHandler implements ILoginHandler {
               reject(new Error(`Error: ${error}. Info: ${JSON.stringify(ev.data || {})}`));
               return;
             }
-            if (ev.data && instanceParams.verifier === this.params.verifier) {
+            if (ev.data && instanceParams.verifier === this.params.authConnectionId) {
               log.info(ev.data);
               if (!this.params.redirectToOpener && bc) await bc.postMessage({ success: true });
               resolve({

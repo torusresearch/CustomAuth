@@ -31,7 +31,7 @@ export default class MockLoginHandler extends AbstractLoginHandler {
 
   async getUserInfo(params: LoginWindowResponse): Promise<TorusVerifierResponse> {
     const { idToken, accessToken } = params;
-    const { domain, verifierIdField, isVerifierIdCaseSensitive, user_info_route = "userinfo" } = this.params.jwtParams;
+    const { domain, userIdField, isUserIdCaseSensitive, user_info_route = "userinfo" } = this.params.jwtParams;
     if (accessToken) {
       try {
         const domainUrl = new URL(domain);
@@ -45,9 +45,9 @@ export default class MockLoginHandler extends AbstractLoginHandler {
           email,
           name,
           profileImage: picture,
-          verifierId: getVerifierId(userInfo, this.params.typeOfLogin, verifierIdField, isVerifierIdCaseSensitive),
-          verifier: this.params.verifier,
-          typeOfLogin: this.params.typeOfLogin,
+          userId: getVerifierId(userInfo, this.params.authConnection, userIdField, isUserIdCaseSensitive),
+          authConnectionId: this.params.authConnectionId,
+          authConnection: this.params.authConnection,
         };
       } catch (error) {
         // ignore
@@ -61,9 +61,9 @@ export default class MockLoginHandler extends AbstractLoginHandler {
         profileImage: picture,
         name,
         email,
-        verifierId: getVerifierId(decodedToken, this.params.typeOfLogin, verifierIdField, isVerifierIdCaseSensitive),
-        verifier: this.params.verifier,
-        typeOfLogin: this.params.typeOfLogin,
+        userId: getVerifierId(decodedToken, this.params.authConnection, userIdField, isUserIdCaseSensitive),
+        authConnectionId: this.params.authConnectionId,
+        authConnection: this.params.authConnection,
       };
     }
     throw new Error("Access/id token not available");

@@ -49,9 +49,9 @@ export default class FacebookHandler extends AbstractLoginHandler {
       email,
       name,
       profileImage: picture.data.url || "",
-      verifier: this.params.verifier,
-      verifierId: id,
-      typeOfLogin: this.params.typeOfLogin,
+      authConnectionId: this.params.authConnectionId,
+      authConnection: this.params.authConnection,
+      userId: id,
     };
   }
 }

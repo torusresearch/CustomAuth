@@ -302,9 +302,9 @@ const loginToConnectionMap = computed((): Record<string, Record<string, string |
     },
   };
 });
-const loadResponse = (privKeyInfo: TorusKey["finalKeyData"], localUserInfo: TorusVerifierResponse & LoginWindowResponse) => {
+const loadResponse = (privKeyInfo: TorusKey["finalKeyData"], localUserInfo:( TorusVerifierResponse & LoginWindowResponse) | undefined) => {
   privKey.value = privKeyInfo?.privKey;
-  userInfo.value = localUserInfo;
+  if (localUserInfo) userInfo.value = localUserInfo;
   if (privKey.value) localStorage.setItem("privKey", privKey.value as string);
   if (userInfo.value) localStorage.setItem("userInfo", JSON.stringify(userInfo.value));
 };
@@ -370,37 +370,27 @@ const onLogin = async () => {
 
   const jwtParams = loginToConnectionMap.value[selectedLoginProvider] || {};
   const { typeOfLogin, clientId, verifier } = verifierMap.value[selectedLoginProvider];
-  let privKeyInfo: TorusKey["finalKeyData"];
-  let localUserInfo: TorusVerifierResponse & LoginWindowResponse;
 
+  let data: TorusLoginResponse | undefined;
   if (formData.value.network === TORUS_LEGACY_NETWORK.TESTNET) {
-    const data = await customAuthSdk.value.triggerLogin({
-      typeOfLogin,
-      verifier,
+    data = await customAuthSdk.value.triggerLogin({
+      authConnection: typeOfLogin,
+      authConnectionId: verifier,
       clientId,
       jwtParams,
     });
-    privKeyInfo = data?.finalKeyData;
-    localUserInfo = data?.userInfo;
   } else {
-    const data = await customAuthSdk.value.triggerAggregateLogin({
-      aggregateVerifierType: "single_id_verifier",
-      subVerifierDetailsArray: [
-        {
-          clientId,
-          typeOfLogin,
-          verifier: "web3auth",
-          jwtParams,
-        },
-      ],
-      verifierIdentifier: verifier,
+    data = await customAuthSdk.value.triggerLogin({
+      authConnection: typeOfLogin,
+      authConnectionId: "web3auth",
+      groupedAuthConnectionId: verifier,
+      clientId,
+      jwtParams,
     });
-    privKeyInfo = data?.finalKeyData;
-    localUserInfo = data?.userInfo[0];
   }
 
-  if (privKeyInfo) {
-    loadResponse(privKeyInfo, localUserInfo);
+  if (data) {
+    loadResponse(data.finalKeyData, data.userInfo);
   }
 };
 

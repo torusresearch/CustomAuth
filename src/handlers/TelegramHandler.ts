@@ -68,14 +68,14 @@ export default class TelegramHandler extends AbstractLoginHandler {
       email: "", // Telegram does not provide email
       name: `${first_name} ${last_name}`,
       profileImage,
-      verifier: this.params.verifier,
-      verifierId: id.toString(),
-      typeOfLogin: this.params.typeOfLogin,
+      authConnectionId: this.params.authConnectionId,
+      userId: id.toString(),
+      authConnection: this.params.authConnection,
     };
   }
 
   async handleLoginWindow(params: { locationReplaceOnRedirect?: boolean; popupFeatures?: string }): Promise<LoginWindowResponse> {
-    const verifierWindow = new PopupHandler({ url: this.finalURL, features: params.popupFeatures, timeout: getTimeout(this.params.typeOfLogin) });
+    const verifierWindow = new PopupHandler({ url: this.finalURL, features: params.popupFeatures, timeout: getTimeout(this.params.authConnection) });
     if (this.params.uxMode === UX_MODE.REDIRECT) {
       verifierWindow.redirect(params.locationReplaceOnRedirect);
     } else {

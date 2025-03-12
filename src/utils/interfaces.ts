@@ -2,7 +2,7 @@ import { INodeDetails, TORUS_NETWORK_TYPE } from "@toruslabs/constants";
 import { Sentry } from "@toruslabs/http-helpers";
 import { KeyType, TorusKey } from "@toruslabs/torus.js";
 
-import { AGGREGATE_VERIFIER_TYPE, LOGIN_TYPE, TORUS_METHOD_TYPE, UX_MODE_TYPE } from "./enums";
+import { AUTH_CONNECTION_TYPE, UX_MODE_TYPE } from "./enums";
 
 export type TorusGenericObject = {
   [key: string]: string;
@@ -37,23 +37,6 @@ export type PasskeyExtraParams = {
   transports?: AuthenticatorTransport[];
   username?: string;
 };
-export interface TorusVerifierResponse {
-  email: string;
-  name: string;
-  profileImage: string;
-  aggregateVerifier?: string;
-  verifier: string;
-  verifierId: string;
-  typeOfLogin: LOGIN_TYPE;
-  ref?: string;
-  extraVerifierParams?: PasskeyExtraParams;
-}
-
-export interface TorusSubVerifierInfo {
-  verifier: string;
-  idToken: string;
-  extraVerifierParams?: PasskeyExtraParams;
-}
 
 export interface LoginWindowResponse {
   accessToken: string;
@@ -64,16 +47,23 @@ export interface LoginWindowResponse {
   state: TorusGenericObject;
 }
 
-export interface TorusAggregateVerifierResponse {
-  userInfo: (TorusVerifierResponse & LoginWindowResponse)[];
+export interface TorusVerifierResponse {
+  email: string;
+  name: string;
+  profileImage: string;
+  groupedAuthConnectionId?: string;
+  authConnectionId: string;
+  userId: string;
+  authConnection: AUTH_CONNECTION_TYPE;
+  ref?: string;
+  extraConnectionParams?: PasskeyExtraParams;
 }
 
-export interface TorusSingleVerifierResponse {
-  userInfo: TorusVerifierResponse & LoginWindowResponse;
-}
+export type TorusUserInfo = {
+  userInfo?: TorusVerifierResponse & LoginWindowResponse;
+};
 
-export type TorusLoginResponse = TorusSingleVerifierResponse & TorusKey;
-export type TorusAggregateLoginResponse = TorusAggregateVerifierResponse & TorusKey;
+export type TorusLoginResponse = TorusUserInfo & TorusKey;
 
 export interface CustomAuthArgs {
   /**
@@ -355,15 +345,15 @@ export interface Auth0ClientOptions extends BaseLoginOptions {
    */
   client_id?: string;
   /**
-   * The field in jwt token which maps to verifier id
+   * The field in jwt token which maps to user id
    */
-  verifierIdField?: string;
+  userIdField?: string;
 
   /**
-   * Whether the verifier id field is case sensitive
+   * Whether the user id field is case sensitive
    * @defaultValue true
    */
-  isVerifierIdCaseSensitive?: boolean;
+  isUserIdCaseSensitive?: boolean;
 
   id_token?: string;
 
@@ -380,10 +370,11 @@ export interface Auth0ClientOptions extends BaseLoginOptions {
   flow_type?: EMAIL_FLOW_TYPE;
 }
 
-export interface SubVerifierDetails {
-  typeOfLogin: LOGIN_TYPE;
-  verifier: string;
+export interface CustomAuthLoginParams {
+  authConnection: AUTH_CONNECTION_TYPE;
+  authConnectionId: string;
   clientId: string;
+  groupedAuthConnectionId?: string;
   jwtParams?: Auth0ClientOptions;
   hash?: string;
   queryParameters?: TorusGenericObject;
@@ -391,27 +382,20 @@ export interface SubVerifierDetails {
 }
 
 export interface CreateHandlerParams {
-  typeOfLogin: LOGIN_TYPE;
+  authConnection: AUTH_CONNECTION_TYPE;
   clientId: string;
-  verifier: string;
+  authConnectionId: string;
   redirect_uri: string;
+  web3AuthClientId: string;
+  web3AuthNetwork: TORUS_NETWORK_TYPE;
+  groupedAuthConnectionId?: string;
   uxMode?: UX_MODE_TYPE;
   redirectToOpener?: boolean;
   jwtParams?: Auth0ClientOptions;
   customState?: TorusGenericObject;
-  web3AuthClientId: string;
-  web3AuthNetwork: TORUS_NETWORK_TYPE;
 }
 
-export type SingleLoginParams = SubVerifierDetails;
-
-export interface AggregateLoginParams {
-  aggregateVerifierType: AGGREGATE_VERIFIER_TYPE;
-  verifierIdentifier: string;
-  subVerifierDetailsArray: SubVerifierDetails[];
-}
-
-export type LoginDetails = { method: TORUS_METHOD_TYPE; args: SingleLoginParams | AggregateLoginParams };
+export type LoginDetails = { args: CustomAuthLoginParams };
 
 export interface RedirectResultParams {
   replaceUrl?: boolean;
@@ -420,22 +404,21 @@ export interface RedirectResultParams {
 }
 
 export interface RedirectResult {
-  method: TORUS_METHOD_TYPE;
-  result?: TorusLoginResponse | TorusAggregateLoginResponse | unknown;
+  result?: TorusLoginResponse | unknown;
   error?: string;
   state: Record<string, unknown>;
   hashParameters?: Record<string, string>;
-  args: SingleLoginParams | AggregateLoginParams;
+  args: CustomAuthLoginParams;
 }
 
-export type AUTH0_JWT_LOGIN_TYPE = "apple" | "github" | "linkedin" | "twitter" | "weibo" | "line";
+export type AUTH0_CONNECTION_TYPE = "apple" | "github" | "linkedin" | "twitter" | "weibo" | "line";
 
-export type AggregateVerifierParams = {
-  verify_params: {
+export type VerifierParams = {
+  verify_params?: {
     verifier_id: string;
     idtoken: string;
   }[];
-  sub_verifier_ids: string[];
+  sub_verifier_ids?: string[];
   verifier_id: string;
 };
 

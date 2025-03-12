@@ -61,10 +61,10 @@ export default class PasskeysHandler extends AbstractLoginHandler {
       email: "",
       name: "Passkeys Login",
       profileImage: "",
-      verifier: this.params.verifier,
-      verifierId,
-      typeOfLogin: this.params.typeOfLogin,
-      extraVerifierParams: {
+      authConnectionId: this.params.authConnectionId,
+      userId: verifierId,
+      authConnection: this.params.authConnection,
+      extraConnectionParams: {
         signature,
         clientDataJSON,
         authenticatorData,

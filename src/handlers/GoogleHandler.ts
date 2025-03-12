@@ -50,9 +50,9 @@ export default class GoogleHandler extends AbstractLoginHandler {
       email,
       name,
       profileImage,
-      verifier: this.params.verifier,
-      verifierId: email.toLowerCase(),
-      typeOfLogin: this.params.typeOfLogin,
+      authConnectionId: this.params.authConnectionId,
+      authConnection: this.params.authConnection,
+      userId: email.toLowerCase(),
     };
   }
 }

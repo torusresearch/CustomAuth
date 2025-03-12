@@ -51,9 +51,9 @@ export default class TwitchHandler extends AbstractLoginHandler {
       profileImage,
       name,
       email,
-      verifierId,
-      verifier: this.params.verifier,
-      typeOfLogin: this.params.typeOfLogin,
+      userId: verifierId,
+      authConnectionId: this.params.authConnectionId,
+      authConnection: this.params.authConnection,
     };
   }
 }
