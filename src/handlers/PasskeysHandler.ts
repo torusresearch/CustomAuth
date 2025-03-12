@@ -1,7 +1,7 @@
 import base64url from "base64url";
 import deepmerge from "deepmerge";
 
-import { CreateHandlerParams, LoginWindowResponse, PasskeySessionData, TorusVerifierResponse } from "../utils/interfaces";
+import { CreateHandlerParams, LoginWindowResponse, PasskeySessionData, TorusConnectionResponse } from "../utils/interfaces";
 import { fetchDataFromBroadcastServer } from "../utils/sessionHelper";
 import AbstractLoginHandler from "./AbstractLoginHandler";
 
@@ -31,7 +31,7 @@ export default class PasskeysHandler extends AbstractLoginHandler {
     this.finalURL = finalUrl;
   }
 
-  async getUserInfo(parameters: LoginWindowResponse, storageServerUrl?: string): Promise<TorusVerifierResponse> {
+  async getUserInfo(parameters: LoginWindowResponse, storageServerUrl?: string): Promise<TorusConnectionResponse> {
     const { idToken, extraParams } = parameters;
 
     const { sessionId } = JSON.parse(base64url.decode(extraParams)) || {};

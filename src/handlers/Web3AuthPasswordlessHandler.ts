@@ -1,7 +1,7 @@
 import deepmerge from "deepmerge";
 
 import { decodeToken, loginToConnectionMap, validateAndConstructUrl } from "../utils/helpers";
-import { Auth0UserInfo, CreateHandlerParams, EMAIL_FLOW, LoginWindowResponse, TorusVerifierResponse } from "../utils/interfaces";
+import { Auth0UserInfo, CreateHandlerParams, EMAIL_FLOW, LoginWindowResponse, TorusConnectionResponse } from "../utils/interfaces";
 import AbstractLoginHandler from "./AbstractLoginHandler";
 
 export default class Web3AuthPasswordlessHandler extends AbstractLoginHandler {
@@ -45,7 +45,7 @@ export default class Web3AuthPasswordlessHandler extends AbstractLoginHandler {
     this.finalURL = finalUrl;
   }
 
-  async getUserInfo(params: LoginWindowResponse): Promise<TorusVerifierResponse> {
+  async getUserInfo(params: LoginWindowResponse): Promise<TorusConnectionResponse> {
     const { idToken } = params;
 
     const decodedToken = decodeToken<Auth0UserInfo>(idToken).payload;

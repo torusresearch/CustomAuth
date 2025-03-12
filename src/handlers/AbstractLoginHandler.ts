@@ -2,7 +2,7 @@ import base64url from "base64url";
 
 import { UX_MODE } from "../utils/enums";
 import { broadcastChannelOptions, getTimeout, randomId } from "../utils/helpers";
-import { CreateHandlerParams, ILoginHandler, LoginWindowResponse, PopupResponse, TorusVerifierResponse } from "../utils/interfaces";
+import { CreateHandlerParams, ILoginHandler, LoginWindowResponse, PopupResponse, TorusConnectionResponse } from "../utils/interfaces";
 import log from "../utils/loglevel";
 import { PopupHandler } from "../utils/PopupHandler";
 
@@ -34,9 +34,13 @@ abstract class AbstractLoginHandler implements ILoginHandler {
   }
 
   async handleLoginWindow(params: { locationReplaceOnRedirect?: boolean; popupFeatures?: string }): Promise<LoginWindowResponse> {
-    const verifierWindow = new PopupHandler({ url: this.finalURL, features: params.popupFeatures, timeout: getTimeout(this.params.authConnection) });
+    const authConnectionWindow = new PopupHandler({
+      url: this.finalURL,
+      features: params.popupFeatures,
+      timeout: getTimeout(this.params.authConnection),
+    });
     if (this.params.uxMode === UX_MODE.REDIRECT) {
-      verifierWindow.redirect(params.locationReplaceOnRedirect);
+      authConnectionWindow.redirect(params.locationReplaceOnRedirect);
     } else {
       const { BroadcastChannel } = await import("@toruslabs/broadcast-channel");
       return new Promise<LoginWindowResponse>((resolve, reject) => {
@@ -54,7 +58,7 @@ abstract class AbstractLoginHandler implements ILoginHandler {
               reject(new Error(`Error: ${error}. Info: ${JSON.stringify(ev.data || {})}`));
               return;
             }
-            if (ev.data && instanceParams.verifier === this.params.authConnectionId) {
+            if (ev.data && instanceParams.authConnectionId === this.params.authConnectionId) {
               log.info(ev.data);
               if (!this.params.redirectToOpener && bc) await bc.postMessage({ success: true });
               resolve({
@@ -79,7 +83,7 @@ abstract class AbstractLoginHandler implements ILoginHandler {
           bc.addEventListener("message", async (ev: { error: string; data: PopupResponse }) => {
             await handleData(ev);
             bc.close();
-            verifierWindow.close();
+            authConnectionWindow.close();
           });
         } else {
           const postMessageEventHandler = async (postMessageEvent: MessageEvent) => {
@@ -88,18 +92,18 @@ abstract class AbstractLoginHandler implements ILoginHandler {
             if (ev.channel !== `redirect_channel_${this.nonce}`) return;
             window.removeEventListener("message", postMessageEventHandler);
             handleData(ev);
-            verifierWindow.close();
+            authConnectionWindow.close();
           };
           window.addEventListener("message", postMessageEventHandler);
         }
         try {
-          verifierWindow.open();
+          authConnectionWindow.open();
         } catch (error) {
           log.error(error);
           reject(error);
           return;
         }
-        verifierWindow.once("close", () => {
+        authConnectionWindow.once("close", () => {
           if (bc) bc.close();
           reject(new Error("user closed popup"));
         });
@@ -108,7 +112,7 @@ abstract class AbstractLoginHandler implements ILoginHandler {
     return null;
   }
 
-  abstract getUserInfo(params: LoginWindowResponse): Promise<TorusVerifierResponse>;
+  abstract getUserInfo(params: LoginWindowResponse): Promise<TorusConnectionResponse>;
 
   abstract setFinalUrl(): void;
 }

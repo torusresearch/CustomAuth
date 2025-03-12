@@ -141,7 +141,6 @@ class CustomAuth {
 
   async triggerLogin(args: CustomAuthLoginParams): Promise<TorusLoginResponse> {
     const { authConnectionId, authConnection, clientId, jwtParams, hash, queryParameters, customState, groupedAuthConnectionId } = args;
-    log.info("Verifier: ", authConnectionId, "Grouped Verifier: ", groupedAuthConnectionId, "Auth Connection: ", authConnection);
     if (!this.isInitialized) {
       throw new Error("Not initialized yet");
     }
@@ -251,27 +250,6 @@ class CustomAuth {
     log.debug("torus-direct/getTorusKey", { retrieveShares: sharesResponse });
     return sharesResponse;
   }
-
-  // async getAggregateTorusKey(
-  //   verifier: string,
-  //   verifierId: string, // unique identifier for user e.g. sub on jwt
-  //   subVerifierInfoArray: TorusSubVerifierInfo[]
-  // ): Promise<TorusKey> {
-  //   const aggregateVerifierParams: AggregateVerifierParams = { verify_params: [], sub_verifier_ids: [], verifier_id: "" };
-  //   const aggregateIdTokenSeeds = [];
-  //   let extraVerifierParams = {};
-  //   for (let index = 0; index < subVerifierInfoArray.length; index += 1) {
-  //     const userInfo = subVerifierInfoArray[index];
-  //     aggregateVerifierParams.verify_params.push({ verifier_id: verifierId, idtoken: userInfo.idToken });
-  //     aggregateVerifierParams.sub_verifier_ids.push(userInfo.verifier);
-  //     aggregateIdTokenSeeds.push(userInfo.idToken);
-  //     extraVerifierParams = userInfo.extraVerifierParams;
-  //   }
-  //   aggregateIdTokenSeeds.sort();
-  //   const aggregateIdToken = keccak256(Buffer.from(aggregateIdTokenSeeds.join(String.fromCharCode(29)), "utf8")).slice(2);
-  //   aggregateVerifierParams.verifier_id = verifierId;
-  //   return this.getTorusKey(verifier, verifierId, aggregateVerifierParams, aggregateIdToken, extraVerifierParams);
-  // }
 
   async getRedirectResult({
     replaceUrl = true,

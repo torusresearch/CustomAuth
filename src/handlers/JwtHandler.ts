@@ -2,8 +2,8 @@ import { get } from "@toruslabs/http-helpers";
 import deepmerge from "deepmerge";
 import log from "loglevel";
 
-import { decodeToken, getVerifierId, loginToConnectionMap, padUrlString, validateAndConstructUrl } from "../utils/helpers";
-import { AUTH0_CONNECTION_TYPE, Auth0UserInfo, CreateHandlerParams, LoginWindowResponse, TorusVerifierResponse } from "../utils/interfaces";
+import { decodeToken, getUserId, loginToConnectionMap, padUrlString, validateAndConstructUrl } from "../utils/helpers";
+import { AUTH0_CONNECTION_TYPE, Auth0UserInfo, CreateHandlerParams, LoginWindowResponse, TorusConnectionResponse } from "../utils/interfaces";
 import AbstractLoginHandler from "./AbstractLoginHandler";
 
 export default class JwtHandler extends AbstractLoginHandler {
@@ -44,7 +44,7 @@ export default class JwtHandler extends AbstractLoginHandler {
     this.finalURL = finalUrl;
   }
 
-  async getUserInfo(params: LoginWindowResponse): Promise<TorusVerifierResponse> {
+  async getUserInfo(params: LoginWindowResponse): Promise<TorusConnectionResponse> {
     const { idToken, accessToken } = params;
     const { domain, userIdField, isUserIdCaseSensitive, user_info_route = "userinfo" } = this.params.jwtParams;
     if (accessToken) {
@@ -60,7 +60,7 @@ export default class JwtHandler extends AbstractLoginHandler {
           email,
           name,
           profileImage: picture,
-          userId: getVerifierId(userInfo, this.params.authConnection, userIdField, isUserIdCaseSensitive),
+          userId: getUserId(userInfo, this.params.authConnection, userIdField, isUserIdCaseSensitive),
           authConnectionId: this.params.authConnectionId,
           authConnection: this.params.authConnection,
         };
@@ -76,7 +76,7 @@ export default class JwtHandler extends AbstractLoginHandler {
         profileImage: picture,
         name,
         email,
-        userId: getVerifierId(decodedToken, this.params.authConnection, userIdField, isUserIdCaseSensitive),
+        userId: getUserId(decodedToken, this.params.authConnection, userIdField, isUserIdCaseSensitive),
         authConnectionId: this.params.authConnectionId,
         authConnection: this.params.authConnection,
       };

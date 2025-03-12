@@ -55,18 +55,18 @@ function caseSensitiveField(field: string, isCaseSensitive?: boolean): string {
   return isCaseSensitive ? field : field.toLowerCase();
 }
 
-export const getVerifierId = (
+export const getUserId = (
   userInfo: Auth0UserInfo,
   authConnection: AUTH_CONNECTION_TYPE,
-  verifierIdField?: string,
-  isVerifierIdCaseSensitive = true
+  userIdField?: string,
+  isUserIdCaseSensitive = true
 ): string => {
   const { name, sub } = userInfo;
-  if (verifierIdField) return caseSensitiveField(userInfo[verifierIdField as keyof Auth0UserInfo], isVerifierIdCaseSensitive);
+  if (userIdField) return caseSensitiveField(userInfo[userIdField as keyof Auth0UserInfo], isUserIdCaseSensitive);
   switch (authConnection) {
     case AUTH_CONNECTION.EMAIL_PASSWORDLESS:
     case AUTH_CONNECTION.SMS_PASSWORDLESS:
-      return caseSensitiveField(name, isVerifierIdCaseSensitive);
+      return caseSensitiveField(name, isUserIdCaseSensitive);
     case AUTH_CONNECTION.WEIBO:
     case AUTH_CONNECTION.GITHUB:
     case AUTH_CONNECTION.TWITTER:
@@ -74,9 +74,9 @@ export const getVerifierId = (
     case AUTH_CONNECTION.LINKEDIN:
     case AUTH_CONNECTION.LINE:
     case AUTH_CONNECTION.CUSTOM:
-      return caseSensitiveField(sub, isVerifierIdCaseSensitive);
+      return caseSensitiveField(sub, isUserIdCaseSensitive);
     default:
-      throw new Error("Invalid login type to get verifier id");
+      throw new Error("Invalid login type to get auth connection id");
   }
 };
 

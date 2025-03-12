@@ -3,7 +3,7 @@ import deepmerge from "deepmerge";
 
 import { UX_MODE } from "../utils/enums";
 import { getTimeout, objectToAuthDataMap, validateAndConstructUrl } from "../utils/helpers";
-import { CreateHandlerParams, LoginWindowResponse, TorusVerifierResponse } from "../utils/interfaces";
+import { CreateHandlerParams, LoginWindowResponse, TorusConnectionResponse } from "../utils/interfaces";
 import log from "../utils/loglevel";
 import { PopupHandler } from "../utils/PopupHandler";
 import AbstractLoginHandler from "./AbstractLoginHandler";
@@ -60,7 +60,7 @@ export default class TelegramHandler extends AbstractLoginHandler {
     this.finalURL = finalUrl;
   }
 
-  async getUserInfo(params: LoginWindowResponse): Promise<TorusVerifierResponse> {
+  async getUserInfo(params: LoginWindowResponse): Promise<TorusConnectionResponse> {
     const { idToken } = params;
     const userInfo = objectToAuthDataMap(idToken);
     const { photo_url: profileImage = "", first_name = "", last_name = "", id } = userInfo;
@@ -75,9 +75,13 @@ export default class TelegramHandler extends AbstractLoginHandler {
   }
 
   async handleLoginWindow(params: { locationReplaceOnRedirect?: boolean; popupFeatures?: string }): Promise<LoginWindowResponse> {
-    const verifierWindow = new PopupHandler({ url: this.finalURL, features: params.popupFeatures, timeout: getTimeout(this.params.authConnection) });
+    const authConnectionWindow = new PopupHandler({
+      url: this.finalURL,
+      features: params.popupFeatures,
+      timeout: getTimeout(this.params.authConnection),
+    });
     if (this.params.uxMode === UX_MODE.REDIRECT) {
-      verifierWindow.redirect(params.locationReplaceOnRedirect);
+      authConnectionWindow.redirect(params.locationReplaceOnRedirect);
     } else {
       return new Promise<LoginWindowResponse>((resolve, reject) => {
         const handleData = async (ev: string) => {
@@ -121,17 +125,17 @@ export default class TelegramHandler extends AbstractLoginHandler {
           }
           window.removeEventListener("message", postMessageEventHandler);
           handleData(ev);
-          verifierWindow.close();
+          authConnectionWindow.close();
         };
         window.addEventListener("message", postMessageEventHandler);
         try {
-          verifierWindow.open();
+          authConnectionWindow.open();
         } catch (error) {
           log.error(error);
           reject(error);
           return;
         }
-        verifierWindow.once("close", () => {
+        authConnectionWindow.once("close", () => {
           reject(new Error("user closed popup"));
         });
       });

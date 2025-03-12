@@ -47,7 +47,7 @@ export interface LoginWindowResponse {
   state: TorusGenericObject;
 }
 
-export interface TorusVerifierResponse {
+export interface TorusConnectionResponse {
   email: string;
   name: string;
   profileImage: string;
@@ -60,7 +60,7 @@ export interface TorusVerifierResponse {
 }
 
 export type TorusUserInfo = {
-  userInfo?: TorusVerifierResponse & LoginWindowResponse;
+  userInfo?: TorusConnectionResponse & LoginWindowResponse;
 };
 
 export type TorusLoginResponse = TorusUserInfo & TorusKey;
@@ -72,7 +72,7 @@ export interface CustomAuthArgs {
    *
    * @remarks
    * Redirect Uri for OAuth is `baseUrl`+`redirectPathName` which means
-   * that you must specify `baseUrl`+`redirectPathName` as redirect_uri at verifier's
+   * that you must specify `baseUrl`+`redirectPathName` as redirect_uri at connection's
    * interface.
    *
    * Torus Direct SDK installs a service worker relative to baseUrl to capture
@@ -146,7 +146,7 @@ export interface CustomAuthArgs {
    * @defaultValue redirect
    *
    * @remarks
-   * At verifier's interface (where you obtain client id), please use baseUrl/redirectPathName
+   * At connection's interface (where you obtain client id), please use baseUrl/redirectPathName
    * as the redirect_uri
    *
    * Torus Direct SDK installs a service worker relative to baseUrl to capture
@@ -440,6 +440,6 @@ export interface ILoginHandler {
   params: CreateHandlerParams;
   nonce: string;
   finalURL: URL;
-  getUserInfo(params: LoginWindowResponse, storageServerUrl?: string): Promise<TorusVerifierResponse>;
+  getUserInfo(params: LoginWindowResponse, storageServerUrl?: string): Promise<TorusConnectionResponse>;
   handleLoginWindow(params: { locationReplaceOnRedirect?: boolean; popupFeatures?: string }): Promise<LoginWindowResponse>;
 }
