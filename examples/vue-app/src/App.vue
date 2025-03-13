@@ -183,7 +183,7 @@
 
 <script setup lang="ts">
 import { KEY_TYPE, TORUS_LEGACY_NETWORK, TORUS_SAPPHIRE_NETWORK } from "@toruslabs/constants";
-import { CustomAuth, LoginWindowResponse, TorusLoginResponse, TorusVerifierResponse, UX_MODE } from "@toruslabs/customauth";
+import { CustomAuth, LoginWindowResponse, TorusLoginResponse, TorusConnectionResponse, UX_MODE } from "@toruslabs/customauth";
 import { fetchLocalConfig } from "@toruslabs/fnd-base";
 import { getStarkHDAccount, pedersen, sign, STARKNET_NETWORKS, verify } from "@toruslabs/openlogin-starkkey";
 import { TorusKey } from "@toruslabs/torus.js";
@@ -236,7 +236,7 @@ const formData = ref<FormData>({
 
 const customAuthSdk = ref<CustomAuth | null>(null);
 const privKey = ref<string | undefined>("");
-const userInfo = ref<(TorusVerifierResponse & LoginWindowResponse) | null>(null);
+const userInfo = ref<(TorusConnectionResponse & LoginWindowResponse) | null>(null);
 const provider = ref<SafeEventEmitterProvider | null>(null);
 const signedMessage = ref<ec.Signature | null>(null);
 const signingMessage = ref<string | null>(null);
@@ -302,7 +302,7 @@ const loginToConnectionMap = computed((): Record<string, Record<string, string |
     },
   };
 });
-const loadResponse = (privKeyInfo: TorusKey["finalKeyData"], localUserInfo:( TorusVerifierResponse & LoginWindowResponse) | undefined) => {
+const loadResponse = (privKeyInfo: TorusKey["finalKeyData"], localUserInfo:( TorusConnectionResponse & LoginWindowResponse) | undefined) => {
   privKey.value = privKeyInfo?.privKey;
   if (localUserInfo) userInfo.value = localUserInfo;
   if (privKey.value) localStorage.setItem("privKey", privKey.value as string);

@@ -43,7 +43,7 @@ abstract class AbstractLoginHandler implements ILoginHandler {
     if (this.params.uxMode === UX_MODE.REDIRECT) {
       authConnectionWindow.redirect(params.locationReplaceOnRedirect);
     } else {
-      const { BroadcastChannel } = await import("@toruslabs/broadcast-channel");
+      const { RedundantAdaptiveBroadcastChannel: BroadcastChannel } = await import("@toruslabs/broadcast-channel");
       return new Promise<LoginWindowResponse>((resolve, reject) => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         let bc: any;
