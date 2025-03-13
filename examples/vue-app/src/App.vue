@@ -183,7 +183,7 @@
 
 <script setup lang="ts">
 import { KEY_TYPE, TORUS_LEGACY_NETWORK, TORUS_SAPPHIRE_NETWORK } from "@toruslabs/constants";
-import { CustomAuth, LoginWindowResponse, TorusLoginResponse, TorusConnectionResponse, UX_MODE } from "@toruslabs/customauth";
+import { CustomAuth, LoginWindowResponse, TorusLoginResponse, TorusConnectionResponse, UX_MODE, AUTH_CONNECTION_TYPE } from "@toruslabs/customauth";
 import { fetchLocalConfig } from "@toruslabs/fnd-base";
 import { getStarkHDAccount, pedersen, sign, STARKNET_NETWORKS, verify } from "@toruslabs/openlogin-starkkey";
 import { TorusKey } from "@toruslabs/torus.js";
@@ -291,8 +291,8 @@ const loginToConnectionMap = computed((): Record<string, Record<string, string |
     [COGNITO]: { domain: COGNITO_AUTH_DOMAIN, identity_provider: "Google", response_type: "token", user_info_endpoint: "userInfo" },
     [REDDIT]: { domain: AUTH_DOMAIN, connection: "Reddit", verifierIdField: "name", isVerifierIdCaseSensitive: false },
     [TELEGRAM]: {
-        identity_provider: "Telegram",
-        origin: "https://custom-auth-beta.vercel.app/serviceworker/redirect",
+      identity_provider: "Telegram",
+      origin: "https://custom-auth-beta.vercel.app/serviceworker/redirect",
     },
     [WEB3AUTH_EMAIL_PASSWORDLESS]: {
       login_hint,
@@ -302,8 +302,8 @@ const loginToConnectionMap = computed((): Record<string, Record<string, string |
     },
   };
 });
-const loadResponse = (privKeyInfo: TorusKey["finalKeyData"], localUserInfo:( TorusConnectionResponse & LoginWindowResponse) | undefined) => {
-  privKey.value = privKeyInfo?.privKey;
+const loadResponse = (privKeyInfo: TorusKey, localUserInfo: (TorusConnectionResponse & LoginWindowResponse) | undefined) => {
+  privKey.value = privKeyInfo?.finalKeyData?.privKey || privKeyInfo?.oAuthKeyData?.privKey;
   if (localUserInfo) userInfo.value = localUserInfo;
   if (privKey.value) localStorage.setItem("privKey", privKey.value as string);
   if (userInfo.value) localStorage.setItem("userInfo", JSON.stringify(userInfo.value));
@@ -374,14 +374,14 @@ const onLogin = async () => {
   let data: TorusLoginResponse | undefined;
   if (formData.value.network === TORUS_LEGACY_NETWORK.TESTNET) {
     data = await customAuthSdk.value.triggerLogin({
-      authConnection: typeOfLogin,
+      authConnection: typeOfLogin as AUTH_CONNECTION_TYPE,
       authConnectionId: verifier,
       clientId,
       jwtParams,
     });
   } else {
     data = await customAuthSdk.value.triggerLogin({
-      authConnection: typeOfLogin,
+      authConnection: typeOfLogin as AUTH_CONNECTION_TYPE,
       authConnectionId: "web3auth",
       groupedAuthConnectionId: verifier,
       clientId,
@@ -390,7 +390,7 @@ const onLogin = async () => {
   }
 
   if (data) {
-    loadResponse(data.finalKeyData, data.userInfo);
+    loadResponse(data, data.userInfo);
   }
 };
 
@@ -427,7 +427,7 @@ const init = async () => {
     if (uxMode === UX_MODE.REDIRECT) {
       const loginDetails = await customAuthSdk.value?.getRedirectResult();
       const response = loginDetails?.result as TorusLoginResponse;
-      if (response) loadResponse(response.finalKeyData, response.userInfo);
+      if (response) loadResponse(response, response.userInfo);
     }
   } catch (error) {
     log(error);

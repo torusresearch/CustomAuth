@@ -1,5 +1,5 @@
 import { TORUS_LEGACY_NETWORK, TORUS_NETWORK_TYPE, TORUS_SAPPHIRE_NETWORK } from "@toruslabs/constants";
-import { LOGIN_TYPE, UX_MODE, UX_MODE_TYPE } from "@toruslabs/customauth";
+import { UX_MODE, UX_MODE_TYPE } from "@toruslabs/customauth";
 import { SafeEventEmitterProvider } from "@web3auth/base";
 
 export const GOOGLE = "google";
@@ -31,7 +31,7 @@ export const WEB3AUTH_CLIENT_ID = "BJ6l3_kIQiy6YVL7zDlCcEAvGpGukwFgp-C_0WvNI_fAE
 
 export interface LoginProviderItem {
   name: string;
-  typeOfLogin: LOGIN_TYPE;
+  typeOfLogin: string;
   clientId: string;
   verifier: string;
 }
