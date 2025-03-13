@@ -135,8 +135,8 @@ self.addEventListener("fetch", function (event) {
       <h1 class="title content" id="closeText" style="display: none;">You can close this window now</h1>
     </div>
     <script
-      src="https://cdn.jsdelivr.net/npm/@toruslabs/broadcast-channel@11.0.0/dist/broadcastChannel.umd.min.js"
-      integrity="sha384-SS+TPPsMWyXIgSv/ivXO6D9ZZTwcvd1gEHZyXkn2htyyUvZ0OZCGY96JrjnKoQUu"
+      src="https://cdn.jsdelivr.net/npm/@toruslabs/broadcast-channel@12.0.0/dist/broadcastChannel.umd.min.js"
+      integrity="sha256-/tl4ddW3YWdpwrY9ulragEO+wqRKGlBkbkLaK7vDhRA="
       crossorigin="anonymous"
     ></script>
     <script>
@@ -242,7 +242,7 @@ self.addEventListener("fetch", function (event) {
             );
           } else {
             // communicate via broadcast channel
-            bc = new broadcastChannelLib.BroadcastChannel("redirect_channel_" + instanceParams.instanceId, broadcastChannelOptions);
+            bc = new broadcastChannelLib.RedundantAdaptiveBroadcastChannel("redirect_channel_" + instanceParams.instanceId, broadcastChannelOptions);
             bc.postMessage({
               data: {
                 instanceParams: instanceParams,
@@ -272,7 +272,7 @@ self.addEventListener("fetch", function (event) {
       } else {
         // in preopen, awaiting redirect
         try {
-          bc = new broadcastChannelLib.BroadcastChannel("preopen_channel_" + preopenInstanceId, broadcastChannelOptions);
+          bc = new broadcastChannelLib.RedundantAdaptiveBroadcastChannel("preopen_channel_" + preopenInstanceId, broadcastChannelOptions);
           bc.onmessage = function (ev) {
             var { preopenInstanceId: oldId, payload, message } = ev.data;
             if (oldId === preopenInstanceId && payload && payload.url) {
@@ -301,9 +301,9 @@ self.addEventListener("fetch", function (event) {
   </body>
 </html>`,
             ],
-            { type: "text/html" },
-          ),
-        ),
+            { type: "text/html" }
+          )
+        )
       );
     }
   } catch (error) {

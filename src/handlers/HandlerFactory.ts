@@ -1,55 +1,50 @@
-import { LOGIN } from "../utils/enums";
+import { AUTH_CONNECTION } from "../utils/enums";
+import { CreateHandlerParams, ILoginHandler } from "../utils/interfaces";
 import DiscordHandler from "./DiscordHandler";
 import FacebookHandler from "./FacebookHandler";
 import GoogleHandler from "./GoogleHandler";
-import { CreateHandlerParams, ILoginHandler } from "./interfaces";
 import JwtHandler from "./JwtHandler";
 import MockLoginHandler from "./MockLoginHandler";
 import PasskeysHandler from "./PasskeysHandler";
-import PasswordlessHandler from "./PasswordlessHandler";
 import TelegramHandler from "./TelegramHandler";
 import TwitchHandler from "./TwitchHandler";
 import Web3AuthPasswordlessHandler from "./Web3AuthPasswordlessHandler";
 
 const createHandler = (params: CreateHandlerParams): ILoginHandler => {
-  const { verifier, typeOfLogin, clientId, jwtParams } = params;
-  if (!verifier || !typeOfLogin || !clientId) {
-    throw new Error("Invalid params. Missing verifier, typeOfLogin or clientId");
+  const { authConnectionId, authConnection, clientId, jwtParams } = params;
+  if (!authConnectionId || !authConnection || !clientId) {
+    throw new Error("Invalid params. Missing authConnectionId, authConnection or clientId");
   }
   const { domain, login_hint, id_token, access_token } = jwtParams || {};
-  switch (typeOfLogin) {
-    case LOGIN.GOOGLE:
+  switch (authConnection) {
+    case AUTH_CONNECTION.GOOGLE:
       return new GoogleHandler(params);
-    case LOGIN.TELEGRAM:
+    case AUTH_CONNECTION.TELEGRAM:
       return new TelegramHandler(params);
-    case LOGIN.FACEBOOK:
+    case AUTH_CONNECTION.FACEBOOK:
       return new FacebookHandler(params);
-    case LOGIN.TWITCH:
+    case AUTH_CONNECTION.TWITCH:
       return new TwitchHandler(params);
-    case LOGIN.DISCORD:
+    case AUTH_CONNECTION.DISCORD:
       return new DiscordHandler(params);
-    case LOGIN.EMAIL_PASSWORDLESS:
-    case LOGIN.SMS_PASSWORDLESS:
+    case AUTH_CONNECTION.EMAIL_PASSWORDLESS:
+    case AUTH_CONNECTION.SMS_PASSWORDLESS:
       if (!login_hint) throw new Error("Invalid params. Missing login_hint for web3auth passwordless login");
       return new Web3AuthPasswordlessHandler(params);
-    case LOGIN.PASSWORDLESS:
-      if (!domain || !login_hint) throw new Error("Invalid params. Missing domain or login_hint for passwordless login");
-      return new PasswordlessHandler(params);
-    case LOGIN.APPLE:
-    case LOGIN.GITHUB:
-    case LOGIN.LINKEDIN:
-    case LOGIN.TWITTER:
-    case LOGIN.WEIBO:
-    case LOGIN.LINE:
-    case LOGIN.EMAIL_PASSWORD:
-    case LOGIN.JWT:
-    case LOGIN.REDDIT:
+    case AUTH_CONNECTION.APPLE:
+    case AUTH_CONNECTION.GITHUB:
+    case AUTH_CONNECTION.LINKEDIN:
+    case AUTH_CONNECTION.TWITTER:
+    case AUTH_CONNECTION.WEIBO:
+    case AUTH_CONNECTION.LINE:
+    case AUTH_CONNECTION.CUSTOM:
+    case AUTH_CONNECTION.REDDIT:
       if (id_token || access_token) {
         return new MockLoginHandler(params);
       }
       if (!domain) throw new Error("Invalid params for jwt login. Missing domain");
       return new JwtHandler(params);
-    case LOGIN.PASSKEYS:
+    case AUTH_CONNECTION.PASSKEYS:
       return new PasskeysHandler(params);
     default:
       throw new Error("Unsupported login type");

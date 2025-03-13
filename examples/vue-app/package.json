@@ -10,8 +10,8 @@
     "install:local": "npm i ../../toruslabs-customauth-*.tgz"
   },
   "dependencies": {
-    "@toruslabs/broadcast-channel": "10.0.1",
-    "@toruslabs/constants": "^14.0.0",
+    "@toruslabs/broadcast-channel": "12.0.0",
+    "@toruslabs/constants": "^15.0.0",
     "@toruslabs/customauth": "file:../../",
     "@toruslabs/fnd-base": "^14.0.0",
     "@toruslabs/openlogin-starkkey": "^3.2.0",
@@ -30,6 +30,7 @@
     "web3": "^4.6.0"
   },
   "devDependencies": {
+    "@sentry/types": "^9.5.0",
     "@toruslabs/eslint-config-vue": "^3.3.3",
     "@types/elliptic": "^6.4.18",
     "@vitejs/plugin-vue": "^5.1.2",

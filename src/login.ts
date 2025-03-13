@@ -1,30 +1,25 @@
 import { type INodeDetails, TORUS_NETWORK_TYPE } from "@toruslabs/constants";
 import { NodeDetailManager } from "@toruslabs/fetch-node-details";
-import { Sentry } from "@toruslabs/http-helpers";
 import { keccak256, type KeyType, Torus, TorusKey } from "@toruslabs/torus.js";
 
 import createHandler from "./handlers/HandlerFactory";
+import { registerServiceWorker } from "./registerServiceWorker";
+import SentryHandler from "./sentry";
+import { SENTRY_TXNS, UX_MODE, UX_MODE_TYPE } from "./utils/enums";
+import { serializeError } from "./utils/error";
+import { handleRedirectParameters, isFirefox, padUrlString } from "./utils/helpers";
 import {
-  AggregateLoginParams,
-  AggregateVerifierParams,
   CustomAuthArgs,
+  CustomAuthLoginParams,
   ExtraParams,
   ILoginHandler,
   InitParams,
   LoginWindowResponse,
   RedirectResult,
   RedirectResultParams,
-  SingleLoginParams,
-  SubVerifierDetails,
-  TorusAggregateLoginResponse,
   TorusLoginResponse,
-  TorusSubVerifierInfo,
-  TorusVerifierResponse,
-} from "./handlers/interfaces";
-import { registerServiceWorker } from "./registerServiceWorker";
-import { AGGREGATE_VERIFIER, SENTRY_TXNS, TORUS_METHOD, UX_MODE, UX_MODE_TYPE } from "./utils/enums";
-import { serializeError } from "./utils/error";
-import { handleRedirectParameters, isFirefox, padUrlString } from "./utils/helpers";
+  VerifierParams,
+} from "./utils/interfaces";
 import log from "./utils/loglevel";
 import StorageHelper from "./utils/StorageHelper";
 
@@ -52,7 +47,7 @@ class CustomAuth {
 
   storageHelper: StorageHelper;
 
-  sentryHandler: Sentry;
+  sentryHandler: SentryHandler;
 
   constructor({
     baseUrl,
@@ -109,7 +104,7 @@ class CustomAuth {
     if (enableLogging) log.enableAll();
     else log.disableAll();
     this.storageHelper = new StorageHelper(storageServerUrl);
-    this.sentryHandler = sentry;
+    this.sentryHandler = new SentryHandler(sentry);
   }
 
   async init({ skipSw = false, skipInit = false, skipPrefetch = false }: InitParams = {}): Promise<void> {
@@ -144,16 +139,16 @@ class CustomAuth {
     this.isInitialized = true;
   }
 
-  async triggerLogin(args: SingleLoginParams): Promise<TorusLoginResponse> {
-    const { verifier, typeOfLogin, clientId, jwtParams, hash, queryParameters, customState } = args;
-    log.info("Verifier: ", verifier);
+  async triggerLogin(args: CustomAuthLoginParams): Promise<TorusLoginResponse> {
+    const { authConnectionId, authConnection, clientId, jwtParams, hash, queryParameters, customState, groupedAuthConnectionId } = args;
     if (!this.isInitialized) {
       throw new Error("Not initialized yet");
     }
     const loginHandler: ILoginHandler = createHandler({
-      typeOfLogin,
+      authConnection,
       clientId,
-      verifier,
+      authConnectionId,
+      groupedAuthConnectionId,
       redirect_uri: this.config.redirect_uri,
       redirectToOpener: this.config.redirectToOpener,
       jwtParams,
@@ -162,6 +157,7 @@ class CustomAuth {
       web3AuthClientId: this.config.web3AuthClientId,
       web3AuthNetwork: this.config.web3AuthNetwork,
     });
+
     let loginParams: LoginWindowResponse;
     if (hash && queryParameters) {
       const { error, hashParameters, instanceParameters } = handleRedirectParameters(hash, queryParameters);
@@ -172,7 +168,7 @@ class CustomAuth {
     } else {
       this.storageHelper.clearOrphanedLoginDetails();
       if (this.config.uxMode === UX_MODE.REDIRECT) {
-        await this.storageHelper.storeLoginDetails({ method: TORUS_METHOD.TRIGGER_LOGIN, args }, loginHandler.nonce);
+        await this.storageHelper.storeLoginDetails({ args }, loginHandler.nonce);
       }
       loginParams = await loginHandler.handleLoginWindow({
         locationReplaceOnRedirect: this.config.locationReplaceOnRedirect,
@@ -183,13 +179,14 @@ class CustomAuth {
 
     const userInfo = await loginHandler.getUserInfo(loginParams);
 
-    const torusKey = await this.getTorusKey(
-      verifier,
-      userInfo.verifierId,
-      { verifier_id: userInfo.verifierId },
-      loginParams.idToken || loginParams.accessToken,
-      userInfo.extraVerifierParams
-    );
+    const torusKey = await this.getTorusKey({
+      authConnectionId,
+      userId: userInfo.userId,
+      idToken: loginParams.idToken || loginParams.accessToken,
+      additionalParams: userInfo.extraConnectionParams,
+      groupedAuthConnectionId,
+    });
+
     return {
       ...torusKey,
       userInfo: {
@@ -199,91 +196,26 @@ class CustomAuth {
     };
   }
 
-  async triggerAggregateLogin(args: AggregateLoginParams): Promise<TorusAggregateLoginResponse> {
-    // This method shall break if any of the promises fail. This behaviour is intended
-    const { aggregateVerifierType, verifierIdentifier, subVerifierDetailsArray } = args;
-    if (!this.isInitialized) {
-      throw new Error("Not initialized yet");
-    }
-    if (!aggregateVerifierType || !verifierIdentifier || !Array.isArray(subVerifierDetailsArray)) {
-      throw new Error("Invalid params. Missing aggregateVerifierType, verifierIdentifier or subVerifierDetailsArray");
-    }
-    if (aggregateVerifierType === AGGREGATE_VERIFIER.SINGLE_VERIFIER_ID && subVerifierDetailsArray.length !== 1) {
-      throw new Error("Single id verifier can only have one sub verifier");
-    }
-    const userInfoPromises: Promise<TorusVerifierResponse>[] = [];
-    const loginParamsArray: LoginWindowResponse[] = [];
-    for (const subVerifierDetail of subVerifierDetailsArray) {
-      const { clientId, typeOfLogin, verifier, jwtParams, hash, queryParameters, customState } = subVerifierDetail;
-      const loginHandler: ILoginHandler = createHandler({
-        typeOfLogin,
-        clientId,
-        verifier,
-        redirect_uri: this.config.redirect_uri,
-        redirectToOpener: this.config.redirectToOpener,
-        jwtParams,
-        uxMode: this.config.uxMode,
-        customState,
-        web3AuthClientId: this.config.web3AuthClientId,
-        web3AuthNetwork: this.config.web3AuthNetwork,
-      });
-      // We let the user login to each verifier in a loop. Don't wait for key derivation here.!
-      let loginParams: LoginWindowResponse;
-      if (hash && queryParameters) {
-        const { error, hashParameters, instanceParameters } = handleRedirectParameters(hash, queryParameters);
-        if (error) throw new Error(error);
-        const { access_token: accessToken, id_token: idToken, tgAuthResult, ...rest } = hashParameters;
-        // State has to be last here otherwise it will be overwritten
-        loginParams = { accessToken, idToken: idToken || tgAuthResult || "", ...rest, state: instanceParameters };
-      } else {
-        this.storageHelper.clearOrphanedLoginDetails();
-        if (this.config.uxMode === UX_MODE.REDIRECT) {
-          await this.storageHelper.storeLoginDetails({ method: TORUS_METHOD.TRIGGER_AGGREGATE_LOGIN, args }, loginHandler.nonce);
-        }
-        loginParams = await loginHandler.handleLoginWindow({
-          locationReplaceOnRedirect: this.config.locationReplaceOnRedirect,
-          popupFeatures: this.config.popupFeatures,
-        });
-        if (this.config.uxMode === UX_MODE.REDIRECT) return null;
-      }
-      // Fail the method even if one promise fails
+  async getTorusKey(params: {
+    authConnectionId: string;
+    userId: string;
+    idToken: string;
+    additionalParams?: ExtraParams;
+    groupedAuthConnectionId?: string;
+  }): Promise<TorusKey> {
+    const { authConnectionId, userId, idToken, additionalParams, groupedAuthConnectionId } = params;
+    const verifier = groupedAuthConnectionId || authConnectionId;
+    const verifierId = userId;
+    const verifierParams: VerifierParams = { verifier_id: userId };
+    let aggregateIdToken = "";
+    const finalIdToken = idToken;
 
-      userInfoPromises.push(loginHandler.getUserInfo(loginParams));
-      loginParamsArray.push(loginParams);
+    if (groupedAuthConnectionId) {
+      verifierParams["verify_params"] = [{ verifier_id: userId, idtoken: finalIdToken }];
+      verifierParams["sub_verifier_ids"] = [authConnectionId];
+      aggregateIdToken = keccak256(Buffer.from(finalIdToken, "utf8")).slice(2);
     }
-    const _userInfoArray = await Promise.all(userInfoPromises);
-    const userInfoArray = _userInfoArray.map((userInfo) => ({ ...userInfo, aggregateVerifier: verifierIdentifier }));
-    const aggregateVerifierParams: AggregateVerifierParams = { verify_params: [], sub_verifier_ids: [], verifier_id: "" };
-    const aggregateIdTokenSeeds = [];
-    let aggregateVerifierId = "";
-    let extraVerifierParams = {};
-    for (let index = 0; index < subVerifierDetailsArray.length; index += 1) {
-      const loginParams = loginParamsArray[index];
-      const { idToken, accessToken } = loginParams;
-      const userInfo = userInfoArray[index];
-      aggregateVerifierParams.verify_params.push({ verifier_id: userInfo.verifierId, idtoken: idToken || accessToken });
-      aggregateVerifierParams.sub_verifier_ids.push(userInfo.verifier);
-      aggregateIdTokenSeeds.push(idToken || accessToken);
-      aggregateVerifierId = userInfo.verifierId; // using last because idk
-      extraVerifierParams = userInfo.extraVerifierParams;
-    }
-    aggregateIdTokenSeeds.sort();
-    const aggregateIdToken = keccak256(Buffer.from(aggregateIdTokenSeeds.join(String.fromCharCode(29)), "utf8")).slice(2);
-    aggregateVerifierParams.verifier_id = aggregateVerifierId;
-    const torusKey = await this.getTorusKey(verifierIdentifier, aggregateVerifierId, aggregateVerifierParams, aggregateIdToken, extraVerifierParams);
-    return {
-      ...torusKey,
-      userInfo: userInfoArray.map((x, index) => ({ ...x, ...loginParamsArray[index] })),
-    };
-  }
 
-  async getTorusKey(
-    verifier: string,
-    verifierId: string,
-    verifierParams: { verifier_id: string },
-    idToken: string,
-    additionalParams?: ExtraParams
-  ): Promise<TorusKey> {
     const nodeDetails = await this.sentryHandler.startSpan(
       {
         name: SENTRY_TXNS.FETCH_NODE_DETAILS,
@@ -308,7 +240,7 @@ class CustomAuth {
           indexes: nodeDetails.torusIndexes,
           verifier,
           verifierParams,
-          idToken,
+          idToken: aggregateIdToken || finalIdToken,
           nodePubkeys: nodeDetails.torusNodePub,
           extraParams: {
             ...additionalParams,
@@ -321,27 +253,6 @@ class CustomAuth {
 
     log.debug("torus-direct/getTorusKey", { retrieveShares: sharesResponse });
     return sharesResponse;
-  }
-
-  async getAggregateTorusKey(
-    verifier: string,
-    verifierId: string, // unique identifier for user e.g. sub on jwt
-    subVerifierInfoArray: TorusSubVerifierInfo[]
-  ): Promise<TorusKey> {
-    const aggregateVerifierParams: AggregateVerifierParams = { verify_params: [], sub_verifier_ids: [], verifier_id: "" };
-    const aggregateIdTokenSeeds = [];
-    let extraVerifierParams = {};
-    for (let index = 0; index < subVerifierInfoArray.length; index += 1) {
-      const userInfo = subVerifierInfoArray[index];
-      aggregateVerifierParams.verify_params.push({ verifier_id: verifierId, idtoken: userInfo.idToken });
-      aggregateVerifierParams.sub_verifier_ids.push(userInfo.verifier);
-      aggregateIdTokenSeeds.push(userInfo.idToken);
-      extraVerifierParams = userInfo.extraVerifierParams;
-    }
-    aggregateIdTokenSeeds.sort();
-    const aggregateIdToken = keccak256(Buffer.from(aggregateIdTokenSeeds.join(String.fromCharCode(29)), "utf8")).slice(2);
-    aggregateVerifierParams.verifier_id = verifierId;
-    return this.getTorusKey(verifier, verifierId, aggregateVerifierParams, aggregateIdToken, extraVerifierParams);
   }
 
   async getRedirectResult({
@@ -368,29 +279,19 @@ class CustomAuth {
     log.info(instanceId, "instanceId");
 
     const loginDetails = storageData || (await this.storageHelper.retrieveLoginDetails(instanceId));
-    const { args, method, ...rest } = loginDetails || {};
-    log.info(args, method);
+    const { args, ...rest } = loginDetails || {};
+    log.info(args, "args", this.storageHelper.storageMethodUsed);
+
+    let result: TorusLoginResponse;
 
     if (error) {
-      return { error, state: instanceParameters || {}, method, result: {}, hashParameters, args };
+      return { error, state: instanceParameters || {}, result: {}, hashParameters, args };
     }
 
-    let result: unknown;
-
     try {
-      if (method === TORUS_METHOD.TRIGGER_LOGIN) {
-        const methodArgs = args as SubVerifierDetails;
-        methodArgs.hash = hash;
-        methodArgs.queryParameters = queryParams;
-        result = await this.triggerLogin(methodArgs);
-      } else if (method === TORUS_METHOD.TRIGGER_AGGREGATE_LOGIN) {
-        const methodArgs = args as AggregateLoginParams;
-        methodArgs.subVerifierDetailsArray.forEach((x) => {
-          x.hash = hash;
-          x.queryParameters = queryParams;
-        });
-        result = await this.triggerAggregateLogin(methodArgs);
-      }
+      args.hash = hash;
+      args.queryParameters = queryParams;
+      result = await this.triggerLogin(args);
     } catch (err: unknown) {
       const serializedError = await serializeError(err);
       log.error(serializedError);
@@ -400,7 +301,6 @@ class CustomAuth {
       return {
         error: `${serializedError.message || ""}`,
         state: instanceParameters || {},
-        method,
         result: {},
         hashParameters,
         args,
@@ -412,7 +312,6 @@ class CustomAuth {
       return {
         error: `Init parameters not found. It might be because storage is not available. Please retry the login in a different browser. Used storage method: ${this.storageHelper.storageMethodUsed}`,
         state: instanceParameters || {},
-        method,
         result: {},
         hashParameters,
         args,
@@ -428,7 +327,7 @@ class CustomAuth {
       this.storageHelper.clearLoginDetailsStorage(instanceId);
     }
 
-    return { method, result, state: instanceParameters || {}, hashParameters, args, ...rest };
+    return { result, state: instanceParameters || {}, hashParameters, args, ...rest };
   }
 
   private async handlePrefetchRedirectUri(): Promise<void> {

@@ -1,9 +1,9 @@
 import base64url from "base64url";
 import deepmerge from "deepmerge";
 
+import { CreateHandlerParams, LoginWindowResponse, PasskeySessionData, TorusConnectionResponse } from "../utils/interfaces";
 import { fetchDataFromBroadcastServer } from "../utils/sessionHelper";
 import AbstractLoginHandler from "./AbstractLoginHandler";
-import { CreateHandlerParams, LoginWindowResponse, PasskeySessionData, TorusVerifierResponse } from "./interfaces";
 
 export default class PasskeysHandler extends AbstractLoginHandler {
   constructor(params: CreateHandlerParams) {
@@ -31,7 +31,7 @@ export default class PasskeysHandler extends AbstractLoginHandler {
     this.finalURL = finalUrl;
   }
 
-  async getUserInfo(parameters: LoginWindowResponse, storageServerUrl?: string): Promise<TorusVerifierResponse> {
+  async getUserInfo(parameters: LoginWindowResponse, storageServerUrl?: string): Promise<TorusConnectionResponse> {
     const { idToken, extraParams } = parameters;
 
     const { sessionId } = JSON.parse(base64url.decode(extraParams)) || {};
@@ -61,10 +61,11 @@ export default class PasskeysHandler extends AbstractLoginHandler {
       email: "",
       name: "Passkeys Login",
       profileImage: "",
-      verifier: this.params.verifier,
-      verifierId,
-      typeOfLogin: this.params.typeOfLogin,
-      extraVerifierParams: {
+      authConnectionId: this.params.authConnectionId,
+      userId: verifierId,
+      authConnection: this.params.authConnection,
+      groupedAuthConnectionId: this.params.groupedAuthConnectionId,
+      extraConnectionParams: {
         signature,
         clientDataJSON,
         authenticatorData,

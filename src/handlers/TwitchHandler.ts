@@ -1,8 +1,8 @@
 import { get } from "@toruslabs/http-helpers";
 import deepmerge from "deepmerge";
 
+import { CreateHandlerParams, LoginWindowResponse, TorusConnectionResponse } from "../utils/interfaces";
 import AbstractLoginHandler from "./AbstractLoginHandler";
-import { CreateHandlerParams, LoginWindowResponse, TorusVerifierResponse } from "./interfaces";
 
 export default class TwitchHandler extends AbstractLoginHandler {
   private readonly RESPONSE_TYPE: string = "token";
@@ -35,7 +35,7 @@ export default class TwitchHandler extends AbstractLoginHandler {
     this.finalURL = finalUrl;
   }
 
-  async getUserInfo(params: LoginWindowResponse): Promise<TorusVerifierResponse> {
+  async getUserInfo(params: LoginWindowResponse): Promise<TorusConnectionResponse> {
     const { accessToken } = params;
     const userInfo = await get<{ data: [{ profile_image_url: string; display_name: string; email: string; id: string }] }>(
       "https://api.twitch.tv/helix/users",
@@ -46,14 +46,15 @@ export default class TwitchHandler extends AbstractLoginHandler {
         },
       }
     );
-    const [{ profile_image_url: profileImage = "", display_name: name = "", email = "", id: verifierId }] = userInfo.data || [];
+    const [{ profile_image_url: profileImage = "", display_name: name = "", email = "", id: userId }] = userInfo.data || [];
     return {
       profileImage,
       name,
       email,
-      verifierId,
-      verifier: this.params.verifier,
-      typeOfLogin: this.params.typeOfLogin,
+      userId: userId,
+      authConnectionId: this.params.authConnectionId,
+      authConnection: this.params.authConnection,
+      groupedAuthConnectionId: this.params.groupedAuthConnectionId,
     };
   }
 }

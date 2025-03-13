@@ -1,8 +1,8 @@
 import { get } from "@toruslabs/http-helpers";
 import deepmerge from "deepmerge";
 
+import { CreateHandlerParams, LoginWindowResponse, TorusConnectionResponse } from "../utils/interfaces";
 import AbstractLoginHandler from "./AbstractLoginHandler";
-import { CreateHandlerParams, LoginWindowResponse, TorusVerifierResponse } from "./interfaces";
 
 export default class FacebookHandler extends AbstractLoginHandler {
   private readonly RESPONSE_TYPE: string = "token";
@@ -34,7 +34,7 @@ export default class FacebookHandler extends AbstractLoginHandler {
     this.finalURL = finalUrl;
   }
 
-  async getUserInfo(params: LoginWindowResponse): Promise<TorusVerifierResponse> {
+  async getUserInfo(params: LoginWindowResponse): Promise<TorusConnectionResponse> {
     const { accessToken } = params;
     const userInfo = await get<{ name: string; id: string; picture: { data: { url?: string } }; email?: string }>(
       "https://graph.facebook.com/me?fields=name,email,picture.type(large)",
@@ -49,9 +49,10 @@ export default class FacebookHandler extends AbstractLoginHandler {
       email,
       name,
       profileImage: picture.data.url || "",
-      verifier: this.params.verifier,
-      verifierId: id,
-      typeOfLogin: this.params.typeOfLogin,
+      authConnectionId: this.params.authConnectionId,
+      authConnection: this.params.authConnection,
+      groupedAuthConnectionId: this.params.groupedAuthConnectionId,
+      userId: id,
     };
   }
 }

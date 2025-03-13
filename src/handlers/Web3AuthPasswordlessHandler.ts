@@ -1,8 +1,8 @@
 import deepmerge from "deepmerge";
 
 import { decodeToken, loginToConnectionMap, validateAndConstructUrl } from "../utils/helpers";
+import { Auth0UserInfo, CreateHandlerParams, EMAIL_FLOW, LoginWindowResponse, TorusConnectionResponse } from "../utils/interfaces";
 import AbstractLoginHandler from "./AbstractLoginHandler";
-import { Auth0UserInfo, CreateHandlerParams, EMAIL_FLOW, LoginWindowResponse, TorusVerifierResponse } from "./interfaces";
 
 export default class Web3AuthPasswordlessHandler extends AbstractLoginHandler {
   private readonly SCOPE: string = "openid profile email";
@@ -30,7 +30,7 @@ export default class Web3AuthPasswordlessHandler extends AbstractLoginHandler {
         redirect_uri: this.params.redirect_uri,
         nonce: this.nonce,
         network: this.params.web3AuthNetwork,
-        connection: loginToConnectionMap[this.params.typeOfLogin],
+        connection: loginToConnectionMap[this.params.authConnection],
         scope: this.SCOPE,
         response_type: this.RESPONSE_TYPE,
         prompt: this.PROMPT,
@@ -45,7 +45,7 @@ export default class Web3AuthPasswordlessHandler extends AbstractLoginHandler {
     this.finalURL = finalUrl;
   }
 
-  async getUserInfo(params: LoginWindowResponse): Promise<TorusVerifierResponse> {
+  async getUserInfo(params: LoginWindowResponse): Promise<TorusConnectionResponse> {
     const { idToken } = params;
 
     const decodedToken = decodeToken<Auth0UserInfo>(idToken).payload;
@@ -54,9 +54,10 @@ export default class Web3AuthPasswordlessHandler extends AbstractLoginHandler {
       profileImage: picture,
       name,
       email,
-      verifierId: name.toLowerCase(),
-      verifier: this.params.verifier,
-      typeOfLogin: this.params.typeOfLogin,
+      userId: name.toLowerCase(),
+      authConnectionId: this.params.authConnectionId,
+      authConnection: this.params.authConnection,
+      groupedAuthConnectionId: this.params.groupedAuthConnectionId,
     };
   }
 }

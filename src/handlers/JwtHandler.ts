@@ -2,9 +2,9 @@ import { get } from "@toruslabs/http-helpers";
 import deepmerge from "deepmerge";
 import log from "loglevel";
 
-import { decodeToken, getVerifierId, loginToConnectionMap, padUrlString, validateAndConstructUrl } from "../utils/helpers";
+import { decodeToken, getUserId, loginToConnectionMap, padUrlString, validateAndConstructUrl } from "../utils/helpers";
+import { AUTH0_CONNECTION_TYPE, Auth0UserInfo, CreateHandlerParams, LoginWindowResponse, TorusConnectionResponse } from "../utils/interfaces";
 import AbstractLoginHandler from "./AbstractLoginHandler";
-import { AUTH0_JWT_LOGIN_TYPE, Auth0UserInfo, CreateHandlerParams, LoginWindowResponse, TorusVerifierResponse } from "./interfaces";
 
 export default class JwtHandler extends AbstractLoginHandler {
   private readonly SCOPE: string = "openid profile email";
@@ -32,7 +32,7 @@ export default class JwtHandler extends AbstractLoginHandler {
         prompt: this.PROMPT,
         redirect_uri: this.params.redirect_uri,
         scope: this.SCOPE,
-        connection: loginToConnectionMap[this.params.typeOfLogin as AUTH0_JWT_LOGIN_TYPE],
+        connection: loginToConnectionMap[this.params.authConnection as AUTH0_CONNECTION_TYPE],
         nonce: this.nonce,
       },
       clonedParams
@@ -44,9 +44,9 @@ export default class JwtHandler extends AbstractLoginHandler {
     this.finalURL = finalUrl;
   }
 
-  async getUserInfo(params: LoginWindowResponse): Promise<TorusVerifierResponse> {
+  async getUserInfo(params: LoginWindowResponse): Promise<TorusConnectionResponse> {
     const { idToken, accessToken } = params;
-    const { domain, verifierIdField, isVerifierIdCaseSensitive, user_info_route = "userinfo" } = this.params.jwtParams;
+    const { domain, userIdField, isUserIdCaseSensitive, user_info_route = "userinfo" } = this.params.jwtParams;
     if (accessToken) {
       try {
         const domainUrl = new URL(domain);
@@ -60,9 +60,10 @@ export default class JwtHandler extends AbstractLoginHandler {
           email,
           name,
           profileImage: picture,
-          verifierId: getVerifierId(userInfo, this.params.typeOfLogin, verifierIdField, isVerifierIdCaseSensitive),
-          verifier: this.params.verifier,
-          typeOfLogin: this.params.typeOfLogin,
+          userId: getUserId(userInfo, this.params.authConnection, userIdField, isUserIdCaseSensitive),
+          authConnectionId: this.params.authConnectionId,
+          authConnection: this.params.authConnection,
+          groupedAuthConnectionId: this.params.groupedAuthConnectionId,
         };
       } catch (error) {
         // ignore
@@ -76,9 +77,10 @@ export default class JwtHandler extends AbstractLoginHandler {
         profileImage: picture,
         name,
         email,
-        verifierId: getVerifierId(decodedToken, this.params.typeOfLogin, verifierIdField, isVerifierIdCaseSensitive),
-        verifier: this.params.verifier,
-        typeOfLogin: this.params.typeOfLogin,
+        userId: getUserId(decodedToken, this.params.authConnection, userIdField, isUserIdCaseSensitive),
+        authConnectionId: this.params.authConnectionId,
+        authConnection: this.params.authConnection,
+        groupedAuthConnectionId: this.params.groupedAuthConnectionId,
       };
     }
     throw new Error("Access/id token not available");

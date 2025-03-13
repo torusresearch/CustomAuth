@@ -1,8 +1,8 @@
 import { get } from "@toruslabs/http-helpers";
 import deepmerge from "deepmerge";
 
+import { CreateHandlerParams, LoginWindowResponse, TorusConnectionResponse } from "../utils/interfaces";
 import AbstractLoginHandler from "./AbstractLoginHandler";
-import { CreateHandlerParams, LoginWindowResponse, TorusVerifierResponse } from "./interfaces";
 
 export default class GoogleHandler extends AbstractLoginHandler {
   private readonly RESPONSE_TYPE: string = "token id_token";
@@ -38,7 +38,7 @@ export default class GoogleHandler extends AbstractLoginHandler {
     this.finalURL = finalUrl;
   }
 
-  async getUserInfo(params: LoginWindowResponse): Promise<TorusVerifierResponse> {
+  async getUserInfo(params: LoginWindowResponse): Promise<TorusConnectionResponse> {
     const { accessToken } = params;
     const userInfo = await get<{ picture: string; email: string; name: string }>("https://www.googleapis.com/userinfo/v2/me", {
       headers: {
@@ -50,9 +50,10 @@ export default class GoogleHandler extends AbstractLoginHandler {
       email,
       name,
       profileImage,
-      verifier: this.params.verifier,
-      verifierId: email.toLowerCase(),
-      typeOfLogin: this.params.typeOfLogin,
+      authConnectionId: this.params.authConnectionId,
+      authConnection: this.params.authConnection,
+      groupedAuthConnectionId: this.params.groupedAuthConnectionId,
+      userId: email.toLowerCase(),
     };
   }
 }

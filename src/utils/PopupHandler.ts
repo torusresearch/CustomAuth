@@ -7,7 +7,7 @@ export type PopupHandlerEvents = {
   close: () => void;
 };
 
-class PopupHandler extends (EventEmitter as new () => TypedEmitter<PopupHandlerEvents>) {
+export class PopupHandler extends (EventEmitter as new () => TypedEmitter<PopupHandlerEvents>) {
   url: URL;
 
   target: string;
@@ -72,5 +72,3 @@ class PopupHandler extends (EventEmitter as new () => TypedEmitter<PopupHandlerE
     }
   }
 }
-
-export default PopupHandler;

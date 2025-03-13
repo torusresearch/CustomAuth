@@ -3,10 +3,10 @@ import deepmerge from "deepmerge";
 import log from "loglevel";
 
 import { UX_MODE } from "../utils/enums";
-import { constructURL, decodeToken, getVerifierId, padUrlString } from "../utils/helpers";
-import PopupHandler from "../utils/PopupHandler";
+import { constructURL, decodeToken, getUserId, padUrlString } from "../utils/helpers";
+import { Auth0UserInfo, CreateHandlerParams, LoginWindowResponse, TorusConnectionResponse } from "../utils/interfaces";
+import { PopupHandler } from "../utils/PopupHandler";
 import AbstractLoginHandler from "./AbstractLoginHandler";
-import { Auth0UserInfo, CreateHandlerParams, LoginWindowResponse, TorusVerifierResponse } from "./interfaces";
 
 export default class MockLoginHandler extends AbstractLoginHandler {
   constructor(params: CreateHandlerParams) {
@@ -29,9 +29,9 @@ export default class MockLoginHandler extends AbstractLoginHandler {
     this.finalURL = new URL(constructURL({ baseURL: this.params.redirect_uri, query: null, hash: finalJwtParams }));
   }
 
-  async getUserInfo(params: LoginWindowResponse): Promise<TorusVerifierResponse> {
+  async getUserInfo(params: LoginWindowResponse): Promise<TorusConnectionResponse> {
     const { idToken, accessToken } = params;
-    const { domain, verifierIdField, isVerifierIdCaseSensitive, user_info_route = "userinfo" } = this.params.jwtParams;
+    const { domain, userIdField, isUserIdCaseSensitive, user_info_route = "userinfo" } = this.params.jwtParams;
     if (accessToken) {
       try {
         const domainUrl = new URL(domain);
@@ -45,9 +45,10 @@ export default class MockLoginHandler extends AbstractLoginHandler {
           email,
           name,
           profileImage: picture,
-          verifierId: getVerifierId(userInfo, this.params.typeOfLogin, verifierIdField, isVerifierIdCaseSensitive),
-          verifier: this.params.verifier,
-          typeOfLogin: this.params.typeOfLogin,
+          userId: getUserId(userInfo, this.params.authConnection, userIdField, isUserIdCaseSensitive),
+          authConnectionId: this.params.authConnectionId,
+          authConnection: this.params.authConnection,
+          groupedAuthConnectionId: this.params.groupedAuthConnectionId,
         };
       } catch (error) {
         // ignore
@@ -61,9 +62,10 @@ export default class MockLoginHandler extends AbstractLoginHandler {
         profileImage: picture,
         name,
         email,
-        verifierId: getVerifierId(decodedToken, this.params.typeOfLogin, verifierIdField, isVerifierIdCaseSensitive),
-        verifier: this.params.verifier,
-        typeOfLogin: this.params.typeOfLogin,
+        userId: getUserId(decodedToken, this.params.authConnection, userIdField, isUserIdCaseSensitive),
+        authConnectionId: this.params.authConnectionId,
+        authConnection: this.params.authConnection,
+        groupedAuthConnectionId: this.params.groupedAuthConnectionId,
       };
     }
     throw new Error("Access/id token not available");
@@ -71,9 +73,9 @@ export default class MockLoginHandler extends AbstractLoginHandler {
 
   handleLoginWindow(params: { locationReplaceOnRedirect?: boolean; popupFeatures?: string }): Promise<LoginWindowResponse> {
     const { id_token: idToken, access_token: accessToken } = this.params.jwtParams;
-    const verifierWindow = new PopupHandler({ url: this.finalURL, features: params.popupFeatures });
+    const authConnectionWindow = new PopupHandler({ url: this.finalURL, features: params.popupFeatures });
     if (this.params.uxMode === UX_MODE.REDIRECT) {
-      verifierWindow.redirect(params.locationReplaceOnRedirect);
+      authConnectionWindow.redirect(params.locationReplaceOnRedirect);
     } else {
       return Promise.resolve({
         state: {},

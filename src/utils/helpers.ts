@@ -1,8 +1,8 @@
 import base64url from "base64url";
 import Bowser from "bowser";
 
-import { Auth0UserInfo, TorusGenericObject } from "../handlers/interfaces";
-import { LOGIN, LOGIN_TYPE, REDIRECT_PARAMS_STORAGE_METHOD_TYPE } from "./enums";
+import { AUTH_CONNECTION, AUTH_CONNECTION_TYPE, REDIRECT_PARAMS_STORAGE_METHOD_TYPE } from "./enums";
+import { Auth0UserInfo, TorusGenericObject } from "./interfaces";
 import log from "./loglevel";
 interface CustomMessageEvent extends MessageEvent {
   error: string;
@@ -28,16 +28,14 @@ export function eventToPromise<T>(emitter: EmitterType): Promise<T> {
 
 // These are the default connection names used by auth0
 export const loginToConnectionMap: Record<string, string> = {
-  [LOGIN.APPLE]: "apple",
-  [LOGIN.GITHUB]: "github",
-  [LOGIN.LINKEDIN]: "linkedin",
-  [LOGIN.TWITTER]: "twitter",
-  [LOGIN.WEIBO]: "weibo",
-  [LOGIN.LINE]: "line",
-  [LOGIN.EMAIL_PASSWORD]: "Username-Password-Authentication",
-  [LOGIN.PASSWORDLESS]: "email",
-  [LOGIN.EMAIL_PASSWORDLESS]: "email",
-  [LOGIN.SMS_PASSWORDLESS]: "sms",
+  [AUTH_CONNECTION.APPLE]: "apple",
+  [AUTH_CONNECTION.GITHUB]: "github",
+  [AUTH_CONNECTION.LINKEDIN]: "linkedin",
+  [AUTH_CONNECTION.TWITTER]: "twitter",
+  [AUTH_CONNECTION.WEIBO]: "weibo",
+  [AUTH_CONNECTION.LINE]: "line",
+  [AUTH_CONNECTION.EMAIL_PASSWORDLESS]: "email",
+  [AUTH_CONNECTION.SMS_PASSWORDLESS]: "sms",
 };
 
 export const padUrlString = (url: URL): string => (url.href.endsWith("/") ? url.href : `${url.href}/`);
@@ -57,30 +55,28 @@ function caseSensitiveField(field: string, isCaseSensitive?: boolean): string {
   return isCaseSensitive ? field : field.toLowerCase();
 }
 
-export const getVerifierId = (
+export const getUserId = (
   userInfo: Auth0UserInfo,
-  typeOfLogin: LOGIN_TYPE,
-  verifierIdField?: keyof Auth0UserInfo,
-  isVerifierIdCaseSensitive = true
+  authConnection: AUTH_CONNECTION_TYPE,
+  userIdField?: string,
+  isUserIdCaseSensitive = true
 ): string => {
   const { name, sub } = userInfo;
-  if (verifierIdField) return caseSensitiveField(userInfo[verifierIdField], isVerifierIdCaseSensitive);
-  switch (typeOfLogin) {
-    case LOGIN.PASSWORDLESS:
-    case LOGIN.EMAIL_PASSWORD:
-    case LOGIN.EMAIL_PASSWORDLESS:
-    case LOGIN.SMS_PASSWORDLESS:
-      return caseSensitiveField(name, isVerifierIdCaseSensitive);
-    case LOGIN.WEIBO:
-    case LOGIN.GITHUB:
-    case LOGIN.TWITTER:
-    case LOGIN.APPLE:
-    case LOGIN.LINKEDIN:
-    case LOGIN.LINE:
-    case LOGIN.JWT:
-      return caseSensitiveField(sub, isVerifierIdCaseSensitive);
+  if (userIdField) return caseSensitiveField(userInfo[userIdField as keyof Auth0UserInfo], isUserIdCaseSensitive);
+  switch (authConnection) {
+    case AUTH_CONNECTION.EMAIL_PASSWORDLESS:
+    case AUTH_CONNECTION.SMS_PASSWORDLESS:
+      return caseSensitiveField(name, isUserIdCaseSensitive);
+    case AUTH_CONNECTION.WEIBO:
+    case AUTH_CONNECTION.GITHUB:
+    case AUTH_CONNECTION.TWITTER:
+    case AUTH_CONNECTION.APPLE:
+    case AUTH_CONNECTION.LINKEDIN:
+    case AUTH_CONNECTION.LINE:
+    case AUTH_CONNECTION.CUSTOM:
+      return caseSensitiveField(sub, isUserIdCaseSensitive);
     default:
-      throw new Error("Invalid login type to get verifier id");
+      throw new Error("Invalid login type to get auth connection id");
   }
 };
 
@@ -180,23 +176,23 @@ export function constructURL(params: { baseURL: string; query?: Record<string, u
   return url.toString();
 }
 
-export function are3PCSupported(): boolean {
-  const browserInfo = Bowser.parse(navigator.userAgent);
-  log.info(JSON.stringify(browserInfo), "current browser info");
+// export function are3PCSupported(): boolean {
+//   const browserInfo = Bowser.parse(navigator.userAgent);
+//   log.info(JSON.stringify(browserInfo), "current browser info");
 
-  let thirdPartyCookieSupport = true;
-  // brave
-  if ((navigator as unknown as { brave: boolean })?.brave) {
-    thirdPartyCookieSupport = false;
-  }
-  // All webkit & gecko engine instances use itp (intelligent tracking prevention -
-  // https://webkit.org/tracking-prevention/#intelligent-tracking-prevention-itp)
-  if (browserInfo.engine.name === Bowser.ENGINE_MAP.WebKit || browserInfo.engine.name === Bowser.ENGINE_MAP.Gecko) {
-    thirdPartyCookieSupport = false;
-  }
+//   let thirdPartyCookieSupport = true;
+//   // brave
+//   if ((navigator as unknown as { brave: boolean })?.brave) {
+//     thirdPartyCookieSupport = false;
+//   }
+//   // All webkit & gecko engine instances use itp (intelligent tracking prevention -
+//   // https://webkit.org/tracking-prevention/#intelligent-tracking-prevention-itp)
+//   if (browserInfo.engine.name === Bowser.ENGINE_MAP.WebKit || browserInfo.engine.name === Bowser.ENGINE_MAP.Gecko) {
+//     thirdPartyCookieSupport = false;
+//   }
 
-  return thirdPartyCookieSupport;
-}
+//   return thirdPartyCookieSupport;
+// }
 
 export const validateAndConstructUrl = (domain: string): URL => {
   try {
@@ -223,8 +219,8 @@ export function isMobileOrTablet(): boolean {
   return platform.type === Bowser.PLATFORMS_MAP.tablet || platform.type === Bowser.PLATFORMS_MAP.mobile;
 }
 
-export function getTimeout(typeOfLogin: LOGIN_TYPE) {
-  if ((typeOfLogin === LOGIN.FACEBOOK || typeOfLogin === LOGIN.LINE) && isMobileOrTablet()) {
+export function getTimeout(authConnection: AUTH_CONNECTION_TYPE) {
+  if ((authConnection === AUTH_CONNECTION.FACEBOOK || authConnection === AUTH_CONNECTION.LINE) && isMobileOrTablet()) {
     return 1000 * 60; // 60 seconds to finish the login
   }
   return 1000 * 10; // 10 seconds
