@@ -52,6 +52,7 @@ export default class GoogleHandler extends AbstractLoginHandler {
       profileImage,
       authConnectionId: this.params.authConnectionId,
       authConnection: this.params.authConnection,
+      groupedAuthConnectionId: this.params.groupedAuthConnectionId,
       userId: email.toLowerCase(),
     };
   }

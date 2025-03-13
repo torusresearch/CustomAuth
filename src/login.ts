@@ -148,6 +148,7 @@ class CustomAuth {
       authConnection,
       clientId,
       authConnectionId,
+      groupedAuthConnectionId,
       redirect_uri: this.config.redirect_uri,
       redirectToOpener: this.config.redirectToOpener,
       jwtParams,
@@ -178,23 +179,13 @@ class CustomAuth {
 
     const userInfo = await loginHandler.getUserInfo(loginParams);
 
-    const verifierParams: VerifierParams = { verifier_id: userInfo.userId };
-    let aggregateIdToken = "";
-    const finalIdToken = loginParams.idToken || loginParams.accessToken;
-
-    if (groupedAuthConnectionId) {
-      verifierParams["verify_params"] = [{ verifier_id: userInfo.userId, idtoken: finalIdToken }];
-      verifierParams["sub_verifier_ids"] = [userInfo.authConnectionId];
-      aggregateIdToken = keccak256(Buffer.from(finalIdToken, "utf8")).slice(2);
-    }
-
-    const torusKey = await this.getTorusKey(
-      groupedAuthConnectionId || authConnectionId,
-      userInfo.userId,
-      verifierParams,
-      aggregateIdToken || finalIdToken,
-      userInfo.extraConnectionParams
-    );
+    const torusKey = await this.getTorusKey({
+      authConnectionId,
+      userId: userInfo.userId,
+      idToken: loginParams.idToken || loginParams.accessToken,
+      additionalParams: userInfo.extraConnectionParams,
+      groupedAuthConnectionId,
+    });
 
     return {
       ...torusKey,
@@ -205,13 +196,26 @@ class CustomAuth {
     };
   }
 
-  async getTorusKey(
-    verifier: string,
-    verifierId: string,
-    verifierParams: { verifier_id: string },
-    idToken: string,
-    additionalParams?: ExtraParams
-  ): Promise<TorusKey> {
+  async getTorusKey(params: {
+    authConnectionId: string;
+    userId: string;
+    idToken: string;
+    additionalParams?: ExtraParams;
+    groupedAuthConnectionId?: string;
+  }): Promise<TorusKey> {
+    const { authConnectionId, userId, idToken, additionalParams, groupedAuthConnectionId } = params;
+    const verifier = groupedAuthConnectionId || authConnectionId;
+    const verifierId = userId;
+    const verifierParams: VerifierParams = { verifier_id: userId };
+    let aggregateIdToken = "";
+    const finalIdToken = idToken;
+
+    if (groupedAuthConnectionId) {
+      verifierParams["verify_params"] = [{ verifier_id: userId, idtoken: finalIdToken }];
+      verifierParams["sub_verifier_ids"] = [authConnectionId];
+      aggregateIdToken = keccak256(Buffer.from(finalIdToken, "utf8")).slice(2);
+    }
+
     const nodeDetails = await this.sentryHandler.startSpan(
       {
         name: SENTRY_TXNS.FETCH_NODE_DETAILS,
@@ -236,7 +240,7 @@ class CustomAuth {
           indexes: nodeDetails.torusIndexes,
           verifier,
           verifierParams,
-          idToken,
+          idToken: aggregateIdToken || finalIdToken,
           nodePubkeys: nodeDetails.torusNodePub,
           extraParams: {
             ...additionalParams,
@@ -276,7 +280,7 @@ class CustomAuth {
 
     const loginDetails = storageData || (await this.storageHelper.retrieveLoginDetails(instanceId));
     const { args, ...rest } = loginDetails || {};
-    log.info(args);
+    log.info(args, "args", this.storageHelper.storageMethodUsed);
 
     let result: TorusLoginResponse;
 

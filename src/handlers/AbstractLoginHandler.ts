@@ -27,6 +27,7 @@ abstract class AbstractLoginHandler implements ILoginHandler {
           instanceId: this.nonce,
           authConnectionId: this.params.authConnectionId,
           authConnection: this.params.authConnection,
+          groupedAuthConnectionId: this.params.groupedAuthConnectionId,
           redirectToOpener: this.params.redirectToOpener || false,
         })
       )

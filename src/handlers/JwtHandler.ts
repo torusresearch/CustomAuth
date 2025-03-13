@@ -63,6 +63,7 @@ export default class JwtHandler extends AbstractLoginHandler {
           userId: getUserId(userInfo, this.params.authConnection, userIdField, isUserIdCaseSensitive),
           authConnectionId: this.params.authConnectionId,
           authConnection: this.params.authConnection,
+          groupedAuthConnectionId: this.params.groupedAuthConnectionId,
         };
       } catch (error) {
         // ignore
@@ -79,6 +80,7 @@ export default class JwtHandler extends AbstractLoginHandler {
         userId: getUserId(decodedToken, this.params.authConnection, userIdField, isUserIdCaseSensitive),
         authConnectionId: this.params.authConnectionId,
         authConnection: this.params.authConnection,
+        groupedAuthConnectionId: this.params.groupedAuthConnectionId,
       };
     }
     throw new Error("Access/id token not available");

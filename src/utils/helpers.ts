@@ -176,23 +176,23 @@ export function constructURL(params: { baseURL: string; query?: Record<string, u
   return url.toString();
 }
 
-export function are3PCSupported(): boolean {
-  const browserInfo = Bowser.parse(navigator.userAgent);
-  log.info(JSON.stringify(browserInfo), "current browser info");
+// export function are3PCSupported(): boolean {
+//   const browserInfo = Bowser.parse(navigator.userAgent);
+//   log.info(JSON.stringify(browserInfo), "current browser info");
 
-  let thirdPartyCookieSupport = true;
-  // brave
-  if ((navigator as unknown as { brave: boolean })?.brave) {
-    thirdPartyCookieSupport = false;
-  }
-  // All webkit & gecko engine instances use itp (intelligent tracking prevention -
-  // https://webkit.org/tracking-prevention/#intelligent-tracking-prevention-itp)
-  if (browserInfo.engine.name === Bowser.ENGINE_MAP.WebKit || browserInfo.engine.name === Bowser.ENGINE_MAP.Gecko) {
-    thirdPartyCookieSupport = false;
-  }
+//   let thirdPartyCookieSupport = true;
+//   // brave
+//   if ((navigator as unknown as { brave: boolean })?.brave) {
+//     thirdPartyCookieSupport = false;
+//   }
+//   // All webkit & gecko engine instances use itp (intelligent tracking prevention -
+//   // https://webkit.org/tracking-prevention/#intelligent-tracking-prevention-itp)
+//   if (browserInfo.engine.name === Bowser.ENGINE_MAP.WebKit || browserInfo.engine.name === Bowser.ENGINE_MAP.Gecko) {
+//     thirdPartyCookieSupport = false;
+//   }
 
-  return thirdPartyCookieSupport;
-}
+//   return thirdPartyCookieSupport;
+// }
 
 export const validateAndConstructUrl = (domain: string): URL => {
   try {

@@ -51,6 +51,7 @@ export default class FacebookHandler extends AbstractLoginHandler {
       profileImage: picture.data.url || "",
       authConnectionId: this.params.authConnectionId,
       authConnection: this.params.authConnection,
+      groupedAuthConnectionId: this.params.groupedAuthConnectionId,
       userId: id,
     };
   }

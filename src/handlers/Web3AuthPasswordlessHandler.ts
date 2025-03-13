@@ -57,6 +57,7 @@ export default class Web3AuthPasswordlessHandler extends AbstractLoginHandler {
       userId: name.toLowerCase(),
       authConnectionId: this.params.authConnectionId,
       authConnection: this.params.authConnection,
+      groupedAuthConnectionId: this.params.groupedAuthConnectionId,
     };
   }
 }

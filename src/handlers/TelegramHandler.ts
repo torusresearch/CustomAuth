@@ -71,6 +71,7 @@ export default class TelegramHandler extends AbstractLoginHandler {
       authConnectionId: this.params.authConnectionId,
       userId: id.toString(),
       authConnection: this.params.authConnection,
+      groupedAuthConnectionId: this.params.groupedAuthConnectionId,
     };
   }
 

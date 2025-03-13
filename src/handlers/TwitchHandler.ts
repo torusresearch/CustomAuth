@@ -54,6 +54,7 @@ export default class TwitchHandler extends AbstractLoginHandler {
       userId: userId,
       authConnectionId: this.params.authConnectionId,
       authConnection: this.params.authConnection,
+      groupedAuthConnectionId: this.params.groupedAuthConnectionId,
     };
   }
 }

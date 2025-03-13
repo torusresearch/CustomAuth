@@ -56,6 +56,7 @@ export default class DiscordHandler extends AbstractLoginHandler {
       userId: id,
       authConnectionId: this.params.authConnectionId,
       authConnection: this.params.authConnection,
+      groupedAuthConnectionId: this.params.groupedAuthConnectionId,
     };
   }
 }

@@ -64,6 +64,7 @@ export default class PasskeysHandler extends AbstractLoginHandler {
       authConnectionId: this.params.authConnectionId,
       userId: verifierId,
       authConnection: this.params.authConnection,
+      groupedAuthConnectionId: this.params.groupedAuthConnectionId,
       extraConnectionParams: {
         signature,
         clientDataJSON,
