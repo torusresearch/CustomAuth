@@ -1,3 +1,4 @@
+import { SESSION_SERVER_API_URL } from "@toruslabs/constants";
 import { getPublic, sign } from "@toruslabs/eccrypto";
 import { get, post } from "@toruslabs/http-helpers";
 import { decryptData, encryptData, keccak256 } from "@toruslabs/metadata-helpers";
@@ -12,7 +13,7 @@ class StorageHelper {
 
   private isInitialized = false;
 
-  private storageServerUrl = "https://session.web3auth.io";
+  private storageServerUrl = SESSION_SERVER_API_URL;
 
   private localStorageAvailable: boolean = true;
 
