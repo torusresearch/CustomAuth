@@ -20,6 +20,7 @@ export const AUTH_CONNECTION = {
   // end - byoa
   CUSTOM: "custom",
   PASSKEYS: "passkeys",
+  AUTHENTICATOR: "authenticator",
 } as const;
 
 export const UX_MODE = {

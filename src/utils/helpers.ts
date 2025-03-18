@@ -66,6 +66,7 @@ export const getUserId = (
   switch (authConnection) {
     case AUTH_CONNECTION.EMAIL_PASSWORDLESS:
     case AUTH_CONNECTION.SMS_PASSWORDLESS:
+    case AUTH_CONNECTION.AUTHENTICATOR:
       return caseSensitiveField(name, isUserIdCaseSensitive);
     case AUTH_CONNECTION.WEIBO:
     case AUTH_CONNECTION.GITHUB:
@@ -73,6 +74,9 @@ export const getUserId = (
     case AUTH_CONNECTION.APPLE:
     case AUTH_CONNECTION.LINKEDIN:
     case AUTH_CONNECTION.LINE:
+    case AUTH_CONNECTION.WECHAT:
+    case AUTH_CONNECTION.KAKAO:
+    case AUTH_CONNECTION.FARCASTER:
     case AUTH_CONNECTION.CUSTOM:
       return caseSensitiveField(sub, isUserIdCaseSensitive);
     default:
