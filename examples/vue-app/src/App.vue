@@ -285,7 +285,7 @@ const loginToConnectionMap = computed((): Record<string, Record<string, string |
     [WEIBO]: { domain: AUTH_DOMAIN },
     [LINE]: { domain: AUTH_DOMAIN },
     [COGNITO]: { domain: COGNITO_AUTH_DOMAIN, identity_provider: "Google", response_type: "token", user_info_endpoint: "userInfo" },
-    [REDDIT]: { domain: AUTH_DOMAIN, connection: "Reddit", verifierIdField: "name", isVerifierIdCaseSensitive: false },
+    [REDDIT]: { domain: AUTH_DOMAIN, connection: "Reddit", userIdField: "name", isUserIdCaseSensitive: false },
     [TELEGRAM]: {
       identity_provider: "Telegram",
       origin: "https://custom-auth-beta.vercel.app/serviceworker/redirect",
