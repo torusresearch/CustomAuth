@@ -14,9 +14,13 @@ export const AUTH_CONNECTION = {
   LINE: "line",
   EMAIL_PASSWORDLESS: "email_passwordless",
   SMS_PASSWORDLESS: "sms_passwordless",
+  KAKAO: "kakao",
+  WECHAT: "wechat",
+  FARCASTER: "farcaster",
   // end - byoa
   CUSTOM: "custom",
   PASSKEYS: "passkeys",
+  AUTHENTICATOR: "authenticator",
 } as const;
 
 export const UX_MODE = {

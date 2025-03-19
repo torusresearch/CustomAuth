@@ -39,6 +39,10 @@ const createHandler = (params: CreateHandlerParams): ILoginHandler => {
     case AUTH_CONNECTION.LINE:
     case AUTH_CONNECTION.CUSTOM:
     case AUTH_CONNECTION.REDDIT:
+    case AUTH_CONNECTION.WECHAT:
+    case AUTH_CONNECTION.KAKAO:
+    case AUTH_CONNECTION.FARCASTER:
+    case AUTH_CONNECTION.AUTHENTICATOR:
       if (id_token || access_token) {
         return new MockLoginHandler(params);
       }
