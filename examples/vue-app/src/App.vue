@@ -1,5 +1,5 @@
 <template>
-  <nav class="bg-white sticky top-0 z-50 w-full z-20 top-0 start-0 border-gray-200 dark:border-gray-600">
+  <nav class="bg-white sticky z-50 w-full top-0 start-0 border-gray-200 dark:border-gray-600">
     <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
       <a href="#" class="flex items-center space-x-3 rtl:space-x-reverse">
         <img :src="`/web3auth.svg`" class="h-8" alt="W3A Logo" />
@@ -203,8 +203,6 @@ import {
   FormData,
   GITHUB,
   GOOGLE,
-  HOSTED_EMAIL_PASSWORDLESS,
-  HOSTED_SMS_PASSWORDLESS,
   LINE,
   LINKEDIN,
   LOCAL_NETWORK,
@@ -280,8 +278,6 @@ const loginToConnectionMap = computed((): Record<string, Record<string, string |
   return {
     // [GOOGLE]: { login_hint: 'hello@tor.us', prompt: 'none' }, // This allows seamless login with google
     [EMAIL_PASSWORD]: { domain: AUTH_DOMAIN },
-    [HOSTED_EMAIL_PASSWORDLESS]: { domain: AUTH_DOMAIN, verifierIdField: "name", connection: "", isVerifierIdCaseSensitive: false },
-    [HOSTED_SMS_PASSWORDLESS]: { domain: AUTH_DOMAIN, verifierIdField: "name", connection: "" },
     [APPLE]: { domain: AUTH_DOMAIN },
     [GITHUB]: { domain: AUTH_DOMAIN },
     [LINKEDIN]: { domain: AUTH_DOMAIN },
