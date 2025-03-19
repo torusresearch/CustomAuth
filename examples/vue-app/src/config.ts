@@ -1,6 +1,5 @@
 import { TORUS_LEGACY_NETWORK, TORUS_NETWORK_TYPE, TORUS_SAPPHIRE_NETWORK } from "@toruslabs/constants";
 import { UX_MODE, UX_MODE_TYPE } from "@toruslabs/customauth";
-import { SafeEventEmitterProvider } from "@web3auth/base";
 
 export const GOOGLE = "google";
 export const FACEBOOK = "facebook";
@@ -22,7 +21,6 @@ export const AUTH_DOMAIN = "https://torus-test.auth0.com";
 export const COGNITO_AUTH_DOMAIN = "https://torus-test.auth.ap-southeast-1.amazoncognito.com/oauth2/";
 export const WEB3AUTH_EMAIL_PASSWORDLESS = "email_passwordless";
 export const WEB3AUTH_SMS_PASSWORDLESS = "sms_passwordless";
-export const LOCAL_NETWORK = "network";
 export const uxModeOptions = Object.values(UX_MODE).map((x) => ({ name: x, value: x }));
 export const WEB3AUTH_CLIENT_ID = "BJ6l3_kIQiy6YVL7zDlCcEAvGpGukwFgp-C_0WvNI_fAEeIaoVRLDrV5OjtbZr_zJxbyXFsXMT-yhQiUNYvZWpo";
 
@@ -145,7 +143,6 @@ export type FormData = {
   loginProvider: string;
   loginHint: string;
   network: TORUS_NETWORK_TYPE;
-  provider: SafeEventEmitterProvider | null;
 };
 
 export const networkList = [TORUS_SAPPHIRE_NETWORK.SAPPHIRE_DEVNET, TORUS_LEGACY_NETWORK.TESTNET];

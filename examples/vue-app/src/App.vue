@@ -37,7 +37,7 @@
             />
             <Select
               v-model="formData.loginProvider"
-              data-testid="selectUxMode"
+              data-testid="selectLoginProvider"
               :label="$t('app.verifier')"
               :aria-label="$t('app.verifier')"
               :placeholder="$t('app.verifier')"
@@ -61,7 +61,7 @@
             />
             <Select
               v-model="formData.network"
-              data-testid="selectUxMode"
+              data-testid="selectNetwork"
               :label="$t('app.network')"
               :aria-label="$t('app.network')"
               :placeholder="$t('app.network')"
@@ -192,7 +192,7 @@ import { SafeEventEmitterProvider } from "@web3auth/base";
 import { EthereumPrivateKeyProvider } from "@web3auth/ethereum-provider";
 import { ec } from "elliptic";
 import { binaryToHex, binaryToUtf8, bufferToBinary, bufferToHex, hexToBinary } from "enc-utils";
-import { computed, ref, watch } from "vue";
+import { computed, onMounted, ref, watch } from "vue";
 
 import {
   APPLE,
@@ -205,7 +205,6 @@ import {
   GOOGLE,
   LINE,
   LINKEDIN,
-  LOCAL_NETWORK,
   networkOptions,
   REDDIT,
   sapphireDevnetVerifierMap,
@@ -229,7 +228,22 @@ const formData = ref<FormData>({
   loginProvider: GOOGLE,
   loginHint: "",
   network: TORUS_SAPPHIRE_NETWORK.SAPPHIRE_DEVNET,
-  provider: null,
+});
+
+watch(formData.value, (newVal) => {
+  console.log("formData changed to", newVal);
+  localStorage.setItem("formData", JSON.stringify(newVal));
+});
+
+onMounted(() => {
+  const localFormData = localStorage.getItem("formData");
+  if (localFormData) {
+    const parsedFormData = JSON.parse(localFormData);
+    formData.value.loginHint = parsedFormData.loginHint;
+    formData.value.network = parsedFormData.network;
+    formData.value.loginProvider = parsedFormData.loginProvider;
+    formData.value.uxMode = parsedFormData.uxMode;
+  }
 });
 
 const customAuthSdk = ref<CustomAuth | null>(null);
@@ -306,6 +320,7 @@ const loadResponse = (privKeyInfo: TorusKey, localUserInfo: (TorusConnectionResp
 };
 const initCustomAuth = async () => {
   const { network, uxMode } = formData.value;
+  console.log("initCustomAuth", network, uxMode);
   switch (uxMode) {
     case UX_MODE.REDIRECT: {
       const nodeDetails = fetchLocalConfig(network, KEY_TYPE.SECP256K1);
@@ -340,7 +355,6 @@ const initCustomAuth = async () => {
     default:
       break;
   }
-  localStorage.setItem(LOCAL_NETWORK, network);
 };
 
 const setProvider = async () => {
@@ -366,6 +380,7 @@ const onLogin = async () => {
 
   const jwtParams = loginToConnectionMap.value[selectedLoginProvider] || {};
   const { typeOfLogin, clientId, verifier } = verifierMap.value[selectedLoginProvider];
+  console.log("logging in with ", typeOfLogin, clientId, verifier, jwtParams, formData.value.network, customAuthSdk.value);
 
   let data: TorusLoginResponse | undefined;
   if (formData.value.network === TORUS_LEGACY_NETWORK.TESTNET) {
@@ -397,8 +412,9 @@ const onLogout = async () => {
 
 watch(
   () => [formData.value.network, formData.value.uxMode],
-  ([newValue, oldValue]) => {
-    if (oldValue === newValue) return;
+  ([newNetwork, oldNetwork], [newUxMode, oldUxMode]) => {
+    console.log("watch", newNetwork, oldNetwork, newUxMode, oldUxMode);
+    if (oldNetwork === newNetwork && oldUxMode === newUxMode) return;
     initCustomAuth();
   }
 );
