@@ -55,12 +55,6 @@ export const testnetVerifierMap = {
   [TWITTER]: { name: "Twitter", typeOfLogin: "twitter", clientId: "A7H8kkcmyFRlusJQ9dZiqBLraG2yWIsO", verifier: "torus-auth0-twitter-lrc" },
   [WEIBO]: { name: "Weibo", typeOfLogin: "weibo", clientId: "dhFGlWQMoACOI5oS5A1jFglp772OAWr1", verifier: "torus-auth0-weibo-lrc" },
   [LINE]: { name: "Line", typeOfLogin: "line", clientId: "WN8bOmXKNRH1Gs8k475glfBP5gDZr9H1", verifier: "torus-auth0-line-lrc" },
-  [COGNITO]: {
-    name: "Cognito",
-    typeOfLogin: "custom",
-    clientId: "78i338ev9lkgjst3mfeuih9tsh",
-    verifier: "demo-cognito-example",
-  },
   [WEB3AUTH_EMAIL_PASSWORDLESS]: {
     name: "Web3Auth Email Passwordless",
     typeOfLogin: "email_passwordless",
