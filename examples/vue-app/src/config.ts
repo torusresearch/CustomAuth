@@ -22,7 +22,8 @@ export const COGNITO_AUTH_DOMAIN = "https://torus-test.auth.ap-southeast-1.amazo
 export const WEB3AUTH_EMAIL_PASSWORDLESS = "email_passwordless";
 export const WEB3AUTH_SMS_PASSWORDLESS = "sms_passwordless";
 export const uxModeOptions = Object.values(UX_MODE).map((x) => ({ name: x, value: x }));
-export const WEB3AUTH_CLIENT_ID = "BJ6l3_kIQiy6YVL7zDlCcEAvGpGukwFgp-C_0WvNI_fAEeIaoVRLDrV5OjtbZr_zJxbyXFsXMT-yhQiUNYvZWpo";
+export const TESTNET_WEB3AUTH_CLIENT_ID = "BJ6l3_kIQiy6YVL7zDlCcEAvGpGukwFgp-C_0WvNI_fAEeIaoVRLDrV5OjtbZr_zJxbyXFsXMT-yhQiUNYvZWpo";
+export const SAPPHIRE_WEB3AUTH_CLIENT_ID = "BGeLpPeQTo9SD3az6tXjokcDNN65GW3V0E9s6f7aPPl-r3MXOHPrqBWaXhhRLdtC2tTt9iH6VctMK0G4xJJio0o";
 
 export interface LoginProviderItem {
   name: string;
