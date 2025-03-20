@@ -214,7 +214,8 @@ import {
   testnetVerifierOptions,
   TWITTER,
   uxModeOptions,
-  WEB3AUTH_CLIENT_ID,
+  TESTNET_WEB3AUTH_CLIENT_ID,
+  SAPPHIRE_WEB3AUTH_CLIENT_ID,
   WEB3AUTH_EMAIL_PASSWORDLESS,
   WEB3AUTH_SMS_PASSWORDLESS,
   WEIBO,
@@ -330,7 +331,7 @@ const initCustomAuth = async () => {
         enableLogging: true,
         network,
         uxMode,
-        web3AuthClientId: WEB3AUTH_CLIENT_ID,
+        web3AuthClientId: network === TORUS_SAPPHIRE_NETWORK.SAPPHIRE_DEVNET ? SAPPHIRE_WEB3AUTH_CLIENT_ID : TESTNET_WEB3AUTH_CLIENT_ID,
         nodeDetails,
         checkCommitment: false,
       });
@@ -345,7 +346,7 @@ const initCustomAuth = async () => {
         enableLogging: true,
         network,
         popupFeatures: `titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=500,width=500,top=100,left=100`,
-        web3AuthClientId: WEB3AUTH_CLIENT_ID,
+        web3AuthClientId: network === TORUS_SAPPHIRE_NETWORK.SAPPHIRE_DEVNET ? SAPPHIRE_WEB3AUTH_CLIENT_ID : TESTNET_WEB3AUTH_CLIENT_ID,
         nodeDetails,
         checkCommitment: false,
       });
