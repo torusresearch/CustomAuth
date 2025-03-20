@@ -54,8 +54,6 @@ export const testnetVerifierMap = {
   [TWITTER]: { name: "Twitter", typeOfLogin: "twitter", clientId: "A7H8kkcmyFRlusJQ9dZiqBLraG2yWIsO", verifier: "torus-auth0-twitter-lrc" },
   [WEIBO]: { name: "Weibo", typeOfLogin: "weibo", clientId: "dhFGlWQMoACOI5oS5A1jFglp772OAWr1", verifier: "torus-auth0-weibo-lrc" },
   [LINE]: { name: "Line", typeOfLogin: "line", clientId: "WN8bOmXKNRH1Gs8k475glfBP5gDZr9H1", verifier: "torus-auth0-line-lrc" },
-  [PASSKEYS_LOGIN]: { name: "Passkeys Login", typeOfLogin: "passkeys", clientId: "passkey", verifier: "passkey-legacy-testnet" },
-  [PASSKEYS_REGISTER]: { name: "Passkeys Register", typeOfLogin: "passkeys", clientId: "passkey", verifier: "passkey-legacy-testnet" },
   [COGNITO]: {
     name: "Cognito",
     typeOfLogin: "custom",
@@ -131,8 +129,6 @@ export const sapphireDevnetVerifierMap = {
     clientId: "4jK24VpfepWRSe5EMdd2if0RBD55pAuA",
     verifier: "web3auth-auth0-sms-passwordless-sapphire-devnet",
   },
-  [PASSKEYS_LOGIN]: { name: "Passkeys Login", typeOfLogin: "passkeys", clientId: "passkey", verifier: "passkey-sapphire-devnet" },
-  [PASSKEYS_REGISTER]: { name: "Passkeys Register", typeOfLogin: "passkeys", clientId: "passkey", verifier: "passkey-sapphire-devnet" },
 } as Record<string, LoginProviderItem>;
 
 export const sapphireDevnetVerifierOptions = Object.entries(sapphireDevnetVerifierMap).map(([key]) => ({ name: key, value: key }));
