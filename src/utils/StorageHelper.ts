@@ -38,11 +38,11 @@ export class StorageHelper<T> {
     this.isInitialized = true;
   }
 
-  async storeLoginDetails(params: T, scope: string): Promise<void> {
+  async storeData(key: string, params: T): Promise<void> {
     if (!this.isInitialized) throw new Error("StorageHelper is not initialized");
-    if (this.localStorageAvailable) window.localStorage.setItem(`torus_login_${scope}`, JSON.stringify(params));
+    if (this.localStorageAvailable) window.localStorage.setItem(key, JSON.stringify(params));
     // if (this.currentStorageMethod === REDIRECT_PARAMS_STORAGE_METHOD.SERVER) {
-    const privKey = keccak256(Buffer.from(scope, "utf8"));
+    const privKey = keccak256(Buffer.from(key, "utf8"));
     const privKeyHex = privKey.toString("hex");
     const publicKeyHex = getPublic(privKey).toString("hex");
     const encData = await encryptData(privKeyHex, params);
@@ -51,18 +51,18 @@ export class StorageHelper<T> {
     // }
   }
 
-  async retrieveLoginDetails(scope: string): Promise<T> {
+  async retrieveData(key: string): Promise<T> {
     if (!this.isInitialized) throw new Error("StorageHelper is not initialized");
     if (this.localStorageAvailable) {
-      const loginDetails = window.localStorage.getItem(`torus_login_${scope}`);
-      if (loginDetails) {
+      const data = window.localStorage.getItem(key);
+      if (data) {
         this.currentStorageMethod = REDIRECT_PARAMS_STORAGE_METHOD.LOCAL_STORAGE;
-        return JSON.parse(loginDetails || "{}") as T;
+        return JSON.parse(data || "{}") as T;
       }
     }
     // if (this.currentStorageMethod === REDIRECT_PARAMS_STORAGE_METHOD.SERVER) {
     this.currentStorageMethod = REDIRECT_PARAMS_STORAGE_METHOD.SERVER;
-    const privKey = keccak256(Buffer.from(scope, "utf8"));
+    const privKey = keccak256(Buffer.from(key, "utf8"));
     const privKeyHex = privKey.toString("hex");
     const publicKeyHex = getPublic(privKey).toString("hex");
     try {
@@ -81,18 +81,18 @@ export class StorageHelper<T> {
     // }
   }
 
-  clearLoginDetailsStorage(scope: string): void {
+  clearStorage(key: string): void {
     if (!this.isInitialized) throw new Error("StorageHelper is not initialized");
-    if (this.localStorageAvailable) window.localStorage.removeItem(`torus_login_${scope}`);
+    if (this.localStorageAvailable) window.localStorage.removeItem(key);
     // No need to clear server details cause they auto expire and scope is never re-used for different login attempts
   }
 
-  clearOrphanedLoginDetails(): void {
+  clearOrphanedData(baseKey: string): void {
     if (!this.isInitialized) throw new Error("StorageHelper is not initialized");
     if (!this.localStorageAvailable) return;
     const allStorageKeys = Object.keys(window.localStorage);
     allStorageKeys.forEach((key) => {
-      if (key.startsWith("torus_login_")) {
+      if (key.startsWith(baseKey)) {
         window.localStorage.removeItem(key);
       }
     });
