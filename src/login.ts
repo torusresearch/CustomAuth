@@ -14,6 +14,7 @@ import {
   ExtraParams,
   ILoginHandler,
   InitParams,
+  LoginDetails,
   LoginWindowResponse,
   RedirectResult,
   RedirectResultParams,
@@ -45,7 +46,7 @@ export class CustomAuth {
 
   nodeDetailManager: NodeDetailManager;
 
-  storageHelper: StorageHelper;
+  storageHelper: StorageHelper<LoginDetails>;
 
   sentryHandler: SentryHandler;
 
