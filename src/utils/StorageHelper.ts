@@ -8,7 +8,7 @@ import { storageAvailable } from "./helpers";
 import { LoginDetails } from "./interfaces";
 import log from "./loglevel";
 
-class StorageHelper {
+export class StorageHelper {
   private currentStorageMethod: REDIRECT_PARAMS_STORAGE_METHOD_TYPE = REDIRECT_PARAMS_STORAGE_METHOD.LOCAL_STORAGE;
 
   private isInitialized = false;
@@ -100,5 +100,3 @@ class StorageHelper {
     // No need to clear server details cause they auto expire and scope is never re-used for different login attempts
   }
 }
-
-export default StorageHelper;
