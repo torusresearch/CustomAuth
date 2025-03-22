@@ -10,7 +10,7 @@ import TelegramHandler from "./TelegramHandler";
 import TwitchHandler from "./TwitchHandler";
 import Web3AuthPasswordlessHandler from "./Web3AuthPasswordlessHandler";
 
-const createHandler = (params: CreateHandlerParams): ILoginHandler => {
+export const createHandler = (params: CreateHandlerParams): ILoginHandler => {
   const { authConnectionId, authConnection, clientId, jwtParams } = params;
   if (!authConnectionId || !authConnection || !clientId) {
     throw new Error("Invalid params. Missing authConnectionId, authConnection or clientId");
@@ -54,5 +54,3 @@ const createHandler = (params: CreateHandlerParams): ILoginHandler => {
       throw new Error("Unsupported login type");
   }
 };
-
-export default createHandler;

@@ -2,7 +2,7 @@ import { type INodeDetails, TORUS_NETWORK_TYPE } from "@toruslabs/constants";
 import { NodeDetailManager } from "@toruslabs/fetch-node-details";
 import { keccak256, type KeyType, Torus, TorusKey } from "@toruslabs/torus.js";
 
-import createHandler from "./handlers/HandlerFactory";
+import { createHandler } from "./handlers/HandlerFactory";
 import { registerServiceWorker } from "./registerServiceWorker";
 import SentryHandler from "./sentry";
 import { SENTRY_TXNS, UX_MODE, UX_MODE_TYPE } from "./utils/enums";
@@ -21,9 +21,9 @@ import {
   VerifierParams,
 } from "./utils/interfaces";
 import log from "./utils/loglevel";
-import StorageHelper from "./utils/StorageHelper";
+import { StorageHelper } from "./utils/StorageHelper";
 
-class CustomAuth {
+export class CustomAuth {
   isInitialized: boolean;
 
   config: {
@@ -364,5 +364,3 @@ class CustomAuth {
     });
   }
 }
-
-export default CustomAuth;
