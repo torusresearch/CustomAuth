@@ -5,10 +5,9 @@ import { decryptData, encryptData, keccak256 } from "@toruslabs/metadata-helpers
 
 import { REDIRECT_PARAMS_STORAGE_METHOD, REDIRECT_PARAMS_STORAGE_METHOD_TYPE } from "./enums";
 import { storageAvailable } from "./helpers";
-import { LoginDetails } from "./interfaces";
 import log from "./loglevel";
 
-export class StorageHelper {
+export class StorageHelper<T> {
   private currentStorageMethod: REDIRECT_PARAMS_STORAGE_METHOD_TYPE = REDIRECT_PARAMS_STORAGE_METHOD.LOCAL_STORAGE;
 
   private isInitialized = false;
@@ -39,11 +38,11 @@ export class StorageHelper {
     this.isInitialized = true;
   }
 
-  async storeLoginDetails(params: LoginDetails, scope: string): Promise<void> {
+  async storeData(key: string, params: T): Promise<void> {
     if (!this.isInitialized) throw new Error("StorageHelper is not initialized");
-    if (this.localStorageAvailable) window.localStorage.setItem(`torus_login_${scope}`, JSON.stringify(params));
+    if (this.localStorageAvailable) window.localStorage.setItem(key, JSON.stringify(params));
     // if (this.currentStorageMethod === REDIRECT_PARAMS_STORAGE_METHOD.SERVER) {
-    const privKey = keccak256(Buffer.from(scope, "utf8"));
+    const privKey = keccak256(Buffer.from(key, "utf8"));
     const privKeyHex = privKey.toString("hex");
     const publicKeyHex = getPublic(privKey).toString("hex");
     const encData = await encryptData(privKeyHex, params);
@@ -52,25 +51,25 @@ export class StorageHelper {
     // }
   }
 
-  async retrieveLoginDetails(scope: string): Promise<LoginDetails> {
+  async retrieveData(key: string): Promise<T> {
     if (!this.isInitialized) throw new Error("StorageHelper is not initialized");
     if (this.localStorageAvailable) {
-      const loginDetails = window.localStorage.getItem(`torus_login_${scope}`);
-      if (loginDetails) {
+      const data = window.localStorage.getItem(key);
+      if (data) {
         this.currentStorageMethod = REDIRECT_PARAMS_STORAGE_METHOD.LOCAL_STORAGE;
-        return JSON.parse(loginDetails || "{}") as LoginDetails;
+        return JSON.parse(data || "{}") as T;
       }
     }
     // if (this.currentStorageMethod === REDIRECT_PARAMS_STORAGE_METHOD.SERVER) {
     this.currentStorageMethod = REDIRECT_PARAMS_STORAGE_METHOD.SERVER;
-    const privKey = keccak256(Buffer.from(scope, "utf8"));
+    const privKey = keccak256(Buffer.from(key, "utf8"));
     const privKeyHex = privKey.toString("hex");
     const publicKeyHex = getPublic(privKey).toString("hex");
     try {
       const encData: { message: string; success: boolean } = await post(`${this.storageServerUrl}/v2/store/get`, { key: publicKeyHex });
       if (encData.message) {
-        const currentLoginDetails = await decryptData<LoginDetails>(privKeyHex, encData.message);
-        return currentLoginDetails;
+        const data = await decryptData<T>(privKeyHex, encData.message);
+        return data;
       }
     } catch (error) {
       if ((error as Response).status === 404) {
@@ -82,18 +81,18 @@ export class StorageHelper {
     // }
   }
 
-  clearLoginDetailsStorage(scope: string): void {
+  clearStorage(key: string): void {
     if (!this.isInitialized) throw new Error("StorageHelper is not initialized");
-    if (this.localStorageAvailable) window.localStorage.removeItem(`torus_login_${scope}`);
+    if (this.localStorageAvailable) window.localStorage.removeItem(key);
     // No need to clear server details cause they auto expire and scope is never re-used for different login attempts
   }
 
-  clearOrphanedLoginDetails(): void {
+  clearOrphanedData(baseKey: string): void {
     if (!this.isInitialized) throw new Error("StorageHelper is not initialized");
     if (!this.localStorageAvailable) return;
     const allStorageKeys = Object.keys(window.localStorage);
     allStorageKeys.forEach((key) => {
-      if (key.startsWith("torus_login_")) {
+      if (key.startsWith(baseKey)) {
         window.localStorage.removeItem(key);
       }
     });

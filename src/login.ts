@@ -14,6 +14,7 @@ import {
   ExtraParams,
   ILoginHandler,
   InitParams,
+  LoginDetails,
   LoginWindowResponse,
   RedirectResult,
   RedirectResultParams,
@@ -45,7 +46,7 @@ export class CustomAuth {
 
   nodeDetailManager: NodeDetailManager;
 
-  storageHelper: StorageHelper;
+  storageHelper: StorageHelper<LoginDetails>;
 
   sentryHandler: SentryHandler;
 
@@ -166,9 +167,9 @@ export class CustomAuth {
       // State has to be last here otherwise it will be overwritten
       loginParams = { accessToken, idToken: idToken || tgAuthResult || "", ...rest, state: instanceParameters };
     } else {
-      this.storageHelper.clearOrphanedLoginDetails();
+      this.storageHelper.clearOrphanedData(`torus_login_`);
       if (this.config.uxMode === UX_MODE.REDIRECT) {
-        await this.storageHelper.storeLoginDetails({ args }, loginHandler.nonce);
+        await this.storageHelper.storeData(`torus_login_${loginHandler.nonce}`, { args });
       }
       loginParams = await loginHandler.handleLoginWindow({
         locationReplaceOnRedirect: this.config.locationReplaceOnRedirect,
@@ -278,7 +279,7 @@ export class CustomAuth {
 
     log.info(instanceId, "instanceId");
 
-    const loginDetails = storageData || (await this.storageHelper.retrieveLoginDetails(instanceId));
+    const loginDetails = storageData || (await this.storageHelper.retrieveData(`torus_login_${instanceId}`));
     const { args, ...rest } = loginDetails || {};
     log.info(args, "args", this.storageHelper.storageMethodUsed);
 
@@ -296,7 +297,7 @@ export class CustomAuth {
       const serializedError = await serializeError(err);
       log.error(serializedError);
       if (clearLoginDetails) {
-        this.storageHelper.clearLoginDetailsStorage(instanceId);
+        this.storageHelper.clearStorage(`torus_login_${instanceId}`);
       }
       return {
         error: `${serializedError.message || ""}`,
@@ -324,7 +325,7 @@ export class CustomAuth {
     }
 
     if (clearLoginDetails) {
-      this.storageHelper.clearLoginDetailsStorage(instanceId);
+      this.storageHelper.clearStorage(`torus_login_${instanceId}`);
     }
 
     return { result, state: instanceParameters || {}, hashParameters, args, ...rest };
