@@ -225,9 +225,9 @@ export function isMobileOrTablet(): boolean {
 
 export function getTimeout(authConnection: AUTH_CONNECTION_TYPE) {
   if ((authConnection === AUTH_CONNECTION.FACEBOOK || authConnection === AUTH_CONNECTION.LINE) && isMobileOrTablet()) {
-    return 1000 * 60; // 60 seconds to finish the login
+    return 1000 * 30; // 60 seconds to finish the login
   }
-  return 1000 * 10; // 10 seconds
+  return 1000 * 1; // 10 seconds
 }
 
 export function decodeToken<T>(token: string): { header: { alg: string; typ: string; kid?: string }; payload: T } {
