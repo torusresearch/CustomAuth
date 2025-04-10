@@ -45,6 +45,7 @@ class RedirectMode extends React.Component<IProps, IState> {
         enableLogging: true,
         uxMode: UX_MODE.REDIRECT,
         network: "testnet",
+        web3AuthClientId: "BJ6l3_kIQiy6YVL7zDlCcEAvGpGukwFgp-C_0WvNI_fAEeIaoVRLDrV5OjtbZr_zJxbyXFsXMT-yhQiUNYvZWpo",
       });
       await torusdirectsdk.init({ skipSw: true });
 
@@ -64,8 +65,8 @@ class RedirectMode extends React.Component<IProps, IState> {
       // in redirect mode, login result will be handled in redirect page
       // (Check auth.tsx file)
       await torusdirectsdk?.triggerLogin({
-        typeOfLogin,
-        verifier,
+        authConnection: typeOfLogin,
+        authConnectionId: verifier,
         clientId,
         jwtParams,
       });

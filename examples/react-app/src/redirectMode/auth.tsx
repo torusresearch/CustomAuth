@@ -24,6 +24,7 @@ class RedirectAuth extends React.Component<IProps, IState> {
       enableLogging: true,
       uxMode: "redirect",
       network: "testnet",
+      web3AuthClientId: "BJ6l3_kIQiy6YVL7zDlCcEAvGpGukwFgp-C_0WvNI_fAEeIaoVRLDrV5OjtbZr_zJxbyXFsXMT-yhQiUNYvZWpo",
     });
     const loginDetails = await torusdirectsdk.getRedirectResult();
     console.log(loginDetails);

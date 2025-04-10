@@ -44,6 +44,7 @@ class PopupMode extends React.Component<IProps, IState> {
         baseUrl: `${window.location.origin}/serviceworker`,
         enableLogging: true,
         network: "testnet", // details for test net
+        web3AuthClientId: "BJ6l3_kIQiy6YVL7zDlCcEAvGpGukwFgp-C_0WvNI_fAEeIaoVRLDrV5OjtbZr_zJxbyXFsXMT-yhQiUNYvZWpo",
       });
 
       await torusdirectsdk.init({ skipSw: false });
@@ -62,8 +63,8 @@ class PopupMode extends React.Component<IProps, IState> {
       const jwtParams = this._loginToConnectionMap()[selectedVerifier] || {};
       const { typeOfLogin, clientId, verifier } = verifierMap[selectedVerifier];
       const loginDetails = await torusdirectsdk?.triggerLogin({
-        typeOfLogin,
-        verifier,
+        authConnection: typeOfLogin,
+        authConnectionId: verifier,
         clientId,
         jwtParams,
       });

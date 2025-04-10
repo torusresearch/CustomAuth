@@ -3,7 +3,13 @@
     "browser": true,
     "es2021": true
   },
-  "extends": ["plugin:react/recommended", "airbnb-typescript/base", "plugin:prettier/recommended", "prettier"],
+  "extends": [
+    "plugin:react/recommended",
+    "airbnb-typescript/base",
+    "plugin:prettier/recommended",
+    "prettier",
+    "plugin:@typescript-eslint/recommended"
+  ],
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
     "ecmaFeatures": {
@@ -13,7 +19,7 @@
     "sourceType": "module",
     "project": ["./tsconfig.json"]
   },
-  "plugins": ["prettier", "react", "@typescript-eslint"],
+  "plugins": ["prettier", "react", "@typescript-eslint", "import"],
   "settings": {
     "import/resolver": {
       "node": {
@@ -54,7 +60,17 @@
     "no-unused-vars": 0,
     "@typescript-eslint/no-unused-vars": ["error"],
     "no-restricted-syntax": 0,
-    "max-len": [2, { "code": 150, "ignoreComments": true }]
+    "max-len": [2, { "code": 150, "ignoreComments": true }],
+    "@typescript-eslint/lines-between-class-members": ["error", "always", { "exceptAfterSingleLine": true }],
+    "@typescript-eslint/no-throw-literal": "error",
+    "import/no-extraneous-dependencies": [
+      "error",
+      {
+        "devDependencies": true,
+        "optionalDependencies": false,
+        "peerDependencies": false
+      }
+    ]
   },
   "root": true
 }

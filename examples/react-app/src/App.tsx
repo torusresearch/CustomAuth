@@ -66,9 +66,12 @@ class HomePage extends React.PureComponent<IProps, IState> {
       }
       const { error, instanceParameters } = this.handleRedirectParameters(hash, queryParams);
       const torusdirectsdk = new CustomAuth({
-        baseUrl: `${window.location.origin}/serviceworker`,
+        baseUrl: `${window.location.origin}`,
+        redirectPathName: "auth",
         enableLogging: true,
         network: "testnet", // details for test net
+        web3AuthClientId: "BJ6l3_kIQiy6YVL7zDlCcEAvGpGukwFgp-C_0WvNI_fAEeIaoVRLDrV5OjtbZr_zJxbyXFsXMT-yhQiUNYvZWpo", // get Client ID from Web3Auth Dashboard
+        checkCommitment: false,
       });
 
       await torusdirectsdk.init({ skipSw: false });
@@ -96,12 +99,10 @@ class HomePage extends React.PureComponent<IProps, IState> {
       const jwtParams = this._loginToConnectionMap()[selectedVerifier] || {};
       const { typeOfLogin, clientId, verifier } = verifierMap[selectedVerifier];
       const loginDetails = await torusdirectsdk?.triggerLogin({
-        typeOfLogin,
-        verifier,
+        authConnection: typeOfLogin,
+        authConnectionId: verifier,
         clientId,
         jwtParams,
-        hash,
-        queryParameters,
       });
       this.setState({ loginResponse: loginDetails });
     } catch (error) {

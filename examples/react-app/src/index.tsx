@@ -1,15 +1,18 @@
 import React from "react";
-import ReactDOM from "react-dom";
+import { createRoot } from "react-dom/client";
 import { BrowserRouter as Router } from "react-router-dom";
 
 import "./index.css";
 import RouterPage from "./router";
 
-ReactDOM.render(
+const container = document.getElementById("root");
+if (!container) throw new Error("Failed to find the root element");
+const root = createRoot(container);
+
+root.render(
   <React.StrictMode>
     <Router>
       <RouterPage />
     </Router>
   </React.StrictMode>,
-  document.getElementById("root")
 );
