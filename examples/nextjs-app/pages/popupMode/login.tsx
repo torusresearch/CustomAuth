@@ -1,5 +1,5 @@
 import React from "react";
-import { CustomAuth, TorusLoginResponse} from "@toruslabs/customauth";
+import { CustomAuth, TorusLoginResponse } from "@toruslabs/customauth";
 import dynamic from "next/dynamic";
 import {
   verifierMap,
@@ -27,9 +27,9 @@ if (typeof window === "object") {
 
 interface IState {
   selectedVerifier: string;
-  torusdirectsdk: CustomAuth | null;
+  torusdirectsdk: any | null;
   loginHint: string;
-  loginDetails?: TorusLoginResponse | null;
+  loginDetails?: any | null;
 }
 
 interface IProps {}
@@ -69,8 +69,8 @@ class MyApp extends React.Component<IProps, IState> {
       const jwtParams = this._loginToConnectionMap()[selectedVerifier] || {};
       const { typeOfLogin, clientId, verifier } = verifierMap[selectedVerifier];
       const loginDetails = await torusdirectsdk.triggerLogin({
-        typeOfLogin,
-        verifier,
+        authConnection: typeOfLogin,
+        authConnectionId: verifier,
         clientId,
         jwtParams,
       });
