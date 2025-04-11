@@ -35,7 +35,6 @@ export const createHandler = (params: CreateHandlerParams): ILoginHandler => {
     case AUTH_CONNECTION.GITHUB:
     case AUTH_CONNECTION.LINKEDIN:
     case AUTH_CONNECTION.TWITTER:
-    case AUTH_CONNECTION.WEIBO:
     case AUTH_CONNECTION.LINE:
     case AUTH_CONNECTION.CUSTOM:
     case AUTH_CONNECTION.REDDIT:
