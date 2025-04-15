@@ -22,7 +22,7 @@ import {
 
 interface IState {
   selectedVerifier: string;
-  torusdirectsdk: CustomAuth | null;
+  torusdirectsdk: any | null;
   loginHint: string;
   consoleText?: string;
 }
@@ -68,8 +68,8 @@ class RedirectMode extends React.Component<IProps, IState> {
       // in redirect mode, login result will be handled in redirect page
       // (Check auth.tsx file)
       await torusdirectsdk?.triggerLogin({
-        typeOfLogin,
-        verifier,
+        authConnection: typeOfLogin,
+        authConnectionId: verifier,
         clientId,
         jwtParams,
       });
@@ -95,10 +95,10 @@ class RedirectMode extends React.Component<IProps, IState> {
       [WEIBO]: { domain: AUTH_DOMAIN },
       [LINE]: { domain: AUTH_DOMAIN },
       [COGNITO]: { domain: COGNITO_AUTH_DOMAIN, identity_provider: "Google", response_type: "token", user_info_endpoint: "userInfo" },
-      [TELEGRAM]: { 
+      [TELEGRAM]: {
         domain: "https://oauth.tg.dev/auth",
-        identity_provider: "Telegram", 
-        origin: "https://custom-auth-beta.vercel.app/auth" 
+        identity_provider: "Telegram",
+        origin: "https://custom-auth-beta.vercel.app/auth",
       },
       [REDDIT]: { domain: AUTH_DOMAIN, connection: "Reddit", verifierIdField: "name", isVerifierIdCaseSensitive: false },
     };
