@@ -389,7 +389,7 @@ export interface RedirectResult {
   args: CustomAuthLoginParams;
 }
 
-export type AUTH0_CONNECTION_TYPE = "apple" | "github" | "linkedin" | "twitter" | "weibo" | "line";
+export type AUTH0_CONNECTION_TYPE = "apple" | "github" | "linkedin" | "twitter" | "line";
 
 export type VerifierParams = {
   verify_params?: {

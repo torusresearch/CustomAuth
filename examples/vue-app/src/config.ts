@@ -11,7 +11,6 @@ export const GITHUB = "github";
 export const APPLE = "apple";
 export const LINKEDIN = "linkedin";
 export const TWITTER = "twitter";
-export const WEIBO = "weibo";
 export const LINE = "line";
 export const EMAIL_PASSWORD = "email_password";
 export const PASSKEYS_LOGIN = "passkeys_login";
@@ -53,7 +52,6 @@ export const testnetVerifierMap = {
   [GITHUB]: { name: "Github", typeOfLogin: "github", clientId: "PC2a4tfNRvXbT48t89J5am0oFM21Nxff", verifier: "torus-auth0-github-lrc" },
   [LINKEDIN]: { name: "Linkedin", typeOfLogin: "linkedin", clientId: "59YxSgx79Vl3Wi7tQUBqQTRTxWroTuoc", verifier: "torus-auth0-linkedin-lrc" },
   [TWITTER]: { name: "Twitter", typeOfLogin: "twitter", clientId: "A7H8kkcmyFRlusJQ9dZiqBLraG2yWIsO", verifier: "torus-auth0-twitter-lrc" },
-  [WEIBO]: { name: "Weibo", typeOfLogin: "weibo", clientId: "dhFGlWQMoACOI5oS5A1jFglp772OAWr1", verifier: "torus-auth0-weibo-lrc" },
   [LINE]: { name: "Line", typeOfLogin: "line", clientId: "WN8bOmXKNRH1Gs8k475glfBP5gDZr9H1", verifier: "torus-auth0-line-lrc" },
   [WEB3AUTH_EMAIL_PASSWORDLESS]: {
     name: "Web3Auth Email Passwordless",
@@ -110,7 +108,6 @@ export const sapphireDevnetVerifierMap = {
     clientId: "wz4w3pdutXsbmWltyUJjq1pyaoF0GBxW",
     verifier: "web3auth-auth0-twitter-sapphire-devnet",
   },
-  [WEIBO]: { name: "Weibo", typeOfLogin: "weibo", clientId: "X3BSYMr3BVZFVls6XOEMZ4VdOTW58mQZ", verifier: "web3auth-auth0-weibo-sapphire-devnet" },
   [LINE]: { name: "Line", typeOfLogin: "line", clientId: "AUDHMShLlzzS15cb9F8IjYQHBbfWO5iB", verifier: "web3auth-auth0-line-sapphire-devnet" },
   [WEB3AUTH_EMAIL_PASSWORDLESS]: {
     name: "Web3Auth Email Passwordless",

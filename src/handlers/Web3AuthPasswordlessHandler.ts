@@ -18,7 +18,7 @@ export default class Web3AuthPasswordlessHandler extends AbstractLoginHandler {
 
   setFinalUrl(): void {
     const { domain } = this.params.jwtParams || {};
-    const finalUrl = validateAndConstructUrl(domain || "https://passwordless.web3auth.io/v6");
+    const finalUrl = validateAndConstructUrl(domain || "https://passwordless.web3auth.io/v7");
     finalUrl.pathname += finalUrl.pathname.endsWith("/") ? "authorize" : "/authorize";
     const clonedParams = JSON.parse(JSON.stringify(this.params.jwtParams || {}));
     delete clonedParams.domain;

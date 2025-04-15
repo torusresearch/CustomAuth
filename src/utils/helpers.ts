@@ -32,7 +32,6 @@ export const loginToConnectionMap: Record<string, string> = {
   [AUTH_CONNECTION.GITHUB]: "github",
   [AUTH_CONNECTION.LINKEDIN]: "linkedin",
   [AUTH_CONNECTION.TWITTER]: "twitter",
-  [AUTH_CONNECTION.WEIBO]: "weibo",
   [AUTH_CONNECTION.LINE]: "line",
   [AUTH_CONNECTION.EMAIL_PASSWORDLESS]: "email",
   [AUTH_CONNECTION.SMS_PASSWORDLESS]: "sms",
@@ -68,7 +67,6 @@ export const getUserId = (
     case AUTH_CONNECTION.SMS_PASSWORDLESS:
     case AUTH_CONNECTION.AUTHENTICATOR:
       return caseSensitiveField(name, isUserIdCaseSensitive);
-    case AUTH_CONNECTION.WEIBO:
     case AUTH_CONNECTION.GITHUB:
     case AUTH_CONNECTION.TWITTER:
     case AUTH_CONNECTION.APPLE:
@@ -225,9 +223,9 @@ export function isMobileOrTablet(): boolean {
 
 export function getTimeout(authConnection: AUTH_CONNECTION_TYPE) {
   if ((authConnection === AUTH_CONNECTION.FACEBOOK || authConnection === AUTH_CONNECTION.LINE) && isMobileOrTablet()) {
-    return 1000 * 30; // 60 seconds to finish the login
+    return 1000 * 30; // 30 seconds to finish the login
   }
-  return 1000 * 1; // 10 seconds
+  return 1000 * 1; // 1 second
 }
 
 export function decodeToken<T>(token: string): { header: { alg: string; typ: string; kid?: string }; payload: T } {

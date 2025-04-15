@@ -218,7 +218,6 @@ import {
   SAPPHIRE_WEB3AUTH_CLIENT_ID,
   WEB3AUTH_EMAIL_PASSWORDLESS,
   WEB3AUTH_SMS_PASSWORDLESS,
-  WEIBO,
 } from "./config";
 import { fetchLatestBlock, signEthMessage, signTypedData_v1 } from "./services/chainHandlers";
 
@@ -297,7 +296,6 @@ const loginToConnectionMap = computed((): Record<string, Record<string, string |
     [GITHUB]: { domain: AUTH_DOMAIN },
     [LINKEDIN]: { domain: AUTH_DOMAIN },
     [TWITTER]: { domain: AUTH_DOMAIN },
-    [WEIBO]: { domain: AUTH_DOMAIN },
     [LINE]: { domain: AUTH_DOMAIN },
     [COGNITO]: { domain: COGNITO_AUTH_DOMAIN, identity_provider: "Google", response_type: "token", user_info_endpoint: "userInfo" },
     [REDDIT]: { domain: AUTH_DOMAIN, connection: "Reddit", userIdField: "name", isUserIdCaseSensitive: false },
