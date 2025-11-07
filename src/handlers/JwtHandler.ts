@@ -47,6 +47,19 @@ export default class JwtHandler extends AbstractLoginHandler {
   async getUserInfo(params: LoginWindowResponse): Promise<TorusConnectionResponse> {
     const { idToken, accessToken } = params;
     const { domain, userIdField, isUserIdCaseSensitive, user_info_route = "userinfo" } = this.params.jwtParams;
+    if (idToken) {
+      const decodedToken = decodeToken<Auth0UserInfo>(idToken).payload;
+      const { name, email, picture } = decodedToken;
+      return {
+        profileImage: picture,
+        name,
+        email,
+        userId: getUserId(decodedToken, this.params.authConnection, userIdField, isUserIdCaseSensitive),
+        authConnectionId: this.params.authConnectionId,
+        authConnection: this.params.authConnection,
+        groupedAuthConnectionId: this.params.groupedAuthConnectionId,
+      };
+    }
     if (accessToken) {
       try {
         const domainUrl = new URL(domain);
@@ -69,19 +82,6 @@ export default class JwtHandler extends AbstractLoginHandler {
         // ignore
         log.warn(error, "Unable to get userinfo from endpoint");
       }
-    }
-    if (idToken) {
-      const decodedToken = decodeToken<Auth0UserInfo>(idToken).payload;
-      const { name, email, picture } = decodedToken;
-      return {
-        profileImage: picture,
-        name,
-        email,
-        userId: getUserId(decodedToken, this.params.authConnection, userIdField, isUserIdCaseSensitive),
-        authConnectionId: this.params.authConnectionId,
-        authConnection: this.params.authConnection,
-        groupedAuthConnectionId: this.params.groupedAuthConnectionId,
-      };
     }
     throw new Error("Access/id token not available");
   }
