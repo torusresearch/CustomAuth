@@ -4,15 +4,15 @@
   "description": "CustomAuth login with torus to get user private key",
   "main": "dist/lib.cjs/index.js",
   "module": "dist/lib.esm/index.js",
-  "unpkg": "dist/customauth.umd.min.js",
-  "jsdelivr": "dist/customauth.umd.min.js",
+  "unpkg": "dist/lib.esm/index.js",
+  "jsdelivr": "dist/lib.esm/index.js",
   "types": "dist/lib.cjs/types/index.d.ts",
   "sideEffects": false,
   "scripts": {
     "build": "torus-scripts build",
     "start": "torus-scripts start",
     "release": "torus-scripts release",
-    "lint:ts": "eslint --fix 'src/**/*.ts'",
+    "lint:ts": "torus-scripts lint",
     "prepack": "npm run build",
     "test": "echo \"Error: no test specified\" && exit 1",
     "prepare": "husky"
@@ -23,7 +23,7 @@
   ],
   "peerDependencies": {
     "@babel/runtime": "^7.x",
-    "@sentry/core": "^9.x"
+    "@sentry/core": "^10.x"
   },
   "peerDependenciesMeta": {
     "@sentry/core": {
@@ -88,7 +88,7 @@
     "direct auth"
   ],
   "engines": {
-    "node": ">=20.x",
-    "npm": ">=9.x"
+    "node": ">=22.x",
+    "npm": ">=10.x"
   }
 }
