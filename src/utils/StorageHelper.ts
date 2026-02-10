@@ -1,7 +1,7 @@
 import { SESSION_SERVER_API_URL } from "@toruslabs/constants";
 import { getPublic, sign } from "@toruslabs/eccrypto";
 import { post } from "@toruslabs/http-helpers";
-import { decryptData, encryptData, keccak256 } from "@toruslabs/metadata-helpers";
+import { bytesToHex, decryptData, encryptData, keccak256, utf8ToBytes } from "@toruslabs/metadata-helpers";
 
 import { REDIRECT_PARAMS_STORAGE_METHOD, REDIRECT_PARAMS_STORAGE_METHOD_TYPE } from "./enums";
 import { storageAvailable } from "./helpers";
@@ -42,11 +42,11 @@ export class StorageHelper<T> {
     if (!this.isInitialized) throw new Error("StorageHelper is not initialized");
     if (this.localStorageAvailable) window.localStorage.setItem(key, JSON.stringify(params));
     // if (this.currentStorageMethod === REDIRECT_PARAMS_STORAGE_METHOD.SERVER) {
-    const privKey = keccak256(Buffer.from(key, "utf8"));
-    const privKeyHex = privKey.toString("hex");
-    const publicKeyHex = getPublic(privKey).toString("hex");
+    const privKey = keccak256(utf8ToBytes(key));
+    const privKeyHex = bytesToHex(privKey);
+    const publicKeyHex = bytesToHex(getPublic(privKey));
     const encData = await encryptData(privKeyHex, params);
-    const signature = (await sign(privKey, keccak256(Buffer.from(encData, "utf8")))).toString("hex");
+    const signature = bytesToHex(await sign(privKey, keccak256(utf8ToBytes(encData))));
     await post(`${this.storageServerUrl}/v2/store/set`, { key: publicKeyHex, data: encData, signature, allowedOrigin: true });
     // }
   }
@@ -62,9 +62,9 @@ export class StorageHelper<T> {
     }
     // if (this.currentStorageMethod === REDIRECT_PARAMS_STORAGE_METHOD.SERVER) {
     this.currentStorageMethod = REDIRECT_PARAMS_STORAGE_METHOD.SERVER;
-    const privKey = keccak256(Buffer.from(key, "utf8"));
-    const privKeyHex = privKey.toString("hex");
-    const publicKeyHex = getPublic(privKey).toString("hex");
+    const privKey = keccak256(utf8ToBytes(key));
+    const privKeyHex = bytesToHex(privKey);
+    const publicKeyHex = bytesToHex(getPublic(privKey));
     try {
       const encData: { message: string; success: boolean } = await post(`${this.storageServerUrl}/v2/store/get`, { key: publicKeyHex });
       if (encData.message) {
