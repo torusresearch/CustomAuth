@@ -38,7 +38,6 @@
     "@toruslabs/fetch-node-details": "^16.0.0",
     "@toruslabs/http-helpers": "^9.0.0",
     "@toruslabs/metadata-helpers": "^8.0.0",
-    "@toruslabs/session-manager": "^5.0.0",
     "@toruslabs/torus.js": "file:toruslabs-torus.js-16.0.0.tgz",
     "base64url": "^3.0.1",
     "bowser": "^2.14.1",
