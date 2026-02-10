@@ -1,6 +1,6 @@
 import { type INodeDetails, TORUS_NETWORK_TYPE } from "@toruslabs/constants";
 import { NodeDetailManager } from "@toruslabs/fetch-node-details";
-import { keccak256, type KeyType, Torus, TorusKey } from "@toruslabs/torus.js";
+import { keccak256, type KeyType, Torus, TorusKey, utf8ToBytes } from "@toruslabs/torus.js";
 
 import { createHandler } from "./handlers/HandlerFactory";
 import { registerServiceWorker } from "./registerServiceWorker";
@@ -214,7 +214,7 @@ export class CustomAuth {
     if (groupedAuthConnectionId) {
       verifierParams["verify_params"] = [{ verifier_id: userId, idtoken: finalIdToken }];
       verifierParams["sub_verifier_ids"] = [authConnectionId];
-      aggregateIdToken = keccak256(Buffer.from(finalIdToken, "utf8")).slice(2);
+      aggregateIdToken = keccak256(utf8ToBytes(finalIdToken)).slice(2);
     }
 
     const nodeDetails = await this.sentryHandler.startSpan(

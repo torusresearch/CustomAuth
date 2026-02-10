@@ -51,6 +51,7 @@
     "@toruslabs/config": "^4.0.0",
     "@toruslabs/eslint-config-typescript": "^5.0.0",
     "@toruslabs/torus-scripts": "^8.0.0",
+    "@types/events": "^3.0.3",
     "eslint": "^9.39.1",
     "husky": "^9.1.7",
     "lint-staged": "^16.2.7",
