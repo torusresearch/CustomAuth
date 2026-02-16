@@ -7,6 +7,7 @@ export async function fetchDataFromBroadcastServer<T>(identifier: string, storag
       sessionId: identifier,
       sessionServerBaseUrl: storageServerUrl,
       allowedOrigin: true,
+      useLocalStorage: true,
     });
 
     const data = await configManager.authorizeSession();
