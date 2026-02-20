@@ -218,7 +218,7 @@ export class CustomAuth {
     if (groupedAuthConnectionId) {
       verifierParams["verify_params"] = [{ verifier_id: userId, idtoken: finalIdToken }];
       verifierParams["sub_verifier_ids"] = [authConnectionId];
-      aggregateIdToken = keccak256(Buffer.from(finalIdToken, "utf8")).slice(2);
+      aggregateIdToken = keccak256(new TextEncoder().encode(finalIdToken) as Buffer).slice(2);
     }
 
     const nodeDetails = await this.sentryHandler.startSpan(
@@ -382,6 +382,6 @@ export class CustomAuth {
 
   private getSessionId(key: string): string {
     // SessionManager expects a hex private key as sessionId; hashing the legacy string key keeps compatibility
-    return keccak256(Buffer.from(key, "utf8")).slice(2);
+    return keccak256(new TextEncoder().encode(key) as Buffer).slice(2);
   }
 }
