@@ -1,5 +1,4 @@
-import { EventEmitter } from "events";
-import type { default as TypedEmitter } from "typed-emitter";
+import EventEmitter from "eventemitter3";
 
 import { getPopupFeatures } from "./helpers";
 
@@ -7,7 +6,7 @@ export type PopupHandlerEvents = {
   close: () => void;
 };
 
-export class PopupHandler extends (EventEmitter as new () => TypedEmitter<PopupHandlerEvents>) {
+export class PopupHandler extends EventEmitter<PopupHandlerEvents> {
   url: URL;
 
   target: string;
