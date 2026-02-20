@@ -1,5 +1,6 @@
 import { type INodeDetails, TORUS_NETWORK_TYPE } from "@toruslabs/constants";
 import { NodeDetailManager } from "@toruslabs/fetch-node-details";
+import { utf8ToBytes } from "@toruslabs/metadata-helpers";
 import { SessionManager } from "@toruslabs/session-manager";
 import { keccak256, type KeyType, Torus, TorusKey } from "@toruslabs/torus.js";
 
@@ -218,7 +219,7 @@ export class CustomAuth {
     if (groupedAuthConnectionId) {
       verifierParams["verify_params"] = [{ verifier_id: userId, idtoken: finalIdToken }];
       verifierParams["sub_verifier_ids"] = [authConnectionId];
-      aggregateIdToken = keccak256(new TextEncoder().encode(finalIdToken)).slice(2);
+      aggregateIdToken = keccak256(utf8ToBytes(finalIdToken)).slice(2);
     }
 
     const nodeDetails = await this.sentryHandler.startSpan(
@@ -382,6 +383,6 @@ export class CustomAuth {
 
   private getSessionId(key: string): string {
     // SessionManager expects a hex private key as sessionId; hashing the legacy string key keeps compatibility
-    return keccak256(new TextEncoder().encode(key)).slice(2);
+    return keccak256(utf8ToBytes(key)).slice(2);
   }
 }
