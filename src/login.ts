@@ -1,5 +1,7 @@
 import { type INodeDetails, TORUS_NETWORK_TYPE } from "@toruslabs/constants";
 import { NodeDetailManager } from "@toruslabs/fetch-node-details";
+import { utf8ToBytes } from "@toruslabs/metadata-helpers";
+import { SessionManager } from "@toruslabs/session-manager";
 import { keccak256, type KeyType, Torus, TorusKey } from "@toruslabs/torus.js";
 
 import { createHandler } from "./handlers/HandlerFactory";
@@ -22,7 +24,6 @@ import {
   VerifierParams,
 } from "./utils/interfaces";
 import log from "./utils/loglevel";
-import { StorageHelper } from "./utils/StorageHelper";
 
 export class CustomAuth {
   isInitialized: boolean;
@@ -46,9 +47,9 @@ export class CustomAuth {
 
   nodeDetailManager: NodeDetailManager;
 
-  storageHelper: StorageHelper<LoginDetails>;
-
   sentryHandler: SentryHandler;
+
+  private sessionManager: SessionManager<LoginDetails>;
 
   constructor({
     baseUrl,
@@ -104,12 +105,15 @@ export class CustomAuth {
     this.nodeDetailManager = new NodeDetailManager({ network });
     if (enableLogging) log.enableAll();
     else log.disableAll();
-    this.storageHelper = new StorageHelper(storageServerUrl);
+    this.sessionManager = new SessionManager<LoginDetails>({
+      sessionServerBaseUrl: storageServerUrl,
+      allowedOrigin: true,
+      useLocalStorage: true,
+    });
     this.sentryHandler = new SentryHandler(sentry);
   }
 
   async init({ skipSw = false, skipInit = false, skipPrefetch = false }: InitParams = {}): Promise<void> {
-    this.storageHelper.init();
     if (skipInit) {
       this.isInitialized = true;
       return;
@@ -167,9 +171,10 @@ export class CustomAuth {
       // State has to be last here otherwise it will be overwritten
       loginParams = { accessToken, idToken: idToken || tgAuthResult || "", ...rest, state: instanceParameters };
     } else {
-      this.storageHelper.clearOrphanedData(`torus_login_`);
+      this.sessionManager.clearOrphanedData();
       if (this.config.uxMode === UX_MODE.REDIRECT) {
-        await this.storageHelper.storeData(`torus_login_${loginHandler.nonce}`, { args });
+        this.sessionManager.sessionId = this.getSessionId(`torus_login_${loginHandler.nonce}`);
+        await this.sessionManager.createSession({ args });
       }
       loginParams = await loginHandler.handleLoginWindow({
         locationReplaceOnRedirect: this.config.locationReplaceOnRedirect,
@@ -214,7 +219,7 @@ export class CustomAuth {
     if (groupedAuthConnectionId) {
       verifierParams["verify_params"] = [{ verifier_id: userId, idtoken: finalIdToken }];
       verifierParams["sub_verifier_ids"] = [authConnectionId];
-      aggregateIdToken = keccak256(Buffer.from(finalIdToken, "utf8")).slice(2);
+      aggregateIdToken = keccak256(utf8ToBytes(finalIdToken)).slice(2);
     }
 
     const nodeDetails = await this.sentryHandler.startSpan(
@@ -279,9 +284,19 @@ export class CustomAuth {
 
     log.info(instanceId, "instanceId");
 
-    const loginDetails = storageData || (await this.storageHelper.retrieveData(`torus_login_${instanceId}`));
+    let loginDetails = storageData;
+    if (!loginDetails) {
+      try {
+        this.sessionManager.sessionId = this.getSessionId(`torus_login_${instanceId}`);
+        loginDetails = await this.sessionManager.authorizeSession();
+      } catch (error) {
+        log.error(error, "Unable to read login details from session manager");
+        throw error;
+      }
+    }
     const { args, ...rest } = loginDetails || {};
-    log.info(args, "args", this.storageHelper.storageMethodUsed);
+    const storageMethodUsed = "localStorage + server";
+    log.info(args, "args", storageMethodUsed);
 
     let result: TorusLoginResponse;
 
@@ -297,7 +312,8 @@ export class CustomAuth {
       const serializedError = await serializeError(err);
       log.error(serializedError);
       if (clearLoginDetails) {
-        this.storageHelper.clearStorage(`torus_login_${instanceId}`);
+        this.sessionManager.sessionId = this.getSessionId(`torus_login_${instanceId}`);
+        this.sessionManager.clearStorage();
       }
       return {
         error: `${serializedError.message || ""}`,
@@ -311,7 +327,7 @@ export class CustomAuth {
 
     if (!result)
       return {
-        error: `Init parameters not found. It might be because storage is not available. Please retry the login in a different browser. Used storage method: ${this.storageHelper.storageMethodUsed}`,
+        error: `Init parameters not found. It might be because storage is not available. Please retry the login in a different browser. Used storage method: ${storageMethodUsed}`,
         state: instanceParameters || {},
         result: {},
         hashParameters,
@@ -325,7 +341,7 @@ export class CustomAuth {
     }
 
     if (clearLoginDetails) {
-      this.storageHelper.clearStorage(`torus_login_${instanceId}`);
+      this.sessionManager.clearStorage();
     }
 
     return { result, state: instanceParameters || {}, hashParameters, args, ...rest };
@@ -363,5 +379,10 @@ export class CustomAuth {
         resolveFn();
       }
     });
+  }
+
+  private getSessionId(key: string): string {
+    // SessionManager expects a hex private key as sessionId; hashing the legacy string key keeps compatibility
+    return keccak256(utf8ToBytes(key)).slice(2);
   }
 }
