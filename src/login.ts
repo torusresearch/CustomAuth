@@ -46,8 +46,6 @@ export class CustomAuth {
 
   nodeDetailManager: NodeDetailManager;
 
-  useLocalStorage: boolean = true;
-
   sentryHandler: SentryHandler;
 
   private sessionManager: SessionManager<LoginDetails>;
@@ -109,7 +107,7 @@ export class CustomAuth {
     this.sessionManager = new SessionManager<LoginDetails>({
       sessionServerBaseUrl: storageServerUrl,
       allowedOrigin: true,
-      useLocalStorage: this.useLocalStorage,
+      useLocalStorage: true,
     });
     this.sentryHandler = new SentryHandler(sentry);
   }
@@ -296,7 +294,7 @@ export class CustomAuth {
       }
     }
     const { args, ...rest } = loginDetails || {};
-    const storageMethodUsed = this.useLocalStorage ? "localStorage" : "server";
+    const storageMethodUsed = "localStorage + server";
     log.info(args, "args", storageMethodUsed);
 
     let result: TorusLoginResponse;

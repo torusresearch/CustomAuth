@@ -38,7 +38,7 @@
     "@toruslabs/fetch-node-details": "^15.0.0",
     "@toruslabs/http-helpers": "^8.1.1",
     "@toruslabs/metadata-helpers": "^7.0.2",
-    "@toruslabs/session-manager": "^4.0.2",
+    "@toruslabs/session-manager": "^5.1.0",
     "@toruslabs/torus.js": "^16.0.0",
     "base64url": "^3.0.1",
     "bowser": "^2.12.1",
