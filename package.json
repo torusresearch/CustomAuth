@@ -43,7 +43,7 @@
     "base64url": "^3.0.1",
     "bowser": "^2.12.1",
     "deepmerge": "^4.3.1",
-    "eventemitter3": "^5.0.1",
+    "events": "^3.3.0",
     "loglevel": "^1.9.2"
   },
   "devDependencies": {
@@ -51,6 +51,7 @@
     "@toruslabs/config": "^4.0.0",
     "@toruslabs/eslint-config-typescript": "^5.0.0",
     "@toruslabs/torus-scripts": "^8.0.0",
+    "@types/node": "^22",
     "eslint": "^9.39.2",
     "husky": "^9.1.7",
     "lint-staged": "^16.2.7",
