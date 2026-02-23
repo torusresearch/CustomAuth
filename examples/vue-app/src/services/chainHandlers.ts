@@ -1,41 +1,46 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { SafeEventEmitterProvider } from "@web3auth/base";
-import Web3 from "web3";
+import { createPublicClient, createWalletClient, type Hex, http, type PublicClient, type WalletClient } from "viem";
+import { privateKeyToAccount } from "viem/accounts";
+import { polygon } from "viem/chains";
 
-export const signEthMessage = async (provider: SafeEventEmitterProvider): Promise<string> => {
-  const web3 = new Web3(provider as any);
-  const accounts = await web3.eth.getAccounts();
-  // hex message
-  const message = "0x47173285a8d7341e5e972fc677286384f802f8ef42a5ec5f03bbfa254cb01fad";
-  const sign = await web3.eth.sign(message, accounts[0]);
-  return sign as string;
+export const createViemClients = (privKey: Hex): { walletClient: WalletClient; publicClient: PublicClient } => {
+  const account = privateKeyToAccount(privKey);
+  const walletClient = createWalletClient({
+    account,
+    chain: polygon,
+    transport: http("https://polygon-rpc.com"),
+  });
+  const publicClient = createPublicClient({
+    chain: polygon,
+    transport: http("https://polygon-rpc.com"),
+  });
+  return { walletClient, publicClient };
 };
 
-export const signTypedData_v1 = async (provider: SafeEventEmitterProvider): Promise<any> => {
-  const web3 = new Web3(provider as any);
-  const accounts = await web3.eth.getAccounts();
+export const signEthMessage = async (walletClient: WalletClient): Promise<string> => {
+  const message = "0x47173285a8d7341e5e972fc677286384f802f8ef42a5ec5f03bbfa254cb01fad";
+  const signature = await walletClient.signMessage({
+    account: walletClient.account!,
+    message: { raw: message as Hex },
+  });
+  return signature;
+};
 
-  const typedData = [
-    {
-      type: "string",
-      name: "message",
-      value: "Hi, Alice!",
+export const signTypedData_v1 = async (walletClient: WalletClient): Promise<Hex> => {
+  const signature = await walletClient.signTypedData({
+    account: walletClient.account!,
+    domain: {},
+    types: {
+      EIP712Domain: [],
+      Mail: [
+        { name: "message", type: "string" },
+        { name: "value", type: "uint8" },
+      ],
     },
-    {
-      type: "uint8",
-      name: "value",
+    primaryType: "Mail",
+    message: {
+      message: "Hi, Alice!",
       value: 10,
     },
-  ];
-  return (web3.currentProvider as any)?.sendAsync({
-    method: "eth_signTypedData",
-    params: [typedData, accounts[0]],
-    from: accounts[0],
   });
-};
-
-export const fetchLatestBlock = async (provider: SafeEventEmitterProvider): Promise<any> => {
-  const web3 = new Web3(provider as any);
-  const block = await web3.eth.getBlock("latest");
-  return block;
+  return signature;
 };
