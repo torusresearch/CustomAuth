@@ -140,17 +140,6 @@ self.addEventListener("fetch", function (event) {
       crossorigin="anonymous"
     ></script>
     <script>
-      var base64urlLib = {
-        decode: function(str) {
-          var base64 = str.replace(/-/g, '+').replace(/_/g, '/');
-          while (base64.length % 4) base64 += '=';
-          return decodeURIComponent(atob(base64).split('').map(function(c) {
-            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-          }).join(''));
-        }
-      };
-    </script>
-    <script>
       function storageAvailable(type) {
         var storage;
         try {
@@ -219,10 +208,10 @@ self.addEventListener("fetch", function (event) {
           var error = "";
           try {
             if (Object.keys(hashParams).length > 0 && hashParams.state) {
-              instanceParams = JSON.parse(base64urlLib.decode(decodeURIComponent(decodeURIComponent(hashParams.state)))) || {};
+              instanceParams = JSON.parse(decodeBase64Url(decodeURIComponent(decodeURIComponent(hashParams.state)))) || {};
               if (hashParams.error) error = hashParams.error;
             } else if (Object.keys(queryParams).length > 0 && queryParams.state) {
-              instanceParams = JSON.parse(base64urlLib.decode(decodeURIComponent(decodeURIComponent(queryParams.state)))) || {};
+              instanceParams = JSON.parse(decodeBase64Url(decodeURIComponent(decodeURIComponent(queryParams.state)))) || {};
               if (queryParams.error) error = queryParams.error;
             }
           } catch (e) {
