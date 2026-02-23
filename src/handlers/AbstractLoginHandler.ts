@@ -1,4 +1,4 @@
-import base64url from "base64url";
+import { encodeBase64Url } from "@toruslabs/metadata-helpers";
 
 import { UX_MODE } from "../utils/enums";
 import { broadcastChannelOptions, getTimeout, randomId } from "../utils/helpers";
@@ -21,7 +21,7 @@ abstract class AbstractLoginHandler implements ILoginHandler {
 
   get state(): string {
     return encodeURIComponent(
-      base64url.encode(
+      encodeBase64Url(
         JSON.stringify({
           ...(this.params.customState || {}),
           instanceId: this.nonce,

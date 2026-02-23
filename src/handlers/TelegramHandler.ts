@@ -1,4 +1,4 @@
-import base64url from "base64url";
+import { decodeBase64Url, encodeBase64Url } from "@toruslabs/metadata-helpers";
 import deepmerge from "deepmerge";
 
 import { UX_MODE } from "../utils/enums";
@@ -98,8 +98,8 @@ export default class TelegramHandler extends AbstractLoginHandler {
               resolve({
                 accessToken: "",
                 ...rest,
-                idToken: base64url.encode(JSON.stringify(result)) || "",
-                state: base64url.decode(stateParam) as unknown as { [key: string]: string },
+                idToken: encodeBase64Url(JSON.stringify(result)) || "",
+                state: decodeBase64Url(stateParam) as unknown as { [key: string]: string },
               });
             }
           } catch (error) {
