@@ -114,43 +114,6 @@
                 {{ $t("app.btnSignV1Message") }}
               </Button>
             </div>
-            <div class="mb-2">
-              <Button block size="xs" pill data-testid="btnFetchLatestBlock" @click="latestBlock">
-                {{ $t("app.btnFetchLatestBlock") }}
-              </Button>
-            </div>
-            <div class="mb-2">
-              <p class="btn-label !mb-0">Stark key pair</p>
-              <p class="text-xs text-app-gray-500 mb-2">Enter HD account index to derive stark key pair from custom auth's private key</p>
-              <form class="flex flex-col sm:flex-row gap-4 bottom-gutter" @submit.prevent="starkHdAccount">
-                <TextField id="accountIndex" v-model="accountIndex" class="custom-input" type="number" placeholder="Index" :min="0" required />
-                <Button type="submit" pill size="xs" @click="starkHdAccount">{{ $t("app.btnGetStarkKey") }}</Button>
-              </form>
-              <p class="btn-label">Sign message</p>
-              <form @submit.prevent="signMessageWithStarkKey">
-                <div class="flex flex-col sm:flex-row gap-4 bottom-gutter">
-                  <TextArea v-model="starkMessage" class="custom-input w-full" rows="2" placeholder="Message to encrypt" />
-                </div>
-                <div class="flex flex-col sm:flex-row gap-4 bottom-gutter">
-                  <TextField id="accountIndex" v-model="starkAccountIndex" class="custom-input" type="number" :min="0" />
-                  <Button type="submit" pill size="sm">{{ $t("app.btnSignMessageStarkey") }}</Button>
-                </div>
-              </form>
-              <p class="btn-label">Validate message</p>
-              <form class="flex flex-col sm:flex-row gap-4 bottom-gutter" @submit.prevent="validateStarkMessage">
-                <TextField
-                  id="accountIndex"
-                  v-model="validateAccountIndex"
-                  class="custom-input disabled:cursor-not-allowed"
-                  :disabled="!signingMessage"
-                  type="number"
-                  placeholder="Index"
-                  :min="0"
-                  required
-                />
-                <Button type="submit" :disabled="!signingMessage" pill size="xs">{{ $t("app.btnValidateStarkMessage") }}</Button>
-              </form>
-            </div>
           </Card>
           <Card id="console" class="px-4 py-4 col-span-4 overflow-y-auto">
             <ul class="text-sm text-app-gray-700 dark:text-app-gray-200 font-normal mt-4 mb-5 px-0">
@@ -185,14 +148,10 @@
 import { KEY_TYPE, TORUS_LEGACY_NETWORK, TORUS_SAPPHIRE_NETWORK } from "@toruslabs/constants";
 import { CustomAuth, LoginWindowResponse, TorusLoginResponse, TorusConnectionResponse, UX_MODE, AUTH_CONNECTION_TYPE } from "@toruslabs/customauth";
 import { fetchLocalConfig } from "@toruslabs/fnd-base";
-import { getStarkHDAccount, pedersen, sign, STARKNET_NETWORKS, verify } from "@toruslabs/openlogin-starkkey";
 import { TorusKey } from "@toruslabs/torus.js";
-import { Button, Card, Select, TextArea, TextField } from "@toruslabs/vue-components";
-import { SafeEventEmitterProvider } from "@web3auth/base";
-import { EthereumPrivateKeyProvider } from "@web3auth/ethereum-provider";
-import { ec } from "elliptic";
-import { binaryToHex, binaryToUtf8, bufferToBinary, bufferToHex, hexToBinary } from "enc-utils";
+import { Button, Card, Select, TextField } from "@toruslabs/vue-components";
 import { computed, onMounted, ref, watch } from "vue";
+import type { Hex, PublicClient, WalletClient } from "viem";
 
 import {
   APPLE,
@@ -219,7 +178,7 @@ import {
   WEB3AUTH_EMAIL_PASSWORDLESS,
   WEB3AUTH_SMS_PASSWORDLESS,
 } from "./config";
-import { fetchLatestBlock, signEthMessage, signTypedData_v1 } from "./services/chainHandlers";
+import { createViemClients, signEthMessage, signTypedData_v1 } from "./services/chainHandlers";
 
 const { log } = console;
 
@@ -249,13 +208,8 @@ onMounted(() => {
 const customAuthSdk = ref<CustomAuth | null>(null);
 const privKey = ref<string | undefined>("");
 const userInfo = ref<(TorusConnectionResponse & LoginWindowResponse) | null>(null);
-const provider = ref<SafeEventEmitterProvider | null>(null);
-const signedMessage = ref<ec.Signature | null>(null);
-const signingMessage = ref<string | null>(null);
-const accountIndex = ref<number | undefined>(0);
-const starkMessage = ref<string | undefined>("");
-const starkAccountIndex = ref<number | undefined>(0);
-const validateAccountIndex = ref<number | undefined>(0);
+const walletClient = ref<WalletClient | null>(null);
+const publicClient = ref<PublicClient | null>(null);
 
 const isDisplay = (name: string): boolean => {
   switch (name) {
@@ -356,20 +310,11 @@ const initCustomAuth = async () => {
   }
 };
 
-const setProvider = async () => {
+const setClients = () => {
   if (!privKey.value) return;
-  provider.value = await EthereumPrivateKeyProvider.getProviderInstance({
-    chainConfig: {
-      rpcTarget: "https://polygon-rpc.com",
-      chainId: "0x89",
-      ticker: "matic",
-      tickerName: "matic",
-      displayName: "Polygon Mainnet",
-      blockExplorerUrl: "https://polygonscan.com",
-      chainNamespace: "eip155",
-    },
-    privKey: privKey.value,
-  });
+  const clients = createViemClients(`0x${privKey.value}` as Hex);
+  walletClient.value = clients.walletClient;
+  publicClient.value = clients.publicClient;
 };
 
 const onLogin = async () => {
@@ -420,9 +365,9 @@ watch(
 
 watch(
   () => privKey.value,
-  async (newValue) => {
+  (newValue) => {
     if (!newValue) return;
-    await setProvider();
+    setClients();
   }
 );
 
@@ -481,78 +426,14 @@ const printUserInfo = () => {
 };
 
 const signMessage = async () => {
-  const signedMessageR = await signEthMessage(provider.value as SafeEventEmitterProvider);
+  if (!walletClient.value) return;
+  const signedMessageR = await signEthMessage(walletClient.value);
   printConsole("Signed Message", signedMessageR);
 };
 
 const signV1Message = async () => {
-  const signedMessageR = await signTypedData_v1(provider.value as SafeEventEmitterProvider);
+  if (!walletClient.value) return;
+  const signedMessageR = await signTypedData_v1(walletClient.value);
   printConsole("Signed V1 Message", signedMessageR);
-};
-
-const latestBlock = async () => {
-  const block = await fetchLatestBlock(provider.value as SafeEventEmitterProvider);
-  printConsole("Latest block", block);
-};
-
-const getStarkAccount = (index: number): ec.KeyPair => {
-  const account = getStarkHDAccount((privKey.value as string).padStart(64, "0"), index, STARKNET_NETWORKS.testnet);
-  return account;
-};
-
-const starkHdAccount = (): ec.KeyPair => {
-  const account = getStarkAccount(accountIndex.value as number);
-  printConsole("Stark Key Pair", {
-    ...account,
-  });
-  return account;
-};
-
-/**
- *
- * @param str utf 8 string to be signed
- * @param prefix hex prefix padded to 252 bits (optional)
- * @returns
- */
-const getPedersenHashRecursively = (str: string, prefix?: string): string => {
-  const TEST_MESSAGE_SUFFIX = prefix || "TORUS STARKWARE-";
-  const x = Buffer.from(str, "utf8");
-  const binaryStr = hexToBinary(bufferToHex(x));
-  const rounds = Math.ceil(binaryStr.length / 252);
-  if (rounds > 1) {
-    const currentChunkHex = binaryToHex(binaryStr.substring(0, 252));
-    if (prefix) {
-      const hash = pedersen([prefix, currentChunkHex]);
-      const pendingStr = binaryToUtf8(binaryStr.substring(252));
-      return getPedersenHashRecursively(pendingStr.replace("\n", ""), hash);
-    }
-    // send again with default prefix,
-    // this prefix is only relevant for this example and
-    // has no relevance with starkware message encoding.
-    return getPedersenHashRecursively(str, binaryToHex(bufferToBinary(Buffer.from(TEST_MESSAGE_SUFFIX, "utf8")).padEnd(252, "0")));
-  }
-  const currentChunkHex = binaryToHex(binaryStr.padEnd(252, "0"));
-  return pedersen([prefix || "", currentChunkHex]);
-};
-
-const signMessageWithStarkKey = () => {
-  const accIndex = starkAccountIndex.value as number;
-  const message = starkMessage.value as string;
-  const keyPair: ec.KeyPair = getStarkAccount(accIndex);
-  const hash = getPedersenHashRecursively(message);
-  signedMessage.value = sign(keyPair, hash);
-  signingMessage.value = message;
-  printConsole("Signed Message With Stark Key", {
-    pedersenHash: hash,
-    info: `Message signed successfully: TORUS STARKWARE- ${message}`,
-    signedMesssage: signedMessage.value,
-  });
-};
-
-const validateStarkMessage = () => {
-  const keyPair = getStarkAccount(validateAccountIndex.value as number);
-  const hash = getPedersenHashRecursively(signingMessage.value as string);
-  const isVerified = verify(keyPair, hash, signedMessage.value as unknown as ec.Signature);
-  printConsole("Validate Stark Message", { verified: isVerified });
 };
 </script>
