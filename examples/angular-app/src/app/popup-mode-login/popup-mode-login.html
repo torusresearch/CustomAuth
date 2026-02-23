@@ -19,7 +19,9 @@
       </select>
     </label>
 
-    @if (formData.loginProvider === emailPasswordless || formData.loginProvider === smsPasswordless) {
+    @if (
+      formData.loginProvider === emailPasswordless || formData.loginProvider === smsPasswordless
+    ) {
       <label>
         Login Hint
         <input [(ngModel)]="formData.loginHint" placeholder="email or phone" />

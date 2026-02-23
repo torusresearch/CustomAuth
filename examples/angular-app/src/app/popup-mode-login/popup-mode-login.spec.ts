@@ -1,14 +1,9 @@
 import { TestBed } from "@angular/core/testing";
-import { vi } from "vitest";
 
 import { CustomAuthService } from "../custom-auth";
 import { PopupModeLogin } from "./popup-mode-login";
 
 describe("PopupModeLogin", () => {
-  afterEach(() => {
-    vi.useRealTimers();
-  });
-
   it("sets success state after popup login resolves", async () => {
     const serviceMock = {
       getDefaultFormData: () => ({
@@ -35,8 +30,7 @@ describe("PopupModeLogin", () => {
     expect(component.result).toContain("PopupUser");
   });
 
-  it("sets error state when popup login hangs", async () => {
-    vi.useFakeTimers();
+  it("sets error state when popup login fails", async () => {
     const serviceMock = {
       getDefaultFormData: () => ({
         uxMode: "popup",
@@ -44,7 +38,9 @@ describe("PopupModeLogin", () => {
         loginHint: "",
         network: "sapphire_devnet",
       }),
-      triggerLogin: () => new Promise(() => {}),
+      triggerLogin: async () => {
+        throw new Error("user closed popup");
+      },
       saveLoginResult: () => {},
       stringifyForDisplay: (value: unknown) => JSON.stringify(value, null, 2),
     };
@@ -56,10 +52,9 @@ describe("PopupModeLogin", () => {
 
     const fixture = TestBed.createComponent(PopupModeLogin);
     const component = fixture.componentInstance;
-    const run = component.login();
-    await vi.advanceTimersByTimeAsync(16000);
-    await run;
+    await component.login();
 
     expect(component.status).toBe("error");
+    expect(component.result).toContain("user closed popup");
   });
 });
