@@ -116,4 +116,4 @@ export const verifierMap = {
     clientId: "78i338ev9lkgjst3mfeuih9tsh",
     verifier: "demo-cognito-example",
   },
-} as Record<string, any>;
+} as const;

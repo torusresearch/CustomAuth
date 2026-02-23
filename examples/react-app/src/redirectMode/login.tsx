@@ -1,6 +1,6 @@
 import React from "react";
 import "../App.css";
-import { CustomAuth, UX_MODE } from "@toruslabs/customauth";
+import { AUTH_CONNECTION_TYPE, CustomAuth, UX_MODE } from "@toruslabs/customauth";
 import {
   verifierMap,
   GOOGLE,
@@ -38,6 +38,7 @@ class RedirectMode extends React.Component<IProps, IState> {
 
   componentDidMount = async () => {
     try {
+      const { clientId } = verifierMap[this.state.selectedVerifier as keyof typeof verifierMap];
       const torusdirectsdk = new CustomAuth({
         baseUrl: window.location.origin,
         // user will be redirect to auth page after login
@@ -45,6 +46,7 @@ class RedirectMode extends React.Component<IProps, IState> {
         enableLogging: true,
         uxMode: UX_MODE.REDIRECT,
         network: "testnet",
+        web3AuthClientId: clientId,
       });
       await torusdirectsdk.init({ skipSw: true });
 
@@ -60,12 +62,12 @@ class RedirectMode extends React.Component<IProps, IState> {
 
     try {
       const jwtParams = this._loginToConnectionMap()[selectedVerifier] || {};
-      const { typeOfLogin, clientId, verifier } = verifierMap[selectedVerifier];
+      const { typeOfLogin, clientId, verifier } = verifierMap[selectedVerifier as keyof typeof verifierMap];
       // in redirect mode, login result will be handled in redirect page
       // (Check auth.tsx file)
       await torusdirectsdk?.triggerLogin({
-        typeOfLogin,
-        verifier,
+        authConnection: typeOfLogin as AUTH_CONNECTION_TYPE,
+        authConnectionId: verifier,
         clientId,
         jwtParams,
       });
@@ -106,7 +108,7 @@ class RedirectMode extends React.Component<IProps, IState> {
             <select value={selectedVerifier} onChange={(e) => this.setState({ selectedVerifier: e.target.value })}>
               {Object.keys(verifierMap).map((login) => (
                 <option value={login} key={login.toString()}>
-                  {verifierMap[login].name}
+                  {verifierMap[login as keyof typeof verifierMap].name}
                 </option>
               ))}
             </select>

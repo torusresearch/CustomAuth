@@ -1,3 +1,23 @@
+/* eslint-disable */
+function getScope() {
+  return self.registration.scope;
+}
+
+self.addEventListener("message", function (event) {
+  if (event.data && event.data.type === "SKIP_WAITING") {
+    self.skipWaiting();
+  }
+});
+
+self.addEventListener("fetch", function (event) {
+  try {
+    const url = new URL(event.request.url);
+    if (url.pathname.includes("redirect") && url.href.includes(getScope())) {
+      event.respondWith(
+        new Response(
+          new Blob(
+            [
+              `
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -112,7 +132,7 @@
         <div class="beat beat-even"></div>
         <div class="beat beat-odd"></div>
       </div>
-      <h1 class="title content" id="closeText" style="display: none">You can close this window now</h1>
+      <h1 class="title content" id="closeText" style="display: none;">You can close this window now</h1>
     </div>
     <script
       src="https://cdn.jsdelivr.net/npm/@toruslabs/broadcast-channel@13.1.0/dist/lib/browser.min.js"
@@ -121,18 +141,13 @@
     ></script>
     <script>
       var base64urlLib = {
-        decode: function (str) {
-          var base64 = str.replace(/-/g, "+").replace(/_/g, "/");
-          while (base64.length % 4) base64 += "=";
-          return decodeURIComponent(
-            atob(base64)
-              .split("")
-              .map(function (c) {
-                return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
-              })
-              .join("")
-          );
-        },
+        decode: function(str) {
+          var base64 = str.replace(/-/g, '+').replace(/_/g, '/');
+          while (base64.length % 4) base64 += '=';
+          return decodeURIComponent(atob(base64).split('').map(function(c) {
+            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+          }).join(''));
+        }
       };
     </script>
     <script>
@@ -147,16 +162,10 @@
         } catch (e) {
           return (
             e &&
-            // everything except Firefox
             (e.code === 22 ||
-              // Firefox
               e.code === 1014 ||
-              // test name field too, because code might not be present
-              // everything except Firefox
               e.name === "QuotaExceededError" ||
-              // Firefox
               e.name === "NS_ERROR_DOM_QUOTA_REACHED") &&
-            // acknowledge QuotaExceededError only if there's something already stored
             storage &&
             storage.length !== 0
           );
@@ -173,7 +182,6 @@
         }
       }
       var isLocalStorageAvailable = storageAvailable("localStorage");
-      // set theme
       let theme = "light";
       if (isLocalStorageAvailable) {
         var torusTheme = localStorage.getItem("torus-theme");
@@ -187,14 +195,12 @@
       }
       var bc;
       var broadcastChannelOptions = {
-        // type: 'localstorage', // (optional) enforce a type, oneOf['native', 'idb', 'localstorage', 'node'
-        webWorkerSupport: false, // (optional) set this to false if you know that your channel will never be used in a WebWorker (increase performance)
+        webWorkerSupport: false,
       };
       var instanceParams = {};
       var preopenInstanceId = new URL(window.location.href).searchParams.get("preopenInstanceId");
       if (!preopenInstanceId) {
         document.getElementById("message").style.visibility = "visible";
-        // in general oauth redirect
         try {
           var url = new URL(location.href);
           var hash = url.hash.substr(1);
@@ -223,7 +229,6 @@
             console.error(e);
           }
           if (instanceParams.redirectToOpener) {
-            // communicate to window.opener
             window.opener.postMessage(
               {
                 channel: "redirect_channel_" + instanceParams.instanceId,
@@ -237,7 +242,6 @@
               "http://localhost:3000"
             );
           } else {
-            // communicate via broadcast channel
             bc = new BroadcastChannel.RedundantAdaptiveBroadcastChannel("redirect_channel_" + instanceParams.instanceId, broadcastChannelOptions);
             bc.postMessage({
               data: {
@@ -266,7 +270,6 @@
           showCloseText();
         }
       } else {
-        // in preopen, awaiting redirect
         try {
           bc = new BroadcastChannel.RedundantAdaptiveBroadcastChannel("preopen_channel_" + preopenInstanceId, broadcastChannelOptions);
           bc.onmessage = function (ev) {
@@ -295,4 +298,14 @@
       }
     </script>
   </body>
-</html>
+</html>`,
+            ],
+            { type: "text/html" }
+          )
+        )
+      );
+    }
+  } catch (error) {
+    console.error(error);
+  }
+});

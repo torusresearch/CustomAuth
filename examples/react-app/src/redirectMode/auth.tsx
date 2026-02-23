@@ -2,6 +2,7 @@ import React from "react";
 import "../App.css";
 import { CustomAuth, RedirectResult } from "@toruslabs/customauth";
 import ReactJsonView from "react-json-view";
+import { GOOGLE, verifierMap } from "../constants";
 
 interface IState {
   loginDetails?: RedirectResult | null;
@@ -18,12 +19,14 @@ class RedirectAuth extends React.Component<IProps, IState> {
   }
 
   async componentDidMount() {
+    const { clientId } = verifierMap[GOOGLE];
     const torusdirectsdk = new CustomAuth({
       baseUrl: window.location.origin,
       redirectPathName: "auth",
       enableLogging: true,
       uxMode: "redirect",
       network: "testnet",
+      web3AuthClientId: clientId,
     });
     const loginDetails = await torusdirectsdk.getRedirectResult();
     console.log(loginDetails);

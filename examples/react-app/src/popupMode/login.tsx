@@ -1,6 +1,6 @@
 import React from "react";
 import "../App.css";
-import { CustomAuth, TorusLoginResponse } from "@toruslabs/customauth";
+import { AUTH_CONNECTION_TYPE, CustomAuth, TorusLoginResponse } from "@toruslabs/customauth";
 import ReactJsonView from "react-json-view";
 import {
   verifierMap,
@@ -40,10 +40,12 @@ class PopupMode extends React.Component<IProps, IState> {
 
   componentDidMount = async () => {
     try {
+      const { clientId } = verifierMap[this.state.selectedVerifier as keyof typeof verifierMap];
       const torusdirectsdk = new CustomAuth({
         baseUrl: `${window.location.origin}/serviceworker`,
         enableLogging: true,
         network: "testnet", // details for test net
+        web3AuthClientId: clientId,
       });
 
       await torusdirectsdk.init({ skipSw: false });
@@ -60,10 +62,10 @@ class PopupMode extends React.Component<IProps, IState> {
     // console.log(hash, queryParameters);
     try {
       const jwtParams = this._loginToConnectionMap()[selectedVerifier] || {};
-      const { typeOfLogin, clientId, verifier } = verifierMap[selectedVerifier];
+      const { typeOfLogin, clientId, verifier } = verifierMap[selectedVerifier as keyof typeof verifierMap];
       const loginDetails = await torusdirectsdk?.triggerLogin({
-        typeOfLogin,
-        verifier,
+        authConnection: typeOfLogin as AUTH_CONNECTION_TYPE,
+        authConnectionId: verifier,
         clientId,
         jwtParams,
       });
@@ -104,7 +106,7 @@ class PopupMode extends React.Component<IProps, IState> {
             <select value={selectedVerifier} onChange={(e) => this.setState({ selectedVerifier: e.target.value })}>
               {Object.keys(verifierMap).map((login) => (
                 <option value={login} key={login.toString()}>
-                  {verifierMap[login].name}
+                  {verifierMap[login as keyof typeof verifierMap].name}
                 </option>
               ))}
             </select>

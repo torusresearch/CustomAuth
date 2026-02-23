@@ -135,10 +135,21 @@ self.addEventListener("fetch", function (event) {
       <h1 class="title content" id="closeText" style="display: none;">You can close this window now</h1>
     </div>
     <script
-      src="https://scripts.toruswallet.io/broadcastChannel_4_5_0.js"
-      integrity="sha384-LyjYpi9J/BsbzFXTzLh0xCaHcqYURyWnTwhPSGzlD2gDissLfGARGcScz/DgBzWH"
+      src="https://cdn.jsdelivr.net/npm/@toruslabs/broadcast-channel@13.1.0/dist/lib/browser.min.js"
+      integrity="sha384-vv1RkRonhPWQdx3ShNjf7kCuYZk01XgaxSSqvl4pvAUwy7gbuW0uH271iUvzMkm9"
       crossorigin="anonymous"
     ></script>
+    <script>
+      var base64urlLib = {
+        decode: function(str) {
+          var base64 = str.replace(/-/g, '+').replace(/_/g, '/');
+          while (base64.length % 4) base64 += '=';
+          return decodeURIComponent(atob(base64).split('').map(function(c) {
+            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+          }).join(''));
+        }
+      };
+    </script>
     <script>
       function storageAvailable(type) {
         var storage;
@@ -177,7 +188,6 @@ self.addEventListener("fetch", function (event) {
         }
       }
       var isLocalStorageAvailable = storageAvailable("localStorage");
-      var isSessionStorageAvailable = storageAvailable("sessionStorage");
       // set theme
       let theme = "light";
       if (isLocalStorageAvailable) {
@@ -218,10 +228,10 @@ self.addEventListener("fetch", function (event) {
           var error = "";
           try {
             if (Object.keys(hashParams).length > 0 && hashParams.state) {
-              instanceParams = JSON.parse(window.atob(decodeURIComponent(decodeURIComponent(hashParams.state)))) || {};
+              instanceParams = JSON.parse(base64urlLib.decode(decodeURIComponent(decodeURIComponent(hashParams.state)))) || {};
               if (hashParams.error) error = hashParams.error;
             } else if (Object.keys(queryParams).length > 0 && queryParams.state) {
-              instanceParams = JSON.parse(window.atob(decodeURIComponent(decodeURIComponent(queryParams.state)))) || {};
+              instanceParams = JSON.parse(base64urlLib.decode(decodeURIComponent(decodeURIComponent(queryParams.state)))) || {};
               if (queryParams.error) error = queryParams.error;
             }
           } catch (e) {
@@ -243,20 +253,7 @@ self.addEventListener("fetch", function (event) {
             );
           } else {
             // communicate via broadcast channel
-            bc = new broadcastChannelLib.BroadcastChannel("redirect_channel_" + instanceParams.instanceId, broadcastChannelOptions);
-            bc.addEventListener("message", function (ev) {
-              if (ev.success) {
-                bc.close();
-                console.log("posted", {
-                  queryParams,
-                  instanceParams,
-                  hashParams,
-                });
-              } else {
-                window.close();
-                showCloseText();
-              }
-            });
+            bc = new BroadcastChannel.RedundantAdaptiveBroadcastChannel("redirect_channel_" + instanceParams.instanceId, broadcastChannelOptions);
             bc.postMessage({
               data: {
                 instanceParams: instanceParams,
@@ -265,8 +262,15 @@ self.addEventListener("fetch", function (event) {
               },
               error: error,
             }).then(function () {
+              bc.close();
+              console.log("posted", {
+                queryParams,
+                instanceParams,
+                hashParams,
+              });
               setTimeout(function () {
-                window.location.href = url.origin + location.search + location.hash;
+                window.close();
+                showCloseText();
               }, 5000);
             });
           }
@@ -279,7 +283,7 @@ self.addEventListener("fetch", function (event) {
       } else {
         // in preopen, awaiting redirect
         try {
-          bc = new broadcastChannelLib.BroadcastChannel("preopen_channel_" + preopenInstanceId, broadcastChannelOptions);
+          bc = new BroadcastChannel.RedundantAdaptiveBroadcastChannel("preopen_channel_" + preopenInstanceId, broadcastChannelOptions);
           bc.onmessage = function (ev) {
             var { preopenInstanceId: oldId, payload, message } = ev.data;
             if (oldId === preopenInstanceId && payload && payload.url) {

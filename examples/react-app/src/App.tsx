@@ -1,7 +1,7 @@
 /* eslint-disable class-methods-use-this */
 import React from "react";
 import { Link } from "react-router-dom";
-import { CustomAuth, TorusLoginResponse } from "@toruslabs/customauth";
+import { AUTH_CONNECTION_TYPE, CustomAuth, TorusLoginResponse } from "@toruslabs/customauth";
 import ReactJsonView from "react-json-view";
 
 import {
@@ -18,6 +18,7 @@ import {
   WEIBO,
   COGNITO,
   COGNITO_AUTH_DOMAIN,
+  GOOGLE,
 } from "./constants";
 
 interface IState {
@@ -33,7 +34,7 @@ class HomePage extends React.PureComponent<IProps, IState> {
   constructor(props: IProps) {
     super(props);
     this.state = {
-      selectedVerifier: "",
+      selectedVerifier: GOOGLE,
       torusdirectsdk: null,
       loginHint: "",
       loginResponse: null,
@@ -65,10 +66,12 @@ class HomePage extends React.PureComponent<IProps, IState> {
         queryParams[key] = url.searchParams.get(key);
       }
       const { error, instanceParameters } = this.handleRedirectParameters(hash, queryParams);
+      const { clientId } = verifierMap[this.state.selectedVerifier as keyof typeof verifierMap];
       const torusdirectsdk = new CustomAuth({
         baseUrl: `${window.location.origin}/serviceworker`,
         enableLogging: true,
         network: "testnet", // details for test net
+        web3AuthClientId: clientId,
       });
 
       await torusdirectsdk.init({ skipSw: false });
@@ -78,7 +81,9 @@ class HomePage extends React.PureComponent<IProps, IState> {
       if (hash) {
         if (error) throw new Error(error);
         const { verifier: returnedVerifier } = instanceParameters as Record<string, any>;
-        const selectedVerifier = Object.keys(verifierMap).find((x) => verifierMap[x].verifier === returnedVerifier) as string;
+        const selectedVerifier = Object.keys(verifierMap).find(
+          (x) => verifierMap[x as keyof typeof verifierMap].verifier === returnedVerifier
+        ) as string;
         this.setState({
           selectedVerifier,
         });
@@ -94,10 +99,10 @@ class HomePage extends React.PureComponent<IProps, IState> {
     console.log(hash, queryParameters);
     try {
       const jwtParams = this._loginToConnectionMap()[selectedVerifier] || {};
-      const { typeOfLogin, clientId, verifier } = verifierMap[selectedVerifier];
+      const { typeOfLogin, clientId, verifier } = verifierMap[selectedVerifier as keyof typeof verifierMap];
       const loginDetails = await torusdirectsdk?.triggerLogin({
-        typeOfLogin,
-        verifier,
+        authConnection: typeOfLogin as AUTH_CONNECTION_TYPE,
+        authConnectionId: verifier,
         clientId,
         jwtParams,
         hash,
