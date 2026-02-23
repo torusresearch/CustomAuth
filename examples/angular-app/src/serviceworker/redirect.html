@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />
@@ -21,7 +21,6 @@
       .container {
         width: 100%;
         height: 100%;
-
         display: flex;
         justify-content: center;
         align-items: center;
@@ -88,20 +87,6 @@
           opacity: 1;
         }
       }
-
-      @media (min-width: 768px) {
-        h1.title {
-          font-size: 14px;
-        }
-        p.info {
-          font-size: 28px;
-        }
-
-        .spinner .beat {
-          height: 12px;
-          width: 12px;
-        }
-      }
     </style>
   </head>
 
@@ -115,8 +100,8 @@
       <h1 class="title content" id="closeText" style="display: none">You can close this window now</h1>
     </div>
     <script
-      src="https://scripts.toruswallet.io/broadcastChannel_4_5_0.js"
-      integrity="sha384-LyjYpi9J/BsbzFXTzLh0xCaHcqYURyWnTwhPSGzlD2gDissLfGARGcScz/DgBzWH"
+      src="https://cdn.jsdelivr.net/npm/@toruslabs/broadcast-channel@13.1.0/dist/lib/browser.min.js"
+      integrity="sha384-vv1RkRonhPWQdx3ShNjf7kCuYZk01XgaxSSqvl4pvAUwy7gbuW0uH271iUvzMkm9"
       crossorigin="anonymous"
     ></script>
     <script>
@@ -131,16 +116,10 @@
         } catch (e) {
           return (
             e &&
-            // everything except Firefox
             (e.code === 22 ||
-              // Firefox
               e.code === 1014 ||
-              // test name field too, because code might not be present
-              // everything except Firefox
               e.name === "QuotaExceededError" ||
-              // Firefox
               e.name === "NS_ERROR_DOM_QUOTA_REACHED") &&
-            // acknowledge QuotaExceededError only if there's something already stored
             storage &&
             storage.length !== 0
           );
@@ -149,37 +128,25 @@
       function showCloseText() {
         var closeText = document.getElementById("closeText");
         var spinner = document.getElementById("spinner");
-        if (closeText) {
-          closeText.style.display = "block";
-        }
-        if (spinner) {
-          spinner.style.display = "none";
-        }
-      }
-      var isLocalStorageAvailable = storageAvailable("localStorage");
-      var isSessionStorageAvailable = storageAvailable("sessionStorage");
-      // set theme
-      let theme = "light";
-      if (isLocalStorageAvailable) {
-        var torusTheme = localStorage.getItem("torus-theme");
-        if (torusTheme) {
-          theme = torusTheme.split("-")[0];
-        }
+        if (closeText) closeText.style.display = "block";
+        if (spinner) spinner.style.display = "none";
       }
 
-      if (theme === "dark") {
-        document.querySelector("body").style.backgroundColor = "#24252A";
+      var isLocalStorageAvailable = storageAvailable("localStorage");
+      var theme = "light";
+      if (isLocalStorageAvailable) {
+        var torusTheme = localStorage.getItem("torus-theme");
+        if (torusTheme) theme = torusTheme.split("-")[0];
       }
+      if (theme === "dark") document.querySelector("body").style.backgroundColor = "#24252A";
+
       var bc;
-      var broadcastChannelOptions = {
-        // type: 'localstorage', // (optional) enforce a type, oneOf['native', 'idb', 'localstorage', 'node'
-        webWorkerSupport: false, // (optional) set this to false if you know that your channel will never be used in a WebWorker (increase performance)
-      };
+      var broadcastChannelOptions = { webWorkerSupport: false };
       var instanceParams = {};
       var preopenInstanceId = new URL(window.location.href).searchParams.get("preopenInstanceId");
+
       if (!preopenInstanceId) {
         document.getElementById("message").style.visibility = "visible";
-        // in general oauth redirect
         try {
           var url = new URL(location.href);
           var hash = url.hash.substr(1);
@@ -192,61 +159,39 @@
             }, {});
           }
           var queryParams = {};
-          for (var key of url.searchParams.keys()) {
-            queryParams[key] = url.searchParams.get(key);
-          }
+          for (var key of url.searchParams.keys()) queryParams[key] = url.searchParams.get(key);
           var error = "";
           try {
             if (Object.keys(hashParams).length > 0 && hashParams.state) {
-              instanceParams = JSON.parse(window.atob(decodeURIComponent(decodeURIComponent(hashParams.state)))) || {};
+              instanceParams = JSON.parse(decodeBase64Url(decodeURIComponent(decodeURIComponent(hashParams.state)))) || {};
               if (hashParams.error) error = hashParams.error;
             } else if (Object.keys(queryParams).length > 0 && queryParams.state) {
-              instanceParams = JSON.parse(window.atob(decodeURIComponent(decodeURIComponent(queryParams.state)))) || {};
+              instanceParams = JSON.parse(decodeBase64Url(decodeURIComponent(decodeURIComponent(queryParams.state)))) || {};
               if (queryParams.error) error = queryParams.error;
             }
           } catch (e) {
             console.error(e);
           }
+
           if (instanceParams.redirectToOpener) {
-            // communicate to window.opener
             window.opener.postMessage(
               {
                 channel: "redirect_channel_" + instanceParams.instanceId,
-                data: {
-                  instanceParams: instanceParams,
-                  hashParams: hashParams,
-                  queryParams: queryParams,
-                },
+                data: { instanceParams: instanceParams, hashParams: hashParams, queryParams: queryParams },
                 error: error,
               },
               "http://localhost:3000"
             );
           } else {
-            // communicate via broadcast channel
-            bc = new broadcastChannelLib.BroadcastChannel("redirect_channel_" + instanceParams.instanceId, broadcastChannelOptions);
-            bc.addEventListener("message", function (ev) {
-              if (ev.success) {
-                bc.close();
-                console.log("posted", {
-                  queryParams,
-                  instanceParams,
-                  hashParams,
-                });
-              } else {
-                window.close();
-                showCloseText();
-              }
-            });
+            bc = new BroadcastChannel.RedundantAdaptiveBroadcastChannel("redirect_channel_" + instanceParams.instanceId, broadcastChannelOptions);
             bc.postMessage({
-              data: {
-                instanceParams: instanceParams,
-                hashParams: hashParams,
-                queryParams: queryParams,
-              },
+              data: { instanceParams: instanceParams, hashParams: hashParams, queryParams: queryParams },
               error: error,
             }).then(function () {
+              bc.close();
               setTimeout(function () {
-                window.location.href = url.origin + location.search + location.hash;
+                window.close();
+                showCloseText();
               }, 5000);
             });
           }
@@ -257,20 +202,16 @@
           showCloseText();
         }
       } else {
-        // in preopen, awaiting redirect
         try {
-          bc = new broadcastChannelLib.BroadcastChannel("preopen_channel_" + preopenInstanceId, broadcastChannelOptions);
+          bc = new BroadcastChannel.RedundantAdaptiveBroadcastChannel("preopen_channel_" + preopenInstanceId, broadcastChannelOptions);
           bc.onmessage = function (ev) {
-            var { preopenInstanceId: oldId, payload, message } = ev.data;
+            var oldId = ev.data.preopenInstanceId;
+            var payload = ev.data.payload;
+            var message = ev.data.message;
             if (oldId === preopenInstanceId && payload && payload.url) {
               window.location.href = payload.url;
             } else if (oldId === preopenInstanceId && message === "setup_complete") {
-              bc.postMessage({
-                data: {
-                  preopenInstanceId: preopenInstanceId,
-                  message: "popup_loaded",
-                },
-              });
+              bc.postMessage({ data: { preopenInstanceId: preopenInstanceId, message: "popup_loaded" } });
             }
             if (ev.error && ev.error !== "") {
               console.error(ev.error);

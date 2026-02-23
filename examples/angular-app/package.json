@@ -6,60 +6,41 @@
     "start": "ng serve --port 3000",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test",
-    "lint": "tsc --noEmit && eslint . --ext js,ts,json --quiet --fix"
+    "test": "ng test"
+  },
+  "prettier": {
+    "printWidth": 100,
+    "singleQuote": true,
+    "overrides": [
+      {
+        "files": "*.html",
+        "options": {
+          "parser": "angular"
+        }
+      }
+    ]
   },
   "private": true,
+  "packageManager": "npm@11.6.2",
   "dependencies": {
-    "@angular/animations": "~12.1.1",
-    "@angular/common": "~12.1.1",
-    "@angular/compiler": "~12.1.1",
-    "@angular/core": "~12.1.1",
-    "@angular/forms": "~12.1.1",
-    "@angular/platform-browser": "~12.1.1",
-    "@angular/platform-browser-dynamic": "~12.1.1",
-    "@angular/router": "~12.1.1",
+    "@angular/common": "^21.1.0",
+    "@angular/compiler": "^21.1.0",
+    "@angular/core": "^21.1.0",
+    "@angular/forms": "^21.1.0",
+    "@angular/platform-browser": "^21.1.0",
+    "@angular/router": "^21.1.0",
+    "@toruslabs/constants": "^16.0.0",
     "@toruslabs/customauth": "file:../..",
-    "crypto-browserify": "^3.12.0",
-    "process": "^0.11.10",
-    "rxjs": "~6.6.0",
-    "stream-browserify": "^3.0.0",
-    "tslib": "^2.2.0",
-    "zone.js": "~0.11.4"
+    "@toruslabs/fnd-base": "^16.0.0",
+    "rxjs": "~7.8.0",
+    "tslib": "^2.3.0"
   },
   "devDependencies": {
-    "@angular-builders/custom-webpack": "^20.0.0",
-    "@angular-devkit/build-angular": "~20.1.4",
-    "@angular-eslint/builder": "12.7.0",
-    "@angular-eslint/eslint-plugin": "12.3.0",
-    "@angular-eslint/eslint-plugin-template": "12.3.0",
-    "@angular-eslint/schematics": "20.1.1",
-    "@angular-eslint/template-parser": "12.3.0",
-    "@angular/cli": "~20.1.4",
-    "@angular/compiler-cli": "~12.1.1",
-    "@types/bs58": "^4.0.1",
-    "@types/jasmine": "~3.6.0",
-    "@types/keccak": "^3.0.1",
-    "@types/node": "^12.11.1",
-    "@typescript-eslint/eslint-plugin": "4.28.2",
-    "@typescript-eslint/parser": "4.28.2",
-    "buffer": "^6.0.3",
-    "eslint": "^7.26.0",
-    "eslint-config-prettier": "^8.3.0",
-    "eslint-plugin-angular": "^4.0.1",
-    "eslint-plugin-prettier": "^3.4.0",
-    "https-browserify": "^1.0.0",
-    "jasmine-core": "^5.2.0",
-    "karma": "^6.4.3",
-    "karma-chrome-launcher": "^3.2.0",
-    "karma-coverage": "^2.2.1",
-    "karma-jasmine": "^5.1.0",
-    "karma-jasmine-html-reporter": "^2.1.0",
-    "os-browserify": "^0.3.0",
-    "prettier": "^2.3.2",
-    "prettier-eslint": "^12.0.0",
-    "stream-http": "^3.2.0",
-    "tslint-plugin-prettier": "^2.3.0",
-    "typescript": "~4.3.2"
+    "@angular/build": "^21.1.4",
+    "@angular/cli": "^21.1.4",
+    "@angular/compiler-cli": "^21.1.0",
+    "jsdom": "^27.1.0",
+    "typescript": "~5.9.2",
+    "vitest": "^4.0.8"
   }
 }
