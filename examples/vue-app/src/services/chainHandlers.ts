@@ -24,23 +24,3 @@ export const signEthMessage = async (walletClient: WalletClient): Promise<string
   });
   return signature;
 };
-
-export const signTypedData_v1 = async (walletClient: WalletClient): Promise<Hex> => {
-  const signature = await walletClient.signTypedData({
-    account: walletClient.account!,
-    domain: {},
-    types: {
-      EIP712Domain: [],
-      Mail: [
-        { name: "message", type: "string" },
-        { name: "value", type: "uint8" },
-      ],
-    },
-    primaryType: "Mail",
-    message: {
-      message: "Hi, Alice!",
-      value: 10,
-    },
-  });
-  return signature;
-};

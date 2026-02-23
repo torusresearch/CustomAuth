@@ -9,7 +9,6 @@
     { "directory": "examples/firebase-example/", "changeProcessCWD": true },
     { "directory": "examples/nextjs-app/", "changeProcessCWD": true },
     { "directory": "examples/react-app/", "changeProcessCWD": true },
-    { "directory": "examples/starkware-react-example/", "changeProcessCWD": true },
     { "directory": ".", "changeProcessCWD": true }
   ]
 }

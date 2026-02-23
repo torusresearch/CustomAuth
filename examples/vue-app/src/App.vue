@@ -109,11 +109,6 @@
                 {{ $t("app.btnSignMessage") }}
               </Button>
             </div>
-            <div class="mb-2">
-              <Button block size="xs" pill data-testid="btnSignV1Message" @click="signV1Message">
-                {{ $t("app.btnSignV1Message") }}
-              </Button>
-            </div>
           </Card>
           <Card id="console" class="px-4 py-4 col-span-4 overflow-y-auto">
             <ul class="text-sm text-app-gray-700 dark:text-app-gray-200 font-normal mt-4 mb-5 px-0">
@@ -178,7 +173,7 @@ import {
   WEB3AUTH_EMAIL_PASSWORDLESS,
   WEB3AUTH_SMS_PASSWORDLESS,
 } from "./config";
-import { createViemClients, signEthMessage, signTypedData_v1 } from "./services/chainHandlers";
+import { createViemClients, signEthMessage } from "./services/chainHandlers";
 
 const { log } = console;
 
@@ -429,11 +424,5 @@ const signMessage = async () => {
   if (!walletClient.value) return;
   const signedMessageR = await signEthMessage(walletClient.value);
   printConsole("Signed Message", signedMessageR);
-};
-
-const signV1Message = async () => {
-  if (!walletClient.value) return;
-  const signedMessageR = await signTypedData_v1(walletClient.value);
-  printConsole("Signed V1 Message", signedMessageR);
 };
 </script>
