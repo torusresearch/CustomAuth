@@ -16,7 +16,7 @@
     "@toruslabs/torus.js": "^17.0.0",
     "@uiw/react-json-view": "^2.0.0-alpha.30",
     "error": "10.4.0",
-    "next": "^15.4.8",
+    "next": "^15.5.10",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
   },
