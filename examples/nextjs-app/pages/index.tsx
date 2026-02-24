@@ -255,6 +255,8 @@ const HomePage = () => {
 
   const showEmailHint = formData.loginProvider === WEB3AUTH_EMAIL_PASSWORDLESS;
   const showPhoneHint = formData.loginProvider === WEB3AUTH_SMS_PASSWORDLESS;
+  const requiresLoginHint = showEmailHint || showPhoneHint;
+  const isConnectDisabled = !customAuthSdk || (requiresLoginHint && !formData.loginHint.trim());
 
   return (
     <div style={{ maxWidth: 860, margin: "30px auto", padding: "0 16px" }}>
@@ -334,7 +336,7 @@ const HomePage = () => {
             </label>
           )}
 
-          <button type="button" onClick={() => void onLogin()} disabled={!customAuthSdk}>
+          <button type="button" onClick={() => void onLogin()} disabled={isConnectDisabled}>
             Connect
           </button>
         </div>
