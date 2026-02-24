@@ -45,4 +45,16 @@ describe("CustomAuthService", () => {
     expect(localStorage.getItem("userInfo")).toBe('{"name":"Alice"}');
     expect(localStorage.getItem("angular_custom_auth_result")).toBeNull();
   });
+
+  it("uses BroadcastChannel base64url decoder in popup callback assets", async () => {
+    const redirectUrl = new URL("/serviceworker/redirect", window.location.origin).toString();
+    const serviceWorkerUrl = new URL("/serviceworker/sw.js", window.location.origin).toString();
+    const [redirectHtml, serviceWorkerScript] = await Promise.all([
+      fetch(redirectUrl).then((response) => response.text()),
+      fetch(serviceWorkerUrl).then((response) => response.text()),
+    ]);
+
+    expect(redirectHtml).toContain("BroadcastChannel.decodeBase64Url");
+    expect(serviceWorkerScript).toContain("BroadcastChannel.decodeBase64Url");
+  });
 });
