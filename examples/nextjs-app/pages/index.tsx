@@ -1,189 +1,375 @@
-/* eslint-disable class-methods-use-this */
-import React from "react";
-import Link from "next/link";
-import { CustomAuth, TorusLoginResponse } from "@toruslabs/customauth";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import dynamic from "next/dynamic";
+import { KEY_TYPE, TORUS_LEGACY_NETWORK } from "@toruslabs/constants";
+import { CustomAuth } from "@toruslabs/customauth";
+import { fetchLocalConfig } from "@toruslabs/fnd-base";
 
 import {
-  verifierMap,
-  GITHUB,
-  TWITTER,
   APPLE,
   AUTH_DOMAIN,
-  EMAIL_PASSWORD,
-  HOSTED_EMAIL_PASSWORDLESS,
-  HOSTED_SMS_PASSWORDLESS,
-  LINE,
-  LINKEDIN,
-  WEIBO,
   COGNITO,
   COGNITO_AUTH_DOMAIN,
+  DEFAULT_NETWORK,
+  EMAIL_PASSWORD,
+  FormData,
+  getVerifierMap,
+  getVerifierOptions,
+  GOOGLE,
+  GITHUB,
+  LINE,
+  LINKEDIN,
+  networkOptions,
+  REDDIT,
+  TELEGRAM,
+  TWITTER,
+  uxModeOptions,
+  WEB3AUTH_EMAIL_PASSWORDLESS,
+  WEB3AUTH_SMS_PASSWORDLESS,
 } from "../lib/constants";
 
-let ReactJsonView;
-if (typeof window === "object") {
-  ReactJsonView = dynamic(() => import("@uiw/react-json-view"));
-}
+const ReactJsonView = dynamic(() => import("@uiw/react-json-view"), { ssr: false });
 
-interface IState {
-  selectedVerifier: string;
-  torusdirectsdk: CustomAuth | null;
-  loginHint: string;
-  loginResponse?: TorusLoginResponse | null;
-}
+type UserInfoType = Record<string, unknown> | null;
 
-interface IProps {}
-class HomePage extends React.PureComponent<IProps, IState> {
-  constructor(props: IProps) {
-    super(props);
-    this.state = {
-      selectedVerifier: "",
-      torusdirectsdk: null,
-      loginHint: "",
-      loginResponse: null,
-    };
+const getDefaultFormData = (): FormData => ({
+  uxMode: "redirect",
+  loginProvider: GOOGLE,
+  loginHint: "",
+  network: DEFAULT_NETWORK,
+});
+
+const parseStoredFormData = (): FormData => {
+  if (typeof window === "undefined") return getDefaultFormData();
+  const stored = localStorage.getItem("formData");
+  if (!stored) return getDefaultFormData();
+  try {
+    return JSON.parse(stored) as FormData;
+  } catch {
+    return getDefaultFormData();
   }
+};
 
-  componentDidMount = async () => {
-    try {
-      /**
-       * Important Note:
-       * After user completes the oauth login process, user will be redirected to redirectPathName
-       * which you will specify while initializing sdk. If you are using serviceworker or redirect.html
-       * file provided in this package to handle the redirect result which parses the login result
-       * and sends the result back to original window (i.e. where login was initiated).
-       * But User might close original window before completing login process (in popup uxMode)
-       * or only one window exists during login (in redirect mode), in that case
-       * service worker will not able to send login result back to original window and it will
-       * simply redirect to root path of app ('i.e': '/') with the login results in hash params
-       * and search params.
-       * So a best practice is to add a fallback handler in the root page of your app.
-       * Here we are simply parsing hash params and search params to get the login results.
-       * If you are using redirect uxMode (recommended) , you don't have to include this fallback handler
-       * in your code.
-       */
-      const url = new URL(window.location.href);
-      const hash = url.hash.substr(1);
-      const queryParams = {} as Record<string, any>;
-      for (const key of url.searchParams.keys()) {
-        queryParams[key] = url.searchParams.get(key);
-      }
-      const { error, instanceParameters } = this.handleRedirectParameters(hash, queryParams);
-      const torusdirectsdk = new CustomAuth({
-        baseUrl: `${window.location.origin}/serviceworker`,
-        enableLogging: true,
-        network: "sapphire_devnet", // details for test net
-        web3AuthClientId: "BPi5PB_UiIZ-cPz1GtV5i1I2iOSOHuimiXBI0e-Oe_u6X3oVAbCiAZOTEBtTXw4tsluTITPqA8zMsfxIKMjiqNQ",
-      });
+const HomePage = () => {
+  const [formData, setFormData] = useState<FormData>(getDefaultFormData);
+  const [customAuthSdk, setCustomAuthSdk] = useState<any | null>(null);
+  const [privKey, setPrivKey] = useState<string | undefined>(undefined);
+  const [userInfo, setUserInfo] = useState<UserInfoType>(null);
+  const [consoleTitle, setConsoleTitle] = useState("Console");
+  const [consoleBody, setConsoleBody] = useState("");
+  const [mounted, setMounted] = useState(false);
+  const [isHydrated, setIsHydrated] = useState(false);
+  const sdkInitSeqRef = useRef(0);
 
-      await torusdirectsdk.init({ skipSw: false });
+  const verifierMap = useMemo(() => getVerifierMap(formData.network), [formData.network]);
+  const verifierOptions = useMemo(() => getVerifierOptions(formData.network), [formData.network]);
 
-      this.setState({ torusdirectsdk });
-
-      if (hash) {
-        if (error) throw new Error(error);
-        const { verifier: returnedVerifier } = instanceParameters as Record<string, any>;
-        const selectedVerifier = Object.keys(verifierMap).find((x) => verifierMap[x].verifier === returnedVerifier) as string;
-        this.setState({
-          selectedVerifier,
-        });
-        this._loginWithParams(hash, queryParams);
-      }
-    } catch (error) {
-      console.error(error, "mounted caught");
-    }
-  };
-
-  _loginWithParams = async (hash: string, queryParameters: Record<string, any>) => {
-    const { selectedVerifier, torusdirectsdk } = this.state;
-    console.log(hash, queryParameters);
-    try {
-      const jwtParams = this._loginToConnectionMap()[selectedVerifier] || {};
-      const { typeOfLogin, clientId, verifier } = verifierMap[selectedVerifier];
-      const loginDetails = await torusdirectsdk?.triggerLogin({
-        typeOfLogin,
-        verifier,
-        clientId,
-        jwtParams,
-        hash,
-        queryParameters,
-      });
-      this.setState({ loginResponse: loginDetails });
-    } catch (error) {
-      console.error(error, "login caught");
-    }
-  };
-
-  handleRedirectParameters = (hash: string, queryParameters: Record<string, any>) => {
-    const hashParameters = hash.split("&").reduce((result: Record<string, any>, item) => {
-      const [part0, part1] = item.split("=");
-      result[part0] = part1;
-      return result;
-    }, {});
-    let instanceParameters = {};
-    let error = "";
-    if (!queryParameters.preopenInstanceId) {
-      if (Object.keys(hashParameters).length > 0 && hashParameters.state) {
-        instanceParameters = JSON.parse(atob(decodeURIComponent(decodeURIComponent(hashParameters.state)))) || {};
-        error = hashParameters.error_description || hashParameters.error || error;
-      } else if (Object.keys(queryParameters).length > 0 && queryParameters.state) {
-        instanceParameters = JSON.parse(atob(decodeURIComponent(decodeURIComponent(queryParameters.state)))) || {};
-        if (queryParameters.error) error = queryParameters.error;
-      }
-    }
-    return { error, instanceParameters, hashParameters };
-  };
-
-  _loginToConnectionMap = (): Record<string, any> => {
-    return {
+  const loginToConnectionMap = useMemo(
+    () => ({
       [EMAIL_PASSWORD]: { domain: AUTH_DOMAIN },
-      [HOSTED_EMAIL_PASSWORDLESS]: {
-        domain: AUTH_DOMAIN,
-        verifierIdField: "name",
-        connection: "",
-        isVerifierIdCaseSensitive: false,
-      },
-      [HOSTED_SMS_PASSWORDLESS]: { domain: AUTH_DOMAIN, verifierIdField: "name", connection: "" },
       [APPLE]: { domain: AUTH_DOMAIN },
       [GITHUB]: { domain: AUTH_DOMAIN },
       [LINKEDIN]: { domain: AUTH_DOMAIN },
       [TWITTER]: { domain: AUTH_DOMAIN },
-      [WEIBO]: { domain: AUTH_DOMAIN },
       [LINE]: { domain: AUTH_DOMAIN },
       [COGNITO]: { domain: COGNITO_AUTH_DOMAIN, identity_provider: "Google", response_type: "token", user_info_endpoint: "userInfo" },
-    };
+      [REDDIT]: { domain: AUTH_DOMAIN, connection: "Reddit", userIdField: "name", isUserIdCaseSensitive: false },
+      [TELEGRAM]: {
+        identity_provider: "Telegram",
+        origin: "https://custom-auth-beta.vercel.app/serviceworker/redirect",
+      },
+      [WEB3AUTH_EMAIL_PASSWORDLESS]: { login_hint: formData.loginHint },
+      [WEB3AUTH_SMS_PASSWORDLESS]: { login_hint: formData.loginHint },
+    }),
+    [formData.loginHint],
+  );
+
+  const printConsole = (title: string, payload: unknown) => {
+    setConsoleTitle(title);
+    setConsoleBody(JSON.stringify(payload, null, 2));
   };
 
-  render() {
-    const { loginResponse } = this.state;
-    return (
-      <div className="app">
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "row",
-            justifyContent: "center",
-            alignItems: "center",
-            margin: 100,
-          }}
-        >
-          <Link href="/redirectMode/login">
-            <button>Login with Redirect Mode (Recommended)</button>
-          </Link>
-          <Link href="/popupMode/login">
-            <button>Login with Popup Mode</button>
-          </Link>
-        </div>
+  const getErrorMessage = (error: unknown): string => {
+    if (error instanceof Error) return error.message;
+    if (typeof error === "string") return error;
+    return "Unknown error";
+  };
 
-        {loginResponse && (
-          <div>
-            <h2>Login Response</h2>
-            <ReactJsonView value={loginResponse} style={{ marginTop: 20 }} />
-          </div>
-        )}
+  const loadResponse = (response: any) => {
+    const localPrivKey = response?.finalKeyData?.privKey || response?.oAuthKeyData?.privKey;
+    const localUserInfo = response?.userInfo || null;
+    if (localPrivKey) {
+      setPrivKey(localPrivKey);
+      localStorage.setItem("privKey", localPrivKey);
+    }
+    if (localUserInfo) {
+      setUserInfo(localUserInfo);
+      localStorage.setItem("userInfo", JSON.stringify(localUserInfo));
+    }
+  };
+
+  const getWeb3AuthClientIdFromUrl = (fallbackClientId: string, verifierMapSnapshot: ReturnType<typeof getVerifierMap>): string => {
+    const verifierToClientId = Object.values(verifierMapSnapshot).reduce<Record<string, string>>((acc, item) => {
+      acc[item.verifier] = item.clientId;
+      return acc;
+    }, {});
+    try {
+      const url = new URL(window.location.href);
+      const hash = url.hash.replace(/^#/, "");
+      const searchState = url.searchParams.get("state");
+      const stateFromHash = hash
+        .split("&")
+        .find((part) => part.startsWith("state="))
+        ?.split("=")[1];
+      const encodedState = stateFromHash || searchState;
+      if (!encodedState) return fallbackClientId;
+      const decodedState = decodeURIComponent(decodeURIComponent(encodedState));
+      const parsed = JSON.parse(atob(decodedState)) as { verifier?: string };
+      if (!parsed.verifier) return fallbackClientId;
+      return verifierToClientId[parsed.verifier] || fallbackClientId;
+    } catch {
+      return fallbackClientId;
+    }
+  };
+
+  const initSdk = async (formSnapshot: FormData) => {
+    const verifierMapSnapshot = getVerifierMap(formSnapshot.network);
+    const selectedProvider = formSnapshot.loginProvider;
+    const selectedVerifier = verifierMapSnapshot[selectedProvider] || verifierMapSnapshot[GOOGLE];
+    if (!selectedVerifier) return null;
+    const nodeDetails = fetchLocalConfig(formSnapshot.network, KEY_TYPE.SECP256K1);
+    const web3AuthClientId =
+      formSnapshot.uxMode === "redirect" ? getWeb3AuthClientIdFromUrl(selectedVerifier.clientId, verifierMapSnapshot) : selectedVerifier.clientId;
+    const sdk =
+      formSnapshot.uxMode === "redirect"
+        ? new CustomAuth({
+            baseUrl: window.location.origin,
+            redirectPathName: "auth",
+            enableLogging: true,
+            network: formSnapshot.network,
+            web3AuthClientId,
+            nodeDetails,
+            checkCommitment: false,
+            uxMode: formSnapshot.uxMode,
+          })
+        : new CustomAuth({
+            baseUrl: `${window.location.origin}/serviceworker`,
+            enableLogging: true,
+            network: formSnapshot.network,
+            web3AuthClientId,
+            nodeDetails,
+            checkCommitment: false,
+            uxMode: formSnapshot.uxMode,
+          });
+    await sdk.init(formSnapshot.uxMode === "redirect" ? { skipSw: true } : { skipSw: false });
+    return sdk;
+  };
+
+  useEffect(() => {
+    if (!mounted) return;
+    localStorage.setItem("formData", JSON.stringify(formData));
+  }, [formData, mounted]);
+
+  useEffect(() => {
+    setMounted(true);
+    const persistedFormData = parseStoredFormData();
+    setFormData(persistedFormData);
+
+    const persistedPrivKey = localStorage.getItem("privKey") || undefined;
+    const persistedUserInfo = localStorage.getItem("userInfo");
+    setPrivKey(persistedPrivKey);
+    setUserInfo(persistedUserInfo ? (JSON.parse(persistedUserInfo) as UserInfoType) : null);
+    setIsHydrated(true);
+  }, []);
+
+  useEffect(() => {
+    if (!isHydrated) return;
+    const seq = sdkInitSeqRef.current + 1;
+    sdkInitSeqRef.current = seq;
+    setCustomAuthSdk(null);
+    const formSnapshot = { ...formData };
+    void (async () => {
+      const sdk = await initSdk(formSnapshot);
+      if (!sdk || sdkInitSeqRef.current !== seq) return;
+      setCustomAuthSdk(sdk);
+      if (formSnapshot.uxMode !== "redirect") return;
+      try {
+        const loginDetails = await sdk.getRedirectResult();
+        if (sdkInitSeqRef.current !== seq) return;
+        const response = ((loginDetails as any)?.result || loginDetails) as any;
+        if (response) loadResponse(response);
+      } catch (error) {
+        console.error(error);
+      }
+    })();
+  }, [isHydrated, formData.network, formData.uxMode, formData.loginProvider]);
+
+  const onLogin = async () => {
+    try {
+      const selected = verifierMap[formData.loginProvider];
+      if (!selected) return;
+      if (!customAuthSdk) return;
+
+      const jwtParams = loginToConnectionMap[formData.loginProvider] || {};
+      if (formData.network === TORUS_LEGACY_NETWORK.TESTNET) {
+        const data = await customAuthSdk.triggerLogin({
+          authConnection: selected.typeOfLogin,
+          authConnectionId: selected.verifier,
+          clientId: selected.clientId,
+          jwtParams,
+        });
+        if (data) loadResponse(data);
+        return;
+      }
+
+      const data = await customAuthSdk.triggerLogin({
+        authConnection: selected.typeOfLogin,
+        authConnectionId: "web3auth",
+        groupedAuthConnectionId: selected.verifier,
+        clientId: selected.clientId,
+        jwtParams,
+      });
+      if (data) loadResponse(data);
+    } catch (error) {
+      console.error(error);
+      printConsole("Login Error", { message: getErrorMessage(error) });
+    }
+  };
+
+  const onLogout = () => {
+    setPrivKey(undefined);
+    setUserInfo(null);
+    localStorage.removeItem("privKey");
+    localStorage.removeItem("userInfo");
+    printConsole("Console", {});
+  };
+
+  const onLoadUserInfo = () => {
+    printConsole("User Info", {
+      network: formData.network,
+      uxMode: formData.uxMode,
+      loginProvider: formData.loginProvider,
+      userInfo,
+      privKey,
+    });
+  };
+
+  const showEmailHint = formData.loginProvider === WEB3AUTH_EMAIL_PASSWORDLESS;
+  const showPhoneHint = formData.loginProvider === WEB3AUTH_SMS_PASSWORDLESS;
+  const requiresLoginHint = showEmailHint || showPhoneHint;
+  const isConnectDisabled = !customAuthSdk || (requiresLoginHint && !formData.loginHint.trim());
+
+  return (
+    <div style={{ maxWidth: 860, margin: "30px auto", padding: "0 16px" }}>
+      <h1 style={{ marginBottom: 8 }}>CustomAuth Next.js Example</h1>
+      <p style={{ marginTop: 0 }}>Vue-like UI and flow with network, verifier, and UX mode.</p>
+
+      {!privKey ? (
+        <div style={{ display: "grid", gap: 12, maxWidth: 520 }}>
+          <label>
+            UX Mode
+            <select value={formData.uxMode} onChange={(e) => setFormData((prev) => ({ ...prev, uxMode: e.target.value }))} style={{ width: "100%" }}>
+              {uxModeOptions.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.name}
+                </option>
+              ))}
+            </select>
+          </label>
+
+          <label>
+            Network
+            <select
+              value={formData.network}
+              onChange={(e) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  network: e.target.value as FormData["network"],
+                  loginProvider: GOOGLE,
+                }))
+              }
+              style={{ width: "100%" }}
+            >
+              {networkOptions.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.name}
+                </option>
+              ))}
+            </select>
+          </label>
+
+          <label>
+            Verifier
+            <select
+              value={formData.loginProvider}
+              onChange={(e) => setFormData((prev) => ({ ...prev, loginProvider: e.target.value }))}
+              style={{ width: "100%" }}
+            >
+              {verifierOptions.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {verifierMap[option.value]?.name || option.name}
+                </option>
+              ))}
+            </select>
+          </label>
+
+          {showEmailHint && (
+            <label>
+              Email
+              <input
+                placeholder="Enter an email"
+                value={formData.loginHint}
+                onChange={(e) => setFormData((prev) => ({ ...prev, loginHint: e.target.value }))}
+                style={{ width: "100%" }}
+              />
+            </label>
+          )}
+
+          {showPhoneHint && (
+            <label>
+              Phone
+              <input
+                placeholder="+{cc}-{number}"
+                value={formData.loginHint}
+                onChange={(e) => setFormData((prev) => ({ ...prev, loginHint: e.target.value }))}
+                style={{ width: "100%" }}
+              />
+            </label>
+          )}
+
+          <button type="button" onClick={() => void onLogin()} disabled={isConnectDisabled}>
+            Connect
+          </button>
+        </div>
+      ) : (
+        <div style={{ display: "flex", gap: 8, marginBottom: 12 }}>
+          <button type="button" onClick={() => onLoadUserInfo()}>
+            User Info
+          </button>
+          <button type="button" onClick={() => printConsole("Console", {})}>
+            Clear Console
+          </button>
+          <button type="button" onClick={() => onLogout()}>
+            Logout
+          </button>
+        </div>
+      )}
+
+      <div style={{ marginTop: 16 }}>
+        <p>
+          Please note that the verifiers listed in the example have <strong>http://localhost:3000/serviceworker/redirect</strong> configured as the
+          redirect uri.
+        </p>
+        <p>If you use any other domains, they won't work.</p>
       </div>
-    );
-  }
-}
+
+      {privKey && (
+        <div style={{ marginTop: 20 }}>
+          <h3>{consoleTitle}</h3>
+          {mounted ? <ReactJsonView value={consoleBody ? JSON.parse(consoleBody) : {}} style={{ textAlign: "left" }} /> : <pre>{consoleBody}</pre>}
+        </div>
+      )}
+    </div>
+  );
+};
 
 export default HomePage;

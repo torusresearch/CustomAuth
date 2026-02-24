@@ -135,8 +135,8 @@ self.addEventListener("fetch", function (event) {
       <h1 class="title content" id="closeText" style="display: none;">You can close this window now</h1>
     </div>
     <script
-      src="https://cdn.jsdelivr.net/npm/@toruslabs/broadcast-channel@12.0.0/dist/broadcastChannel.umd.min.js"
-      integrity="sha256-/tl4ddW3YWdpwrY9ulragEO+wqRKGlBkbkLaK7vDhRA="
+      src="https://cdn.jsdelivr.net/npm/@toruslabs/broadcast-channel@13.1.0/dist/lib/browser.min.js"
+      integrity="sha384-vv1RkRonhPWQdx3ShNjf7kCuYZk01XgaxSSqvl4pvAUwy7gbuW0uH271iUvzMkm9"
       crossorigin="anonymous"
     ></script>
     <script>
@@ -217,10 +217,10 @@ self.addEventListener("fetch", function (event) {
           var error = "";
           try {
             if (Object.keys(hashParams).length > 0 && hashParams.state) {
-              instanceParams = JSON.parse(base64urlLib.decode(decodeURIComponent(decodeURIComponent(hashParams.state)))) || {};
+              instanceParams = JSON.parse(BroadcastChannel.decodeBase64Url(decodeURIComponent(decodeURIComponent(hashParams.state)))) || {};
               if (hashParams.error) error = hashParams.error;
             } else if (Object.keys(queryParams).length > 0 && queryParams.state) {
-              instanceParams = JSON.parse(base64urlLib.decode(decodeURIComponent(decodeURIComponent(queryParams.state)))) || {};
+              instanceParams = JSON.parse(BroadcastChannel.decodeBase64Url(decodeURIComponent(decodeURIComponent(queryParams.state)))) || {};
               if (queryParams.error) error = queryParams.error;
             }
           } catch (e) {
@@ -242,7 +242,7 @@ self.addEventListener("fetch", function (event) {
             );
           } else {
             // communicate via broadcast channel
-            bc = new broadcastChannelLib.RedundantAdaptiveBroadcastChannel("redirect_channel_" + instanceParams.instanceId, broadcastChannelOptions);
+            bc = new BroadcastChannel.RedundantAdaptiveBroadcastChannel("redirect_channel_" + instanceParams.instanceId, broadcastChannelOptions);
             bc.postMessage({
               data: {
                 instanceParams: instanceParams,
@@ -272,7 +272,7 @@ self.addEventListener("fetch", function (event) {
       } else {
         // in preopen, awaiting redirect
         try {
-          bc = new broadcastChannelLib.RedundantAdaptiveBroadcastChannel("preopen_channel_" + preopenInstanceId, broadcastChannelOptions);
+          bc = new BroadcastChannel.RedundantAdaptiveBroadcastChannel("preopen_channel_" + preopenInstanceId, broadcastChannelOptions);
           bc.onmessage = function (ev) {
             var { preopenInstanceId: oldId, payload, message } = ev.data;
             if (oldId === preopenInstanceId && payload && payload.url) {

@@ -3,16 +3,16 @@ function getScope() {
   return self.registration.scope;
 }
 
-self.addEventListener("message", function (event) {
-  if (event.data && event.data.type === "SKIP_WAITING") {
+self.addEventListener('message', function (event) {
+  if (event.data && event.data.type === 'SKIP_WAITING') {
     self.skipWaiting();
   }
 });
 
-self.addEventListener("fetch", function (event) {
+self.addEventListener('fetch', function (event) {
   try {
     const url = new URL(event.request.url);
-    if (url.pathname.includes("redirect") && url.href.includes(getScope())) {
+    if (url.pathname.includes('redirect') && url.href.includes(getScope())) {
       event.respondWith(
         new Response(
           new Blob(
@@ -135,8 +135,8 @@ self.addEventListener("fetch", function (event) {
       <h1 class="title content" id="closeText" style="display: none;">You can close this window now</h1>
     </div>
     <script
-      src="https://scripts.toruswallet.io/broadcastChannel_4_5_0.js"
-      integrity="sha384-LyjYpi9J/BsbzFXTzLh0xCaHcqYURyWnTwhPSGzlD2gDissLfGARGcScz/DgBzWH"
+      src="https://cdn.jsdelivr.net/npm/@toruslabs/broadcast-channel@13.1.0/dist/lib/browser.min.js"
+      integrity="sha384-vv1RkRonhPWQdx3ShNjf7kCuYZk01XgaxSSqvl4pvAUwy7gbuW0uH271iUvzMkm9"
       crossorigin="anonymous"
     ></script>
     <script>
@@ -151,16 +151,10 @@ self.addEventListener("fetch", function (event) {
         } catch (e) {
           return (
             e &&
-            // everything except Firefox
             (e.code === 22 ||
-              // Firefox
               e.code === 1014 ||
-              // test name field too, because code might not be present
-              // everything except Firefox
               e.name === "QuotaExceededError" ||
-              // Firefox
               e.name === "NS_ERROR_DOM_QUOTA_REACHED") &&
-            // acknowledge QuotaExceededError only if there's something already stored
             storage &&
             storage.length !== 0
           );
@@ -177,8 +171,6 @@ self.addEventListener("fetch", function (event) {
         }
       }
       var isLocalStorageAvailable = storageAvailable("localStorage");
-      var isSessionStorageAvailable = storageAvailable("sessionStorage");
-      // set theme
       let theme = "light";
       if (isLocalStorageAvailable) {
         var torusTheme = localStorage.getItem("torus-theme");
@@ -192,14 +184,12 @@ self.addEventListener("fetch", function (event) {
       }
       var bc;
       var broadcastChannelOptions = {
-        // type: 'localstorage', // (optional) enforce a type, oneOf['native', 'idb', 'localstorage', 'node'
-        webWorkerSupport: false, // (optional) set this to false if you know that your channel will never be used in a WebWorker (increase performance)
+        webWorkerSupport: false,
       };
       var instanceParams = {};
       var preopenInstanceId = new URL(window.location.href).searchParams.get("preopenInstanceId");
       if (!preopenInstanceId) {
         document.getElementById("message").style.visibility = "visible";
-        // in general oauth redirect
         try {
           var url = new URL(location.href);
           var hash = url.hash.substr(1);
@@ -218,17 +208,16 @@ self.addEventListener("fetch", function (event) {
           var error = "";
           try {
             if (Object.keys(hashParams).length > 0 && hashParams.state) {
-              instanceParams = JSON.parse(window.atob(decodeURIComponent(decodeURIComponent(hashParams.state)))) || {};
+              instanceParams = JSON.parse(BroadcastChannel.decodeBase64Url(decodeURIComponent(decodeURIComponent(hashParams.state)))) || {};
               if (hashParams.error) error = hashParams.error;
             } else if (Object.keys(queryParams).length > 0 && queryParams.state) {
-              instanceParams = JSON.parse(window.atob(decodeURIComponent(decodeURIComponent(queryParams.state)))) || {};
+              instanceParams = JSON.parse(BroadcastChannel.decodeBase64Url(decodeURIComponent(decodeURIComponent(queryParams.state)))) || {};
               if (queryParams.error) error = queryParams.error;
             }
           } catch (e) {
             console.error(e);
           }
           if (instanceParams.redirectToOpener) {
-            // communicate to window.opener
             window.opener.postMessage(
               {
                 channel: "redirect_channel_" + instanceParams.instanceId,
@@ -242,21 +231,7 @@ self.addEventListener("fetch", function (event) {
               "http://localhost:3000"
             );
           } else {
-            // communicate via broadcast channel
-            bc = new broadcastChannelLib.BroadcastChannel("redirect_channel_" + instanceParams.instanceId, broadcastChannelOptions);
-            bc.addEventListener("message", function (ev) {
-              if (ev.success) {
-                bc.close();
-                console.log("posted", {
-                  queryParams,
-                  instanceParams,
-                  hashParams,
-                });
-              } else {
-                window.close();
-                showCloseText();
-              }
-            });
+            bc = new BroadcastChannel.RedundantAdaptiveBroadcastChannel("redirect_channel_" + instanceParams.instanceId, broadcastChannelOptions);
             bc.postMessage({
               data: {
                 instanceParams: instanceParams,
@@ -265,8 +240,10 @@ self.addEventListener("fetch", function (event) {
               },
               error: error,
             }).then(function () {
+              bc.close();
               setTimeout(function () {
-                window.location.href = url.origin + location.search + location.hash;
+                window.close();
+                showCloseText();
               }, 5000);
             });
           }
@@ -277,9 +254,8 @@ self.addEventListener("fetch", function (event) {
           showCloseText();
         }
       } else {
-        // in preopen, awaiting redirect
         try {
-          bc = new broadcastChannelLib.BroadcastChannel("preopen_channel_" + preopenInstanceId, broadcastChannelOptions);
+          bc = new BroadcastChannel.RedundantAdaptiveBroadcastChannel("preopen_channel_" + preopenInstanceId, broadcastChannelOptions);
           bc.onmessage = function (ev) {
             var { preopenInstanceId: oldId, payload, message } = ev.data;
             if (oldId === preopenInstanceId && payload && payload.url) {
@@ -306,14 +282,11 @@ self.addEventListener("fetch", function (event) {
       }
     </script>
   </body>
-</html>
-                        
-${""}
-  `,
+</html>`,
             ],
-            { type: "text/html" }
-          )
-        )
+            { type: 'text/html' },
+          ),
+        ),
       );
     }
   } catch (error) {

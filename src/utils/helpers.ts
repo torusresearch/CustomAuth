@@ -1,4 +1,4 @@
-import base64url from "base64url";
+import { decodeBase64Url } from "@toruslabs/metadata-helpers";
 import Bowser from "bowser";
 
 import { AUTH_CONNECTION, AUTH_CONNECTION_TYPE, REDIRECT_PARAMS_STORAGE_METHOD_TYPE } from "./enums";
@@ -95,10 +95,10 @@ export const handleRedirectParameters = (
   let instanceParameters: TorusGenericObject = {};
   let error = "";
   if (Object.keys(hashParameters).length > 0 && hashParameters.state) {
-    instanceParameters = JSON.parse(base64url.decode(decodeURIComponent(decodeURIComponent(hashParameters.state)))) || {};
+    instanceParameters = JSON.parse(decodeBase64Url(decodeURIComponent(decodeURIComponent(hashParameters.state)))) || {};
     error = hashParameters.error_description || hashParameters.error || error;
   } else if (Object.keys(queryParameters).length > 0 && queryParameters.state) {
-    instanceParameters = JSON.parse(base64url.decode(decodeURIComponent(decodeURIComponent(queryParameters.state)))) || {};
+    instanceParameters = JSON.parse(decodeBase64Url(decodeURIComponent(decodeURIComponent(queryParameters.state)))) || {};
     if (queryParameters.error) error = queryParameters.error;
   }
   return { error, instanceParameters, hashParameters };
@@ -206,7 +206,7 @@ export const validateAndConstructUrl = (domain: string): URL => {
 };
 
 export const objectToAuthDataMap = (tgAuthenticationResult: string) => {
-  return JSON.parse(base64url.decode(tgAuthenticationResult)) as {
+  return JSON.parse(decodeBase64Url(tgAuthenticationResult)) as {
     first_name: string;
     last_name: string;
     photo_url: string;
@@ -231,7 +231,7 @@ export function getTimeout(authConnection: AUTH_CONNECTION_TYPE) {
 export function decodeToken<T>(token: string): { header: { alg: string; typ: string; kid?: string }; payload: T } {
   const [header, payload] = token.split(".");
   return {
-    header: JSON.parse(base64url.decode(header)),
-    payload: JSON.parse(base64url.decode(payload)) as T,
+    header: JSON.parse(decodeBase64Url(header)),
+    payload: JSON.parse(decodeBase64Url(payload)) as T,
   };
 }

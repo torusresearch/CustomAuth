@@ -1,0 +1,33 @@
+<section>
+  <h2>Redirect Mode Login</h2>
+  <div class="form-grid">
+    <label>
+      Network
+      <select [(ngModel)]="formData.network">
+        @for (network of networkOptions; track network) {
+          <option [value]="network">{{ network }}</option>
+        }
+      </select>
+    </label>
+
+    <label>
+      Login Provider
+      <select [(ngModel)]="formData.loginProvider">
+        @for (provider of verifierOptions; track provider) {
+          <option [value]="provider">{{ provider }}</option>
+        }
+      </select>
+    </label>
+
+    @if (formData.loginProvider === emailPasswordless || formData.loginProvider === smsPasswordless) {
+      <label>
+        Login Hint
+        <input [(ngModel)]="formData.loginHint" placeholder="email or phone" />
+      </label>
+    }
+  </div>
+
+  <button [disabled]="status === 'loading'" (click)="login()">Login with Redirect</button>
+  <p class="status">{{ status }}</p>
+  <pre>{{ result }}</pre>
+</section>

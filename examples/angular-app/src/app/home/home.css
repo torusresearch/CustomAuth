@@ -1,0 +1,10 @@
+.actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.actions a {
+  color: #0056b3;
+  text-decoration: none;
+}

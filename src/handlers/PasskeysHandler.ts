@@ -1,4 +1,4 @@
-import base64url from "base64url";
+import { decodeBase64Url } from "@toruslabs/metadata-helpers";
 import deepmerge from "deepmerge";
 
 import { CreateHandlerParams, LoginWindowResponse, PasskeySessionData, TorusConnectionResponse } from "../utils/interfaces";
@@ -34,7 +34,7 @@ export default class PasskeysHandler extends AbstractLoginHandler {
   async getUserInfo(parameters: LoginWindowResponse, storageServerUrl?: string): Promise<TorusConnectionResponse> {
     const { idToken, extraParams } = parameters;
 
-    const { sessionId } = JSON.parse(base64url.decode(extraParams)) || {};
+    const { sessionId } = JSON.parse(decodeBase64Url(extraParams)) || {};
     if (!sessionId) {
       throw new Error("sessionId not found");
     }
