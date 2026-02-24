@@ -88,6 +88,12 @@ const HomePage = () => {
     setConsoleBody(JSON.stringify(payload, null, 2));
   };
 
+  const getErrorMessage = (error: unknown): string => {
+    if (error instanceof Error) return error.message;
+    if (typeof error === "string") return error;
+    return "Unknown error";
+  };
+
   const loadResponse = (response: any) => {
     const localPrivKey = response?.finalKeyData?.privKey || response?.oAuthKeyData?.privKey;
     const localUserInfo = response?.userInfo || null;
@@ -198,30 +204,35 @@ const HomePage = () => {
   }, [isHydrated, formData.network, formData.uxMode, formData.loginProvider]);
 
   const onLogin = async () => {
-    const selected = verifierMap[formData.loginProvider];
-    if (!selected) return;
-    if (!customAuthSdk) return;
+    try {
+      const selected = verifierMap[formData.loginProvider];
+      if (!selected) return;
+      if (!customAuthSdk) return;
 
-    const jwtParams = loginToConnectionMap[formData.loginProvider] || {};
-    if (formData.network === TORUS_LEGACY_NETWORK.TESTNET) {
+      const jwtParams = loginToConnectionMap[formData.loginProvider] || {};
+      if (formData.network === TORUS_LEGACY_NETWORK.TESTNET) {
+        const data = await customAuthSdk.triggerLogin({
+          authConnection: selected.typeOfLogin,
+          authConnectionId: selected.verifier,
+          clientId: selected.clientId,
+          jwtParams,
+        });
+        if (data) loadResponse(data);
+        return;
+      }
+
       const data = await customAuthSdk.triggerLogin({
         authConnection: selected.typeOfLogin,
-        authConnectionId: selected.verifier,
+        authConnectionId: "web3auth",
+        groupedAuthConnectionId: selected.verifier,
         clientId: selected.clientId,
         jwtParams,
       });
       if (data) loadResponse(data);
-      return;
+    } catch (error) {
+      console.error(error);
+      printConsole("Login Error", { message: getErrorMessage(error) });
     }
-
-    const data = await customAuthSdk.triggerLogin({
-      authConnection: selected.typeOfLogin,
-      authConnectionId: "web3auth",
-      groupedAuthConnectionId: selected.verifier,
-      clientId: selected.clientId,
-      jwtParams,
-    });
-    if (data) loadResponse(data);
   };
 
   const onLogout = () => {
