@@ -1,8 +1,8 @@
 import { type INodeDetails, TORUS_NETWORK_TYPE } from "@toruslabs/constants";
 import { NodeDetailManager } from "@toruslabs/fetch-node-details";
-import { utf8ToBytes } from "@toruslabs/metadata-helpers";
+import { keccak256, utf8ToBytes } from "@toruslabs/metadata-helpers";
 import { SessionManager } from "@toruslabs/session-manager";
-import { keccak256, type KeyType, Torus, TorusKey } from "@toruslabs/torus.js";
+import { type KeyType, Torus, TorusKey } from "@toruslabs/torus.js";
 
 import { createHandler } from "./handlers/HandlerFactory";
 import { registerServiceWorker } from "./registerServiceWorker";
