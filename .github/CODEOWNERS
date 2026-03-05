@@ -16,11 +16,11 @@
 # and responsibility to publish libraries under the MetaMask name.
 
 # Fallback for all other files
-*                               @MetaMask/Web3Auth-Admins
+*                               @torusresearch/Web3Auth-Admins
 
 # Product code
-src/                            @MetaMask/Web3Auth-Product
-test/                           @MetaMask/Web3Auth-Product
+src/                            @torusresearch/Web3Auth-Product
+test/                           @torusresearch/Web3Auth-Product
 
 # Most restrictive — last match wins
-.github/CODEOWNERS              @MetaMask/Web3Auth-Admins
+.github/CODEOWNERS              @torusresearch/Web3Auth-Admins
