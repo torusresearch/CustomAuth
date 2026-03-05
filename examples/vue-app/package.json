@@ -10,13 +10,13 @@
     "install:local": "npm i ../../toruslabs-customauth-*.tgz"
   },
   "dependencies": {
-    "@toruslabs/broadcast-channel": "13.0.1",
+    "@toruslabs/broadcast-channel": "13.2.0",
     "@toruslabs/constants": "^16.0.0",
     "@toruslabs/customauth": "file:../../",
     "@toruslabs/fnd-base": "^16.0.0",
     "@toruslabs/torus.js": "^17.0.0",
     "@toruslabs/vue-components": "^8.1.2",
-    "@toruslabs/vue-icons": "^8.0.4",
+    "@toruslabs/vue-icons": "^9.0.0",
     "viem": "^2.21.0",
     "core-js": "^3.48.0",
     "daisyui": "^5.5.19",

@@ -14,7 +14,7 @@
     "release": "torus-scripts release",
     "lint:ts": "torus-scripts lint --fix",
     "prepack": "npm run build",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "vitest run",
     "prepare": "husky"
   },
   "files": [
@@ -32,13 +32,13 @@
   },
   "dependencies": {
     "@chaitanyapotti/register-service-worker": "^1.7.4",
-    "@toruslabs/broadcast-channel": "^13.1.0",
+    "@toruslabs/broadcast-channel": "^13.2.0",
     "@toruslabs/constants": "^16.0.0",
     "@toruslabs/eccrypto": "^7.0.0",
     "@toruslabs/fetch-node-details": "^16.0.0",
     "@toruslabs/http-helpers": "^9.0.0",
-    "@toruslabs/metadata-helpers": "^8.1.0",
-    "@toruslabs/session-manager": "^5.3.0",
+    "@toruslabs/metadata-helpers": "^8.2.0",
+    "@toruslabs/session-manager": "^5.4.0",
     "@toruslabs/torus.js": "^17.0.0",
     "bowser": "^2.14.1",
     "deepmerge": "^4.3.1",
@@ -57,7 +57,8 @@
     "prettier": "^3.8.1",
     "rimraf": "^6.1.3",
     "typed-emitter": "^2.1.0",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.18"
   },
   "author": "Torus Labs",
   "license": "MIT",
