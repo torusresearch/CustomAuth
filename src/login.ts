@@ -1,6 +1,6 @@
 import { type INodeDetails, TORUS_NETWORK_TYPE } from "@toruslabs/constants";
 import { NodeDetailManager } from "@toruslabs/fetch-node-details";
-import { keccak256, utf8ToBytes } from "@toruslabs/metadata-helpers";
+import { type Hex, keccak256, remove0x, utf8ToBytes } from "@toruslabs/metadata-helpers";
 import { SessionManager } from "@toruslabs/session-manager";
 import { type KeyType, Torus, TorusKey } from "@toruslabs/torus.js";
 
@@ -173,7 +173,8 @@ export class CustomAuth {
     } else {
       this.sessionManager.clearOrphanedData();
       if (this.config.uxMode === UX_MODE.REDIRECT) {
-        this.sessionManager.sessionId = this.getSessionId(`torus_login_${loginHandler.nonce}`);
+        const sessionId = this.getSessionId(`torus_login_${loginHandler.nonce}`);
+        this.sessionManager.setSessionId(sessionId);
         await this.sessionManager.createSession({ args });
       }
       loginParams = await loginHandler.handleLoginWindow({
@@ -219,7 +220,7 @@ export class CustomAuth {
     if (groupedAuthConnectionId) {
       verifierParams["verify_params"] = [{ verifier_id: userId, idtoken: finalIdToken }];
       verifierParams["sub_verifier_ids"] = [authConnectionId];
-      aggregateIdToken = keccak256(utf8ToBytes(finalIdToken)).slice(2);
+      aggregateIdToken = remove0x(keccak256(utf8ToBytes(finalIdToken)));
     }
 
     const nodeDetails = await this.sentryHandler.startSpan(
@@ -287,7 +288,8 @@ export class CustomAuth {
     let loginDetails = storageData;
     if (!loginDetails) {
       try {
-        this.sessionManager.sessionId = this.getSessionId(`torus_login_${instanceId}`);
+        const sessionId = this.getSessionId(`torus_login_${instanceId}`);
+        this.sessionManager.setSessionId(sessionId);
         loginDetails = await this.sessionManager.authorizeSession();
       } catch (error) {
         log.error(error, "Unable to read login details from session manager");
@@ -312,7 +314,8 @@ export class CustomAuth {
       const serializedError = await serializeError(err);
       log.error(serializedError);
       if (clearLoginDetails) {
-        this.sessionManager.sessionId = this.getSessionId(`torus_login_${instanceId}`);
+        const sessionId = this.getSessionId(`torus_login_${instanceId}`);
+        this.sessionManager.setSessionId(sessionId);
         this.sessionManager.clearStorage();
       }
       return {
@@ -381,8 +384,8 @@ export class CustomAuth {
     });
   }
 
-  private getSessionId(key: string): string {
+  private getSessionId(key: string): Hex {
     // SessionManager expects a hex private key as sessionId; hashing the legacy string key keeps compatibility
-    return keccak256(utf8ToBytes(key)).slice(2);
+    return keccak256(utf8ToBytes(key)) as Hex;
   }
 }

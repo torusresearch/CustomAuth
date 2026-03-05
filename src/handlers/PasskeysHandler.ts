@@ -1,4 +1,4 @@
-import { decodeBase64Url } from "@toruslabs/metadata-helpers";
+import { decodeBase64Url, Hex, isHexString } from "@toruslabs/metadata-helpers";
 import deepmerge from "deepmerge";
 
 import { CreateHandlerParams, LoginWindowResponse, PasskeySessionData, TorusConnectionResponse } from "../utils/interfaces";
@@ -39,6 +39,10 @@ export default class PasskeysHandler extends AbstractLoginHandler {
       throw new Error("sessionId not found");
     }
 
+    if (!isHexString(sessionId)) {
+      throw new Error("sessionId is not a valid hex string");
+    }
+
     const {
       verifier_id: verifierId,
       signature,
@@ -51,7 +55,7 @@ export default class PasskeysHandler extends AbstractLoginHandler {
       credId,
       transports,
       username,
-    } = await fetchDataFromBroadcastServer<PasskeySessionData>(sessionId, storageServerUrl);
+    } = await fetchDataFromBroadcastServer<PasskeySessionData>(sessionId as Hex, storageServerUrl);
 
     if (signature !== idToken) {
       throw new Error("idtoken should be equal to signature");
