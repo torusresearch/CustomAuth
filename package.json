@@ -14,7 +14,7 @@
     "release": "torus-scripts release",
     "lint:ts": "torus-scripts lint --fix",
     "prepack": "npm run build",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "vitest run",
     "prepare": "husky"
   },
   "files": [
@@ -57,7 +57,8 @@
     "prettier": "^3.8.1",
     "rimraf": "^6.1.3",
     "typed-emitter": "^2.1.0",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.18"
   },
   "author": "Torus Labs",
   "license": "MIT",
