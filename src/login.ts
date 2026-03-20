@@ -108,7 +108,7 @@ export class CustomAuth {
     });
     Torus.setAPIKey(apiKey);
     this.torus = torus;
-    this.nodeDetailManager = new NodeDetailManager({ network });
+    this.nodeDetailManager = new NodeDetailManager({ network, buildEnv });
     if (enableLogging) log.enableAll();
     else log.disableAll();
     this.sessionManager = new StorageManager<LoginDetails>({
