@@ -1,4 +1,4 @@
-import { INodeDetails, TORUS_NETWORK_TYPE } from "@toruslabs/constants";
+import { BUILD_ENV_TYPE, INodeDetails, TORUS_NETWORK_TYPE } from "@toruslabs/constants";
 import { Sentry } from "@toruslabs/http-helpers";
 import { KeyType, TorusKey } from "@toruslabs/torus.js";
 
@@ -204,11 +204,18 @@ export interface CustomAuthArgs {
    * for further documentation.
    */
   popupFeatures?: string;
+
   /**
-   * Specify a custom storage server url
+   * Specify the custom storage server url (will be used if no buildEnv is provided)
    * @defaultValue https://session.web3auth.io
    */
   storageServerUrl?: string;
+
+  /**
+   * Specify the build environment
+   * @defaultValue BUILD_ENV.PRODUCTION
+   */
+  buildEnv?: BUILD_ENV_TYPE;
 
   /**
    * Get your Client ID from Web3Auth Dashboard (https://dashboard.web3auth.io)
@@ -371,6 +378,7 @@ export interface CreateHandlerParams {
   redirectToOpener?: boolean;
   jwtParams?: Auth0ClientOptions;
   customState?: TorusGenericObject;
+  storageServerUrl: string;
 }
 
 export type LoginDetails = { args: CustomAuthLoginParams };
@@ -418,6 +426,6 @@ export interface ILoginHandler {
   params: CreateHandlerParams;
   nonce: string;
   finalURL: URL;
-  getUserInfo(params: LoginWindowResponse, storageServerUrl?: string): Promise<TorusConnectionResponse>;
+  getUserInfo(params: LoginWindowResponse): Promise<TorusConnectionResponse>;
   handleLoginWindow(params: { locationReplaceOnRedirect?: boolean; popupFeatures?: string }): Promise<LoginWindowResponse>;
 }

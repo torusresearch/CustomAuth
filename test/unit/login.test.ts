@@ -1,6 +1,6 @@
 import type { TORUS_NETWORK_TYPE } from "@toruslabs/constants";
 import { encodeBase64Url } from "@toruslabs/metadata-helpers";
-import { SessionManager } from "@toruslabs/session-manager";
+import { StorageManager } from "@toruslabs/session-manager";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { createHandler } from "../../src/handlers/HandlerFactory";
@@ -78,11 +78,11 @@ describe("CustomAuth", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    createSessionSpy = vi.spyOn(SessionManager.prototype, "createSession").mockResolvedValue("0xsession");
-    authorizeSessionSpy = vi.spyOn(SessionManager.prototype, "authorizeSession");
-    setSessionIdSpy = vi.spyOn(SessionManager.prototype, "setSessionId");
-    clearOrphanedSpy = vi.spyOn(SessionManager.prototype, "clearOrphanedData");
-    clearStorageSpy = vi.spyOn(SessionManager.prototype, "clearStorage");
+    createSessionSpy = vi.spyOn(StorageManager.prototype, "createSession").mockResolvedValue("0xsession");
+    authorizeSessionSpy = vi.spyOn(StorageManager.prototype, "authorizeSession");
+    setSessionIdSpy = vi.spyOn(StorageManager.prototype, "setSessionId");
+    clearOrphanedSpy = vi.spyOn(StorageManager.prototype, "clearOrphanedData");
+    clearStorageSpy = vi.spyOn(StorageManager.prototype, "clearStorage");
   });
 
   afterEach(() => {
@@ -166,9 +166,9 @@ describe("CustomAuth", () => {
       const firstSessionId = setSessionIdSpy.mock.calls[0][0];
 
       vi.clearAllMocks();
-      createSessionSpy = vi.spyOn(SessionManager.prototype, "createSession").mockResolvedValue("0xsession");
-      setSessionIdSpy = vi.spyOn(SessionManager.prototype, "setSessionId");
-      clearOrphanedSpy = vi.spyOn(SessionManager.prototype, "clearOrphanedData");
+      createSessionSpy = vi.spyOn(StorageManager.prototype, "createSession").mockResolvedValue("0xsession");
+      setSessionIdSpy = vi.spyOn(StorageManager.prototype, "setSessionId");
+      clearOrphanedSpy = vi.spyOn(StorageManager.prototype, "clearOrphanedData");
       vi.mocked(createHandler).mockReturnValue(
         mockLoginHandler({
           nonce: "fixed_nonce",

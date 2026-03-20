@@ -32,6 +32,7 @@ function makeHandlerParams(overrides: Partial<CreateHandlerParams> = {}): Create
     web3AuthClientId: "web3auth-client-id",
     web3AuthNetwork: TORUS_SAPPHIRE_NETWORK.SAPPHIRE_DEVNET,
     customState: { passkeysHostUrl: "https://passkeys.example.com" },
+    storageServerUrl: "https://storage-server.example.com",
     ...overrides,
   };
 }
@@ -123,16 +124,16 @@ describe("PasskeysHandler", () => {
       const handler = new PasskeysHandler(makeHandlerParams());
       await handler.getUserInfo(makeLoginWindowResponse());
 
-      expect(fetchSpy).toHaveBeenCalledWith(TEST_SESSION_ID, undefined);
+      expect(fetchSpy).toHaveBeenCalledWith(TEST_SESSION_ID, "https://storage-server.example.com");
     });
 
     it("passes storageServerUrl to fetchDataFromBroadcastServer", async () => {
       fetchSpy.mockResolvedValue(PASSKEY_SESSION_DATA);
 
       const handler = new PasskeysHandler(makeHandlerParams());
-      await handler.getUserInfo(makeLoginWindowResponse(), "https://custom-server.io");
+      await handler.getUserInfo(makeLoginWindowResponse());
 
-      expect(fetchSpy).toHaveBeenCalledWith(TEST_SESSION_ID, "https://custom-server.io");
+      expect(fetchSpy).toHaveBeenCalledWith(TEST_SESSION_ID, "https://storage-server.example.com");
     });
 
     it("throws if sessionId is missing from extraParams", async () => {
