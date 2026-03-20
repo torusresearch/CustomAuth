@@ -1,10 +1,10 @@
 import { type Hex } from "@toruslabs/metadata-helpers";
-import { SessionManager } from "@toruslabs/session-manager";
+import { StorageManager } from "@toruslabs/session-manager";
 import log from "loglevel";
 
-export async function fetchDataFromBroadcastServer<T>(identifier: Hex, storageServerUrl?: string) {
+export async function fetchDataFromBroadcastServer<T>(identifier: Hex, storageServerUrl: string) {
   try {
-    const configManager = new SessionManager<T>({
+    const configManager = new StorageManager<T>({
       sessionId: identifier,
       sessionServerBaseUrl: storageServerUrl,
       allowedOrigin: true,

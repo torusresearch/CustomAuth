@@ -31,7 +31,7 @@ export default class PasskeysHandler extends AbstractLoginHandler {
     this.finalURL = finalUrl;
   }
 
-  async getUserInfo(parameters: LoginWindowResponse, storageServerUrl?: string): Promise<TorusConnectionResponse> {
+  async getUserInfo(parameters: LoginWindowResponse): Promise<TorusConnectionResponse> {
     const { idToken, extraParams } = parameters;
 
     const { sessionId } = JSON.parse(decodeBase64Url(extraParams)) || {};
@@ -55,7 +55,7 @@ export default class PasskeysHandler extends AbstractLoginHandler {
       credId,
       transports,
       username,
-    } = await fetchDataFromBroadcastServer<PasskeySessionData>(sessionId as Hex, storageServerUrl);
+    } = await fetchDataFromBroadcastServer<PasskeySessionData>(sessionId as Hex, this.params.storageServerUrl);
 
     if (signature !== idToken) {
       throw new Error("idtoken should be equal to signature");

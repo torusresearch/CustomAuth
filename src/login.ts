@@ -1,7 +1,7 @@
-import { type INodeDetails, TORUS_NETWORK_TYPE } from "@toruslabs/constants";
+import { BUILD_ENV, BUILD_ENV_TYPE, type INodeDetails, STORAGE_SERVER_MAP, TORUS_NETWORK_TYPE } from "@toruslabs/constants";
 import { NodeDetailManager } from "@toruslabs/fetch-node-details";
 import { type Hex, keccak256, remove0x, utf8ToBytes } from "@toruslabs/metadata-helpers";
-import { SessionManager } from "@toruslabs/session-manager";
+import { StorageManager } from "@toruslabs/session-manager";
 import { type KeyType, Torus, TorusKey } from "@toruslabs/torus.js";
 
 import { createHandler } from "./handlers/HandlerFactory";
@@ -41,6 +41,7 @@ export class CustomAuth {
     keyType: KeyType;
     nodeDetails: INodeDetails;
     checkCommitment: boolean;
+    buildEnv: BUILD_ENV_TYPE;
   };
 
   torus: Torus;
@@ -49,7 +50,7 @@ export class CustomAuth {
 
   sentryHandler: SentryHandler;
 
-  private sessionManager: SessionManager<LoginDetails>;
+  private sessionManager: StorageManager<LoginDetails>;
 
   constructor({
     baseUrl,
@@ -61,7 +62,7 @@ export class CustomAuth {
     uxMode = UX_MODE.POPUP,
     locationReplaceOnRedirect = false,
     popupFeatures,
-    storageServerUrl = "https://session.web3auth.io",
+    buildEnv = BUILD_ENV.PRODUCTION,
     sentry,
     enableOneKey = false,
     web3AuthClientId,
@@ -91,6 +92,7 @@ export class CustomAuth {
       keyType,
       nodeDetails,
       checkCommitment,
+      buildEnv,
     };
     const torus = new Torus({
       network,
@@ -105,8 +107,8 @@ export class CustomAuth {
     this.nodeDetailManager = new NodeDetailManager({ network });
     if (enableLogging) log.enableAll();
     else log.disableAll();
-    this.sessionManager = new SessionManager<LoginDetails>({
-      sessionServerBaseUrl: storageServerUrl,
+    this.sessionManager = new StorageManager<LoginDetails>({
+      sessionServerBaseUrl: STORAGE_SERVER_MAP[buildEnv],
       allowedOrigin: true,
       useLocalStorage: true,
     });
@@ -161,6 +163,7 @@ export class CustomAuth {
       customState,
       web3AuthClientId: this.config.web3AuthClientId,
       web3AuthNetwork: this.config.web3AuthNetwork,
+      storageServerUrl: STORAGE_SERVER_MAP[this.config.buildEnv],
     });
 
     let loginParams: LoginWindowResponse;
