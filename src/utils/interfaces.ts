@@ -420,6 +420,6 @@ export interface ILoginHandler {
   params: CreateHandlerParams;
   nonce: string;
   finalURL: URL;
-  getUserInfo(params: LoginWindowResponse, storageServerUrl?: string): Promise<TorusConnectionResponse>;
+  getUserInfo(params: LoginWindowResponse): Promise<TorusConnectionResponse>;
   handleLoginWindow(params: { locationReplaceOnRedirect?: boolean; popupFeatures?: string }): Promise<LoginWindowResponse>;
 }
