@@ -206,6 +206,12 @@ export interface CustomAuthArgs {
   popupFeatures?: string;
 
   /**
+   * Specify the custom storage server url (will be used if no buildEnv is provided)
+   * @defaultValue https://session.web3auth.io
+   */
+  storageServerUrl?: string;
+
+  /**
    * Specify the build environment
    * @defaultValue BUILD_ENV.PRODUCTION
    */

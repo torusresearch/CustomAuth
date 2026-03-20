@@ -42,6 +42,7 @@ export class CustomAuth {
     nodeDetails: INodeDetails;
     checkCommitment: boolean;
     buildEnv: BUILD_ENV_TYPE;
+    storageServerUrl: string;
   };
 
   torus: Torus;
@@ -62,6 +63,7 @@ export class CustomAuth {
     uxMode = UX_MODE.POPUP,
     locationReplaceOnRedirect = false,
     popupFeatures,
+    storageServerUrl,
     buildEnv = BUILD_ENV.PRODUCTION,
     sentry,
     enableOneKey = false,
@@ -93,6 +95,7 @@ export class CustomAuth {
       nodeDetails,
       checkCommitment,
       buildEnv,
+      storageServerUrl: storageServerUrl ? storageServerUrl : STORAGE_SERVER_MAP[buildEnv], // custom storage server url takes precedence over build environment (mainly for testing purposes)
     };
     const torus = new Torus({
       network,
@@ -101,6 +104,7 @@ export class CustomAuth {
       clientId: web3AuthClientId,
       legacyMetadataHost: metadataUrl,
       keyType,
+      buildEnv,
     });
     Torus.setAPIKey(apiKey);
     this.torus = torus;
@@ -108,7 +112,7 @@ export class CustomAuth {
     if (enableLogging) log.enableAll();
     else log.disableAll();
     this.sessionManager = new StorageManager<LoginDetails>({
-      sessionServerBaseUrl: STORAGE_SERVER_MAP[buildEnv],
+      sessionServerBaseUrl: this.config.storageServerUrl,
       allowedOrigin: true,
       useLocalStorage: true,
     });
@@ -163,7 +167,7 @@ export class CustomAuth {
       customState,
       web3AuthClientId: this.config.web3AuthClientId,
       web3AuthNetwork: this.config.web3AuthNetwork,
-      storageServerUrl: STORAGE_SERVER_MAP[this.config.buildEnv],
+      storageServerUrl: this.config.storageServerUrl,
     });
 
     let loginParams: LoginWindowResponse;
