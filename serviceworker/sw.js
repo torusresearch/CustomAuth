@@ -135,8 +135,8 @@ self.addEventListener("fetch", function (event) {
       <h1 class="title content" id="closeText" style="display: none;">You can close this window now</h1>
     </div>
     <script
-      src="https://cdn.jsdelivr.net/npm/@toruslabs/broadcast-channel@13.1.0/dist/lib/browser.min.js"
-      integrity="sha384-vv1RkRonhPWQdx3ShNjf7kCuYZk01XgaxSSqvl4pvAUwy7gbuW0uH271iUvzMkm9"
+      src="https://cdn.jsdelivr.net/npm/@toruslabs/broadcast-channel@13.2.0/dist/lib/browser.min.js"
+      integrity="sha384-gw1p4sk0cFIqvnZc+YYBVEXPgPqvG8QA/c6Jp/FhNkjNsopknGx+CvF5H6uWhtda"
       crossorigin="anonymous"
     ></script>
     <script>
