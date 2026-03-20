@@ -23,7 +23,7 @@
   ],
   "peerDependencies": {
     "@babel/runtime": "^7.x",
-    "@sentry/core": "^9.x"
+    "@sentry/core": "^10.x"
   },
   "peerDependenciesMeta": {
     "@sentry/core": {
