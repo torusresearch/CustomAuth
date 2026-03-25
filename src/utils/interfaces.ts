@@ -247,6 +247,12 @@ export interface CustomAuthArgs {
    * @defaultValue true
    */
   checkCommitment?: boolean;
+
+  /**
+   * Source of the login
+   * @defaultValue "customauth"
+   */
+  source?: string;
 }
 
 export interface InitParams {

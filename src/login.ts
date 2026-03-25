@@ -74,6 +74,7 @@ export class CustomAuth {
     serverTimeOffset = 0,
     nodeDetails,
     checkCommitment = true,
+    source = "customauth",
   }: CustomAuthArgs) {
     if (!web3AuthClientId) throw new Error("Please provide a valid web3AuthClientId in constructor");
     if (!network) throw new Error("Please provide a valid network in constructor");
@@ -105,6 +106,7 @@ export class CustomAuth {
       legacyMetadataHost: metadataUrl,
       keyType,
       buildEnv,
+      source,
     });
     Torus.setAPIKey(apiKey);
     this.torus = torus;
