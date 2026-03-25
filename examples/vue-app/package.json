@@ -11,16 +11,16 @@
   },
   "dependencies": {
     "@toruslabs/broadcast-channel": "13.3.0",
-    "@toruslabs/constants": "^16.1.0",
+    "@toruslabs/constants": "^16.1.1",
     "@toruslabs/customauth": "file:../../",
-    "@toruslabs/fnd-base": "^16.1.0",
-    "@toruslabs/torus.js": "^17.2.0",
+    "@toruslabs/fnd-base": "^16.1.1",
+    "@toruslabs/torus.js": "^17.2.2",
     "@toruslabs/vue-components": "^9.0.1",
     "@toruslabs/vue-icons": "^9.0.0",
     "core-js": "^3.49.0",
     "daisyui": "^5.5.19",
     "enc-utils": "^3.0.0",
-    "viem": "^2.47.5",
+    "viem": "^2.47.6",
     "vue": "^3.5.30",
     "vue-i18n": "^11.3.0",
     "vue-router": "^5.0.4"
@@ -38,7 +38,7 @@
     "source-map-loader": "^5.0.0",
     "tailwindcss": "^4.2.2",
     "typescript": "~5.9.3",
-    "vite": "^8.0.1"
+    "vite": "^8.0.2"
   },
   "browserslist": [
     "supports bigint",
