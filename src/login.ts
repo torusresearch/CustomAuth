@@ -2,14 +2,14 @@ import { BUILD_ENV, BUILD_ENV_TYPE, type INodeDetails, STORAGE_SERVER_MAP, TORUS
 import { NodeDetailManager } from "@toruslabs/fetch-node-details";
 import { type Hex, keccak256, remove0x, utf8ToBytes } from "@toruslabs/metadata-helpers";
 import { StorageManager } from "@toruslabs/session-manager";
-import { type KeyType, Torus, TorusKey } from "@toruslabs/torus.js";
+import { type CitadelAuditParams, generateRecordId, type KeyType, Torus, TorusKey } from "@toruslabs/torus.js";
 
 import { createHandler } from "./handlers/HandlerFactory";
 import { registerServiceWorker } from "./registerServiceWorker";
 import SentryHandler from "./sentry";
-import { SENTRY_TXNS, UX_MODE, UX_MODE_TYPE } from "./utils/enums";
+import { AUTH_CONNECTION_TYPE, SENTRY_TXNS, UX_MODE, UX_MODE_TYPE } from "./utils/enums";
 import { serializeError } from "./utils/error";
-import { handleRedirectParameters, isFirefox, padUrlString } from "./utils/helpers";
+import { callCitadelAuditApi, handleRedirectParameters, isFirefox, padUrlString } from "./utils/helpers";
 import {
   CustomAuthArgs,
   CustomAuthLoginParams,
@@ -172,25 +172,52 @@ export class CustomAuth {
       storageServerUrl: this.config.storageServerUrl,
     });
 
+    const recordId = args.customState?.recordId || generateRecordId();
+    // oAuthUserId is not available yet before the login
+    const auditPayload: Partial<CitadelAuditParams> = {
+      recordId,
+      web3AuthNetwork: this.config.web3AuthNetwork,
+      web3AuthClientId: clientId,
+      authConnection,
+      authConnectionId,
+      groupedAuthConnectionId,
+    };
+
+    if (!args.customState?.recordId) {
+      // track the `oauthInitiated` audit if recordId is not provided
+      auditPayload.oauthInitiated = true;
+      callCitadelAuditApi(this.config.buildEnv, auditPayload);
+    }
+
     let loginParams: LoginWindowResponse;
-    if (hash && queryParameters) {
-      const { error, hashParameters, instanceParameters } = handleRedirectParameters(hash, queryParameters);
-      if (error) throw new Error(error);
-      const { access_token: accessToken, id_token: idToken, tgAuthResult, ...rest } = hashParameters;
-      // State has to be last here otherwise it will be overwritten
-      loginParams = { accessToken, idToken: idToken || tgAuthResult || "", ...rest, state: instanceParameters };
-    } else {
-      this.sessionManager.clearOrphanedData();
-      if (this.config.uxMode === UX_MODE.REDIRECT) {
-        const sessionId = this.getSessionId(`torus_login_${loginHandler.nonce}`);
-        this.sessionManager.setSessionId(sessionId);
-        await this.sessionManager.createSession({ args });
+    try {
+      if (hash && queryParameters) {
+        const { error, hashParameters, instanceParameters } = handleRedirectParameters(hash, queryParameters);
+        if (error) throw new Error(error);
+        const { access_token: accessToken, id_token: idToken, tgAuthResult, ...rest } = hashParameters;
+        // State has to be last here otherwise it will be overwritten
+        loginParams = { accessToken, idToken: idToken || tgAuthResult || "", ...rest, state: instanceParameters };
+      } else {
+        this.sessionManager.clearOrphanedData();
+        if (this.config.uxMode === UX_MODE.REDIRECT) {
+          const sessionId = this.getSessionId(`torus_login_${loginHandler.nonce}`);
+          this.sessionManager.setSessionId(sessionId);
+          await this.sessionManager.createSession({ args });
+        }
+        loginParams = await loginHandler.handleLoginWindow({
+          locationReplaceOnRedirect: this.config.locationReplaceOnRedirect,
+          popupFeatures: this.config.popupFeatures,
+        });
+        if (this.config.uxMode === UX_MODE.REDIRECT) return null;
       }
-      loginParams = await loginHandler.handleLoginWindow({
-        locationReplaceOnRedirect: this.config.locationReplaceOnRedirect,
-        popupFeatures: this.config.popupFeatures,
-      });
-      if (this.config.uxMode === UX_MODE.REDIRECT) return null;
+    } catch (error) {
+      log.error(error);
+
+      // track the `oauthFailed` audit if the login fails
+      auditPayload.oauthFailed = true;
+
+      callCitadelAuditApi(this.config.buildEnv, auditPayload);
+      throw error;
     }
 
     const userInfo = await loginHandler.getUserInfo(loginParams);
@@ -201,6 +228,8 @@ export class CustomAuth {
       idToken: loginParams.idToken || loginParams.accessToken,
       additionalParams: userInfo.extraConnectionParams,
       groupedAuthConnectionId,
+      recordId,
+      authConnection: userInfo.authConnection,
     });
 
     return {
@@ -218,6 +247,8 @@ export class CustomAuth {
     idToken: string;
     additionalParams?: ExtraParams;
     groupedAuthConnectionId?: string;
+    recordId?: string;
+    authConnection: AUTH_CONNECTION_TYPE;
   }): Promise<TorusKey> {
     const { authConnectionId, userId, idToken, additionalParams, groupedAuthConnectionId } = params;
     const verifier = groupedAuthConnectionId || authConnectionId;
@@ -263,6 +294,8 @@ export class CustomAuth {
           },
           useDkg: this.config.useDkg,
           checkCommitment: this.config.checkCommitment,
+          recordId: params.recordId,
+          authConnection: params.authConnection,
         });
       }
     );

@@ -1,4 +1,7 @@
+import { BUILD_ENV_TYPE, CITADEL_SERVER_MAP } from "@toruslabs/constants";
+import { put } from "@toruslabs/http-helpers";
 import { decodeBase64Url } from "@toruslabs/metadata-helpers";
+import { CitadelAuditParams } from "@toruslabs/torus.js";
 import Bowser from "bowser";
 
 import { AUTH_CONNECTION, AUTH_CONNECTION_TYPE, REDIRECT_PARAMS_STORAGE_METHOD_TYPE } from "./enums";
@@ -234,4 +237,9 @@ export function decodeToken<T>(token: string): { header: { alg: string; typ: str
     header: JSON.parse(decodeBase64Url(header)),
     payload: JSON.parse(decodeBase64Url(payload)) as T,
   };
+}
+
+export async function callCitadelAuditApi(buildEnv: BUILD_ENV_TYPE, params: Partial<CitadelAuditParams>): Promise<void> {
+  const url = new URL(`${CITADEL_SERVER_MAP[buildEnv]}/v1/user/audit`);
+  await put<void>(url.toString(), params);
 }
