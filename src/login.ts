@@ -177,7 +177,7 @@ export class CustomAuth {
     const auditPayload: Partial<CitadelAuditParams> = {
       recordId,
       web3AuthNetwork: this.config.web3AuthNetwork,
-      web3AuthClientId: clientId,
+      web3AuthClientId: this.config.web3AuthClientId,
       authConnection,
       authConnectionId,
       groupedAuthConnectionId,
@@ -185,8 +185,9 @@ export class CustomAuth {
 
     if (!args.customState?.recordId) {
       // track the `oauthInitiated` audit if recordId is not provided
-      auditPayload.oauthInitiated = true;
-      callCitadelAuditApi(this.config.buildEnv, auditPayload);
+      callCitadelAuditApi(this.config.buildEnv, { ...auditPayload, oauthInitiated: true }).catch((error) => {
+        log.error("Error tracking oauthInitiated audit", error);
+      });
     }
 
     let loginParams: LoginWindowResponse;
@@ -214,9 +215,9 @@ export class CustomAuth {
       log.error(error);
 
       // track the `oauthFailed` audit if the login fails
-      auditPayload.oauthFailed = true;
-
-      callCitadelAuditApi(this.config.buildEnv, auditPayload);
+      callCitadelAuditApi(this.config.buildEnv, { ...auditPayload, oauthFailed: true }).catch((error) => {
+        log.error("Error tracking oauthFailed audit", error);
+      });
       throw error;
     }
 
