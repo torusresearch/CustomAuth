@@ -153,10 +153,15 @@ export class CustomAuth {
   }
 
   async triggerLogin(args: CustomAuthLoginParams): Promise<TorusLoginResponse> {
-    const { authConnectionId, authConnection, clientId, jwtParams, hash, queryParameters, customState, groupedAuthConnectionId } = args;
     if (!this.isInitialized) {
       throw new Error("Not initialized yet");
     }
+    const hasExistingRecordId = Boolean(args.customState?.recordId);
+    const recordId = args.customState?.recordId || generateRecordId();
+    if (!hasExistingRecordId) {
+      args.customState = { ...(args.customState || {}), recordId };
+    }
+    const { authConnectionId, authConnection, clientId, jwtParams, hash, queryParameters, customState, groupedAuthConnectionId } = args;
     const loginHandler: ILoginHandler = createHandler({
       authConnection,
       clientId,
@@ -171,8 +176,6 @@ export class CustomAuth {
       web3AuthNetwork: this.config.web3AuthNetwork,
       storageServerUrl: this.config.storageServerUrl,
     });
-
-    const recordId = args.customState?.recordId || generateRecordId();
     // oAuthUserId is not available yet before the login
     const auditPayload: Partial<CitadelAuditParams> = {
       recordId,
@@ -183,7 +186,7 @@ export class CustomAuth {
       groupedAuthConnectionId,
     };
 
-    if (!args.customState?.recordId) {
+    if (!hasExistingRecordId) {
       // track the `oauthInitiated` audit if recordId is not provided
       callCitadelAuditApi(this.config.buildEnv, { ...auditPayload, oauthInitiated: true }).catch((error) => {
         log.error("Error tracking oauthInitiated audit", error);
