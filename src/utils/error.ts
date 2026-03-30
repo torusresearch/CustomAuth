@@ -24,3 +24,12 @@ export const serializeError = async (error: unknown): Promise<Error> => {
   }
   return err;
 };
+
+export const CustomAuthLoginErrorPrefix = "CustomAuthLoginError: login failure.";
+
+export class CustomAuthLoginError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "CustomAuthLoginError";
+  }
+}

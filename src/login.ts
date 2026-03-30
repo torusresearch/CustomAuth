@@ -2,14 +2,14 @@ import { BUILD_ENV, BUILD_ENV_TYPE, type INodeDetails, STORAGE_SERVER_MAP, TORUS
 import { NodeDetailManager } from "@toruslabs/fetch-node-details";
 import { type Hex, keccak256, remove0x, utf8ToBytes } from "@toruslabs/metadata-helpers";
 import { StorageManager } from "@toruslabs/session-manager";
-import { type CitadelAuditParams, generateRecordId, type KeyType, Torus, TorusKey } from "@toruslabs/torus.js";
+import { type KeyType, Torus, TorusKey } from "@toruslabs/torus.js";
 
 import { createHandler } from "./handlers/HandlerFactory";
 import { registerServiceWorker } from "./registerServiceWorker";
 import SentryHandler from "./sentry";
 import { AUTH_CONNECTION_TYPE, SENTRY_TXNS, UX_MODE, UX_MODE_TYPE } from "./utils/enums";
-import { serializeError } from "./utils/error";
-import { callCitadelAuditApi, handleRedirectParameters, isFirefox, padUrlString } from "./utils/helpers";
+import { CustomAuthLoginError, CustomAuthLoginErrorPrefix, serializeError } from "./utils/error";
+import { handleRedirectParameters, isFirefox, padUrlString } from "./utils/helpers";
 import {
   CustomAuthArgs,
   CustomAuthLoginParams,
@@ -156,11 +156,7 @@ export class CustomAuth {
     if (!this.isInitialized) {
       throw new Error("Not initialized yet");
     }
-    const hasExistingRecordId = Boolean(args.customState?.recordId);
-    const recordId = args.customState?.recordId || generateRecordId();
-    if (!hasExistingRecordId) {
-      args.customState = { ...(args.customState || {}), recordId };
-    }
+
     const { authConnectionId, authConnection, clientId, jwtParams, hash, queryParameters, customState, groupedAuthConnectionId } = args;
     const loginHandler: ILoginHandler = createHandler({
       authConnection,
@@ -176,22 +172,6 @@ export class CustomAuth {
       web3AuthNetwork: this.config.web3AuthNetwork,
       storageServerUrl: this.config.storageServerUrl,
     });
-    // oAuthUserId is not available yet before the login
-    const auditPayload: Partial<CitadelAuditParams> = {
-      recordId,
-      web3AuthNetwork: this.config.web3AuthNetwork,
-      web3AuthClientId: this.config.web3AuthClientId,
-      authConnection,
-      authConnectionId,
-      groupedAuthConnectionId,
-    };
-
-    if (!hasExistingRecordId) {
-      // track the `oauthInitiated` audit if recordId is not provided
-      callCitadelAuditApi(this.config.buildEnv, { ...auditPayload, oauthInitiated: true }).catch((error) => {
-        log.error("Error tracking oauthInitiated audit", error);
-      });
-    }
 
     let loginParams: LoginWindowResponse;
     try {
@@ -217,11 +197,9 @@ export class CustomAuth {
     } catch (error) {
       log.error(error);
 
-      // track the `oauthFailed` audit if the login fails
-      callCitadelAuditApi(this.config.buildEnv, { ...auditPayload, oauthFailed: true }).catch((error) => {
-        log.error("Error tracking oauthFailed audit", error);
-      });
-      throw error;
+      const serializedError = await serializeError(error);
+      const errorMessage = `${CustomAuthLoginErrorPrefix}${serializedError.message || ""}`;
+      throw new CustomAuthLoginError(errorMessage);
     }
 
     const userInfo = await loginHandler.getUserInfo(loginParams);
@@ -232,7 +210,7 @@ export class CustomAuth {
       idToken: loginParams.idToken || loginParams.accessToken,
       additionalParams: userInfo.extraConnectionParams,
       groupedAuthConnectionId,
-      recordId,
+      recordId: args.customState?.recordId,
       authConnection: userInfo.authConnection,
     });
 

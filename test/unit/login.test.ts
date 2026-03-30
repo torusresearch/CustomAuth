@@ -1,12 +1,11 @@
 import type { TORUS_NETWORK_TYPE } from "@toruslabs/constants";
-import { put } from "@toruslabs/http-helpers";
 import { encodeBase64Url } from "@toruslabs/metadata-helpers";
 import { StorageManager } from "@toruslabs/session-manager";
-import { generateRecordId } from "@toruslabs/torus.js";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { createHandler } from "../../src/handlers/HandlerFactory";
 import { UX_MODE } from "../../src/utils/enums";
+import { CustomAuthLoginError, CustomAuthLoginErrorPrefix } from "../../src/utils/error";
 import type { CustomAuthArgs, ILoginHandler, LoginWindowResponse, TorusConnectionResponse } from "../../src/utils/interfaces";
 
 vi.mock("@toruslabs/torus.js", () => {
@@ -16,10 +15,7 @@ vi.mock("@toruslabs/torus.js", () => {
     });
   }
   Torus.setAPIKey = vi.fn();
-  return {
-    Torus,
-    generateRecordId: vi.fn(() => "generated-record-id"),
-  };
+  return { Torus };
 });
 
 vi.mock("@toruslabs/fetch-node-details", () => ({
@@ -30,10 +26,6 @@ vi.mock("@toruslabs/fetch-node-details", () => ({
       torusNodePub: [{ X: "x", Y: "y" }],
     });
   }),
-}));
-
-vi.mock("@toruslabs/http-helpers", () => ({
-  put: vi.fn().mockResolvedValue(undefined),
 }));
 
 vi.mock("../../src/handlers/HandlerFactory", () => ({
@@ -195,6 +187,28 @@ describe("CustomAuth", () => {
 
       expect(setSessionIdSpy.mock.calls[0][0]).toBe(firstSessionId);
     });
+
+    it("wraps login window failures in CustomAuthLoginError", async () => {
+      const CustomAuth = await getCustomAuth();
+      const handler = mockLoginHandler({
+        handleLoginWindow: vi.fn().mockRejectedValue(new Error("Popup blocked")),
+      });
+      vi.mocked(createHandler).mockReturnValue(handler);
+
+      const auth = new CustomAuth({ ...BASE_ARGS, uxMode: UX_MODE.REDIRECT });
+      auth.isInitialized = true;
+
+      const error = await auth
+        .triggerLogin({
+          authConnection: "google",
+          authConnectionId: "google-verifier",
+          clientId: "google-client-id",
+        })
+        .catch((err) => err);
+
+      expect(error).toBeInstanceOf(CustomAuthLoginError);
+      expect(error.message).toBe(`${CustomAuthLoginErrorPrefix}Popup blocked`);
+    });
   });
 
   describe("triggerLogin – popup mode with hash/queryParameters", () => {
@@ -297,58 +311,6 @@ describe("CustomAuth", () => {
       expect(clearStorageSpy).toHaveBeenCalled();
       expect(result.error).toBeUndefined();
       expect(result.result).toBeDefined();
-    });
-
-    it("reuses the generated recordId across the redirect round-trip", async () => {
-      const CustomAuth = await getCustomAuth();
-
-      const redirectHandler = mockLoginHandler({
-        nonce: "redir_nonce",
-        handleLoginWindow: vi.fn().mockResolvedValue(null),
-      });
-      vi.mocked(createHandler).mockReturnValueOnce(redirectHandler).mockReturnValueOnce(mockLoginHandler());
-
-      const auth = new CustomAuth({ ...BASE_ARGS, uxMode: UX_MODE.REDIRECT });
-      auth.isInitialized = true;
-
-      await auth.triggerLogin({
-        authConnection: "google",
-        authConnectionId: "google-verifier",
-        clientId: "google-client-id",
-      });
-
-      expect(createSessionSpy).toHaveBeenCalledWith({
-        args: expect.objectContaining({
-          customState: expect.objectContaining({
-            recordId: "generated-record-id",
-          }),
-        }),
-      });
-
-      const storedArgs = createSessionSpy.mock.calls[0][0].args;
-      const stateObj = {
-        instanceId: "redir_nonce",
-        authConnectionId: "google-verifier",
-        authConnection: "google",
-      };
-      const stateEncoded = encodeURIComponent(encodeBase64Url(JSON.stringify(stateObj)));
-      const hash = `access_token=mock_access&id_token=mock_id_token&state=${stateEncoded}`;
-
-      setupWindowLocation(hash);
-      authorizeSessionSpy.mockResolvedValue({ args: storedArgs });
-
-      const result = await auth.getRedirectResult({ replaceUrl: false });
-
-      expect(result.error).toBeUndefined();
-      expect(vi.mocked(generateRecordId)).toHaveBeenCalledTimes(1);
-      expect(vi.mocked(put)).toHaveBeenCalledTimes(1);
-      expect(vi.mocked(put)).toHaveBeenCalledWith(
-        expect.stringMatching(/\/v1\/user\/audit$/),
-        expect.objectContaining({
-          recordId: "generated-record-id",
-          oauthInitiated: true,
-        })
-      );
     });
 
     it("clears storage on triggerLogin error", async () => {
