@@ -7,8 +7,8 @@ import { type KeyType, Torus, TorusKey } from "@toruslabs/torus.js";
 import { createHandler } from "./handlers/HandlerFactory";
 import { registerServiceWorker } from "./registerServiceWorker";
 import SentryHandler from "./sentry";
-import { SENTRY_TXNS, UX_MODE, UX_MODE_TYPE } from "./utils/enums";
-import { serializeError } from "./utils/error";
+import { AUTH_CONNECTION_TYPE, SENTRY_TXNS, UX_MODE, UX_MODE_TYPE } from "./utils/enums";
+import { CustomAuthLoginError, CustomAuthLoginErrorPrefix, serializeError } from "./utils/error";
 import { handleRedirectParameters, isFirefox, padUrlString } from "./utils/helpers";
 import {
   CustomAuthArgs,
@@ -153,10 +153,11 @@ export class CustomAuth {
   }
 
   async triggerLogin(args: CustomAuthLoginParams): Promise<TorusLoginResponse> {
-    const { authConnectionId, authConnection, clientId, jwtParams, hash, queryParameters, customState, groupedAuthConnectionId } = args;
     if (!this.isInitialized) {
       throw new Error("Not initialized yet");
     }
+
+    const { authConnectionId, authConnection, clientId, jwtParams, hash, queryParameters, customState, groupedAuthConnectionId } = args;
     const loginHandler: ILoginHandler = createHandler({
       authConnection,
       clientId,
@@ -173,24 +174,32 @@ export class CustomAuth {
     });
 
     let loginParams: LoginWindowResponse;
-    if (hash && queryParameters) {
-      const { error, hashParameters, instanceParameters } = handleRedirectParameters(hash, queryParameters);
-      if (error) throw new Error(error);
-      const { access_token: accessToken, id_token: idToken, tgAuthResult, ...rest } = hashParameters;
-      // State has to be last here otherwise it will be overwritten
-      loginParams = { accessToken, idToken: idToken || tgAuthResult || "", ...rest, state: instanceParameters };
-    } else {
-      this.sessionManager.clearOrphanedData();
-      if (this.config.uxMode === UX_MODE.REDIRECT) {
-        const sessionId = this.getSessionId(`torus_login_${loginHandler.nonce}`);
-        this.sessionManager.setSessionId(sessionId);
-        await this.sessionManager.createSession({ args });
+    try {
+      if (hash && queryParameters) {
+        const { error, hashParameters, instanceParameters } = handleRedirectParameters(hash, queryParameters);
+        if (error) throw new Error(error);
+        const { access_token: accessToken, id_token: idToken, tgAuthResult, ...rest } = hashParameters;
+        // State has to be last here otherwise it will be overwritten
+        loginParams = { accessToken, idToken: idToken || tgAuthResult || "", ...rest, state: instanceParameters };
+      } else {
+        this.sessionManager.clearOrphanedData();
+        if (this.config.uxMode === UX_MODE.REDIRECT) {
+          const sessionId = this.getSessionId(`torus_login_${loginHandler.nonce}`);
+          this.sessionManager.setSessionId(sessionId);
+          await this.sessionManager.createSession({ args });
+        }
+        loginParams = await loginHandler.handleLoginWindow({
+          locationReplaceOnRedirect: this.config.locationReplaceOnRedirect,
+          popupFeatures: this.config.popupFeatures,
+        });
+        if (this.config.uxMode === UX_MODE.REDIRECT) return null;
       }
-      loginParams = await loginHandler.handleLoginWindow({
-        locationReplaceOnRedirect: this.config.locationReplaceOnRedirect,
-        popupFeatures: this.config.popupFeatures,
-      });
-      if (this.config.uxMode === UX_MODE.REDIRECT) return null;
+    } catch (error) {
+      log.error(error);
+
+      const serializedError = await serializeError(error);
+      const errorMessage = `${CustomAuthLoginErrorPrefix}${serializedError.message || ""}`;
+      throw new CustomAuthLoginError(errorMessage);
     }
 
     const userInfo = await loginHandler.getUserInfo(loginParams);
@@ -201,6 +210,8 @@ export class CustomAuth {
       idToken: loginParams.idToken || loginParams.accessToken,
       additionalParams: userInfo.extraConnectionParams,
       groupedAuthConnectionId,
+      recordId: args.customState?.recordId,
+      authConnection: userInfo.authConnection,
     });
 
     return {
@@ -218,6 +229,8 @@ export class CustomAuth {
     idToken: string;
     additionalParams?: ExtraParams;
     groupedAuthConnectionId?: string;
+    recordId?: string;
+    authConnection: AUTH_CONNECTION_TYPE;
   }): Promise<TorusKey> {
     const { authConnectionId, userId, idToken, additionalParams, groupedAuthConnectionId } = params;
     const verifier = groupedAuthConnectionId || authConnectionId;
@@ -263,6 +276,8 @@ export class CustomAuth {
           },
           useDkg: this.config.useDkg,
           checkCommitment: this.config.checkCommitment,
+          recordId: params.recordId,
+          authConnection: params.authConnection,
         });
       }
     );
