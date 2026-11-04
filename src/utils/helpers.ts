@@ -215,6 +215,68 @@ export const objectToAuthDataMap = (tgAuthenticationResult: string) => {
   };
 };
 
+const TELEGRAM_ID_PATTERN = /^[1-9]\d*$/;
+
+function canonicalTelegramId(value: unknown): string | undefined {
+  if (typeof value === "number" && Number.isSafeInteger(value) && value > 0) {
+    return String(value);
+  }
+  if (typeof value === "string" && TELEGRAM_ID_PATTERN.test(value)) {
+    return value;
+  }
+  return undefined;
+}
+
+function idFromTelegramJson(value: unknown): string | undefined {
+  if (!value || typeof value !== "object") return undefined;
+  const record = value as { id?: unknown; user?: unknown };
+  const directId = canonicalTelegramId(record.id);
+  if (directId) return directId;
+  if (typeof record.user === "string") {
+    try {
+      return idFromTelegramJson(JSON.parse(record.user));
+    } catch {
+      return undefined;
+    }
+  }
+  return idFromTelegramJson(record.user);
+}
+
+function idFromTelegramPayload(payload: string): string | undefined {
+  try {
+    const fromJson = idFromTelegramJson(JSON.parse(payload));
+    if (fromJson) return fromJson;
+  } catch {
+    // The payload is not JSON. The query-string path below handles Mini App tokens.
+  }
+  const params = new URLSearchParams(payload);
+  return canonicalTelegramId(params.get("id")) ?? idFromTelegramJson({ user: params.get("user") });
+}
+
+export function telegramUserIdFromIdToken(idToken: string): string {
+  if (!idToken) {
+    throw new Error("Telegram user id not found in idToken");
+  }
+  let decoded: string | undefined;
+  try {
+    decoded = decodeBase64Url(idToken);
+  } catch {
+    decoded = undefined;
+  }
+  const telegramId = (decoded && idFromTelegramPayload(decoded)) || idFromTelegramPayload(idToken);
+  if (!telegramId) {
+    throw new Error("Telegram user id not found in idToken");
+  }
+  return telegramId;
+}
+
+export function assertTelegramVerifierId(userId: string, idToken: string): void {
+  const telegramId = telegramUserIdFromIdToken(idToken);
+  if (telegramId !== userId) {
+    throw new Error("verifier ID does not match Telegram user ID");
+  }
+}
+
 export function isMobileOrTablet(): boolean {
   const browser = Bowser.getParser(navigator.userAgent);
   const platform = browser.getPlatform();
