@@ -7,9 +7,9 @@ import { type KeyType, Torus, TorusKey } from "@toruslabs/torus.js";
 import { createHandler } from "./handlers/HandlerFactory";
 import { registerServiceWorker } from "./registerServiceWorker";
 import SentryHandler from "./sentry";
-import { AUTH_CONNECTION_TYPE, SENTRY_TXNS, UX_MODE, UX_MODE_TYPE } from "./utils/enums";
+import { AUTH_CONNECTION, AUTH_CONNECTION_TYPE, SENTRY_TXNS, UX_MODE, UX_MODE_TYPE } from "./utils/enums";
 import { CustomAuthLoginError, CustomAuthLoginErrorPrefix, serializeError } from "./utils/error";
-import { handleRedirectParameters, isFirefox, padUrlString } from "./utils/helpers";
+import { assertTelegramVerifierId, handleRedirectParameters, isFirefox, padUrlString } from "./utils/helpers";
 import {
   CustomAuthArgs,
   CustomAuthLoginParams,
@@ -233,6 +233,9 @@ export class CustomAuth {
     authConnection: AUTH_CONNECTION_TYPE;
   }): Promise<TorusKey> {
     const { authConnectionId, userId, idToken, additionalParams, groupedAuthConnectionId } = params;
+    if (params.authConnection === AUTH_CONNECTION.TELEGRAM) {
+      assertTelegramVerifierId(userId, idToken);
+    }
     const verifier = groupedAuthConnectionId || authConnectionId;
     const verifierId = userId;
     const verifierParams: VerifierParams = { verifier_id: userId };

@@ -4,7 +4,7 @@ import { StorageManager } from "@toruslabs/session-manager";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { createHandler } from "../../src/handlers/HandlerFactory";
-import { UX_MODE } from "../../src/utils/enums";
+import { AUTH_CONNECTION, UX_MODE } from "../../src/utils/enums";
 import { CustomAuthLoginError, CustomAuthLoginErrorPrefix } from "../../src/utils/error";
 import type { CustomAuthArgs, ILoginHandler, LoginWindowResponse, TorusConnectionResponse } from "../../src/utils/interfaces";
 
@@ -407,6 +407,122 @@ describe("CustomAuth", () => {
 
       const auth = new CustomAuth(BASE_ARGS);
       await expect(auth.getRedirectResult()).rejects.toThrow("Found Empty hash and query parameters");
+    });
+  });
+
+  describe("getTorusKey telegram identity", () => {
+    function telegramToken(id: number) {
+      return encodeBase64Url(
+        JSON.stringify({
+          id,
+          auth_date: 1737103331,
+          first_name: "Ada",
+          hash: "abc",
+        })
+      );
+    }
+
+    it("does not call the node when the Telegram id differs from userId", async () => {
+      const CustomAuth = await getCustomAuth();
+      const auth = new CustomAuth(BASE_ARGS);
+      const getNodeDetails = vi.mocked(auth.nodeDetailManager.getNodeDetails);
+      const retrieveShares = vi.mocked(auth.torus.retrieveShares);
+
+      await expect(
+        auth.getTorusKey({
+          authConnection: AUTH_CONNECTION.TELEGRAM,
+          authConnectionId: "test-telegram",
+          userId: "222",
+          idToken: telegramToken(111),
+        })
+      ).rejects.toThrow("verifier ID does not match Telegram user ID");
+
+      expect(getNodeDetails).not.toHaveBeenCalled();
+      expect(retrieveShares).not.toHaveBeenCalled();
+    });
+
+    it("does not call the node when the Telegram token has no id", async () => {
+      const CustomAuth = await getCustomAuth();
+      const auth = new CustomAuth(BASE_ARGS);
+      const getNodeDetails = vi.mocked(auth.nodeDetailManager.getNodeDetails);
+      const retrieveShares = vi.mocked(auth.torus.retrieveShares);
+
+      await expect(
+        auth.getTorusKey({
+          authConnection: AUTH_CONNECTION.TELEGRAM,
+          authConnectionId: "test-telegram",
+          userId: "111",
+          idToken: encodeBase64Url(JSON.stringify({ first_name: "Ada" })),
+        })
+      ).rejects.toThrow("Telegram user id not found in idToken");
+
+      expect(getNodeDetails).not.toHaveBeenCalled();
+      expect(retrieveShares).not.toHaveBeenCalled();
+    });
+
+    it("requests shares when the Telegram id equals userId", async () => {
+      const CustomAuth = await getCustomAuth();
+      const auth = new CustomAuth(BASE_ARGS);
+      const retrieveShares = vi.mocked(auth.torus.retrieveShares);
+
+      await auth.getTorusKey({
+        authConnection: AUTH_CONNECTION.TELEGRAM,
+        authConnectionId: "test-telegram",
+        userId: "111",
+        idToken: telegramToken(111),
+      });
+
+      expect(retrieveShares).toHaveBeenCalledTimes(1);
+      expect(retrieveShares).toHaveBeenCalledWith(
+        expect.objectContaining({
+          verifier: "test-telegram",
+          verifierParams: { verifier_id: "111" },
+          idToken: telegramToken(111),
+          authConnection: AUTH_CONNECTION.TELEGRAM,
+        })
+      );
+    });
+
+    it("checks userId before it builds a grouped aggregate token", async () => {
+      const CustomAuth = await getCustomAuth();
+      const auth = new CustomAuth(BASE_ARGS);
+      const getNodeDetails = vi.mocked(auth.nodeDetailManager.getNodeDetails);
+      const retrieveShares = vi.mocked(auth.torus.retrieveShares);
+
+      await expect(
+        auth.getTorusKey({
+          authConnection: AUTH_CONNECTION.TELEGRAM,
+          authConnectionId: "test-telegram",
+          groupedAuthConnectionId: "grouped-telegram",
+          userId: "222",
+          idToken: telegramToken(111),
+        })
+      ).rejects.toThrow("verifier ID does not match Telegram user ID");
+
+      expect(getNodeDetails).not.toHaveBeenCalled();
+      expect(retrieveShares).not.toHaveBeenCalled();
+    });
+
+    it("leaves a non-Telegram token unchanged", async () => {
+      const CustomAuth = await getCustomAuth();
+      const auth = new CustomAuth(BASE_ARGS);
+      const retrieveShares = vi.mocked(auth.torus.retrieveShares);
+
+      await auth.getTorusKey({
+        authConnection: AUTH_CONNECTION.GOOGLE,
+        authConnectionId: "google-verifier",
+        userId: "user@test.com",
+        idToken: "mock_id_token",
+      });
+
+      expect(retrieveShares).toHaveBeenCalledWith(
+        expect.objectContaining({
+          verifier: "google-verifier",
+          verifierParams: { verifier_id: "user@test.com" },
+          idToken: "mock_id_token",
+          authConnection: AUTH_CONNECTION.GOOGLE,
+        })
+      );
     });
   });
 });
