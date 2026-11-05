@@ -227,43 +227,17 @@ function canonicalTelegramId(value: unknown): string | undefined {
   return undefined;
 }
 
-function idFromTelegramJson(value: unknown): string | undefined {
-  if (!value || typeof value !== "object") return undefined;
-  const record = value as { id?: unknown; user?: unknown };
-  const directId = canonicalTelegramId(record.id);
-  if (directId) return directId;
-  if (typeof record.user === "string") {
-    try {
-      return idFromTelegramJson(JSON.parse(record.user));
-    } catch {
-      return undefined;
-    }
-  }
-  return idFromTelegramJson(record.user);
-}
-
-function idFromTelegramPayload(payload: string): string | undefined {
-  try {
-    const fromJson = idFromTelegramJson(JSON.parse(payload));
-    if (fromJson) return fromJson;
-  } catch {
-    // The payload is not JSON. The query-string path below handles Mini App tokens.
-  }
-  const params = new URLSearchParams(payload);
-  return canonicalTelegramId(params.get("id")) ?? idFromTelegramJson({ user: params.get("user") });
-}
-
 export function telegramUserIdFromIdToken(idToken: string): string {
   if (!idToken) {
     throw new Error("Telegram user id not found in idToken");
   }
-  let decoded: string | undefined;
+  let parsed: { id?: unknown };
   try {
-    decoded = decodeBase64Url(idToken);
+    parsed = JSON.parse(decodeBase64Url(idToken)) as { id?: unknown };
   } catch {
-    decoded = undefined;
+    throw new Error("Telegram user id not found in idToken");
   }
-  const telegramId = (decoded && idFromTelegramPayload(decoded)) || idFromTelegramPayload(idToken);
+  const telegramId = canonicalTelegramId(parsed?.id);
   if (!telegramId) {
     throw new Error("Telegram user id not found in idToken");
   }
