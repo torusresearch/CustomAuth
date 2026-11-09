@@ -1,6 +1,6 @@
 import { TORUS_SAPPHIRE_NETWORK } from "@toruslabs/constants";
 import { encodeBase64Url, type Hex, keccak256, utf8ToBytes } from "@toruslabs/metadata-helpers";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vite-plus/test";
 
 import PasskeysHandler from "../../src/handlers/PasskeysHandler";
 import { AUTH_CONNECTION } from "../../src/utils/enums";

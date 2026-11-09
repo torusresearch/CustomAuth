@@ -35,7 +35,7 @@ export default class TelegramHandler extends AbstractLoginHandler {
   }
 
   setFinalUrl(): void {
-    const { domain } = this.params.jwtParams;
+    const { domain } = this.params.jwtParams || {};
     const finalUrl = validateAndConstructUrl(domain || "https://oauth.telegram.org/auth");
 
     const clonedParams = JSON.parse(JSON.stringify(this.params.jwtParams || {}));
@@ -62,14 +62,14 @@ export default class TelegramHandler extends AbstractLoginHandler {
 
   async getUserInfo(params: LoginWindowResponse): Promise<TorusConnectionResponse> {
     const { idToken } = params;
-    const userInfo = objectToAuthDataMap(idToken);
+    const userInfo = objectToAuthDataMap(idToken || "");
     const { photo_url: profileImage = "", first_name = "", last_name = "", id } = userInfo;
     return {
       email: "", // Telegram does not provide email
       name: `${first_name} ${last_name}`,
       profileImage,
       authConnectionId: this.params.authConnectionId,
-      userId: id.toString(),
+      userId: String(id),
       authConnection: this.params.authConnection,
       groupedAuthConnectionId: this.params.groupedAuthConnectionId,
     };
@@ -82,7 +82,7 @@ export default class TelegramHandler extends AbstractLoginHandler {
       timeout: getTimeout(this.params.authConnection),
     });
     if (this.params.uxMode === UX_MODE.REDIRECT) {
-      authConnectionWindow.redirect(params.locationReplaceOnRedirect);
+      authConnectionWindow.redirect(params.locationReplaceOnRedirect ?? false);
     } else {
       return new Promise<LoginWindowResponse>((resolve, reject) => {
         const handleData = async (ev: string) => {
@@ -99,7 +99,7 @@ export default class TelegramHandler extends AbstractLoginHandler {
                 accessToken: "",
                 ...rest,
                 idToken: encodeBase64Url(JSON.stringify(result)) || "",
-                state: decodeBase64Url(stateParam) as unknown as { [key: string]: string },
+                state: decodeBase64Url(stateParam || "") as unknown as { [key: string]: string },
               });
             }
           } catch (error) {
@@ -141,6 +141,6 @@ export default class TelegramHandler extends AbstractLoginHandler {
         });
       });
     }
-    return null;
+    return null as unknown as LoginWindowResponse;
   }
 }

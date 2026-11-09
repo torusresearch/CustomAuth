@@ -88,7 +88,7 @@ export const handleRedirectParameters = (
 ): { error: string; instanceParameters: TorusGenericObject; hashParameters: TorusGenericObject } => {
   const hashParameters: TorusGenericObject = hash.split("&").reduce((result: Record<string, string>, item) => {
     const [part0, part1] = item.split("=");
-    result[part0] = part1;
+    if (part0 !== undefined) result[part0] = part1 ?? "";
     return result;
   }, {});
   log.info(hashParameters, queryParameters);
@@ -105,7 +105,7 @@ export const handleRedirectParameters = (
 };
 
 export function storageAvailable(type: REDIRECT_PARAMS_STORAGE_METHOD_TYPE): boolean {
-  let storage: Storage;
+  let storage: Storage | undefined;
   try {
     storage = window[type as "sessionStorage" | "localStorage"];
     const x = "__storage_test__";
@@ -115,7 +115,7 @@ export function storageAvailable(type: REDIRECT_PARAMS_STORAGE_METHOD_TYPE): boo
   } catch (error: unknown) {
     const e = error as { code?: number; name?: string };
     return (
-      e &&
+      !!e &&
       // everything except Firefox
       (e.code === 22 ||
         // Firefox
@@ -126,7 +126,7 @@ export function storageAvailable(type: REDIRECT_PARAMS_STORAGE_METHOD_TYPE): boo
         // Firefox
         e.name === "NS_ERROR_DOM_QUOTA_REACHED") &&
       // acknowledge QuotaExceededError only if there's something already stored
-      storage &&
+      !!storage &&
       storage.length !== 0
     );
   }
@@ -266,6 +266,7 @@ export function getTimeout(authConnection: AUTH_CONNECTION_TYPE) {
 
 export function decodeToken<T>(token: string): { header: { alg: string; typ: string; kid?: string }; payload: T } {
   const [header, payload] = token.split(".");
+  if (header === undefined || payload === undefined) throw new Error("Invalid token");
   return {
     header: JSON.parse(decodeBase64Url(header)),
     payload: JSON.parse(decodeBase64Url(payload)) as T,

@@ -1,10 +1,9 @@
 import { encodeBase64Url } from "@toruslabs/metadata-helpers";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "vite-plus/test";
 
 import { assertTelegramVerifierId, telegramUserIdFromIdToken } from "../../src/utils/helpers";
 
-const widgetToken = (id: number | string) =>
-  encodeBase64Url(JSON.stringify({ id, auth_date: 1737103331, first_name: "Ada", hash: "abc" }));
+const widgetToken = (id: number | string) => encodeBase64Url(JSON.stringify({ id, auth_date: 1737103331, first_name: "Ada", hash: "abc" }));
 
 describe("telegramUserIdFromIdToken", () => {
   it("reads the widget id from a base64url JSON token", () => {
@@ -16,9 +15,7 @@ describe("telegramUserIdFromIdToken", () => {
   });
 
   it("rejects a token with no id", () => {
-    expect(() => telegramUserIdFromIdToken(encodeBase64Url(JSON.stringify({ first_name: "Ada" })))).toThrow(
-      "Telegram user id not found in idToken"
-    );
+    expect(() => telegramUserIdFromIdToken(encodeBase64Url(JSON.stringify({ first_name: "Ada" })))).toThrow("Telegram user id not found in idToken");
   });
 
   it("rejects a zero id and a leading zero", () => {

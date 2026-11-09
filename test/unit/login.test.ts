@@ -1,7 +1,7 @@
 import type { TORUS_NETWORK_TYPE } from "@toruslabs/constants";
 import { encodeBase64Url } from "@toruslabs/metadata-helpers";
 import { StorageManager } from "@toruslabs/session-manager";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vite-plus/test";
 
 import { createHandler } from "../../src/handlers/HandlerFactory";
 import { AUTH_CONNECTION, UX_MODE } from "../../src/utils/enums";
@@ -9,8 +9,8 @@ import { CustomAuthLoginError, CustomAuthLoginErrorPrefix } from "../../src/util
 import type { CustomAuthArgs, ILoginHandler, LoginWindowResponse, TorusConnectionResponse } from "../../src/utils/interfaces";
 
 vi.mock("@toruslabs/torus.js", () => {
-  function Torus() {
-    (this as Record<string, unknown>).retrieveShares = vi.fn().mockResolvedValue({
+  function Torus(this: Record<string, unknown>) {
+    this.retrieveShares = vi.fn().mockResolvedValue({
       finalKeyData: { privKey: "0xdeadbeef" },
     });
   }
@@ -19,8 +19,8 @@ vi.mock("@toruslabs/torus.js", () => {
 });
 
 vi.mock("@toruslabs/fetch-node-details", () => ({
-  NodeDetailManager: vi.fn().mockImplementation(function () {
-    (this as Record<string, unknown>).getNodeDetails = vi.fn().mockResolvedValue({
+  NodeDetailManager: vi.fn().mockImplementation(function (this: Record<string, unknown>) {
+    this.getNodeDetails = vi.fn().mockResolvedValue({
       torusNodeEndpoints: ["https://node1.example.com"],
       torusIndexes: [1],
       torusNodePub: [{ X: "x", Y: "y" }],
@@ -37,8 +37,8 @@ vi.mock("../../src/registerServiceWorker", () => ({
 }));
 
 vi.mock("../../src/sentry", () => ({
-  default: vi.fn().mockImplementation(function () {
-    (this as Record<string, unknown>).startSpan = vi.fn((_opts: unknown, fn: () => unknown) => fn());
+  default: vi.fn().mockImplementation(function (this: Record<string, unknown>) {
+    this.startSpan = vi.fn((_opts: unknown, fn: () => unknown) => fn());
   }),
 }));
 

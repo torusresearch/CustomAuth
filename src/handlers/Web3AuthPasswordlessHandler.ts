@@ -22,7 +22,7 @@ export default class Web3AuthPasswordlessHandler extends AbstractLoginHandler {
     finalUrl.pathname += finalUrl.pathname.endsWith("/") ? "authorize" : "/authorize";
     const clonedParams = JSON.parse(JSON.stringify(this.params.jwtParams || {}));
     delete clonedParams.domain;
-    this.params.customState = { ...(this.params.customState || {}), client: this.params.web3AuthClientId };
+    this.params.customState = { ...this.params.customState, client: this.params.web3AuthClientId };
     const finalJwtParams = deepmerge(
       {
         state: this.state,
@@ -48,7 +48,7 @@ export default class Web3AuthPasswordlessHandler extends AbstractLoginHandler {
   async getUserInfo(params: LoginWindowResponse): Promise<TorusConnectionResponse> {
     const { idToken } = params;
 
-    const decodedToken = decodeToken<Auth0UserInfo>(idToken).payload;
+    const decodedToken = decodeToken<Auth0UserInfo>(idToken || "").payload;
     const { name, email, picture } = decodedToken;
     return {
       profileImage: picture,

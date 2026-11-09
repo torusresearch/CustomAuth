@@ -88,12 +88,12 @@ export class CustomAuth {
       redirectToOpener,
       uxMode,
       locationReplaceOnRedirect,
-      popupFeatures,
+      popupFeatures: popupFeatures ?? "",
       useDkg,
       web3AuthClientId,
       web3AuthNetwork: network,
       keyType,
-      nodeDetails,
+      nodeDetails: nodeDetails as INodeDetails,
       checkCommitment,
       buildEnv,
       storageServerUrl: storageServerUrl ? storageServerUrl : STORAGE_SERVER_MAP[buildEnv], // custom storage server url takes precedence over build environment (mainly for testing purposes)
@@ -180,7 +180,7 @@ export class CustomAuth {
         if (error) throw new Error(error);
         const { access_token: accessToken, id_token: idToken, tgAuthResult, ...rest } = hashParameters;
         // State has to be last here otherwise it will be overwritten
-        loginParams = { accessToken, idToken: idToken || tgAuthResult || "", ...rest, state: instanceParameters };
+        loginParams = { accessToken: accessToken || "", idToken: idToken || tgAuthResult || "", ...rest, state: instanceParameters };
       } else {
         this.sessionManager.clearOrphanedData();
         if (this.config.uxMode === UX_MODE.REDIRECT) {
@@ -192,7 +192,7 @@ export class CustomAuth {
           locationReplaceOnRedirect: this.config.locationReplaceOnRedirect,
           popupFeatures: this.config.popupFeatures,
         });
-        if (this.config.uxMode === UX_MODE.REDIRECT) return null;
+        if (this.config.uxMode === UX_MODE.REDIRECT) return null as unknown as TorusLoginResponse;
       }
     } catch (error) {
       log.error(error);
