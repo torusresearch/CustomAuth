@@ -24,7 +24,6 @@
     "serviceworker"
   ],
   "peerDependencies": {
-    "@babel/runtime": "^7.x",
     "@sentry/core": "^10.78.0"
   },
   "peerDependenciesMeta": {
