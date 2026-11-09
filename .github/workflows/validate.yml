@@ -1,0 +1,99 @@
+name: Validate pull request
+
+on:
+  pull_request:
+  push:
+    branches: [master]
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node: ["24.22.0", "26"]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: ${{ matrix.node }}
+      - name: Install npm 12
+        run: npm install --global npm@12.2.0
+      - name: Install dependencies
+        run: npm ci
+      - name: Check dependency hardening
+        run: npm exec --no -- harden check --package-manager npm
+      - name: Check source
+        run: npm run check
+      - name: Build packages
+        run: npm run build
+      - name: Check TypeScript projects
+        run: npm run typecheck
+      - name: Run tests
+        run: npm test
+      - name: Check release notes
+        if: |
+          github.event_name == 'pull_request' &&
+          !startsWith(github.head_ref, 'changeset-release/') &&
+          !startsWith(github.head_ref, 'dependabot/')
+        env:
+          BASE_REF: ${{ github.base_ref }}
+        run: |
+          git fetch --no-tags origin "${BASE_REF}:refs/remotes/origin/${BASE_REF}"
+          npm exec -- changeset status --since="origin/${BASE_REF}"
+      - name: Preview package archive
+        run: npm pack --dry-run --json
+
+  deploy-demo:
+    if: github.ref == 'refs/heads/master' && github.event_name == 'push'
+    needs: validate
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+      - name: Install npm 12
+        run: npm install --global npm@12.2.0
+      - name: Install dependencies
+        run: npm ci
+      - name: Build package
+        run: npm run build
+      - name: Start Wiz sensor
+        uses: wiz-sec-public/wiz-sensor-github-action@2fd38e4d101f185b1deb0c313c0adb0a7efdfe62 # v0.9.6
+        continue-on-error: true
+        with:
+          api-token: ${{ secrets.WIZ_SENSOR_TOKEN }}
+      - name: Pack and build example
+        run: |
+          npm pack
+          cd examples/vue-app
+          npm run install:local
+          npm run build
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@e1253824e5c10ff9df46874f81ed3ec929e19cfd # v6.3.0
+        with:
+          role-to-assume: ${{ vars.AWS_ROLE_ARN }}
+          aws-region: ${{ secrets.AWS_REGION_US }}
+      - name: sync s3
+        uses: jakejarvis/s3-sync-action@7ed8b112447abb09f1da74f3466e4194fc7a6311 # master
+        env:
+          SOURCE_DIR: "./examples/vue-app/dist"
+          AWS_REGION: "us-east-1"
+          AWS_S3_BUCKET: "demo-customauth.web3auth.io"
+      - name: Update AWS Cloudfront Config
+        uses: chaitanyapotti/cloudfront-update-distribution@c5d4a6b318664766f944d11c32544f492fb3027d # v4
+        with:
+          cloudfront-distribution-id: ${{ secrets.AWS_CLOUDFRONT_DISTRIBUTION_ID }}
+          cloudfront-invalidation-required: true
+          cloudfront-invalidation-path: "/*"
+          cloudfront-wait-for-service-update: false
