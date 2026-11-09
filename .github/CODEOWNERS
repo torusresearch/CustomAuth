@@ -21,6 +21,7 @@
 # Product code
 src/                            @torusresearch/Web3Auth-Product
 test/                           @torusresearch/Web3Auth-Product
+examples/                       @torusresearch/Web3Auth-Product
 
 # Most restrictive — last match wins
 .github/CODEOWNERS              @torusresearch/Web3Auth-Admins
