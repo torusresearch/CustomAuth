@@ -10,6 +10,7 @@
   "sideEffects": false,
   "scripts": {
     "build": "vp pack",
+    "prepack": "npm run build",
     "lint": "vp lint",
     "check": "vp check",
     "typecheck": "tsc --noEmit",
@@ -33,7 +34,7 @@
   },
   "dependencies": {
     "@chaitanyapotti/register-service-worker": "^1.7.4",
-    "@toruslabs/broadcast-channel": "^13.3.0",
+    "@toruslabs/broadcast-channel": "^14.0.0",
     "@toruslabs/constants": "^16.1.1",
     "@toruslabs/eccrypto": "^7.0.0",
     "@toruslabs/fetch-node-details": "^16.1.1",
