@@ -1,3 +1,4 @@
+import { attachChannelSecret, withChannelSecret } from "@toruslabs/broadcast-channel";
 import { encodeBase64Url } from "@toruslabs/metadata-helpers";
 
 import { UX_MODE } from "../utils/enums";
@@ -35,6 +36,15 @@ abstract class AbstractLoginHandler implements ILoginHandler {
   }
 
   async handleLoginWindow(params: { locationReplaceOnRedirect?: boolean; popupFeatures?: string }): Promise<LoginWindowResponse> {
+    // Secret-protected result channel: generate a per-login secret and attach it
+    // to the auth-service URL as a hash fragment (`#csec=...`). The auth-service
+    // pages (start -> provider -> callback) persist it via sessionStorage and
+    // post the login result back on the channel derived from it. Deploy-order
+    // sensitive: the auth-service must ship its dual-post (legacy + secret)
+    // before this SDK version reaches clients. Old auth-service deployments
+    // ignore the fragment and post on the legacy name-derived channel, which
+    // this SDK version does not listen to.
+    const channelSecret = attachChannelSecret(this.finalURL);
     const authConnectionWindow = new PopupHandler({
       url: this.finalURL,
       features: params.popupFeatures,
@@ -80,7 +90,7 @@ abstract class AbstractLoginHandler implements ILoginHandler {
           bc = new BroadcastChannel<{
             error: string;
             data: PopupResponse;
-          }>(`redirect_channel_${this.nonce}`, broadcastChannelOptions);
+          }>(`redirect_channel_${this.nonce}`, withChannelSecret(broadcastChannelOptions, channelSecret));
           bc.addEventListener("message", async (ev: { error: string; data: PopupResponse }) => {
             await handleData(ev);
             bc.close();
