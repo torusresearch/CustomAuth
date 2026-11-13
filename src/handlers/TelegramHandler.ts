@@ -62,7 +62,8 @@ export default class TelegramHandler extends AbstractLoginHandler {
 
   async getUserInfo(params: LoginWindowResponse): Promise<TorusConnectionResponse> {
     const { idToken } = params;
-    const userInfo = objectToAuthDataMap(idToken || "");
+    if (!idToken) throw new Error("Telegram user id not found in idToken");
+    const userInfo = objectToAuthDataMap(idToken);
     const { photo_url: profileImage = "", first_name = "", last_name = "", id } = userInfo;
     return {
       email: "", // Telegram does not provide email
