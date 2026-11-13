@@ -152,7 +152,7 @@ export class CustomAuth {
     this.isInitialized = true;
   }
 
-  async triggerLogin(args: CustomAuthLoginParams): Promise<TorusLoginResponse> {
+  async triggerLogin(args: CustomAuthLoginParams): Promise<TorusLoginResponse | null> {
     if (!this.isInitialized) {
       throw new Error("Not initialized yet");
     }
@@ -192,8 +192,8 @@ export class CustomAuth {
           locationReplaceOnRedirect: this.config.locationReplaceOnRedirect,
           popupFeatures: this.config.popupFeatures,
         });
-        // redirect mode: page navigates away; public return type stays non-null so consumers don't break
-        if (this.config.uxMode === UX_MODE.REDIRECT) return null as unknown as TorusLoginResponse;
+        // redirect mode: page navigates away, result comes from getRedirectResult
+        if (this.config.uxMode === UX_MODE.REDIRECT) return null;
         if (!windowResponse) throw new Error("Login window returned no response");
         loginParams = windowResponse;
       }
@@ -330,7 +330,7 @@ export class CustomAuth {
     const storageMethodUsed = "localStorage + server";
     log.info(args, "args", storageMethodUsed);
 
-    let result: TorusLoginResponse;
+    let result: TorusLoginResponse | null;
 
     if (error) {
       return { error, state: instanceParameters || {}, result: {}, hashParameters, args };
