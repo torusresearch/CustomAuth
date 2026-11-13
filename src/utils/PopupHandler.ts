@@ -1,4 +1,5 @@
 import { EventEmitter } from "events";
+
 import type { default as TypedEmitter } from "typed-emitter";
 
 import { getPopupFeatures } from "./helpers";
@@ -14,9 +15,9 @@ export class PopupHandler extends (EventEmitter as new () => TypedEmitter<PopupH
 
   features: string;
 
-  window: Window;
+  window: Window | undefined;
 
-  windowTimer: number;
+  windowTimer: number | undefined;
 
   iClosedWindow: boolean;
 
@@ -53,7 +54,7 @@ export class PopupHandler extends (EventEmitter as new () => TypedEmitter<PopupH
   }
 
   open(): Promise<void> {
-    this.window = window.open(this.url.href, this.target, this.features);
+    this.window = window.open(this.url.href, this.target, this.features) ?? undefined;
     if (!this.window) throw new Error("popup window is blocked");
     if (this.window?.focus) this.window.focus();
     return Promise.resolve();

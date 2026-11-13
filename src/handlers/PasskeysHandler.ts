@@ -34,6 +34,7 @@ export default class PasskeysHandler extends AbstractLoginHandler {
   async getUserInfo(parameters: LoginWindowResponse): Promise<TorusConnectionResponse> {
     const { idToken, extraParams } = parameters;
 
+    if (!extraParams) throw new Error("sessionId not found");
     const { sessionId } = JSON.parse(decodeBase64Url(extraParams)) || {};
     if (!sessionId) {
       throw new Error("sessionId not found");

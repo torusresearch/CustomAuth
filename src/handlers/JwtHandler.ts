@@ -19,10 +19,11 @@ export default class JwtHandler extends AbstractLoginHandler {
   }
 
   setFinalUrl(): void {
-    const { domain } = this.params.jwtParams;
-    const finalUrl = validateAndConstructUrl(domain);
+    const jwtParams = this.params.jwtParams || {};
+    const { domain } = jwtParams;
+    const finalUrl = validateAndConstructUrl(domain as string);
     finalUrl.pathname += finalUrl.pathname.endsWith("/") ? "authorize" : "/authorize";
-    const clonedParams = JSON.parse(JSON.stringify(this.params.jwtParams));
+    const clonedParams = JSON.parse(JSON.stringify(jwtParams));
     delete clonedParams.domain;
     const finalJwtParams = deepmerge(
       {
@@ -46,7 +47,7 @@ export default class JwtHandler extends AbstractLoginHandler {
 
   async getUserInfo(params: LoginWindowResponse): Promise<TorusConnectionResponse> {
     const { idToken, accessToken } = params;
-    const { domain, userIdField, isUserIdCaseSensitive, user_info_route = "userinfo" } = this.params.jwtParams;
+    const { domain, userIdField, isUserIdCaseSensitive, user_info_route = "userinfo" } = this.params.jwtParams || {};
     if (idToken) {
       const decodedToken = decodeToken<Auth0UserInfo>(idToken).payload;
       const { name, email, picture } = decodedToken;
@@ -62,7 +63,7 @@ export default class JwtHandler extends AbstractLoginHandler {
     }
     if (accessToken) {
       try {
-        const domainUrl = new URL(domain);
+        const domainUrl = new URL(domain as string);
         const userInfo = await get<Auth0UserInfo>(`${padUrlString(domainUrl)}${user_info_route}`, {
           headers: {
             Authorization: `Bearer ${accessToken}`,

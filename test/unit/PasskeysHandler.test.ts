@@ -1,6 +1,6 @@
 import { TORUS_SAPPHIRE_NETWORK } from "@toruslabs/constants";
 import { encodeBase64Url, type Hex, keccak256, utf8ToBytes } from "@toruslabs/metadata-helpers";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vite-plus/test";
 
 import PasskeysHandler from "../../src/handlers/PasskeysHandler";
 import { AUTH_CONNECTION } from "../../src/utils/enums";
@@ -143,6 +143,13 @@ describe("PasskeysHandler", () => {
       });
 
       await expect(handler.getUserInfo(params)).rejects.toThrow("sessionId not found");
+    });
+
+    it("throws if extraParams is empty or missing", async () => {
+      const handler = new PasskeysHandler(makeHandlerParams());
+
+      await expect(handler.getUserInfo(makeLoginWindowResponse({ extraParams: "" }))).rejects.toThrow("sessionId not found");
+      await expect(handler.getUserInfo(makeLoginWindowResponse({ extraParams: undefined }))).rejects.toThrow("sessionId not found");
     });
 
     it("throws if sessionId is not a valid hex string", async () => {

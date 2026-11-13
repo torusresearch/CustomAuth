@@ -6,15 +6,18 @@
   "module": "dist/lib.esm/index.js",
   "unpkg": "dist/lib.esm/index.js",
   "jsdelivr": "dist/lib.esm/index.js",
-  "types": "dist/lib.cjs/types/index.d.ts",
+  "types": "dist/lib.cjs/index.d.ts",
   "sideEffects": false,
   "scripts": {
-    "build": "torus-scripts build",
-    "start": "torus-scripts start",
-    "release": "torus-scripts release",
-    "lint:ts": "torus-scripts lint --fix",
+    "build": "vp pack",
     "prepack": "npm run build",
-    "test": "vitest run",
+    "lint": "vp lint",
+    "check": "vp check",
+    "typecheck": "tsc --noEmit",
+    "changeset": "changeset",
+    "version-packages": "changeset version && npm install --package-lock-only --ignore-scripts",
+    "release-packages": "changeset publish",
+    "test": "vp test run",
     "prepare": "husky"
   },
   "files": [
@@ -22,7 +25,6 @@
     "serviceworker"
   ],
   "peerDependencies": {
-    "@babel/runtime": "^7.x",
     "@sentry/core": "^10.x"
   },
   "peerDependenciesMeta": {
@@ -32,43 +34,47 @@
   },
   "dependencies": {
     "@chaitanyapotti/register-service-worker": "^1.7.4",
-    "@toruslabs/broadcast-channel": "^13.3.0",
-    "@toruslabs/constants": "^16.1.1",
-    "@toruslabs/eccrypto": "^7.0.0",
-    "@toruslabs/fetch-node-details": "^16.1.1",
-    "@toruslabs/http-helpers": "^9.0.0",
-    "@toruslabs/metadata-helpers": "^8.2.0",
-    "@toruslabs/session-manager": "^5.6.0",
-    "@toruslabs/torus.js": "^17.2.3",
-    "bowser": "^2.14.1",
+    "@toruslabs/broadcast-channel": "^14.0.0",
+    "@toruslabs/constants": "^17.0.0",
+    "@toruslabs/eccrypto": "^8.0.0",
+    "@toruslabs/fetch-node-details": "^17.0.0",
+    "@toruslabs/http-helpers": "^10.0.0",
+    "@toruslabs/metadata-helpers": "^9.0.0",
+    "@toruslabs/session-manager": "^6.0.0",
+    "@toruslabs/torus.js": "^18.0.0",
+    "bowser": "^2.15.0",
     "deepmerge": "^4.3.1",
     "events": "^3.3.0",
     "loglevel": "^1.9.2"
   },
   "devDependencies": {
-    "@sentry/core": "^10.45.0",
-    "@toruslabs/config": "^4.0.0",
-    "@toruslabs/eslint-config-typescript": "^5.0.1",
-    "@toruslabs/torus-scripts": "^8.0.1",
-    "@types/node": "^25",
-    "eslint": "^9.39.2",
+    "@changesets/cli": "^3.0.3",
+    "@lavamoat/harden": "^0.8.1",
+    "@sentry/core": "^10.78.0",
+    "@toruslabs/config": "^5.0.0",
+    "@toruslabs/oxlint-config-typescript": "^1.1.0",
+    "@toruslabs/torus-scripts": "9.0.1",
+    "@types/events": "^3.0.3",
+    "@types/node": "^26.6.6",
     "husky": "^9.1.7",
     "lint-staged": "^16.4.0",
-    "prettier": "^3.8.1",
-    "rimraf": "^6.1.3",
     "typed-emitter": "^2.1.0",
-    "typescript": "^5.9.3",
-    "vitest": "^4.1.1"
+    "typescript": "^7.0.2",
+    "vite-plus": "1.5.0"
+  },
+  "overrides": {
+    "vite": "npm:@voidzero-dev/vite-plus-core@1.5.0",
+    "vitest": "5.1.0"
   },
   "author": "Torus Labs",
   "license": "MIT",
   "lint-staged": {
     "!(*d).{js,ts}": [
-      "eslint --cache --fix",
-      "prettier --write"
+      "vp fmt",
+      "vp lint --fix"
     ],
-    "*.{json, md}": [
-      "prettier --write"
+    "*.{json,md}": [
+      "vp fmt"
     ]
   },
   "repository": {
@@ -88,7 +94,17 @@
     "direct auth"
   ],
   "engines": {
-    "node": ">=22.x",
-    "npm": ">=10.x"
+    "node": ">=24.22.0",
+    "npm": ">=12"
+  },
+  "devEngines": {
+    "packageManager": {
+      "name": "npm",
+      "version": ">=11.17.0",
+      "onFail": "error"
+    }
+  },
+  "allowScripts": {
+    "fsevents@2.3.3": false
   }
 }

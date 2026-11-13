@@ -29,9 +29,9 @@
     "@angular/forms": "^21.1.0",
     "@angular/platform-browser": "^21.1.0",
     "@angular/router": "^21.1.0",
-    "@toruslabs/constants": "^16.0.0",
+    "@toruslabs/constants": "^17.0.0",
     "@toruslabs/customauth": "file:../..",
-    "@toruslabs/fnd-base": "^16.0.0",
+    "@toruslabs/fnd-base": "^17.0.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0"
   },

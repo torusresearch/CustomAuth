@@ -88,12 +88,12 @@ export class CustomAuth {
       redirectToOpener,
       uxMode,
       locationReplaceOnRedirect,
-      popupFeatures,
+      popupFeatures: popupFeatures ?? "",
       useDkg,
       web3AuthClientId,
       web3AuthNetwork: network,
       keyType,
-      nodeDetails,
+      nodeDetails: nodeDetails as INodeDetails,
       checkCommitment,
       buildEnv,
       storageServerUrl: storageServerUrl ? storageServerUrl : STORAGE_SERVER_MAP[buildEnv], // custom storage server url takes precedence over build environment (mainly for testing purposes)
@@ -152,7 +152,7 @@ export class CustomAuth {
     this.isInitialized = true;
   }
 
-  async triggerLogin(args: CustomAuthLoginParams): Promise<TorusLoginResponse> {
+  async triggerLogin(args: CustomAuthLoginParams): Promise<TorusLoginResponse | null> {
     if (!this.isInitialized) {
       throw new Error("Not initialized yet");
     }
@@ -180,7 +180,7 @@ export class CustomAuth {
         if (error) throw new Error(error);
         const { access_token: accessToken, id_token: idToken, tgAuthResult, ...rest } = hashParameters;
         // State has to be last here otherwise it will be overwritten
-        loginParams = { accessToken, idToken: idToken || tgAuthResult || "", ...rest, state: instanceParameters };
+        loginParams = { accessToken: accessToken || "", idToken: idToken || tgAuthResult || "", ...rest, state: instanceParameters };
       } else {
         this.sessionManager.clearOrphanedData();
         if (this.config.uxMode === UX_MODE.REDIRECT) {
@@ -188,11 +188,14 @@ export class CustomAuth {
           this.sessionManager.setSessionId(sessionId);
           await this.sessionManager.createSession({ args });
         }
-        loginParams = await loginHandler.handleLoginWindow({
+        const windowResponse = await loginHandler.handleLoginWindow({
           locationReplaceOnRedirect: this.config.locationReplaceOnRedirect,
           popupFeatures: this.config.popupFeatures,
         });
+        // redirect mode: page navigates away, result comes from getRedirectResult
         if (this.config.uxMode === UX_MODE.REDIRECT) return null;
+        if (!windowResponse) throw new Error("Login window returned no response");
+        loginParams = windowResponse;
       }
     } catch (error) {
       log.error(error);
@@ -327,7 +330,7 @@ export class CustomAuth {
     const storageMethodUsed = "localStorage + server";
     log.info(args, "args", storageMethodUsed);
 
-    let result: TorusLoginResponse;
+    let result: TorusLoginResponse | null;
 
     if (error) {
       return { error, state: instanceParameters || {}, result: {}, hashParameters, args };

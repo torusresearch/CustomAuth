@@ -15,7 +15,7 @@ export default class MockLoginHandler extends AbstractLoginHandler {
   }
 
   setFinalUrl(): void {
-    const clonedParams = JSON.parse(JSON.stringify(this.params.jwtParams));
+    const clonedParams = JSON.parse(JSON.stringify(this.params.jwtParams || {}));
     delete clonedParams.domain;
     const finalJwtParams = deepmerge(
       {
@@ -26,12 +26,12 @@ export default class MockLoginHandler extends AbstractLoginHandler {
       clonedParams
     );
 
-    this.finalURL = new URL(constructURL({ baseURL: this.params.redirect_uri, query: null, hash: finalJwtParams }));
+    this.finalURL = new URL(constructURL({ baseURL: this.params.redirect_uri, hash: finalJwtParams }));
   }
 
   async getUserInfo(params: LoginWindowResponse): Promise<TorusConnectionResponse> {
     const { idToken, accessToken } = params;
-    const { domain, userIdField, isUserIdCaseSensitive, user_info_route = "userinfo" } = this.params.jwtParams;
+    const { domain, userIdField, isUserIdCaseSensitive, user_info_route = "userinfo" } = this.params.jwtParams || {};
     if (idToken) {
       const decodedToken = decodeToken<Auth0UserInfo>(idToken).payload;
       const { name, email, picture } = decodedToken;
@@ -47,7 +47,7 @@ export default class MockLoginHandler extends AbstractLoginHandler {
     }
     if (accessToken) {
       try {
-        const domainUrl = new URL(domain);
+        const domainUrl = new URL(domain as string);
         const userInfo = await get<Auth0UserInfo>(`${padUrlString(domainUrl)}${user_info_route}`, {
           headers: {
             Authorization: `Bearer ${accessToken}`,
@@ -71,18 +71,18 @@ export default class MockLoginHandler extends AbstractLoginHandler {
     throw new Error("Access/id token not available");
   }
 
-  handleLoginWindow(params: { locationReplaceOnRedirect?: boolean; popupFeatures?: string }): Promise<LoginWindowResponse> {
-    const { id_token: idToken, access_token: accessToken } = this.params.jwtParams;
+  handleLoginWindow(params: { locationReplaceOnRedirect?: boolean; popupFeatures?: string }): Promise<LoginWindowResponse | null> {
+    const { id_token: idToken, access_token: accessToken } = this.params.jwtParams || {};
     const authConnectionWindow = new PopupHandler({ url: this.finalURL, features: params.popupFeatures });
     if (this.params.uxMode === UX_MODE.REDIRECT) {
-      authConnectionWindow.redirect(params.locationReplaceOnRedirect);
+      authConnectionWindow.redirect(params.locationReplaceOnRedirect ?? false);
     } else {
       return Promise.resolve({
         state: {},
-        idToken,
-        accessToken,
+        idToken: idToken || "",
+        accessToken: accessToken || "",
       });
     }
-    return null;
+    return Promise.resolve(null);
   }
 }

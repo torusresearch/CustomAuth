@@ -35,7 +35,7 @@ export default class TelegramHandler extends AbstractLoginHandler {
   }
 
   setFinalUrl(): void {
-    const { domain } = this.params.jwtParams;
+    const { domain } = this.params.jwtParams || {};
     const finalUrl = validateAndConstructUrl(domain || "https://oauth.telegram.org/auth");
 
     const clonedParams = JSON.parse(JSON.stringify(this.params.jwtParams || {}));
@@ -62,6 +62,7 @@ export default class TelegramHandler extends AbstractLoginHandler {
 
   async getUserInfo(params: LoginWindowResponse): Promise<TorusConnectionResponse> {
     const { idToken } = params;
+    if (!idToken) throw new Error("Telegram user id not found in idToken");
     const userInfo = objectToAuthDataMap(idToken);
     const { photo_url: profileImage = "", first_name = "", last_name = "", id } = userInfo;
     return {
@@ -69,20 +70,20 @@ export default class TelegramHandler extends AbstractLoginHandler {
       name: `${first_name} ${last_name}`,
       profileImage,
       authConnectionId: this.params.authConnectionId,
-      userId: id.toString(),
+      userId: String(id),
       authConnection: this.params.authConnection,
       groupedAuthConnectionId: this.params.groupedAuthConnectionId,
     };
   }
 
-  async handleLoginWindow(params: { locationReplaceOnRedirect?: boolean; popupFeatures?: string }): Promise<LoginWindowResponse> {
+  async handleLoginWindow(params: { locationReplaceOnRedirect?: boolean; popupFeatures?: string }): Promise<LoginWindowResponse | null> {
     const authConnectionWindow = new PopupHandler({
       url: this.finalURL,
       features: params.popupFeatures,
       timeout: getTimeout(this.params.authConnection),
     });
     if (this.params.uxMode === UX_MODE.REDIRECT) {
-      authConnectionWindow.redirect(params.locationReplaceOnRedirect);
+      authConnectionWindow.redirect(params.locationReplaceOnRedirect ?? false);
     } else {
       return new Promise<LoginWindowResponse>((resolve, reject) => {
         const handleData = async (ev: string) => {
@@ -94,6 +95,7 @@ export default class TelegramHandler extends AbstractLoginHandler {
             const stateParam = parsedUrl.searchParams.get("state");
 
             if (event && event === "auth_result") {
+              if (!stateParam) throw new Error("state not found in Telegram response");
               // properly resolve the data
               resolve({
                 accessToken: "",

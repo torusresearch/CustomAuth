@@ -321,7 +321,7 @@ const onLogin = async () => {
   const { typeOfLogin, clientId, verifier } = verifierMap.value[selectedLoginProvider];
   console.log("logging in with ", typeOfLogin, clientId, verifier, jwtParams, formData.value.network, customAuthSdk.value);
 
-  let data: TorusLoginResponse | undefined;
+  let data: TorusLoginResponse | null;
   if (formData.value.network === TORUS_LEGACY_NETWORK.TESTNET) {
     data = await customAuthSdk.value.triggerLogin({
       authConnection: typeOfLogin as AUTH_CONNECTION_TYPE,
