@@ -1,6 +1,6 @@
 import { TORUS_SAPPHIRE_NETWORK } from "@toruslabs/constants";
 import { encodeBase64Url } from "@toruslabs/metadata-helpers";
-import { describe, expect, it } from "vite-plus/test";
+import { afterEach, describe, expect, it, vi } from "vite-plus/test";
 
 import TelegramHandler from "../../src/handlers/TelegramHandler";
 import { AUTH_CONNECTION } from "../../src/utils/enums";
@@ -36,5 +36,53 @@ describe("TelegramHandler.getUserInfo", () => {
       authConnectionId: "telegram-verifier",
       authConnection: AUTH_CONNECTION.TELEGRAM,
     });
+  });
+});
+
+describe("TelegramHandler.handleLoginWindow", () => {
+  afterEach(() => {
+    vi.useRealTimers();
+    vi.unstubAllGlobals();
+  });
+
+  it("rejects an auth result whose origin has no state", async () => {
+    vi.useFakeTimers();
+    const popup = {
+      closed: false,
+      focus() {},
+      close() {
+        this.closed = true;
+      },
+    };
+    const listeners = new Map<string, (event: { data: string; origin: string }) => void>();
+    vi.stubGlobal("window", {
+      open: () => popup,
+      innerWidth: 1200,
+      innerHeight: 800,
+      screenLeft: 0,
+      screenTop: 0,
+      addEventListener: (type: string, fn: (event: { data: string; origin: string }) => void) => {
+        listeners.set(type, fn);
+      },
+      removeEventListener: (type: string) => {
+        listeners.delete(type);
+      },
+    });
+
+    const handler = makeHandler();
+    const pending = handler.handleLoginWindow({});
+    const onMessage = listeners.get("message");
+    if (!onMessage) throw new Error("message listener missing");
+    await onMessage({
+      data: JSON.stringify({
+        event: "auth_result",
+        origin: "https://oauth.telegram.org/auth",
+        result: { id: 1 },
+      }),
+      origin: handler.finalURL.origin,
+    });
+
+    await expect(pending).rejects.toThrow("state not found in Telegram response");
+    await vi.runAllTimersAsync();
   });
 });

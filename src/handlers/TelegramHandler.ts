@@ -95,12 +95,13 @@ export default class TelegramHandler extends AbstractLoginHandler {
             const stateParam = parsedUrl.searchParams.get("state");
 
             if (event && event === "auth_result") {
+              if (!stateParam) throw new Error("state not found in Telegram response");
               // properly resolve the data
               resolve({
                 accessToken: "",
                 ...rest,
                 idToken: encodeBase64Url(JSON.stringify(result)) || "",
-                state: decodeBase64Url(stateParam || "") as unknown as { [key: string]: string },
+                state: decodeBase64Url(stateParam) as unknown as { [key: string]: string },
               });
             }
           } catch (error) {
