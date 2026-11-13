@@ -34,7 +34,7 @@ abstract class AbstractLoginHandler implements ILoginHandler {
     );
   }
 
-  async handleLoginWindow(params: { locationReplaceOnRedirect?: boolean; popupFeatures?: string }): Promise<LoginWindowResponse> {
+  async handleLoginWindow(params: { locationReplaceOnRedirect?: boolean; popupFeatures?: string }): Promise<LoginWindowResponse | null> {
     const authConnectionWindow = new PopupHandler({
       url: this.finalURL,
       features: params.popupFeatures,
@@ -110,7 +110,7 @@ abstract class AbstractLoginHandler implements ILoginHandler {
         });
       });
     }
-    return null as unknown as LoginWindowResponse;
+    return null;
   }
 
   abstract getUserInfo(params: LoginWindowResponse): Promise<TorusConnectionResponse>;

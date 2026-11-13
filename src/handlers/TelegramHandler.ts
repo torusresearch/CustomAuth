@@ -76,7 +76,7 @@ export default class TelegramHandler extends AbstractLoginHandler {
     };
   }
 
-  async handleLoginWindow(params: { locationReplaceOnRedirect?: boolean; popupFeatures?: string }): Promise<LoginWindowResponse> {
+  async handleLoginWindow(params: { locationReplaceOnRedirect?: boolean; popupFeatures?: string }): Promise<LoginWindowResponse | null> {
     const authConnectionWindow = new PopupHandler({
       url: this.finalURL,
       features: params.popupFeatures,
@@ -143,6 +143,6 @@ export default class TelegramHandler extends AbstractLoginHandler {
         });
       });
     }
-    return null as unknown as LoginWindowResponse;
+    return null;
   }
 }

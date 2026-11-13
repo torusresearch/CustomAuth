@@ -433,5 +433,5 @@ export interface ILoginHandler {
   nonce: string;
   finalURL: URL;
   getUserInfo(params: LoginWindowResponse): Promise<TorusConnectionResponse>;
-  handleLoginWindow(params: { locationReplaceOnRedirect?: boolean; popupFeatures?: string }): Promise<LoginWindowResponse>;
+  handleLoginWindow(params: { locationReplaceOnRedirect?: boolean; popupFeatures?: string }): Promise<LoginWindowResponse | null>;
 }

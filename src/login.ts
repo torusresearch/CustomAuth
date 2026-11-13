@@ -188,11 +188,14 @@ export class CustomAuth {
           this.sessionManager.setSessionId(sessionId);
           await this.sessionManager.createSession({ args });
         }
-        loginParams = await loginHandler.handleLoginWindow({
+        const windowResponse = await loginHandler.handleLoginWindow({
           locationReplaceOnRedirect: this.config.locationReplaceOnRedirect,
           popupFeatures: this.config.popupFeatures,
         });
+        // redirect mode: page navigates away; public return type stays non-null so consumers don't break
         if (this.config.uxMode === UX_MODE.REDIRECT) return null as unknown as TorusLoginResponse;
+        if (!windowResponse) throw new Error("Login window returned no response");
+        loginParams = windowResponse;
       }
     } catch (error) {
       log.error(error);
