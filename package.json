@@ -25,7 +25,7 @@
     "serviceworker"
   ],
   "peerDependencies": {
-    "@sentry/core": "^10.78.0"
+    "@sentry/core": "^10.x"
   },
   "peerDependenciesMeta": {
     "@sentry/core": {
