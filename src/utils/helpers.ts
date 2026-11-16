@@ -86,11 +86,13 @@ export const handleRedirectParameters = (
   hash: string,
   queryParameters: TorusGenericObject
 ): { error: string; instanceParameters: TorusGenericObject; hashParameters: TorusGenericObject } => {
-  const hashParameters: TorusGenericObject = hash.split("&").reduce((result: Record<string, string>, item) => {
-    const [part0, part1] = item.split("=");
-    if (part0 !== undefined) result[part0] = part1 ?? "";
-    return result;
-  }, {});
+  // Object.fromEntries defines own properties, so a key like "__proto__" from the URL can't touch the prototype.
+  const hashParameters: TorusGenericObject = Object.fromEntries(
+    hash.split("&").map((item) => {
+      const [key, value] = item.split("=");
+      return [key, value ?? ""];
+    })
+  );
   log.info(hashParameters, queryParameters);
   let instanceParameters: TorusGenericObject = {};
   let error = "";

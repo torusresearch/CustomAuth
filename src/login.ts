@@ -300,10 +300,8 @@ export class CustomAuth {
     await this.init({ skipInit: true });
     const url = new URL(window.location.href);
     const hash = url.hash.substring(1);
-    const queryParams: Record<string, string> = {};
-    url.searchParams.forEach((value: string, key: string) => {
-      queryParams[key] = value;
-    });
+    // Object.fromEntries defines own properties, so a "__proto__" query key can't touch the prototype.
+    const queryParams: Record<string, string> = Object.fromEntries(url.searchParams);
 
     if (!hash && Object.keys(queryParams).length === 0) {
       throw new Error("Found Empty hash and query parameters. This can happen if user reloads the page");
