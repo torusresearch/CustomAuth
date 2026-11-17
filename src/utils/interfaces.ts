@@ -106,8 +106,7 @@ export interface CustomAuthArgs {
   baseUrl: string;
 
   /**
-   * Specify a custom metadata host for legacy networks
-   * @defaultValue https://metadata.tor.us
+   * @deprecated Not used. The nodes now give the metadata nonce on all networks.
    */
   metadataUrl?: string;
 
@@ -233,9 +232,7 @@ export interface CustomAuthArgs {
   keyType?: KeyType;
 
   /**
-   * Set this flag to false to generate keys on client side
-   * by default keys are generated on using dkg protocol on a distributed network
-   * @defaultValue undefined
+   * @deprecated Not used. New keys are always generated on the client side.
    */
   useDkg?: boolean;
 

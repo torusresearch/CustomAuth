@@ -35,7 +35,6 @@ export class CustomAuth {
     uxMode: UX_MODE_TYPE;
     locationReplaceOnRedirect: boolean;
     popupFeatures: string;
-    useDkg?: boolean;
     web3AuthClientId: string;
     web3AuthNetwork: TORUS_NETWORK_TYPE;
     keyType: KeyType;
@@ -68,8 +67,6 @@ export class CustomAuth {
     sentry,
     enableOneKey = false,
     web3AuthClientId,
-    useDkg,
-    metadataUrl = "https://metadata.tor.us",
     keyType = "secp256k1",
     serverTimeOffset = 0,
     nodeDetails,
@@ -89,7 +86,6 @@ export class CustomAuth {
       uxMode,
       locationReplaceOnRedirect,
       popupFeatures,
-      useDkg,
       web3AuthClientId,
       web3AuthNetwork: network,
       keyType,
@@ -103,7 +99,6 @@ export class CustomAuth {
       enableOneKey,
       serverTimeOffset,
       clientId: web3AuthClientId,
-      legacyMetadataHost: metadataUrl,
       keyType,
       buildEnv,
       source,
@@ -277,7 +272,6 @@ export class CustomAuth {
           extraParams: {
             ...additionalParams,
           },
-          useDkg: this.config.useDkg,
           checkCommitment: this.config.checkCommitment,
           recordId: params.recordId,
           authConnection: params.authConnection,
