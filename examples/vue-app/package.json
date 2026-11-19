@@ -14,7 +14,7 @@
     "@toruslabs/constants": "^17.0.0",
     "@toruslabs/customauth": "file:../../",
     "@toruslabs/fnd-base": "^17.0.0",
-    "@toruslabs/torus.js": "^18.0.0",
+    "@toruslabs/torus.js": "^19.0.0",
     "@toruslabs/vue-components": "^9.0.1",
     "@toruslabs/vue-icons": "^9.0.0",
     "core-js": "^3.49.0",
