@@ -152,17 +152,8 @@ export class CustomAuth {
       throw new Error("Not initialized yet");
     }
 
-    const {
-      authConnectionId,
-      authConnection,
-      clientId,
-      jwtParams,
-      hash,
-      queryParameters,
-      customState,
-      groupedAuthConnectionId,
-      popupStartUrl,
-    } = args;
+    const { authConnectionId, authConnection, clientId, jwtParams, hash, queryParameters, customState, groupedAuthConnectionId, popupStartUrl } =
+      args;
     const loginHandler: ILoginHandler = createHandler({
       authConnection,
       clientId,
