@@ -16,33 +16,20 @@
     "@toruslabs/torus.js": "^19.0.0",
     "@uiw/react-json-view": "^2.0.0-alpha.30",
     "error": "10.4.0",
-    "next": "^15.4.8",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "next": "^16.4.6",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1"
   },
   "devDependencies": {
+    "@toruslabs/eslint-config-react": "^5.0.2",
     "@types/node": "^22.0.0",
-    "@types/react": "^18",
-    "@types/react-dom": "^18",
-    "@typescript-eslint/eslint-plugin": "^7.18.0",
-    "@typescript-eslint/parser": "^7.18.0",
-    "eslint": "^8.57.0",
-    "eslint-config-airbnb-typescript": "^18.0.0",
-    "eslint-config-prettier": "^10.0.1",
-    "eslint-plugin-import": "^2.31.0",
-    "eslint-plugin-jsx-a11y": "^6.10.2",
-    "eslint-plugin-prettier": "^5.2.3",
-    "eslint-plugin-react": "^7.37.4",
-    "eslint-plugin-react-hooks": "^5.2.0",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "eslint": "^9.39.5",
     "husky": "^9.1.7",
-    "lint-staged": "^16.2.7",
+    "lint-staged": "^17.6.1",
     "prettier": "^3.8.1",
     "typed-emitter": "^2.1.0",
     "typescript": "^5.9.3"
-  },
-  "overrides": {
-    "next": {
-      "postcss": "^8.5.33"
-    }
   }
 }

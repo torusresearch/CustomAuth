@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnInit } from "@angular/core";
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from "@angular/core";
 
 import { CustomAuthService } from "../custom-auth";
 
@@ -6,6 +6,7 @@ import { CustomAuthService } from "../custom-auth";
   selector: "app-redirect-mode-auth",
   imports: [],
   templateUrl: "./redirect-mode-auth.html",
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: "./redirect-mode-auth.css",
 })
 export class RedirectModeAuth implements OnInit {
