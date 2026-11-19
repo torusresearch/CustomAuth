@@ -1,4 +1,5 @@
 import { decodeBase64Url, encodeBase64Url } from "@toruslabs/metadata-helpers";
+
 import { UX_MODE } from "../utils/enums";
 import { deepmerge, getTimeout, objectToAuthDataMap, validateAndConstructUrl } from "../utils/helpers";
 import { CreateHandlerParams, LoginWindowResponse, TorusConnectionResponse } from "../utils/interfaces";
