@@ -158,9 +158,9 @@
               var parts = item.split('=');
               result[parts[0]] = parts[1];
               return result;
-            }, {});
+            }, Object.create(null));
           }
-          var queryParams = {};
+          var queryParams = Object.create(null);
           for (var key of url.searchParams.keys()) queryParams[key] = url.searchParams.get(key);
           var error = '';
           try {

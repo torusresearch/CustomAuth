@@ -87,7 +87,9 @@ abstract class AbstractLoginHandler implements ILoginHandler {
             authConnectionWindow.close();
           });
         } else {
+          const redirectOrigin = new URL(this.params.redirect_uri).origin;
           const postMessageEventHandler = async (postMessageEvent: MessageEvent) => {
+            if (postMessageEvent.origin !== redirectOrigin) return;
             if (!postMessageEvent.data) return;
             const ev = postMessageEvent.data;
             if (ev.channel !== `redirect_channel_${this.nonce}`) return;

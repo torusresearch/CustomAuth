@@ -4,6 +4,7 @@ function getScope() {
 }
 
 self.addEventListener('message', function (event) {
+  if (event.origin !== self.location.origin) return;
   if (event.data && event.data.type === 'SKIP_WAITING') {
     self.skipWaiting();
   }
@@ -199,9 +200,9 @@ self.addEventListener('fetch', function (event) {
               var parts = item.split("=");
               result[parts[0]] = parts[1];
               return result;
-            }, {});
+            }, Object.create(null));
           }
-          var queryParams = {};
+          var queryParams = Object.create(null);
           for (var key of url.searchParams.keys()) {
             queryParams[key] = url.searchParams.get(key);
           }
