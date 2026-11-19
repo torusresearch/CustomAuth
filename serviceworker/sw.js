@@ -215,6 +215,8 @@ self.addEventListener("fetch", function (event) {
           for (var key of url.searchParams.keys()) {
             queryParams[key] = url.searchParams.get(key);
           }
+          // the URL holds OAuth tokens
+          window.history.replaceState(window.history.state, "", url.pathname);
           var error = "";
           try {
             if (Object.keys(hashParams).length > 0 && hashParams.state) {
@@ -253,11 +255,6 @@ self.addEventListener("fetch", function (event) {
               error: error,
             }).then(function () {
               bc.close();
-              console.log("posted", {
-                queryParams,
-                instanceParams,
-                hashParams,
-              });
               setTimeout(function () {
                 window.close();
                 showCloseText();

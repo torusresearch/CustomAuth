@@ -301,6 +301,12 @@ export class CustomAuth {
       throw new Error("Found Empty hash and query parameters. This can happen if user reloads the page");
     }
 
+    // The URL holds OAuth tokens. Remove them before any step that can fail.
+    if (replaceUrl) {
+      const cleanUrl = window.location.origin + window.location.pathname;
+      window.history.replaceState({ ...window.history.state, as: cleanUrl, url: cleanUrl }, "", cleanUrl);
+    }
+
     const { error, instanceParameters, hashParameters } = handleRedirectParameters(hash, queryParams);
 
     const { instanceId } = instanceParameters;
@@ -320,7 +326,7 @@ export class CustomAuth {
     }
     const { args, ...rest } = loginDetails || {};
     const storageMethodUsed = "localStorage + server";
-    log.info(args, "args", storageMethodUsed);
+    log.info(args?.authConnection, "authConnection", storageMethodUsed);
 
     let result: TorusLoginResponse | null;
 
@@ -359,11 +365,6 @@ export class CustomAuth {
         args,
         ...rest,
       };
-
-    if (replaceUrl) {
-      const cleanUrl = window.location.origin + window.location.pathname;
-      window.history.replaceState({ ...window.history.state, as: cleanUrl, url: cleanUrl }, "", cleanUrl);
-    }
 
     if (clearLoginDetails) {
       this.sessionManager.clearStorage();
