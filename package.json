@@ -57,7 +57,7 @@
     "@types/events": "^3.0.3",
     "@types/node": "^26.6.6",
     "husky": "^9.1.7",
-    "lint-staged": "^16.4.0",
+    "lint-staged": "^17.6.1",
     "typed-emitter": "^2.1.0",
     "typescript": "^7.0.2",
     "vite-plus": "1.5.1"
