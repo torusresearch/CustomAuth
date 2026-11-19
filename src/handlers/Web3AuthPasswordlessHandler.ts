@@ -1,6 +1,4 @@
-import deepmerge from "deepmerge";
-
-import { decodeToken, loginToConnectionMap, validateAndConstructUrl } from "../utils/helpers";
+import { decodeToken, deepmerge, loginToConnectionMap, validateAndConstructUrl } from "../utils/helpers";
 import { Auth0UserInfo, CreateHandlerParams, EMAIL_FLOW, LoginWindowResponse, TorusConnectionResponse } from "../utils/interfaces";
 import AbstractLoginHandler from "./AbstractLoginHandler";
 
@@ -40,7 +38,7 @@ export default class Web3AuthPasswordlessHandler extends AbstractLoginHandler {
     );
     Object.keys(finalJwtParams).forEach((key: string) => {
       const localKey = key as keyof typeof finalJwtParams;
-      if (finalJwtParams[localKey]) finalUrl.searchParams.append(localKey, finalJwtParams[localKey]);
+      if (finalJwtParams[localKey]) finalUrl.searchParams.append(key, finalJwtParams[localKey]);
     });
     this.finalURL = finalUrl;
   }

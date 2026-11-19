@@ -34,6 +34,7 @@
   },
   "dependencies": {
     "@chaitanyapotti/register-service-worker": "^1.7.4",
+    "@fastify/deepmerge": "^3.2.4",
     "@toruslabs/broadcast-channel": "^14.0.0",
     "@toruslabs/constants": "^17.0.0",
     "@toruslabs/eccrypto": "^8.0.0",
@@ -43,7 +44,6 @@
     "@toruslabs/session-manager": "^6.0.0",
     "@toruslabs/torus.js": "^19.0.0",
     "bowser": "^2.15.0",
-    "deepmerge": "^4.3.1",
     "events": "^3.3.0",
     "loglevel": "^1.9.2"
   },

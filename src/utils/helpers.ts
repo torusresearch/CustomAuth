@@ -1,9 +1,12 @@
+import deepmergeFactory from "@fastify/deepmerge";
 import { decodeBase64Url } from "@toruslabs/metadata-helpers";
 import Bowser from "bowser";
 
 import { AUTH_CONNECTION, AUTH_CONNECTION_TYPE, REDIRECT_PARAMS_STORAGE_METHOD_TYPE } from "./enums";
 import { Auth0UserInfo, TorusGenericObject } from "./interfaces";
 import log from "./loglevel";
+
+export const deepmerge = deepmergeFactory();
 interface CustomMessageEvent extends MessageEvent {
   error: string;
 }

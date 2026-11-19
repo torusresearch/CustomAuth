@@ -1,9 +1,8 @@
 import { get } from "@toruslabs/http-helpers";
-import deepmerge from "deepmerge";
 import log from "loglevel";
 
 import { UX_MODE } from "../utils/enums";
-import { constructURL, decodeToken, getUserId, padUrlString } from "../utils/helpers";
+import { constructURL, decodeToken, deepmerge, getUserId, padUrlString } from "../utils/helpers";
 import { Auth0UserInfo, CreateHandlerParams, LoginWindowResponse, TorusConnectionResponse } from "../utils/interfaces";
 import { PopupHandler } from "../utils/PopupHandler";
 import AbstractLoginHandler from "./AbstractLoginHandler";
