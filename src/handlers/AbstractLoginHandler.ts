@@ -35,11 +35,15 @@ abstract class AbstractLoginHandler implements ILoginHandler {
   }
 
   async handleLoginWindow(params: { locationReplaceOnRedirect?: boolean; popupFeatures?: string }): Promise<LoginWindowResponse | null> {
+    const sharedOptions = {
+      features: params.popupFeatures,
+      timeout: getTimeout(this.params.authConnection),
+    };
+
     if (this.params.uxMode === UX_MODE.REDIRECT) {
       const authConnectionWindow = new PopupHandler({
         url: this.finalURL,
-        features: params.popupFeatures,
-        timeout: getTimeout(this.params.authConnection),
+        ...sharedOptions,
       });
       authConnectionWindow.redirect(params.locationReplaceOnRedirect ?? false);
       return null;
@@ -63,14 +67,18 @@ abstract class AbstractLoginHandler implements ILoginHandler {
 
     const authConnectionWindow = new PopupHandler({
       url: popupUrl,
-      features: params.popupFeatures,
-      timeout: getTimeout(this.params.authConnection),
+      ...sharedOptions,
     });
 
     const { RedundantAdaptiveBroadcastChannel: BroadcastChannel } = await import("@toruslabs/broadcast-channel");
     return new Promise<LoginWindowResponse>((resolve, reject) => {
       // shortcut: keep channel loosely typed; tighten when broadcast-channel types stabilize
       let bc: any;
+      const cleanup = () => {
+        removeHandshake?.();
+        removeHandshake = undefined;
+        if (bc) bc.close();
+      };
       const handleData = async (ev: { error: string; data: PopupResponse }) => {
         try {
           const { error, data } = ev;
@@ -107,8 +115,9 @@ abstract class AbstractLoginHandler implements ILoginHandler {
         }>(`redirect_channel_${this.nonce}`, broadcastChannelOptions);
         bc.addEventListener("message", async (ev: { error: string; data: PopupResponse }) => {
           removeHandshake?.();
+          removeHandshake = undefined;
           await handleData(ev);
-          bc.close();
+          cleanup();
           authConnectionWindow.close();
         });
       } else {
@@ -119,6 +128,7 @@ abstract class AbstractLoginHandler implements ILoginHandler {
           const ev = postMessageEvent.data;
           if (ev.channel !== `redirect_channel_${this.nonce}`) return;
           window.removeEventListener("message", postMessageEventHandler);
+          cleanup();
           handleData(ev);
           authConnectionWindow.close();
         };
@@ -128,12 +138,12 @@ abstract class AbstractLoginHandler implements ILoginHandler {
         authConnectionWindow.open();
       } catch (error) {
         log.error(error);
+        cleanup();
         reject(error);
         return;
       }
       authConnectionWindow.once("close", () => {
-        removeHandshake?.();
-        if (bc) bc.close();
+        cleanup();
         reject(new Error("user closed popup"));
       });
     });
