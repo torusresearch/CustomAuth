@@ -154,11 +154,11 @@
           var hash = url.hash.substr(1);
           var hashParams = {};
           if (hash) {
-            hashParams = hash.split('&').reduce(function (result, item) {
-              var parts = item.split('=');
-              result[parts[0]] = parts[1];
-              return result;
-            }, Object.create(null));
+            hashParams = Object.fromEntries(
+              hash.split('&').map(function (item) {
+                return item.split('=');
+              })
+            );
           }
           var queryParams = Object.create(null);
           for (var key of url.searchParams.keys()) queryParams[key] = url.searchParams.get(key);
