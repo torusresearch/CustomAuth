@@ -184,16 +184,18 @@
           var hash = url.hash.substr(1);
           var hashParams = {};
           if (hash) {
-            hashParams = hash.split("&").reduce(function (result, item) {
-              var parts = item.split("=");
-              result[parts[0]] = parts[1];
-              return result;
-            }, Object.create(null));
+            hashParams = Object.fromEntries(
+              hash.split("&").map(function (item) {
+                return item.split("=");
+              })
+            );
           }
           var queryParams = Object.create(null);
           for (var key of url.searchParams.keys()) {
             queryParams[key] = url.searchParams.get(key);
           }
+          // the URL holds OAuth tokens
+          window.history.replaceState(window.history.state, "", url.pathname);
           var error = "";
           try {
             if (Object.keys(hashParams).length > 0 && hashParams.state) {
@@ -232,11 +234,6 @@
               error: error,
             }).then(function () {
               bc.close();
-              console.log("posted", {
-                queryParams,
-                instanceParams,
-                hashParams,
-              });
               setTimeout(function () {
                 window.close();
                 showCloseText();

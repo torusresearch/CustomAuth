@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import { KEY_TYPE, TORUS_LEGACY_NETWORK } from "@toruslabs/constants";
 import { CustomAuth } from "@toruslabs/customauth";
@@ -80,7 +80,7 @@ const HomePage = () => {
       [WEB3AUTH_EMAIL_PASSWORDLESS]: { login_hint: formData.loginHint },
       [WEB3AUTH_SMS_PASSWORDLESS]: { login_hint: formData.loginHint },
     }),
-    [formData.loginHint],
+    [formData.loginHint]
   );
 
   const printConsole = (title: string, payload: unknown) => {

@@ -1,8 +1,9 @@
-import type { TORUS_NETWORK_TYPE } from "@toruslabs/constants";
+import { TORUS_SAPPHIRE_NETWORK, type TORUS_NETWORK_TYPE } from "@toruslabs/constants";
 import { encodeBase64Url } from "@toruslabs/metadata-helpers";
 import { StorageManager } from "@toruslabs/session-manager";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vite-plus/test";
 
+import FacebookHandler from "../../src/handlers/FacebookHandler";
 import { createHandler } from "../../src/handlers/HandlerFactory";
 import { AUTH_CONNECTION, UX_MODE } from "../../src/utils/enums";
 import { CustomAuthLoginError, CustomAuthLoginErrorPrefix } from "../../src/utils/error";
@@ -243,6 +244,62 @@ describe("CustomAuth", () => {
     });
   });
 
+  describe("triggerLogin – facebook", () => {
+    const facebookState = encodeURIComponent(
+      encodeBase64Url(JSON.stringify({ instanceId: "abc", authConnectionId: "facebook-verifier", authConnection: "facebook" }))
+    );
+    const facebookIdToken = `${encodeBase64Url(JSON.stringify({ alg: "RS256" }))}.${encodeBase64Url(JSON.stringify({ nonce: "abc", sub: "1" }))}.sig`;
+    const facebookArgs = { authConnection: AUTH_CONNECTION.FACEBOOK, authConnectionId: "facebook-verifier", clientId: "123456" };
+
+    beforeEach(() => {
+      vi.mocked(createHandler).mockImplementation(
+        () =>
+          new FacebookHandler({
+            ...facebookArgs,
+            redirect_uri: "https://example.com/serviceworker/redirect",
+            web3AuthClientId: "test-client-id",
+            web3AuthNetwork: TORUS_SAPPHIRE_NETWORK.SAPPHIRE_DEVNET,
+            storageServerUrl: "https://storage-server.example.com",
+          })
+      );
+    });
+
+    it("does not send the access token to the nodes", async () => {
+      const CustomAuth = await getCustomAuth();
+      const auth = new CustomAuth(BASE_ARGS);
+      auth.isInitialized = true;
+      const retrieveShares = vi.mocked(auth.torus.retrieveShares);
+
+      await expect(auth.triggerLogin({ ...facebookArgs, hash: `access_token=EAAat&state=${facebookState}`, queryParameters: {} })).rejects.toThrow(
+        "Facebook login did not return an id_token"
+      );
+
+      expect(retrieveShares).not.toHaveBeenCalled();
+    });
+
+    it("sends the facebook id_token to the nodes", async () => {
+      const CustomAuth = await getCustomAuth();
+      const auth = new CustomAuth(BASE_ARGS);
+      auth.isInitialized = true;
+      const retrieveShares = vi.mocked(auth.torus.retrieveShares);
+
+      await auth.triggerLogin({
+        ...facebookArgs,
+        hash: `id_token=${facebookIdToken}&state=${facebookState}`,
+        queryParameters: {},
+      });
+
+      expect(retrieveShares).toHaveBeenCalledWith(
+        expect.objectContaining({
+          verifier: "facebook-verifier",
+          verifierParams: { verifier_id: "1" },
+          idToken: facebookIdToken,
+          authConnection: AUTH_CONNECTION.FACEBOOK,
+        })
+      );
+    });
+  });
+
   describe("triggerLogin – not initialized", () => {
     it("throws if not initialized", async () => {
       const CustomAuth = await getCustomAuth();
@@ -343,6 +400,43 @@ describe("CustomAuth", () => {
 
       expect(result.error).toContain("Login failed");
       expect(clearStorageSpy).toHaveBeenCalled();
+    });
+
+    it("cleans the URL when the login fails", async () => {
+      const CustomAuth = await getCustomAuth();
+
+      const stateEncoded = encodeURIComponent(encodeBase64Url(JSON.stringify({ instanceId: "fail_nonce", authConnectionId: "google-verifier" })));
+      setupWindowLocation(`access_token=mock_access&id_token=mock_id_token&state=${stateEncoded}`);
+      authorizeSessionSpy.mockResolvedValue({
+        args: { authConnection: "google", authConnectionId: "google-verifier", clientId: "google-client-id" },
+      });
+      vi.mocked(createHandler).mockReturnValue(
+        mockLoginHandler({ getUserInfo: vi.fn<() => Promise<TorusConnectionResponse>>().mockRejectedValue(new Error("Login failed")) })
+      );
+
+      const auth = new CustomAuth(BASE_ARGS);
+      const result = await auth.getRedirectResult();
+
+      expect(result.error).toContain("Login failed");
+      expect(window.history.replaceState).toHaveBeenCalledWith(expect.anything(), "", "https://example.com/redirect");
+    });
+
+    it("keeps the URL when replaceUrl is false", async () => {
+      const CustomAuth = await getCustomAuth();
+
+      const stateEncoded = encodeURIComponent(encodeBase64Url(JSON.stringify({ instanceId: "keep_nonce", authConnectionId: "google-verifier" })));
+      setupWindowLocation(`access_token=mock_access&id_token=mock_id_token&state=${stateEncoded}`);
+      authorizeSessionSpy.mockResolvedValue({
+        args: { authConnection: "google", authConnectionId: "google-verifier", clientId: "google-client-id" },
+      });
+      vi.mocked(createHandler).mockReturnValue(
+        mockLoginHandler({ getUserInfo: vi.fn<() => Promise<TorusConnectionResponse>>().mockRejectedValue(new Error("Login failed")) })
+      );
+
+      const auth = new CustomAuth(BASE_ARGS);
+      await auth.getRedirectResult({ replaceUrl: false });
+
+      expect(window.history.replaceState).not.toHaveBeenCalled();
     });
 
     it("returns error from redirect parameters without calling triggerLogin", async () => {

@@ -87,12 +87,11 @@ abstract class AbstractLoginHandler implements ILoginHandler {
             hashParams: { access_token: accessToken, id_token: idToken, ...rest },
           } = data || {};
           if (error) {
-            log.error(ev);
+            log.error(error);
             reject(new Error(`Error: ${error}. Info: ${JSON.stringify(ev.data || {})}`));
             return;
           }
           if (ev.data && instanceParams.authConnectionId === this.params.authConnectionId) {
-            log.info(ev.data);
             if (!this.params.redirectToOpener && bc) await bc.postMessage({ success: true });
             resolve({
               accessToken,
