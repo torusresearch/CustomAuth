@@ -157,7 +157,17 @@ export class CustomAuth {
       throw new Error("Not initialized yet");
     }
 
-    const { authConnectionId, authConnection, clientId, jwtParams, hash, queryParameters, customState, groupedAuthConnectionId } = args;
+    const {
+      authConnectionId,
+      authConnection,
+      clientId,
+      jwtParams,
+      hash,
+      queryParameters,
+      customState,
+      groupedAuthConnectionId,
+      popupStartUrl,
+    } = args;
     const loginHandler: ILoginHandler = createHandler({
       authConnection,
       clientId,
@@ -171,6 +181,7 @@ export class CustomAuth {
       web3AuthClientId: this.config.web3AuthClientId,
       web3AuthNetwork: this.config.web3AuthNetwork,
       storageServerUrl: this.config.storageServerUrl,
+      popupStartUrl,
     });
 
     let loginParams: LoginWindowResponse;

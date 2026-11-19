@@ -370,6 +370,8 @@ export interface CustomAuthLoginParams {
   hash?: string;
   queryParameters?: TorusGenericObject;
   customState?: TorusGenericObject;
+  /** When set, popup logins open this URL first to handshake with the opener before redirecting to the IdP. */
+  popupStartUrl?: string;
 }
 
 export interface CreateHandlerParams {
@@ -385,6 +387,7 @@ export interface CreateHandlerParams {
   jwtParams?: Auth0ClientOptions;
   customState?: TorusGenericObject;
   storageServerUrl: string;
+  popupStartUrl?: string;
 }
 
 export type LoginDetails = { args: CustomAuthLoginParams };
