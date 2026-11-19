@@ -1,6 +1,6 @@
 import { decodeBase64Url, Hex, isHexString } from "@toruslabs/metadata-helpers";
-import deepmerge from "deepmerge";
 
+import { deepmerge } from "../utils/helpers";
 import { CreateHandlerParams, LoginWindowResponse, PasskeySessionData, TorusConnectionResponse } from "../utils/interfaces";
 import { fetchDataFromBroadcastServer } from "../utils/sessionHelper";
 import AbstractLoginHandler from "./AbstractLoginHandler";
@@ -26,7 +26,7 @@ export default class PasskeysHandler extends AbstractLoginHandler {
     );
     Object.keys(finalJwtParams).forEach((key: string) => {
       const localKey = key as keyof typeof finalJwtParams;
-      if (finalJwtParams[localKey]) finalUrl.searchParams.append(localKey, finalJwtParams[localKey]);
+      if (finalJwtParams[localKey]) finalUrl.searchParams.append(key, finalJwtParams[localKey]);
     });
     this.finalURL = finalUrl;
   }
@@ -34,6 +34,7 @@ export default class PasskeysHandler extends AbstractLoginHandler {
   async getUserInfo(parameters: LoginWindowResponse): Promise<TorusConnectionResponse> {
     const { idToken, extraParams } = parameters;
 
+    if (!extraParams) throw new Error("sessionId not found");
     const { sessionId } = JSON.parse(decodeBase64Url(extraParams)) || {};
     if (!sessionId) {
       throw new Error("sessionId not found");

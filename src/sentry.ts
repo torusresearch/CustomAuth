@@ -8,13 +8,13 @@ export default class SentryHandler {
   sentry: Sentry | null = null;
 
   constructor(sentry?: Sentry) {
-    this.sentry = sentry;
+    this.sentry = sentry ?? null;
   }
 
   startSpan<T>(context: StartSpanOptions, callback: (span: Span) => T): T {
     if (this.sentry) {
       return this.sentry.startSpan(context, callback);
     }
-    return callback(null);
+    return callback(null as unknown as Span);
   }
 }

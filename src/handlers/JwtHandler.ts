@@ -1,8 +1,7 @@
 import { get } from "@toruslabs/http-helpers";
-import deepmerge from "deepmerge";
 import log from "loglevel";
 
-import { decodeToken, getUserId, loginToConnectionMap, padUrlString, validateAndConstructUrl } from "../utils/helpers";
+import { decodeToken, deepmerge, getUserId, loginToConnectionMap, padUrlString, validateAndConstructUrl } from "../utils/helpers";
 import { AUTH0_CONNECTION_TYPE, Auth0UserInfo, CreateHandlerParams, LoginWindowResponse, TorusConnectionResponse } from "../utils/interfaces";
 import AbstractLoginHandler from "./AbstractLoginHandler";
 
@@ -19,10 +18,11 @@ export default class JwtHandler extends AbstractLoginHandler {
   }
 
   setFinalUrl(): void {
-    const { domain } = this.params.jwtParams;
-    const finalUrl = validateAndConstructUrl(domain);
+    const jwtParams = this.params.jwtParams || {};
+    const { domain } = jwtParams;
+    const finalUrl = validateAndConstructUrl(domain as string);
     finalUrl.pathname += finalUrl.pathname.endsWith("/") ? "authorize" : "/authorize";
-    const clonedParams = JSON.parse(JSON.stringify(this.params.jwtParams));
+    const clonedParams = JSON.parse(JSON.stringify(jwtParams));
     delete clonedParams.domain;
     const finalJwtParams = deepmerge(
       {
@@ -39,14 +39,14 @@ export default class JwtHandler extends AbstractLoginHandler {
     );
     Object.keys(finalJwtParams).forEach((key: string) => {
       const localKey = key as keyof typeof finalJwtParams;
-      if (finalJwtParams[localKey]) finalUrl.searchParams.append(localKey, finalJwtParams[localKey]);
+      if (finalJwtParams[localKey]) finalUrl.searchParams.append(key, finalJwtParams[localKey]);
     });
     this.finalURL = finalUrl;
   }
 
   async getUserInfo(params: LoginWindowResponse): Promise<TorusConnectionResponse> {
     const { idToken, accessToken } = params;
-    const { domain, userIdField, isUserIdCaseSensitive, user_info_route = "userinfo" } = this.params.jwtParams;
+    const { domain, userIdField, isUserIdCaseSensitive, user_info_route = "userinfo" } = this.params.jwtParams || {};
     if (idToken) {
       const decodedToken = decodeToken<Auth0UserInfo>(idToken).payload;
       const { name, email, picture } = decodedToken;
@@ -62,7 +62,7 @@ export default class JwtHandler extends AbstractLoginHandler {
     }
     if (accessToken) {
       try {
-        const domainUrl = new URL(domain);
+        const domainUrl = new URL(domain as string);
         const userInfo = await get<Auth0UserInfo>(`${padUrlString(domainUrl)}${user_info_route}`, {
           headers: {
             Authorization: `Bearer ${accessToken}`,

@@ -9,7 +9,7 @@ import { PopupHandler } from "../utils/PopupHandler";
 abstract class AbstractLoginHandler implements ILoginHandler {
   public nonce: string = randomId();
 
-  public finalURL: URL;
+  public finalURL!: URL;
 
   public params: CreateHandlerParams;
 
@@ -23,7 +23,7 @@ abstract class AbstractLoginHandler implements ILoginHandler {
     return encodeURIComponent(
       encodeBase64Url(
         JSON.stringify({
-          ...(this.params.customState || {}),
+          ...this.params.customState,
           instanceId: this.nonce,
           authConnectionId: this.params.authConnectionId,
           authConnection: this.params.authConnection,
@@ -34,18 +34,18 @@ abstract class AbstractLoginHandler implements ILoginHandler {
     );
   }
 
-  async handleLoginWindow(params: { locationReplaceOnRedirect?: boolean; popupFeatures?: string }): Promise<LoginWindowResponse> {
+  async handleLoginWindow(params: { locationReplaceOnRedirect?: boolean; popupFeatures?: string }): Promise<LoginWindowResponse | null> {
     const authConnectionWindow = new PopupHandler({
       url: this.finalURL,
       features: params.popupFeatures,
       timeout: getTimeout(this.params.authConnection),
     });
     if (this.params.uxMode === UX_MODE.REDIRECT) {
-      authConnectionWindow.redirect(params.locationReplaceOnRedirect);
+      authConnectionWindow.redirect(params.locationReplaceOnRedirect ?? false);
     } else {
       const { RedundantAdaptiveBroadcastChannel: BroadcastChannel } = await import("@toruslabs/broadcast-channel");
       return new Promise<LoginWindowResponse>((resolve, reject) => {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        // shortcut: keep channel loosely typed; tighten when broadcast-channel types stabilize
         let bc: any;
         const handleData = async (ev: { error: string; data: PopupResponse }) => {
           try {

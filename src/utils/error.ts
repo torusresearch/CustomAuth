@@ -7,10 +7,10 @@ export const serializeError = async (error: unknown): Promise<Error> => {
   if (isApiErrorIndex) {
     const apiError = error as Response;
     const contentType = apiError.headers.get("content-type");
-    if (contentType.includes("application/json")) {
+    if (contentType?.includes("application/json")) {
       const errJson = await apiError.json();
       err = new Error(errJson?.error || errJson?.message || JSON.stringify(errJson));
-    } else if (contentType.includes("text/plain")) {
+    } else if (contentType?.includes("text/plain")) {
       err = new Error(await apiError.text());
     } else {
       err = new Error(`${apiError.status} ${apiError.type.toString()} ${apiError.statusText}`);

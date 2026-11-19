@@ -82,7 +82,7 @@ export class CustomAuthService {
     };
   }
 
-  async triggerLogin(formData: FormData): Promise<TorusLoginResponse | undefined> {
+  async triggerLogin(formData: FormData): Promise<TorusLoginResponse | null> {
     const { network, loginProvider, loginHint, uxMode } = formData;
     await this.init(network, uxMode);
     if (!this.sdk) throw new Error("CustomAuth SDK is not initialized");
