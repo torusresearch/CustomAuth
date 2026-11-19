@@ -35,7 +35,6 @@ export class CustomAuth {
     uxMode: UX_MODE_TYPE;
     locationReplaceOnRedirect: boolean;
     popupFeatures: string;
-    useDkg?: boolean;
     web3AuthClientId: string;
     web3AuthNetwork: TORUS_NETWORK_TYPE;
     keyType: KeyType;
@@ -68,8 +67,6 @@ export class CustomAuth {
     sentry,
     enableOneKey = false,
     web3AuthClientId,
-    useDkg,
-    metadataUrl = "https://metadata.tor.us",
     keyType = "secp256k1",
     serverTimeOffset = 0,
     nodeDetails,
@@ -88,12 +85,11 @@ export class CustomAuth {
       redirectToOpener,
       uxMode,
       locationReplaceOnRedirect,
-      popupFeatures,
-      useDkg,
+      popupFeatures: popupFeatures ?? "",
       web3AuthClientId,
       web3AuthNetwork: network,
       keyType,
-      nodeDetails,
+      nodeDetails: nodeDetails as INodeDetails,
       checkCommitment,
       buildEnv,
       storageServerUrl: storageServerUrl ? storageServerUrl : STORAGE_SERVER_MAP[buildEnv], // custom storage server url takes precedence over build environment (mainly for testing purposes)
@@ -103,7 +99,6 @@ export class CustomAuth {
       enableOneKey,
       serverTimeOffset,
       clientId: web3AuthClientId,
-      legacyMetadataHost: metadataUrl,
       keyType,
       buildEnv,
       source,
@@ -152,7 +147,7 @@ export class CustomAuth {
     this.isInitialized = true;
   }
 
-  async triggerLogin(args: CustomAuthLoginParams): Promise<TorusLoginResponse> {
+  async triggerLogin(args: CustomAuthLoginParams): Promise<TorusLoginResponse | null> {
     if (!this.isInitialized) {
       throw new Error("Not initialized yet");
     }
@@ -191,7 +186,7 @@ export class CustomAuth {
         if (error) throw new Error(error);
         const { access_token: accessToken, id_token: idToken, tgAuthResult, ...rest } = hashParameters;
         // State has to be last here otherwise it will be overwritten
-        loginParams = { accessToken, idToken: idToken || tgAuthResult || "", ...rest, state: instanceParameters };
+        loginParams = { accessToken: accessToken || "", idToken: idToken || tgAuthResult || "", ...rest, state: instanceParameters };
       } else {
         this.sessionManager.clearOrphanedData();
         if (this.config.uxMode === UX_MODE.REDIRECT) {
@@ -199,11 +194,14 @@ export class CustomAuth {
           this.sessionManager.setSessionId(sessionId);
           await this.sessionManager.createSession({ args });
         }
-        loginParams = await loginHandler.handleLoginWindow({
+        const windowResponse = await loginHandler.handleLoginWindow({
           locationReplaceOnRedirect: this.config.locationReplaceOnRedirect,
           popupFeatures: this.config.popupFeatures,
         });
+        // redirect mode: page navigates away, result comes from getRedirectResult
         if (this.config.uxMode === UX_MODE.REDIRECT) return null;
+        if (!windowResponse) throw new Error("Login window returned no response");
+        loginParams = windowResponse;
       }
     } catch (error) {
       log.error(error);
@@ -288,7 +286,6 @@ export class CustomAuth {
           extraParams: {
             ...additionalParams,
           },
-          useDkg: this.config.useDkg,
           checkCommitment: this.config.checkCommitment,
           recordId: params.recordId,
           authConnection: params.authConnection,
@@ -308,10 +305,8 @@ export class CustomAuth {
     await this.init({ skipInit: true });
     const url = new URL(window.location.href);
     const hash = url.hash.substring(1);
-    const queryParams: Record<string, string> = {};
-    url.searchParams.forEach((value: string, key: string) => {
-      queryParams[key] = value;
-    });
+    // Object.fromEntries defines own properties, so a "__proto__" query key can't touch the prototype.
+    const queryParams: Record<string, string> = Object.fromEntries(url.searchParams);
 
     if (!hash && Object.keys(queryParams).length === 0) {
       throw new Error("Found Empty hash and query parameters. This can happen if user reloads the page");
@@ -338,7 +333,7 @@ export class CustomAuth {
     const storageMethodUsed = "localStorage + server";
     log.info(args, "args", storageMethodUsed);
 
-    let result: TorusLoginResponse;
+    let result: TorusLoginResponse | null;
 
     if (error) {
       return { error, state: instanceParameters || {}, result: {}, hashParameters, args };

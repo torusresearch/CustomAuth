@@ -106,12 +106,6 @@ export interface CustomAuthArgs {
   baseUrl: string;
 
   /**
-   * Specify a custom metadata host for legacy networks
-   * @defaultValue https://metadata.tor.us
-   */
-  metadataUrl?: string;
-
-  /**
    * Torus Network to target options: mainnet | testnet | cyan | aqua
    */
   network: TORUS_NETWORK_TYPE;
@@ -231,13 +225,6 @@ export interface CustomAuthArgs {
   sentry?: Sentry;
 
   keyType?: KeyType;
-
-  /**
-   * Set this flag to false to generate keys on client side
-   * by default keys are generated on using dkg protocol on a distributed network
-   * @defaultValue undefined
-   */
-  useDkg?: boolean;
 
   nodeDetails?: INodeDetails;
 
@@ -436,5 +423,5 @@ export interface ILoginHandler {
   nonce: string;
   finalURL: URL;
   getUserInfo(params: LoginWindowResponse): Promise<TorusConnectionResponse>;
-  handleLoginWindow(params: { locationReplaceOnRedirect?: boolean; popupFeatures?: string }): Promise<LoginWindowResponse>;
+  handleLoginWindow(params: { locationReplaceOnRedirect?: boolean; popupFeatures?: string }): Promise<LoginWindowResponse | null>;
 }

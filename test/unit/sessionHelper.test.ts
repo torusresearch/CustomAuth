@@ -1,6 +1,6 @@
 import { type Hex, keccak256, utf8ToBytes } from "@toruslabs/metadata-helpers";
 import { StorageManager } from "@toruslabs/session-manager";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vite-plus/test";
 
 import { fetchDataFromBroadcastServer } from "../../src/utils/sessionHelper";
 

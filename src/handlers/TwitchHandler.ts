@@ -1,6 +1,6 @@
 import { get } from "@toruslabs/http-helpers";
-import deepmerge from "deepmerge";
 
+import { deepmerge } from "../utils/helpers";
 import { CreateHandlerParams, LoginWindowResponse, TorusConnectionResponse } from "../utils/interfaces";
 import AbstractLoginHandler from "./AbstractLoginHandler";
 
@@ -30,7 +30,7 @@ export default class TwitchHandler extends AbstractLoginHandler {
     );
     Object.keys(finalJwtParams).forEach((key: string) => {
       const localKey = key as keyof typeof finalJwtParams;
-      if (finalJwtParams[localKey]) finalUrl.searchParams.append(localKey, finalJwtParams[localKey]);
+      if (finalJwtParams[localKey]) finalUrl.searchParams.append(key, finalJwtParams[localKey]);
     });
     this.finalURL = finalUrl;
   }
