@@ -106,6 +106,15 @@ describe("FacebookHandler", () => {
       expect(get).not.toHaveBeenCalled();
     });
 
+    it("rejects without an access token", async () => {
+      const handler = makeHandler();
+
+      await expect(handler.getUserInfo({ accessToken: "", idToken: jwt({ nonce: "abc" }), state: { instanceId: "abc" } })).rejects.toThrow(
+        "Facebook login did not return an access_token"
+      );
+      expect(get).not.toHaveBeenCalled();
+    });
+
     it("reads the profile from Graph v27.0", async () => {
       vi.mocked(get).mockResolvedValue({ id: "1", name: "N", email: "e@x.test", picture: { data: { url: "u" } } });
       const handler = makeHandler();

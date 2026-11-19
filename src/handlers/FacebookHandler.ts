@@ -52,6 +52,7 @@ export default class FacebookHandler extends AbstractLoginHandler {
       throw new Error("Facebook login returned an id_token that is not a JWT");
     }
     if (!nonce || nonce !== state?.instanceId) throw new Error("Facebook id_token nonce mismatch");
+    if (!accessToken) throw new Error("Facebook login did not return an access_token");
 
     const userInfo = await get<{ name: string; id: string; picture: { data: { url?: string } }; email?: string }>(
       "https://graph.facebook.com/v27.0/me?fields=name,email,picture.type(large)",
