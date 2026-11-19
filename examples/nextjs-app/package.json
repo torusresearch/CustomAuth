@@ -39,5 +39,10 @@
     "prettier": "^3.8.1",
     "typed-emitter": "^2.1.0",
     "typescript": "^5.9.3"
+  },
+  "overrides": {
+    "next": {
+      "postcss": "^8.5.33"
+    }
   }
 }
