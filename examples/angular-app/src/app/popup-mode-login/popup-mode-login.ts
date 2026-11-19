@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { TORUS_SAPPHIRE_NETWORK } from '@toruslabs/constants';
 import { UX_MODE } from '@toruslabs/customauth';
@@ -17,6 +17,7 @@ import { CustomAuthService } from '../custom-auth';
   selector: 'app-popup-mode-login',
   imports: [FormsModule],
   templateUrl: './popup-mode-login.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './popup-mode-login.css',
 })
 export class PopupModeLogin {

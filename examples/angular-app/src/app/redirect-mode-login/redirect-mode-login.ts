@@ -1,4 +1,4 @@
-import { Component } from "@angular/core";
+import { ChangeDetectionStrategy, Component } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { TORUS_SAPPHIRE_NETWORK } from "@toruslabs/constants";
 import { UX_MODE } from "@toruslabs/customauth";
@@ -17,6 +17,7 @@ import { CustomAuthService } from "../custom-auth";
   selector: "app-redirect-mode-login",
   imports: [FormsModule],
   templateUrl: "./redirect-mode-login.html",
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: "./redirect-mode-login.css",
 })
 export class RedirectModeLogin {
