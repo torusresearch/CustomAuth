@@ -53,7 +53,7 @@
     "@sentry/core": "^10.78.0",
     "@toruslabs/config": "^5.0.0",
     "@toruslabs/oxlint-config-typescript": "^1.1.0",
-    "@toruslabs/torus-scripts": "9.0.1",
+    "@toruslabs/torus-scripts": "9.0.2",
     "@types/events": "^3.0.3",
     "@types/node": "^26.6.6",
     "husky": "^9.1.7",
