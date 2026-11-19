@@ -35,83 +35,117 @@ abstract class AbstractLoginHandler implements ILoginHandler {
   }
 
   async handleLoginWindow(params: { locationReplaceOnRedirect?: boolean; popupFeatures?: string }): Promise<LoginWindowResponse | null> {
-    const authConnectionWindow = new PopupHandler({
-      url: this.finalURL,
+    const sharedOptions = {
       features: params.popupFeatures,
       timeout: getTimeout(this.params.authConnection),
-    });
-    if (this.params.uxMode === UX_MODE.REDIRECT) {
-      authConnectionWindow.redirect(params.locationReplaceOnRedirect ?? false);
-    } else {
-      const { RedundantAdaptiveBroadcastChannel: BroadcastChannel } = await import("@toruslabs/broadcast-channel");
-      return new Promise<LoginWindowResponse>((resolve, reject) => {
-        // shortcut: keep channel loosely typed; tighten when broadcast-channel types stabilize
-        let bc: any;
-        const handleData = async (ev: { error: string; data: PopupResponse }) => {
-          try {
-            const { error, data } = ev;
-            const {
-              instanceParams,
-              hashParams: { access_token: accessToken, id_token: idToken, ...rest },
-            } = data || {};
-            if (error) {
-              log.error(error);
-              reject(new Error(`Error: ${error}. Info: ${JSON.stringify(ev.data || {})}`));
-              return;
-            }
-            if (ev.data && instanceParams.authConnectionId === this.params.authConnectionId) {
-              if (!this.params.redirectToOpener && bc) await bc.postMessage({ success: true });
-              resolve({
-                accessToken,
-                idToken: idToken || "",
-                ...rest,
-                // State has to be last here otherwise it will be overwritten
-                state: instanceParams,
-              });
-            }
-          } catch (error) {
-            log.error(error);
-            reject(error);
-          }
-        };
+    };
 
-        if (!this.params.redirectToOpener) {
-          bc = new BroadcastChannel<{
-            error: string;
-            data: PopupResponse;
-          }>(`redirect_channel_${this.nonce}`, broadcastChannelOptions);
-          bc.addEventListener("message", async (ev: { error: string; data: PopupResponse }) => {
-            await handleData(ev);
-            bc.close();
-            authConnectionWindow.close();
-          });
-        } else {
-          const redirectOrigin = new URL(this.params.redirect_uri).origin;
-          const postMessageEventHandler = async (postMessageEvent: MessageEvent) => {
-            if (postMessageEvent.origin !== redirectOrigin) return;
-            if (!postMessageEvent.data) return;
-            const ev = postMessageEvent.data;
-            if (ev.channel !== `redirect_channel_${this.nonce}`) return;
-            window.removeEventListener("message", postMessageEventHandler);
-            handleData(ev);
-            authConnectionWindow.close();
-          };
-          window.addEventListener("message", postMessageEventHandler);
-        }
+    if (this.params.uxMode === UX_MODE.REDIRECT) {
+      const authConnectionWindow = new PopupHandler({
+        url: this.finalURL,
+        ...sharedOptions,
+      });
+      authConnectionWindow.redirect(params.locationReplaceOnRedirect ?? false);
+      return null;
+    }
+
+    let popupUrl = this.finalURL;
+    let removeHandshake: (() => void) | undefined;
+    if (this.params.popupStartUrl) {
+      const start = new URL(this.params.popupStartUrl);
+      start.searchParams.set("instanceId", this.nonce);
+      start.searchParams.set("target", this.finalURL.href);
+      popupUrl = start;
+      const onHandshake = (e: MessageEvent) => {
+        if (e.origin !== start.origin) return;
+        if (e.data?.type !== "w3a:popup_start" || e.data.instanceId !== this.nonce) return;
+        (e.source as Window)?.postMessage({ type: "w3a:popup_start_ack", instanceId: this.nonce }, e.origin);
+      };
+      window.addEventListener("message", onHandshake);
+      removeHandshake = () => window.removeEventListener("message", onHandshake);
+    }
+
+    const authConnectionWindow = new PopupHandler({
+      url: popupUrl,
+      ...sharedOptions,
+    });
+
+    const { RedundantAdaptiveBroadcastChannel: BroadcastChannel } = await import("@toruslabs/broadcast-channel");
+    return new Promise<LoginWindowResponse>((resolve, reject) => {
+      // shortcut: keep channel loosely typed; tighten when broadcast-channel types stabilize
+      let bc: any;
+      const cleanup = () => {
+        removeHandshake?.();
+        removeHandshake = undefined;
+        if (bc) bc.close();
+      };
+      const handleData = async (ev: { error: string; data: PopupResponse }) => {
         try {
-          authConnectionWindow.open();
+          const { error, data } = ev;
+          const {
+            instanceParams,
+            hashParams: { access_token: accessToken, id_token: idToken, ...rest },
+          } = data || {};
+          if (error) {
+            log.error(error);
+            reject(new Error(`Error: ${error}. Info: ${JSON.stringify(ev.data || {})}`));
+            return;
+          }
+          if (ev.data && instanceParams.authConnectionId === this.params.authConnectionId) {
+            if (!this.params.redirectToOpener && bc) await bc.postMessage({ success: true });
+            resolve({
+              accessToken,
+              idToken: idToken || "",
+              ...rest,
+              // State has to be last here otherwise it will be overwritten
+              state: instanceParams,
+            });
+          }
         } catch (error) {
           log.error(error);
           reject(error);
-          return;
         }
-        authConnectionWindow.once("close", () => {
-          if (bc) bc.close();
-          reject(new Error("user closed popup"));
+      };
+
+      if (!this.params.redirectToOpener) {
+        bc = new BroadcastChannel<{
+          error: string;
+          data: PopupResponse;
+        }>(`redirect_channel_${this.nonce}`, broadcastChannelOptions);
+        bc.addEventListener("message", async (ev: { error: string; data: PopupResponse }) => {
+          removeHandshake?.();
+          removeHandshake = undefined;
+          await handleData(ev);
+          cleanup();
+          authConnectionWindow.close();
         });
+      } else {
+        const redirectOrigin = new URL(this.params.redirect_uri).origin;
+        const postMessageEventHandler = async (postMessageEvent: MessageEvent) => {
+          if (postMessageEvent.origin !== redirectOrigin) return;
+          if (!postMessageEvent.data) return;
+          const ev = postMessageEvent.data;
+          if (ev.channel !== `redirect_channel_${this.nonce}`) return;
+          window.removeEventListener("message", postMessageEventHandler);
+          cleanup();
+          handleData(ev);
+          authConnectionWindow.close();
+        };
+        window.addEventListener("message", postMessageEventHandler);
+      }
+      try {
+        authConnectionWindow.open();
+      } catch (error) {
+        log.error(error);
+        cleanup();
+        reject(error);
+        return;
+      }
+      authConnectionWindow.once("close", () => {
+        cleanup();
+        reject(new Error("user closed popup"));
       });
-    }
-    return null;
+    });
   }
 
   abstract getUserInfo(params: LoginWindowResponse): Promise<TorusConnectionResponse>;
