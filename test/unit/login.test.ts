@@ -1,5 +1,4 @@
 import { TORUS_SAPPHIRE_NETWORK, type TORUS_NETWORK_TYPE } from "@toruslabs/constants";
-import { get } from "@toruslabs/http-helpers";
 import { encodeBase64Url } from "@toruslabs/metadata-helpers";
 import { StorageManager } from "@toruslabs/session-manager";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vite-plus/test";
@@ -9,11 +8,6 @@ import { createHandler } from "../../src/handlers/HandlerFactory";
 import { AUTH_CONNECTION, UX_MODE } from "../../src/utils/enums";
 import { CustomAuthLoginError, CustomAuthLoginErrorPrefix } from "../../src/utils/error";
 import type { CustomAuthArgs, ILoginHandler, LoginWindowResponse, TorusConnectionResponse } from "../../src/utils/interfaces";
-
-vi.mock("@toruslabs/http-helpers", async (importOriginal) => ({
-  ...(await importOriginal<typeof import("@toruslabs/http-helpers")>()),
-  get: vi.fn<() => Promise<unknown>>(),
-}));
 
 vi.mock("@toruslabs/torus.js", () => {
   function Torus(this: Record<string, unknown>) {
@@ -268,7 +262,6 @@ describe("CustomAuth", () => {
             storageServerUrl: "https://storage-server.example.com",
           })
       );
-      vi.mocked(get).mockResolvedValue({ id: "1", name: "N", email: "e@x.test", picture: { data: { url: "u" } } });
     });
 
     it("does not send the access token to the nodes", async () => {
@@ -292,7 +285,7 @@ describe("CustomAuth", () => {
 
       await auth.triggerLogin({
         ...facebookArgs,
-        hash: `access_token=EAAat&id_token=${facebookIdToken}&state=${facebookState}`,
+        hash: `id_token=${facebookIdToken}&state=${facebookState}`,
         queryParameters: {},
       });
 

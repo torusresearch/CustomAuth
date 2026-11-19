@@ -1,13 +1,11 @@
-import { get } from "@toruslabs/http-helpers";
-
 import { decodeToken, deepmerge } from "../utils/helpers";
 import { CreateHandlerParams, LoginWindowResponse, TorusConnectionResponse } from "../utils/interfaces";
 import AbstractLoginHandler from "./AbstractLoginHandler";
 
 export default class FacebookHandler extends AbstractLoginHandler {
-  private readonly RESPONSE_TYPE: string = "token id_token";
+  private readonly RESPONSE_TYPE: string = "id_token";
 
-  private readonly SCOPE: string = "openid public_profile email";
+  private readonly SCOPE: string = "openid email";
 
   constructor(params: CreateHandlerParams) {
     super(params);
@@ -42,35 +40,26 @@ export default class FacebookHandler extends AbstractLoginHandler {
   }
 
   async getUserInfo(params: LoginWindowResponse): Promise<TorusConnectionResponse> {
-    const { accessToken, idToken, state } = params;
+    const { idToken, state } = params;
     // triggerLogin sends `idToken || accessToken` to the nodes, so a missing id_token must stop the login here.
     if (!idToken) throw new Error("Facebook login did not return an id_token");
-    let nonce: unknown;
+    let claims: { nonce?: unknown; sub?: string; name?: string; email?: string; picture?: string };
     try {
-      nonce = decodeToken<{ nonce?: unknown }>(idToken).payload.nonce;
+      claims = decodeToken<typeof claims>(idToken).payload;
     } catch {
       throw new Error("Facebook login returned an id_token that is not a JWT");
     }
+    const { nonce, sub, name = "", email = "", picture = "" } = claims;
     if (!nonce || nonce !== state?.instanceId) throw new Error("Facebook id_token nonce mismatch");
-    if (!accessToken) throw new Error("Facebook login did not return an access_token");
-
-    const userInfo = await get<{ name: string; id: string; picture: { data: { url?: string } }; email?: string }>(
-      "https://graph.facebook.com/v27.0/me?fields=name,email,picture.type(large)",
-      {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      }
-    );
-    const { name = "", id, picture, email = "" } = userInfo;
+    if (!sub) throw new Error("Facebook id_token has no sub");
     return {
       email,
       name,
-      profileImage: picture.data.url || "",
+      profileImage: picture,
       authConnectionId: this.params.authConnectionId,
       authConnection: this.params.authConnection,
       groupedAuthConnectionId: this.params.groupedAuthConnectionId,
-      userId: id,
+      userId: sub,
     };
   }
 }
