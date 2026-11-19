@@ -86,7 +86,7 @@ jobs:
       - name: sync s3
         run: aws s3 sync ./examples/vue-app/dist s3://demo-customauth.web3auth.io --region us-east-1 --no-progress
       - name: Update AWS Cloudfront Config
-        uses: chaitanyapotti/cloudfront-update-distribution@c5d4a6b318664766f944d11c32544f492fb3027d # v4
+        uses: chaitanyapotti/cloudfront-update-distribution@b120c0220453e292a43e5563f008f8e9e52858d6 # v5
         with:
           cloudfront-distribution-id: ${{ secrets.AWS_CLOUDFRONT_DISTRIBUTION_ID }}
           cloudfront-invalidation-required: true
