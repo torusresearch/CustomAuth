@@ -60,7 +60,7 @@
     "lint-staged": "^17.6.1",
     "typed-emitter": "^2.1.0",
     "typescript": "^7.0.2",
-    "vite-plus": "1.6.0"
+    "vite-plus": "1.7.0"
   },
   "overrides": {
     "vite": "npm:@voidzero-dev/vite-plus-core@1.6.0",
